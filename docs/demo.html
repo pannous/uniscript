@@ -2,19 +2,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>uniscript demo</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
 <!-- Converts in the browser with the Rust crate compiled to WebAssembly (wasm/). Serve the repository over HTTP
-     (docs/make_demo.sh does, with the installed fonts under /fonts/), file:// cannot load modules. Fonts: README.md. -->
+     (docs/make_demo.sh does, with the installed fonts under /fonts/), file:// cannot load modules. Fonts: README.md.
+     Deployed under pannous.com/uniscript/, it uses that page's sliced fonts (../fonts/fonts.css, ../sequence_fonts.js). -->
 <style>
-@font-face{font-family:UniscriptSans;src:local("Uniscript Sans"),local("UniscriptSans-Regular"),url("../fonts/UniscriptSans-Regular.woff2") format("woff2"),url("../fonts/UniscriptSans-Regular.ttf")}
-@font-face{font-family:UniscriptCJK;src:local("Uniscript CJK"),local("UniscriptCJK-Regular"),url("../fonts/UniscriptCJK-Regular.woff2") format("woff2"),url("../fonts/UniscriptCJK-Regular.otf")}
-@font-face{font-family:Hieroglyphs;src:local("NewGardinerOmni Regular"),local("NewGardinerOmni-Regular"),url("../fonts/NewGardinerOmni2d4.woff2") format("woff2"),url("../fonts/NewGardinerOmni2d4.ttf")}
-body{font-family:UniscriptSans,Hieroglyphs,UniscriptCJK,sans-serif;background:#fbfaf7;margin:0;color:#222}
+@font-face{font-family:UniscriptSans;src:local("Uniscript Sans"),local("UniscriptSans-Regular"),url("../fonts/UniscriptSans-Regular.ttf")}
+@font-face{font-family:UniscriptCJK;src:local("Uniscript CJK"),local("UniscriptCJK-Regular"),url("../fonts/UniscriptCJK-Regular.otf")}
+@font-face{font-family:Hieroglyphs;src:local("NewGardinerOmni Regular"),local("NewGardinerOmni-Regular"),url("../fonts/NewGardinerOmni2d4.ttf")}
+:root{--fonts:"Uniscript Sans","NewGardinerOmni","Uniscript CJK",UniscriptSans,Hieroglyphs,UniscriptCJK}
+body{font-family:var(--fonts),sans-serif;background:#fbfaf7;margin:0;color:#222}
 #examples{padding:28px 36px 12px} #editor,#warnings,#about{margin-inline:36px} .hero{font-size:150px;line-height:1.15;margin:0 0 10px}
 .row{display:flex;gap:28px;align-items:center;margin:6px 0}
 .row code{font:15px Menlo,monospace;width:470px;color:#666;flex:none} .out{font-size:42px}
 #editor{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:stretch;margin-top:24px;max-width:1100px}
-textarea,#output{font:18px Menlo,UniscriptSans,Hieroglyphs,UniscriptCJK,monospace;min-height:130px;padding:10px;border:1px solid #ccc;border-radius:6px;background:#fff}
-#output{font-family:UniscriptSans,Hieroglyphs,UniscriptCJK,sans-serif;font-size:32px;white-space:pre-wrap;overflow-wrap:anywhere}
+textarea,#output{font:18px Menlo,var(--fonts),monospace;min-height:130px;padding:10px;border:1px solid #ccc;border-radius:6px;background:#fff}
+#output{font-family:var(--fonts),sans-serif;font-size:32px;white-space:pre-wrap;overflow-wrap:anywhere}
 #about{font:14px system-ui,sans-serif;color:#666;margin-top:24px} #about a{color:#7a3b12}
 button{font-size:20px;align-self:center} #warnings{color:#a60;font:14px Menlo,monospace;white-space:pre-line;margin-top:8px}
 </style>
@@ -27,7 +30,7 @@ button{font-size:20px;align-self:center} #warnings{color:#a60;font:14px Menlo,mo
 </div>
 <div id="warnings"></div>
 <p id="about">Converted by the Rust crate compiled to WebAssembly, with meta information (fonts, colors, angles) rendered as HTML.
-	<a href="https://pannous.com/uniscript/">pannous.com/uniscript</a> instead runs <code>lib/uniscript.wasp</code> compiled by warp, with example buttons and a Unicode → uniscript box.</p>
+	<a href="https://pannous.com/uniscript/">pannous.com/uniscript</a> instead runs the wasp implementation compiled by warp, with example buttons and a Unicode → uniscript box.</p>
 <script type="module">
 import init, { convert, ensure, toUniscript, metaRuns, html } from "../wasm/uniscript.js";
 
@@ -76,5 +79,7 @@ document.getElementById("reverse").addEventListener("click", () => {
 	render();
 });
 await render();
+// the sliced fonts keep IDS, hieroglyph groups and TAG effects in one face; missing when served from the repository
+await import("../sequence_fonts.js").then(fonts => fonts.watchSequences(examples, output), () => {});
 document.body.dataset.ready = "true";
 </script>
