@@ -1,0 +1,22 @@
+{
+	"$schema": "sublime://packagecontrol.io/schemas/repository",
+	"schema_version": "4.0.0",
+	"packages": [
+		{
+			"name": "Uniscript",
+			"details": "https://github.com/pannous/uniscript",
+			"readme": "https://raw.githubusercontent.com/pannous/uniscript/main/sublime/Uniscript/README.md",
+			"description": "Type any Unicode character in plain ASCII and style it: <:alpha> <:fracture A> → α 𝔄",
+			"author": "pannous",
+			"labels": ["unicode", "text manipulation"],
+			"releases": [
+				{
+					"sublime_text": ">=4107",
+					"python_versions": ["3.8"],
+					"tags": "sublime-",
+					"asset": "Uniscript.sublime-package"
+				}
+			]
+		}
+	]
+}

@@ -38,10 +38,12 @@ normal reader searches it. Git-ignored, rebuilt from `data/entities.idx`.
 
 A key sorts by `(group, hash)`: chars by their first code point (a script's characters share chunks), names and the rest
 by the hash of their first word split at space or hyphen (`fracture A`, `fracture-B`, `fracture ` share chunks). Its
-chunk is the last one starting at or before it. `Index::chunked(manifest)` finds nothing in chunks not added yet and
+chunk is the last one starting at or before it. Chunks are semantic: a Unicode block (from `data/sources/Blocks.txt`) or a
+first-word group of a quarter chunk or more starts and ends its own chunks, smaller groups share them. `Index::chunked(manifest)` finds nothing in chunks not added yet and
 records them; `Uniscript::missing_chunks(text)` dry-runs convert (lenient), meta_runs, html and to_uniscript and returns
 them. Callers fetch those, `add_chunk` them and ask again until nothing is missing (2–3 rounds), then convert
-synchronously with results identical to the whole index.
+synchronously with results identical to the whole index. JS: `await init({ chunks: manifestUrl })` then
+`await ensure(text)` (wasm/), `new Uniscript(await ChunkedIndex.load(manifestUrl))` then `await converter.ensure(text)` (js/).
  [`fonts/uniscript_fonts.py`](https://github.com/pannous/warp/tree/main/fonts) in warp. Text
 engines must shape with HarfBuzz or CoreText for the controls to take effect: Chrome, Firefox, Safari, Sublime Text,
 VS Code, and iTerm with ligatures on.
