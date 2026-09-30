@@ -148,20 +148,29 @@ size_t utf8_encode(uint32_t c, char out[5]) {
 	return n;
 }
 
-/* well-formed UTF-8 (RFC 3629): no overlongs, surrogates or code points above U+10FFFF */
-bool utf8_valid(const char *text, size_t n) {
+/* Whether a well-formed UTF-8 sequence (RFC 3629: no overlongs, surrogates or code points above U+10FFFF) starts the
+ * bytes; *length: its length, or that of the maximal invalid subpart (what from_utf8_lossy replaces by one U+FFFD) */
+bool utf8_sequence(const char *text, size_t n, size_t *length) {
 	const unsigned char *b = (const unsigned char *)text;
-	for (size_t i = 0; i < n;) {
-		unsigned char c = b[i];
-		size_t length = c < 0x80 ? 1 : (c >= 0xC2 && c <= 0xDF) ? 2 : (c >= 0xE0 && c <= 0xEF) ? 3 : (c >= 0xF0 && c <= 0xF4) ? 4 : 0;
-		if (!length || i + length > n) return false;
-		for (size_t k = 1; k < length; k++)
-			if ((b[i + k] & 0xC0) != 0x80) return false;
-		if ((c == 0xE0 && b[i + 1] < 0xA0) || (c == 0xED && b[i + 1] > 0x9F) || (c == 0xF0 && b[i + 1] < 0x90) ||
-		    (c == 0xF4 && b[i + 1] > 0x8F))
-			return false;
-		i += length;
+	unsigned char c = b[0], low = 0x80, high = 0xBF;
+	size_t expected = c < 0x80 ? 1 : (c >= 0xC2 && c <= 0xDF) ? 2 : (c >= 0xE0 && c <= 0xEF) ? 3 : (c >= 0xF0 && c <= 0xF4) ? 4 : 0;
+	if (c == 0xE0) low = 0xA0;
+	if (c == 0xED) high = 0x9F;
+	if (c == 0xF0) low = 0x90;
+	if (c == 0xF4) high = 0x8F;
+	*length = 1;
+	if (!expected) return false;
+	for (size_t k = 1; k < expected; k++, low = 0x80, high = 0xBF) {
+		if (k >= n || b[k] < low || b[k] > high) return false;
+		*length = k + 1;
 	}
+	return true;
+}
+
+bool utf8_valid(const char *text, size_t n) {
+	size_t length;
+	for (size_t i = 0; i < n; i += length)
+		if (!utf8_sequence(text + i, n - i, &length)) return false;
 	return true;
 }
 

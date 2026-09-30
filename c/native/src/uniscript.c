@@ -17,6 +17,7 @@
 #define VALUE_PLACEHOLDER "{}"
 #define CLOSE_SPAN "</span>"
 #define SUFFIX_KEY "*suffix"
+#define REPLACEMENT_CHARACTER 0xFFFDu
 
 typedef struct { str *items; size_t n, cap; } strs;
 
@@ -621,9 +622,31 @@ static uniscript_result failed(uniscript_error_kind kind, const char *detail, si
 	return result;
 }
 
+/* The source with each maximal invalid UTF-8 subpart replaced by U+FFFD, a warning at its offset for each; "" with a
+ * warning for NULL */
+static char *repaired(converter *self, const char *source) {
+	buf text = { 0 };
+	if (!source) {
+		warn(self, 0, "input is NULL");
+		return buf_take(&text);
+	}
+	size_t n = strlen(source), length;
+	for (size_t at = 0; at < n; at += length) {
+		if (utf8_sequence(source + at, n - at, &length)) {
+			buf_add(&text, source + at, length);
+			continue;
+		}
+		warn(self, at, "invalid UTF-8 byte 0x%02X replaced by U+FFFD", (unsigned char)source[at]);
+		buf_addc(&text, REPLACEMENT_CHARACTER);
+	}
+	return buf_take(&text);
+}
+
 uniscript_result uniscript_convert(const char *source, uniscript_mode mode) {
-	if (invalid(source)) return failed(UNISCRIPT_INVALID_INPUT, NULL, 0);
 	converter self = { 0 };
+	char *lenient_source = NULL;
+	if (!index_valid() || (mode != UNISCRIPT_LENIENT && invalid(source))) return failed(UNISCRIPT_INVALID_INPUT, NULL, 0);
+	if (invalid(source)) source = lenient_source = repaired(&self, source);
 	buf out = { 0 };
 	uniscript_result result;
 	if (!unicode_of(&self, &out, source, mode)) {
@@ -637,6 +660,7 @@ uniscript_result uniscript_convert(const char *source, uniscript_mode mode) {
 	}
 	buf_free(&out);
 	free(self.detail);
+	free(lenient_source);
 	return result;
 }
 

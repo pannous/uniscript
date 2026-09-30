@@ -21,3 +21,8 @@
   reverse, reverse of the converted) on the repo's markdown and a random corpus (`tests/fuzz_corpus.py`); line by line
   for the first 400 corpus lines, because an error stops a whole file. Run it after reference changes: it caught the
   spaces rule of 822678c before the shared cases had it (since replaced by 48026c8: blocks keep text as written, inline tags drop spaces).
+- Invalid UTF-8 in UNISCRIPT_LENIENT (agreed with c/ffi, cases in c/tests/cases.h): `repaired()` replaces each maximal
+  invalid subpart by U+FFFD (`utf8_sequence` gives its length, as Rust's `from_utf8_lossy`: E2 82 → one, C0 80 → two,
+  ED A0 80 → three), warns "invalid UTF-8 byte 0xNN replaced by U+FFFD" at the input offset, then converts the repaired
+  text (later offsets refer to it). NULL → "" with "input is NULL". WARN and ERROR keep UNISCRIPT_INVALID_INPUT. The Rust
+  CLI rejects invalid stdin, so differential.sh cannot cover this; tests/test_native.c does.

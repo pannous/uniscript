@@ -41,6 +41,8 @@ char *copy_of(str text);
 size_t utf8_decode(str text, uint32_t *character);
 size_t utf8_encode(uint32_t character, char out[5]);
 bool utf8_valid(const char *text, size_t n);
+/* whether a well-formed sequence starts the bytes; *length: its length or that of the maximal invalid subpart */
+bool utf8_sequence(const char *text, size_t n, size_t *length);
 uint32_t first_character(str text);
 
 typedef enum { TABLE_NAMES, TABLE_CHARS, TABLE_SUFFIXES, TABLE_FONTS, TABLE_META, TABLE_COUNT } table;
