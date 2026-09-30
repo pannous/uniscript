@@ -32,6 +32,20 @@ echo "<:beside 犭 句>" | uniscript      # ⿰犭句
 
 `to_uniscript` followed by `to_unicode` gives the original text back.
 
+### Swift
+
+The same converter as a Swift package (`Package.swift`, `Sources/Uniscript`), reading the same `data/entities.idx`
+(bundled as a resource through the symlink `Sources/Uniscript/entities.idx`; lookups read the memory-mapped bytes in place).
+
+```swift
+// .package(url: "https://github.com/pannous/uniscript", branch: "main"), product "Uniscript"
+import Uniscript
+try Uniscript.toUnicode("<:alpha> <:fracture A>")   // "α 𝔄", throws UniscriptError.unknownEntity / .unclosed
+Uniscript.toUniscript("α 𝔄")                       // "<:alpha> <:fracture A>"
+```
+
+`swift test` (in `tests/UniscriptTests`) runs the cases of `tests/uniscript_test.rs` plus a walk over all three index tables.
+
 ## Syntax
 
 - `<:name>` or `\:name`: an entity. Names are case sensitive; spaces may replace hyphens (`<:greek small letter alpha>`).
@@ -39,7 +53,7 @@ echo "<:beside 犭 句>" | uniscript      # ⿰犭句
 - `<:type> … <:/type>` or `<:type> … <:>`: a block; spaces inside it only separate operands and are dropped.
 - Effect words stack: `<:mirror red A>` gives A with the red and the mirror control.
 - `<:` is the only special sequence. Escape it as `<<::>`, `<:less>:` or `<:<>:`; a lone `<` or `>` needs no escape.
-- An unknown name is an error (`Error::UnknownEntity`), never passed through silently.
+- An unknown name is an error (`Error::UnknownEntity`, Swift `UniscriptError.unknownEntity`), never passed through silently.
 
 ## Data
 
