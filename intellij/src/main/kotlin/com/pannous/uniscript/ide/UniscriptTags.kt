@@ -8,9 +8,9 @@ import com.pannous.uniscript.Converted
 import com.pannous.uniscript.Uniscript
 import com.pannous.uniscript.UniscriptError
 
-/** `<:content>` on one line, and `\:name`. The content starts with no space and has no brackets, braces, `;`, `=` or
- *  quotes, so Scala's `T <: Bound[…]>` and C++'s `<:` digraph are no tags. */
-private val TAG = Regex("""<:(?:[^\s>][^>\n\[\]{};="]*)?>|\\:[A-Za-z0-9_-]+""")
+/** `<:content>` on one line, `\:name` (`\:U+1F60D` too) and the code point `\U1F60D`. The content starts with no space and
+ *  has no brackets, braces, `;`, `=` or quotes, so Scala's `T <: Bound[…]>` and C++'s `<:` digraph are no tags. */
+private val TAG = Regex("""<:(?:[^\s>][^>\n\[\]{};="]*)?>|\\:(?:[Uu]\+)?[A-Za-z0-9_-]+|\\U[0-9A-Fa-f]{4,8}(?![A-Za-z0-9_-])""")
 private const val SHORT_MARKER_LENGTH = 2
 private const val LONG_OPEN_LENGTH = 2
 

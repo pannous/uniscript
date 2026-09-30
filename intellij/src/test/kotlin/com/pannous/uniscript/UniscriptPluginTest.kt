@@ -46,6 +46,13 @@ class UniscriptPluginTest : BasePlatformTestCase() {
 		assertEquals(listOf("α", "𝔄", "∞", "c").map { it to false }, placeholders)
 	}
 
+	fun testCodePointsAreHighlightedAndFolded() {
+		val infos = highlighted("notes.txt", "\\U1F60D \\:U+1F60D <:0x1F60D> \\Users")
+		for (entity in listOf("1F60D", "U+1F60D", "0x1F60D")) assertTrue(infos.toString(), Triple(entity, HighlightSeverity.INFORMATION, ENTITY) in infos)
+		EditorTestUtil.buildInitialFoldingsInBackground(myFixture.editor)
+		assertEquals(List(3) { "😍" }, myFixture.editor.foldingModel.allFoldRegions.map { it.placeholderText })
+	}
+
 	fun testActionsConvertTheSelectionOrTheFile() {
 		myFixture.configureByText("notes.txt", "<:alpha> <selection><:fracture A></selection> \\:infinity")
 		myFixture.performEditorAction("Uniscript.ToUnicode")

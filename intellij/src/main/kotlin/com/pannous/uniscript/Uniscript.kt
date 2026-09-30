@@ -13,6 +13,16 @@ private const val MARKER_COLON = ':'
 private const val TAG_CLOSE = '>'
 private const val CLOSING_SLASH = '/'
 private const val ESCAPED_COLON = "<::>"
+private const val UNICODE_ESCAPE_LETTER = 'U'
+private const val ESCAPED_UNICODE = "<:U>"
+/** A code point token: `U+1F60D`, `U1F60D`, `0x1F60D` in any case (1–8 hex digits) or bare `1F60D` (4–8, so a mistyped
+ *  short name stays unknown) */
+private val CODE_POINT = Regex("(?:[Uu]\\+?|0[xX])([0-9A-Fa-f]{1,8})|([0-9A-Fa-f]{4,8})")
+/** `U1F60D` after a backslash: `\U1F60D`, the only marker without a colon, 4–8 hex digits as a whole name token */
+private val UNICODE_ESCAPE = Regex("U([0-9A-Fa-f]{4,8})(?![A-Za-z0-9_-])")
+/** A name token after `\:`; the `+` of a leading `U+` belongs to it */
+private val NAME_TOKEN = Regex("(?:[Uu]\\+)?[A-Za-z0-9_-]*")
+private val MARKERS = Regex("<:|\\\\:|\\\\(?=U[0-9A-Fa-f]{4,8}(?![A-Za-z0-9_-]))")
 private const val FONT_KEY = "font"
 private const val SUFFIX_KEY = "*suffix"
 /** The block control naming the meta a block becomes where it has no suffix control (`red *meta` → `color red`) */
@@ -96,6 +106,12 @@ class Uniscript(val index: EntityIndex = EntityIndex.bundled) {
 				out.appendCodePoint(character).append(ESCAPED_COLON)
 				continue
 			}
+			if (character == SHORT_OPEN.code && characters.getOrNull(position) == UNICODE_ESCAPE_LETTER.code &&
+				unicodeEscapeAt(text, text.offsetByCodePoints(0, position)) != null) {
+				position++
+				out.appendCodePoint(character).append(ESCAPED_UNICODE)
+				continue
+			}
 			val emojiLength = emojiTags(characters, position)
 			if (emojiLength != null) {
 				out.append(spelled(character, emptyList())) // subdivision flags keep their tags
@@ -137,6 +153,15 @@ private class Conversion(val index: EntityIndex, val source: String) {
 	private fun name(key: String) = index[Table.NAMES, key]
 
 	private fun isBlock(name: String) = name("$name ") != null
+
+	/** The character of a code point token (`U+1F60D`, `1F60D`); an invalid one (surrogate, above 10FFFF) warns and
+	 *  stays `written`; null for no code point token */
+	private fun codePoint(token: String, written: String, at: Int): String? {
+		val value = codePointValue(token) ?: return null
+		if (value <= Character.MAX_CODE_POINT && value !in Character.MIN_SURROGATE.code..Character.MAX_SURROGATE.code) return value.toInt().asText()
+		warn("invalid code point U+%04X".format(value), at)
+		return written
+	}
 
 	private fun warn(message: String, at: Int) {
 		warnings += Warning(message, source.substring(0, at).utf8Size)
@@ -320,6 +345,7 @@ private class Conversion(val index: EntityIndex, val source: String) {
 	private fun tag(content: String, at: Int): String {
 		if (content.utf8Size == 1) return content // <:<> <::> escape the marker
 		name(content.replace(' ', '-'))?.let { return it }
+		codePoint(content, "<:$content>", at)?.let { return it }
 		metaTag(content, at)?.let { return it }
 		val (first, afterFirst) = splitOnce(content, ' ') ?: splitOnce(content, '-') ?: throw UniscriptError.UnknownEntity(content)
 		if (!isBlock(first)) throw UniscriptError.UnknownEntity(content)
@@ -340,7 +366,6 @@ private class Conversion(val index: EntityIndex, val source: String) {
 		}
 	}
 
-	private fun isMarkerColon(at: Int) = source[at] == MARKER_COLON && (source[at - 1] == TAG_OPEN || source[at - 1] == SHORT_OPEN)
 
 	private fun firstIndex(from: Int, matches: (Int) -> Boolean) = (from until source.length).firstOrNull(matches)
 
@@ -361,15 +386,20 @@ private class Conversion(val index: EntityIndex, val source: String) {
 		var block: String? = null
 		var position = headerLength()
 		while (position < source.length) {
-			val marker = firstIndex(position + 1, ::isMarkerColon)?.minus(1) ?: source.length
+			val marker = MARKERS.find(source, position)?.range?.first ?: source.length
 			val run = source.substring(position, marker)
 			out.append(block?.let { blockText(it, run, position) } ?: run)
 			position = marker
 			if (position == source.length) break
-			if (source[position] == SHORT_OPEN) {
-				val nameEnd = firstIndex(position + 2) { !isNameChar(source[it]) } ?: source.length
+			val escaped = unicodeEscapeAt(source, position + 1)
+			if (escaped != null) {
+				val end = position + 2 + escaped.length
+				out.append(codePoint(escaped, source.substring(position, end), position))
+				position = end
+			} else if (source[position] == SHORT_OPEN) {
+				val nameEnd = NAME_TOKEN.matchAt(source, position + 2)!!.range.last + 1
 				val entity = source.substring(position + 2, nameEnd)
-				out.append(name(entity) ?: throw UniscriptError.UnknownEntity(entity))
+				out.append(name(entity) ?: codePoint(entity, source.substring(position, nameEnd), position) ?: throw UniscriptError.UnknownEntity(entity))
 				position = nameEnd
 			} else {
 				val close = firstIndex(position + 2) { source[it] == TAG_CLOSE } ?: throw UniscriptError.Unclosed(source.substring(position))
@@ -396,6 +426,13 @@ private fun scriptOf(character: Int) = when (character) {
 }
 
 fun isNameChar(character: Char) = character in 'a'..'z' || character in 'A'..'Z' || character in '0'..'9' || character == '-' || character == '_'
+
+/** The value of a code point token (`U+1F60D`, `1F60D`), else null */
+fun codePointValue(token: String): Long? =
+	CODE_POINT.matchEntire(token)?.destructured?.let { (prefixed, bare) -> prefixed.ifEmpty { bare }.toLong(16) }
+
+/** The hex digits of `\U1F60D` whose backslash is at `position - 1`, else null */
+private fun unicodeEscapeAt(text: String, position: Int) = UNICODE_ESCAPE.matchAt(text, position)?.groupValues?.get(1)
 
 /** A tag's content is a closing tag: `<:>` or `<:/greek>` */
 private fun isClosing(content: String) = content.isEmpty() || content.startsWith(CLOSING_SLASH)

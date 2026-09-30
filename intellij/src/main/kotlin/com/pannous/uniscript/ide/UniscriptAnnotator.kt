@@ -10,6 +10,7 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.pannous.uniscript.codePointValue
 
 private fun key(name: String, fallback: TextAttributesKey) = TextAttributesKey.createTextAttributesKey("UNISCRIPT_$name", fallback)
 
@@ -44,7 +45,7 @@ class UniscriptAnnotator : Annotator, DumbAware {
 		paint(TextRange(tag.range.startOffset, content.startOffset), MARKER)
 		paint(TextRange(content.endOffset, tag.range.endOffset), MARKER)
 		val text = tag.content
-		if (uniscript.isName(text.replace(' ', '-')) || tag.isShort) return paint(content, ENTITY)
+		if (uniscript.isName(text.replace(' ', '-')) || tag.isShort || codePointValue(text) != null) return paint(content, ENTITY)
 		var offset = content.startOffset
 		var operandsStart = offset
 		var metaValueNext = false
