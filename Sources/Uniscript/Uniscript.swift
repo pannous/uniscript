@@ -12,6 +12,9 @@ private let shortOpen = UInt8(ascii: "\\")
 private let tagClose = UInt8(ascii: ">")
 private let closingSlash: Unicode.Scalar = "/"
 private let escapedColon = "<::>"
+private let fontKey = "font"
+private let langKey = "lang"
+private let valuePlaceholder = "{}"
 
 public enum UniscriptError: Error, Equatable, CustomStringConvertible {
 	/// `<:name>` or `\:name` that is no entity, block or block operand
@@ -20,12 +23,15 @@ public enum UniscriptError: Error, Equatable, CustomStringConvertible {
 	case unclosed(String)
 	/// A warning in `WarningMode.error`
 	case unsupported(Warning)
+	/// `<:key value>` whose value has characters a meta value cannot have (spaces, quotes, `;`, brackets)
+	case invalidMeta(String)
 
 	public var description: String {
 		switch self {
 		case .unknownEntity(let name): return "unknown uniscript entity: \(name)"
 		case .unclosed(let rest): return "unclosed <: at \(rest)"
 		case .unsupported(let warning): return warning.description
+		case .invalidMeta(let content): return "invalid meta value in <:\(content)>"
 		}
 	}
 }
@@ -84,6 +90,53 @@ public struct Uniscript: Sendable {
 		return (text, conversion.warnings)
 	}
 
+	/// A font style of the entities: `cuneiform-hittite`, `han-japanese`
+	public func font(_ name: String) -> Font? {
+		guard index.get(.fonts, name + " ") != nil else { return nil }
+		let field = { (field: String) in index.get(.fonts, "\(name) \(field)") ?? "" }
+		return Font(name: name, lang: field("lang"), families: list(field("families")), features: list(field("features")))
+	}
+
+	/// The CSS declaration template of a meta key (`color` → `color: {}`)
+	public func metaTemplate(_ key: String) -> String? {
+		index.get(.meta, key)
+	}
+
+	/// Tagged text → plain text and meta runs; unknown keys and unmatched closes warn
+	public func metaRuns(_ tagged: String) -> (Styled, [Warning]) {
+		let (styled, warnings) = Styled.parse(tagged)
+		let unknown = styled.runs.filter { metaTemplate($0.key) == nil }.map { Warning(message: "unknown meta key \($0.key)", at: $0.at) }
+		return (styled, (warnings + unknown).enumerated().sorted { ($0.element.at, $0.offset) < ($1.element.at, $1.offset) }.map(\.element))
+	}
+
+	/// HTML of tagged text: each meta run a `<span>` with its lang and CSS; an unknown key becomes a `data-` attribute
+	public func html(_ styled: Styled) -> String {
+		styled.interleaved(open: span, close: "</span>", escape: escapeHTML)
+	}
+
+	private func span(_ run: MetaRun) -> String {
+		func attribute(_ name: String, _ value: String) -> String { " \(name)=\"\(escapeHTML(value))\"" }
+		func quoted(_ items: [String]) -> String { items.map { "'\($0)'" }.joined(separator: ", ") }
+		var attributes = ""
+		var style: [String] = []
+		let template = metaTemplate(run.key)
+		if run.key == fontKey, let font = font(run.value) {
+			attributes += attribute(langKey, font.lang)
+			style.append("font-family: \(quoted(font.families))")
+			if !font.features.isEmpty { style.append("font-feature-settings: \(quoted(font.features))") }
+		} else if run.key == fontKey, let template {
+			style.append(template.replacingOccurrences(of: valuePlaceholder, with: quoted([run.value])))
+		} else if run.key == langKey {
+			attributes += attribute(langKey, run.value)
+		} else if let template {
+			style.append(template.replacingOccurrences(of: valuePlaceholder, with: run.value))
+		} else {
+			attributes += attribute("data-\(run.key)", run.value)
+		}
+		if !style.isEmpty { attributes += attribute("style", style.joined(separator: "; ")) }
+		return "<span\(attributes)>"
+	}
+
 	/// One character and the block types of the suffix controls after it: `<:mirror red A>`, `<:mirror red circle>`
 	private func spelled(_ character: Unicode.Scalar, _ blocks: [String]) -> String {
 		let own = index.get(.chars, String(character))
@@ -94,17 +147,33 @@ public struct Uniscript: Sendable {
 		return "<:\(blocks.joined(separator: " ")) \(inner)>"
 	}
 
+	/// Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A>`
 	public func toUniscript(_ text: String) -> String {
 		let characters = Array(text.unicodeScalars)
+		func knownMeta(at position: Int) -> (meta: Meta, length: Int)? {
+			guard let found = meta(characters, at: position), metaTemplate(found.meta.key) != nil else { return nil }
+			return found
+		}
 		var out = ""
 		var position = 0
 		while position < characters.count {
+			if let (meta, length) = knownMeta(at: position), !meta.isAttached {
+				out += meta.uniscript
+				position += length
+				continue
+			}
 			let character = characters[position]
 			position += 1
 			if (character == "<" || character == "\\") && position < characters.count && characters[position] == ":" {
 				position += 1
 				out.unicodeScalars.append(character)
 				out += escapedColon
+				continue
+			}
+			if let length = emojiTags(characters, at: position) {
+				out += spelled(character, [])
+				characters[position..<position + length].forEach { out.unicodeScalars.append($0) } // subdivision flags stay
+				position += length
 				continue
 			}
 			// suffixes s1 s2 … are spelled "s2 … s1": the last word styles first, the others follow in order
@@ -116,7 +185,19 @@ public struct Uniscript: Sendable {
 			if !suffixes.isEmpty {
 				suffixes.append(suffixes.removeFirst())
 			}
-			out += spelled(character, suffixes)
+			var attached: [String] = []
+			while let (meta, length) = knownMeta(at: position), meta.isAttached {
+				attached.append(meta.uniscript)
+				position += length
+			}
+			let form = spelled(character, suffixes)
+			if attached.isEmpty {
+				out += form
+			} else if form.hasPrefix("<:") && form.hasSuffix(">") {
+				out += "<:\(attached.joined(separator: " ")) \(form.dropFirst(2).dropLast())>"
+			} else {
+				out += "<:\(attached.joined(separator: " ")) \(form)>"
+			}
 		}
 		return out
 	}
@@ -222,12 +303,47 @@ private final class Conversion {
 		return out
 	}
 
+	/// `<:key value …>` with meta keys: `<:font han-japanese>` opens spans, `<:color #ff8800 mirror A>` attaches to each
+	/// character of the rest; nil when the content starts with no meta key and value
+	private func metaTag(_ content: String, _ at: Int) throws -> String? {
+		var sequences: [(key: String, value: String)] = []
+		var rest = content.trimmingCharacters(in: [" "])
+		while let (key, after) = splitOnce(rest, " "), index.get(.meta, key) != nil {
+			let after = after.trimmingCharacters(in: [" "])
+			let (value, remainder) = splitOnce(after, " ") ?? (after, "")
+			guard isMetaValue(value) else { throw UniscriptError.invalidMeta(content) }
+			if key == "font" && index.get(.fonts, value + " ") == nil {
+				warn("\(value) is no font style of the entities, used as a font family", at)
+			}
+			sequences.append((key, value))
+			rest = remainder.trimmingCharacters(in: [" "])
+		}
+		if sequences.isEmpty { return nil }
+		if rest.isEmpty {
+			return sequences.map { Meta.open(key: $0.key, value: $0.value).tags }.joined()
+		}
+		let attached = sequences.map { Meta.attached(key: $0.key, value: $0.value).tags }.joined()
+		return attach(try metaOperands(rest, at), attached)
+	}
+
+	/// The characters a meta attaches to: a tag content (`mirror A`, `alpha`), else space separated names and texts
+	private func metaOperands(_ rest: String, _ at: Int) throws -> String {
+		if let text = try? tag(rest, at) { return text }
+		return try splitOnSpaces(rest).map { token in
+			let isName = token.utf8.count > 1 && token.utf8.allSatisfy(isNameByte)
+			return isName ? try tag(token, at) : token
+		}.joined()
+	}
+
 	/// The text of `<:content>` at byte `at` that is no block opener or closer
 	private func tag(_ content: String, _ at: Int) throws -> String {
 		if content.utf8.count == 1 {
 			return content // <:<> <::> escape the marker
 		}
 		if let text = name(content.replacingOccurrences(of: " ", with: "-")) {
+			return text
+		}
+		if let text = try metaTag(content, at) {
 			return text
 		}
 		if let (first, afterFirst) = splitOnce(content, " ") ?? splitOnce(content, "-"), isBlock(first) {
@@ -273,7 +389,9 @@ private final class Conversion {
 					throw UniscriptError.unclosed(text(position..<bytes.count))
 				}
 				let content = text(position + 2..<close)
-				if isClosing(content) {
+				if content.hasPrefix("/"), index.get(.meta, String(content.dropFirst())) != nil {
+					out += Meta.close(key: String(content.dropFirst())).tags
+				} else if isClosing(content) {
 					block = nil
 				} else if isBlock(content) {
 					block = content
@@ -314,7 +432,7 @@ private func splitOnSpaces(_ text: String) -> [String] {
 }
 
 /// Rust's `split_once`: the text before and after the first separator
-private func splitOnce(_ text: String, _ separator: Unicode.Scalar) -> (String, String)? {
+func splitOnce(_ text: String, _ separator: Unicode.Scalar) -> (String, String)? {
 	let scalars = text.unicodeScalars
 	guard let at = scalars.firstIndex(of: separator) else { return nil }
 	return (String(scalars[..<at]), String(scalars[scalars.index(after: at)...]))

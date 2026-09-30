@@ -18,7 +18,7 @@ public enum IndexError: Error, Equatable {
 
 /// A read-only view of an entity index; lookups read the bytes in place, nothing is parsed up front
 public final class EntityIndex: @unchecked Sendable {
-	/// The three tables of the index, in file order
+	/// The tables of the index, in file order
 	public enum Table: Int, CaseIterable, Sendable {
 		/// name → text; a block entry is `block operand` (`fracture A`, `red *suffix`), a block itself `block ` → ""
 		case names
@@ -26,6 +26,10 @@ public final class EntityIndex: @unchecked Sendable {
 		case chars
 		/// a suffix control → its block type
 		case suffixes
+		/// a font style → "", `style field` → value (`cuneiform-hittite lang` → hit-Xsux)
+		case fonts
+		/// a meta key → its CSS declaration, `{}` the value (`color` → `color: {}`)
+		case meta
 	}
 
 	/// data/entities.idx, shared with the Rust crate, memory mapped
