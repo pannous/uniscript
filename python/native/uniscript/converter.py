@@ -13,6 +13,8 @@ from .index import Index, Table
 from .meta import Font, Meta, MetaRun, Styled, utf8_length
 
 UNISCRIPT_VERSION = "https://uniscript.org/v1"
+# every https://uniscript.org/vN is read (backwards compatible, a later version as well as the current tables allow)
+READ_VERSION = re.compile(r"https://uniscript\.org/v[0-9]+")
 MARKER = re.compile(r"[<\\]:")
 MARKER_COLON = ":"
 TAG_OPEN = "<"
@@ -44,6 +46,10 @@ class Header:
     version: str
     length: int
 
+
+def reads_version(version: str) -> bool:
+    """Whether a header version is read without warning: none, or https://uniscript.org/vN for any number N"""
+    return not version or READ_VERSION.fullmatch(version) is not None
 
 def _header_span(source: str):
     """The header at the start of the source and its length in characters; it is no header anywhere else"""
@@ -426,12 +432,12 @@ class Uniscript:
         return "".join(out)
 
     def _header_length(self, source: str) -> int:
-        """Characters of the header to skip; a version other than UNISCRIPT_VERSION warns"""
+        """Characters of the header to skip; a version that is no uniscript.org version (reads_version) warns"""
         span = _header_span(source)
         if not span:
             return 0
         version, length = span
-        if version and version != UNISCRIPT_VERSION:
+        if not reads_version(version):
             self._warn(f"unsupported uniscript version {version}", 0)
         return length
 

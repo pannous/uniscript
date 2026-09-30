@@ -115,7 +115,8 @@ def test_the_header_declares_uniscript_and_its_version():
     converts(HEADER + " <:alpha>", " α")
     converts("<:uniscript><:alpha>", "α")
     converts('<<::>uniscript version="https://uniscript.org/v1">', HEADER)
-    warns('<:uniscript version="https://uniscript.org/v9">A', "A", "unsupported uniscript version https://uniscript.org/v9", 0)
+    assert convert('<:uniscript version="https://uniscript.org/v2">A', WarningMode.ERROR) == ("A", [])  # backwards compatible
+    warns('<:uniscript version="https://example.com/v1">A', "A", "unsupported uniscript version https://example.com/v1", 0)
     with pytest.raises(UnknownEntity) as raised:
         to_unicode("x " + HEADER)
     assert raised.value == UnknownEntity('uniscript version="https://uniscript.org/v1"')
