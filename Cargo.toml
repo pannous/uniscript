@@ -5,8 +5,12 @@ edition = "2021"
 description = "Uniscript: ASCII names for Unicode text (<:alpha> → α, <:fracture A> → 𝔄) and back"
 license = "MIT"
 repository = "https://github.com/pannous/uniscript"
+homepage = "https://pannous.com/uniscript/"
+readme = "README.md"
 keywords = ["unicode", "entities", "text", "encoding"]
 categories = ["text-processing", "encoding"]
+# the crate: the library, the CLI, its data (entities.idx is compiled in, entities/ is the source `uniscript build` reads) and the Rust tests
+include = ["src/**/*.rs", "data/entities.idx", "data/entities/**", "tests/*.rs", "README.md", "LICENSE", "docs/uniscript.md"]
 
 [features]
 default = ["embedded-index"]
