@@ -1,0 +1,1 @@
+../../native/uniscript/__main__.py

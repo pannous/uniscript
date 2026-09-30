@@ -1,0 +1,14 @@
+[build-system]
+requires = ["maturin>=1.9,<2"]
+build-backend = "maturin"
+
+[project]
+name = "uniscript-rs"
+version = "0.1.0"
+description = "Uniscript (<:alpha> → α, <:fracture A> → 𝔄 and back): Python bindings of the Rust reference implementation"
+license = "MIT"
+requires-python = ">=3.9"
+
+[tool.maturin]
+python-source = "."
+module-name = "uniscript._uniscript"
