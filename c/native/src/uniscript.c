@@ -13,6 +13,13 @@
 #define VERSION_ATTRIBUTE "version=\""
 #define VERSION_PREFIX "https://uniscript.org/v"
 #define ESCAPED_COLON "<::>"
+#define ESCAPED_UNICODE "<:U>"
+#define MAX_HEX_DIGITS 8
+/* bare hex (\:1F60D) and \U1F60D need at least 4 digits, so a mistyped short name stays unknown */
+#define MIN_BARE_HEX_DIGITS 4
+#define MAX_CODE_POINT 0x10FFFFu
+#define SURROGATE_FIRST 0xD800u
+#define SURROGATE_LAST 0xDFFFu
 #define FONT_KEY "font"
 #define LANG_KEY "lang"
 #define VALUE_PLACEHOLDER "{}"
@@ -104,6 +111,42 @@ static const char *script_of(uint32_t c) {
 
 static bool is_name_character(char c) {
 	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '-' || c == '_';
+}
+
+/* Bytes of the name token at the start of the text; the + of a leading U+ belongs to it */
+static size_t token_length(str text) {
+	size_t length = str_starts(text, "U+") || str_starts(text, "u+") ? 2 : 0;
+	while (length < text.n && is_name_character(text.p[length])) length++;
+	return length;
+}
+
+/* The value of minimum–8 hex digits */
+static bool hex_value(str digits, size_t minimum, uint32_t *value) {
+	if (digits.n < minimum || digits.n > MAX_HEX_DIGITS) return false;
+	*value = 0;
+	for (size_t i = 0; i < digits.n; i++) {
+		char c = digits.p[i];
+		int digit = c >= '0' && c <= '9' ? c - '0' : c >= 'a' && c <= 'f' ? c - 'a' + 10 : c >= 'A' && c <= 'F' ? c - 'A' + 10 : -1;
+		if (digit < 0) return false;
+		*value = *value * 16 + (uint32_t)digit;
+	}
+	return true;
+}
+
+/* The value of a code point token: U+1F60D, U1F60D, 0x1F60D in any case (1–8 hex digits) or bare 1F60D (4–8) */
+static bool code_point_value(str token, uint32_t *value) {
+	static const char *const prefixes[] = { "U+", "u+", "0x", "0X", "U", "u" }; /* U+ before U */
+	for (size_t i = 0; i < sizeof prefixes / sizeof *prefixes; i++)
+		if (str_starts(token, prefixes[i])) return hex_value(str_from(token, strlen(prefixes[i])), 1, value);
+	return hex_value(token, MIN_BARE_HEX_DIGITS, value);
+}
+
+/* Bytes after the backslash of \U1F60D (4–8 hex digits as a whole name token), the only marker without a colon; 0 for none */
+static size_t unicode_escape(str after_backslash) {
+	if (!str_starts(after_backslash, "U")) return 0;
+	size_t length = token_length(str_from(after_backslash, 1));
+	uint32_t value;
+	return hex_value(str_slice(after_backslash, 1, 1 + length), MIN_BARE_HEX_DIGITS, &value) ? 1 + length : 0;
 }
 
 static bool contains(str text, char byte) { return str_find(text, byte) < text.n; }
@@ -475,6 +518,20 @@ static bool meta_tag(converter *self, buf *out, str content, size_t at, bool *ha
 	return ok;
 }
 
+/* The character of a code point token (U+1F60D, 1F60D); an invalid one (surrogate, above 10FFFF) warns and stays
+ * `written`; false for no code point token */
+static bool code_point(converter *self, buf *out, str token, str written, size_t at) {
+	uint32_t value;
+	if (!code_point_value(token, &value)) return false;
+	if (value <= MAX_CODE_POINT && (value < SURROGATE_FIRST || value > SURROGATE_LAST)) {
+		buf_addc(out, value);
+	} else {
+		warn(self, at, "invalid code point U+%04X", value);
+		buf_adds(out, written);
+	}
+	return true;
+}
+
 /* The text of <:content> at byte `at` that is no block opener or closer */
 static bool tag(converter *self, buf *out, str content, size_t at) {
 	if (content.n == 1) { /* <:<> <::> escape the marker */
@@ -492,6 +549,11 @@ static bool tag(converter *self, buf *out, str content, size_t at) {
 		buf_adds(out, text);
 		return true;
 	}
+	buf written = { 0 };
+	buf_addf(&written, "<:%.*s>", S(content));
+	bool coded = code_point(self, out, content, buf_str(&written), at);
+	buf_free(&written);
+	if (coded) return true;
 	bool handled;
 	if (!meta_tag(self, out, content, at, &handled)) return false;
 	if (handled) return true;
@@ -584,10 +646,12 @@ static size_t header_length(converter *self, const char *source) {
 	return length;
 }
 
-/* The start of the next <: or \: marker, or the end */
+/* The start of the next <:, \: or \U1F60D marker, or the end */
 static size_t marker_in(str rest) {
-	for (size_t at = 1; at < rest.n; at++)
-		if (rest.p[at] == ':' && (rest.p[at - 1] == '<' || rest.p[at - 1] == '\\')) return at - 1;
+	for (size_t at = 0; at + 1 < rest.n; at++) {
+		if ((rest.p[at] == '<' || rest.p[at] == '\\') && rest.p[at + 1] == ':') return at;
+		if (rest.p[at] == '\\' && unicode_escape(str_from(rest, at + 1))) return at;
+	}
 	return rest.n;
 }
 
@@ -603,13 +667,18 @@ static bool unicode_of(converter *self, buf *out, const char *text, uniscript_mo
 		position += marker;
 		rest = str_from(source, position);
 		if (!rest.n) break;
+		size_t escape = unicode_escape(str_from(rest, 1));
+		if (escape) {
+			code_point(self, out, str_slice(rest, 2, 1 + escape), str_slice(rest, 0, 1 + escape), position);
+			position += 1 + escape;
+			continue;
+		}
 		if (rest.p[0] == '\\') {
-			size_t name_end = 2;
-			while (name_end < rest.n && is_name_character(rest.p[name_end])) name_end++;
-			str entity = str_slice(rest, 2, name_end), found;
+			size_t name_end = 2 + token_length(str_from(rest, 2));
+			str entity = str_slice(rest, 2, name_end), found, written = str_slice(rest, 0, name_end);
 			if (name(entity, &found))
 				buf_adds(out, found);
-			else if (!(fail(self, UNISCRIPT_UNKNOWN_ENTITY, entity), kept(self, out, str_slice(rest, 0, name_end), position, mode)))
+			else if (!code_point(self, out, entity, written, position) && !(fail(self, UNISCRIPT_UNKNOWN_ENTITY, entity), kept(self, out, written, position, mode)))
 				return false;
 			position += name_end;
 			continue;
@@ -749,6 +818,12 @@ char *uniscript_to_uniscript(const char *text) {
 			rest = str_from(rest, 1);
 			buf_addc(&out, character);
 			buf_addz(&out, ESCAPED_COLON);
+			continue;
+		}
+		if (character == '\\' && unicode_escape(rest)) {
+			rest = str_from(rest, 1);
+			buf_addc(&out, character);
+			buf_addz(&out, ESCAPED_UNICODE);
 			continue;
 		}
 		size_t emoji = emoji_tags_at(rest);

@@ -104,6 +104,12 @@ static const conversion_case converts[] = {
 	{"<:color #ff8800 e\u0301>", "e\u0301{:color #ff8800}"},
 	{"<:angle>", "∠"}, {"<:angle with s inside>", "⦞"}, {"<:angle 90 A>", "A{:angle 90}"}, /* entity names win */
 	{SCOTLAND, SCOTLAND},
+	/* code points: prefixed U+ U 0x (1–8 digits), bare (4–8), \U without the colon; names win */
+	{"\\:1F60D", "😍"}, {"\\:U1F60D", "😍"}, {"\\:0x1F60D", "😍"}, {"\\U1F60D", "😍"}, {"\\:U+1F60D", "😍"},
+	{"\\:u+1f60d", "😍"}, {"<:U+1F60D>", "😍"}, {"<:0x1F60D>", "😍"}, {"<:1F60D>", "😍"}, {"<:u1f60d>", "😍"},
+	{"\\U0001F60D", "😍"}, {"\\:U+41 \\:0x42 <:u+43>", "A B C"}, {"\\:1F60D. <:1F60D>x (\\U1F60D)", "😍. 😍x (😍)"},
+	{"<:greek> a \\:03B2 <:/greek>", " α β "}, {"\\:bed \\:BbbA \\:U+BBBA", "🛏 𝔸 뮺"},
+	{"C:\\Users\\U1F60Dx \\UABC \\u00e9", "C:\\Users\\U1F60Dx \\UABC \\u00e9"}, {"\\<:U>1F60D", "\\U1F60D"},
 };
 
 /* Unicode → uniscript */
@@ -113,6 +119,7 @@ static const conversion_case spells_back[] = {
 	{"<:alpha> <:Omega> <:fracture A> <:infinity> <:double R>", "α Ω 𝔄 ∞ ℝ"},
 	{"<:red A> <:red circle> x<:upper a>", "A\U000E0072 🔴 xᵃ"},
 	{"a <<::> b \\<::> c", "a <: b \\: c"},
+	{"print(\"\\<:U>0001F60D\") \\Users", "print(\"\\U0001F60D\") \\Users"}, /* a literal \U code point is escaped */
 };
 
 /* Unicode → uniscript → the same Unicode */
@@ -120,6 +127,7 @@ static const char *const restores[] = {
 	"∀x∈ℝ: 𝔄 A\U000E0072\U000E004D 𓀀\U00013440 ⿰犭句 <: é 🔴 日本語",
 	SCOTLAND,
 	"a{:blink fast}", /* a key the entities do not know: spelled out */
+	"print(\"\\U0001F60D\")",
 };
 
 static const warning_case warns[] = {
@@ -133,6 +141,10 @@ static const warning_case warns[] = {
 	{"<:double bold A>", "𝐀", "no double form of 𝐀", 0}, /* a style without a combination keeps the inner style */
 	{"<:uniscript version=\"https://example.com/v1\">A", "A", "unsupported uniscript version https://example.com/v1", 0}, /* no uniscript.org/vN */
 	{"<:font Santakku>", "{<font Santakku}", "Santakku is no font style of the entities, used as a font family", 0},
+	/* invalid code points stay as written */
+	{"\\:D800", "\\:D800", "invalid code point U+D800", 0},
+	{"x <:U+110000>", "x <:U+110000>", "invalid code point U+110000", 2},
+	{"\\UDFFF", "\\UDFFF", "invalid code point U+DFFF", 0},
 };
 
 /* errors in UNISCRIPT_WARN */
@@ -141,6 +153,8 @@ static const error_case errors[] = {
 	{"a <: b", 2 /* UNISCRIPT_UNCLOSED */, "<: b", "unclosed <: at <: b"},
 	{"x " HEADER, 1, "uniscript version=\"https://uniscript.org/v1\"", "unknown uniscript entity: uniscript version=\"https://uniscript.org/v1\""},
 	{"<:color red;x A>", 4 /* UNISCRIPT_INVALID_META */, "color red;x A", "invalid meta value in <:color red;x A>"},
+	{"\\:1F60Dx", 1, "1F60Dx", "unknown uniscript entity: 1F60Dx"}, /* a code point ends where a name ends */
+	{"\\:ab", 1, "ab", "unknown uniscript entity: ab"}, /* bare hex needs 4 digits */
 };
 
 static const lenient_case lenients[] = {
