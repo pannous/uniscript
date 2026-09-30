@@ -23,6 +23,8 @@ TAG_CLOSE = ">"
 CLOSING_SLASH = "/"
 ESCAPED_COLON = "<::>"
 SUFFIX_KEY = "*suffix"
+# the block control naming the meta a block becomes where it has no suffix control (`red *meta` → `color red`)
+META_FALLBACK_KEY = "*meta"
 FONT_KEY = "font"
 LANG_KEY = "lang"
 VALUE_PLACEHOLDER = "{}"
@@ -160,17 +162,24 @@ class Uniscript:
         scripted = self._name(f"{block} {SUFFIX_KEY} {script}") if script else None
         return scripted if scripted is not None else self._name(f"{block} {SUFFIX_KEY}")
 
-    def _effect_suffix(self, block: str, character: str, at: int) -> str:
-        """The control of an effect after one character, "" with a warning when it has none for it"""
+    def _effect_control(self, block: str, character: str, at: int):
+        """The control of an effect after one character as (suffix, meta). Without one, a block with a `*meta` fallback
+        (the colors: `red *meta` → `color red`) becomes that attached meta sequence, anything else nothing; both warn."""
         suffix = self._suffix_of(block, character)
         if suffix:
-            return suffix
+            return suffix, ""
+        key, _, value = (self._name(f"{block} {META_FALLBACK_KEY}") or "").partition(" ")
+        if value:
+            self._warn(f"{block} on {character} kept as {key} meta", at)
+            return "", Meta.attached(key, value).tags()
         self._warn(f"{block} does not apply to {character}", at)
-        return ""
+        return "", ""
 
     def _effect_suffixes(self, effects, character: str, at: int) -> str:
-        """The suffixes of the stacked effect words (`mirror` in `<:mirror red A>`) for one character"""
-        return "".join(self._effect_suffix(effect, character, at) for effect in effects)
+        """The suffix controls of the stacked effect words (`mirror` in `<:mirror red A>`) for one character, then the
+        meta sequences of the effects it has no control for: a meta follows the character's suffix controls"""
+        controls = [self._effect_control(effect, character, at) for effect in effects]
+        return "".join(suffix for suffix, _ in controls) + "".join(meta for _, meta in controls)
 
     def _styled(self, block: str, character: str, effects, at: int) -> str:
         """One character in a block: its own entry (greek a → α), else followed by the block's suffix; then the effects.
@@ -182,7 +191,7 @@ class Uniscript:
             self._warn(f"no {block} form of {character}", at)
             styled = character
         else:
-            styled = character + self._effect_suffix(block, character, at)
+            return character + self._effect_suffixes([block, *effects], character, at)
         return styled + self._effect_suffixes(effects, character, at)
 
     def _is_effect(self, block: str) -> bool:

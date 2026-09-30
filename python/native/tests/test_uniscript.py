@@ -2,7 +2,7 @@
 
 import pytest
 
-from uniscript import (UNISCRIPT_VERSION, Header, Index, Table, UnknownEntity, Unclosed, Unsupported, Warning, WarningMode,
+from uniscript import (UNISCRIPT_VERSION, Header, Index, Meta, Table, UnknownEntity, Unclosed, Unsupported, Warning, WarningMode,
                        convert, header, text_hash, to_uniscript)
 
 HEADER = '<:uniscript version="https://uniscript.org/v1">'
@@ -62,8 +62,11 @@ def test_greek_is_transliterated_phonetically():
 def test_unsupported_characters_and_combinations_warn():
     warns("<:greek c>", "c", "no greek form of c", 0)
     warns("x <:fracture 7>", "x 7", "no fracture form of 7", 2)
-    warns("<:red 𓀀>", "𓀀", "red does not apply to 𓀀", 0)
-    warns("<:mirror red 狗>", "狗\U000E004D", "red does not apply to 狗", 0)
+    warns("<:left 𓀀>", "𓀀", "left does not apply to 𓀀", 0)
+    # a color the fonts cannot show on a character becomes its color meta, after the character's suffix controls
+    red = Meta.attached("color", "red").tags()
+    warns("<:red 𓀀>", "𓀀" + red, "red on 𓀀 kept as color meta", 0)
+    warns("<:mirror red 狗>", "狗\U000E004D" + red, "red on 狗 kept as color meta", 0)
     warns("<:beside a b>", "ab", "no beside group of a", 0)
     assert convert("<:greek a>", WarningMode.ERROR) == ("α", [])
 
