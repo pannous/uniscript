@@ -98,6 +98,7 @@ PREFIX_KEY = "*prefix"  # "*prefix cjk": goes before the parts of a group (an ID
 GROUP_KEY = "*group"    # the block joins its operands (above, beside) instead of styling them
 INFIX_KEY = "*infix"    # "*infix egyptian": goes between the parts of a group (a hieroglyph joiner)
 META_FALLBACK_KEY = "*meta"  # "color red": the attached meta a block becomes where it has no suffix
+RARE_KEY = "*rare"  # a block of a rare script: its names stay out of the web manifest's filter of absent names
 # block type 'egyptian': Gardiner numbers (<:egyptian A1>) and descriptions (<:egyptian seated man>) of the hieroglyphs
 EGYPTIAN_BLOCK = "egyptian"
 EGYPTIAN_HIEROGLYPHS_START = 0x13000
@@ -424,10 +425,10 @@ def seed_files():
 		files.setdefault(block_file(character, blocks), {}).setdefault("names", {})[name_key(name)] = character
 	files[block_file("α", blocks)]["blocks"] = {"greek": greek_transliteration()}
 	egyptian = files[block_file(chr(EGYPTIAN_HIEROGLYPHS_START), blocks)]
-	egyptian["blocks"] = {EGYPTIAN_BLOCK: egyptian_block(named)}
+	egyptian["blocks"] = {EGYPTIAN_BLOCK: {RARE_KEY: "", **egyptian_block(named)}}
 	egyptian["block-aliases"] = dict(EGYPTIAN_ALIASES)
 	anatolian = files[block_file(chr(ANATOLIAN_HIEROGLYPHS_START), blocks)]
-	anatolian["blocks"] = {ANATOLIAN_BLOCK: anatolian_block(named)}
+	anatolian["blocks"] = {ANATOLIAN_BLOCK: {RARE_KEY: "", **anatolian_block(named)}}
 	anatolian["block-aliases"] = dict(ANATOLIAN_ALIASES)
 	return files
 
@@ -444,7 +445,7 @@ HEADER = """// Uniscript entities (docs/uniscript.md), the human readable source
 //   latex          unicode-math command names without backslash: <:alpha> <:infty> <:mfrakA>
 //   html           HTML5 entities, backwards compatible but discouraged: <:dopf>
 //   blocks         block types: <:fracture A>, <:greek> a b <:/greek>, <:egyptian A1> <:egyptian seated man>; control
-//                  keys: "*suffix" follows any other character, "*suffix egyptian" a hieroglyph, "*prefix cjk" / "*infix egyptian" go before / between the parts of a group, "*meta" is the attached meta a block becomes where it has no suffix (colors: "color red")
+//                  keys: "*suffix" follows any other character, "*suffix egyptian" a hieroglyph, "*prefix cjk" / "*infix egyptian" go before / between the parts of a group, "*meta" is the attached meta a block becomes where it has no suffix (colors: "color red"), "*rare" marks a rare script's block (its names are fetched, not filtered)
 //   block-aliases  other names of block types
 //   fonts          font styles: <:font cuneiform-hittite> … <:/font>; lang (BCP 47), families (CSS), features (OpenType)
 //   meta           meta keys (<:color #ff8800 A>, <:font han-japanese> … <:/font>) → CSS declaration, {{}} is the value

@@ -140,3 +140,19 @@ fn latex_names_and_common_prose_need_no_chunk_but_the_common_one() {
 		assert_eq!(converter.to_uniscript(text), whole.to_uniscript(text));
 	}
 }
+
+#[test]
+fn names_of_rare_scripts_are_fetched_not_filtered() {
+	let (manifest, chunks) = cut(&whole());
+	let common = chunks.len() - 1;
+	let chunked = Index::chunked(&manifest).unwrap();
+	chunked.add_chunk(common, &chunks[common]).unwrap();
+	for name in ["anatolian CAPUT", "hieroglyph A1", "egyptian seated-man"] {
+		assert_eq!(chunked.get(Table::Names, name), None);
+		let missing = chunked.take_missing();
+		assert_eq!(missing.len(), 1, "{name} asks for its chunk");
+		chunked.add_chunk(missing[0], &chunks[missing[0]]).unwrap();
+		assert!(chunked.get(Table::Names, name).is_some(), "{name}");
+	}
+	assert!(manifest.len() < 32 * 1024, "{} bytes: rare names would grow the filter", manifest.len());
+}

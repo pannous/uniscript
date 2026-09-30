@@ -7,7 +7,7 @@
 //   latex          unicode-math command names without backslash: <:alpha> <:infty> <:mfrakA>
 //   html           HTML5 entities, backwards compatible but discouraged: <:dopf>
 //   blocks         block types: <:fracture A>, <:greek> a b <:/greek>, <:egyptian A1> <:egyptian seated man>; control
-//                  keys: "*suffix" follows any other character, "*suffix egyptian" a hieroglyph, "*prefix cjk" / "*infix egyptian" go before / between the parts of a group, "*meta" is the attached meta a block becomes where it has no suffix (colors: "color red")
+//                  keys: "*suffix" follows any other character, "*suffix egyptian" a hieroglyph, "*prefix cjk" / "*infix egyptian" go before / between the parts of a group, "*meta" is the attached meta a block becomes where it has no suffix (colors: "color red"), "*rare" marks a rare script's block (its names are fetched, not filtered)
 //   block-aliases  other names of block types
 //   fonts          font styles: <:font cuneiform-hittite> … <:/font>; lang (BCP 47), families (CSS), features (OpenType)
 //   meta           meta keys (<:color #ff8800 A>, <:font han-japanese> … <:/font>) → CSS declaration, {} is the value

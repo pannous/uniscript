@@ -50,6 +50,9 @@ followed by TAG characters (U+E0020…E007E). Any font shows the plain letter. T
   (`lower`), small capitals, circled, fullwidth, ligatures, phonetic Greek (`<:greek athos>` → αθοσ, `<:greek> filosofia kosmos<:/greek>` → φιλοσοφια κοσμοσ).
 - **Styles combine** in any word order: `<:bold italic alpha>` → 𝜶, `<:sans bold A>` → 𝗔, `<:fraktur bold A>` → 𝕬.
 - **Effects**: mirror, flip, turn, left, right and 11 colors, which you can stack: `<:mirror red R>`.
+- **Hieroglyphs**: `<:egyptian A1>` (alias `gardiner`, Gardiner numbers and descriptions), `<:anatolian CAPUT>` (alias
+  `luwian`: Laroche numbers, Latin logogram names, syllabic values `ka` `tá`/`ta2`, from Unicode's NamesList), and
+  `<:hieroglyph …>`, which looks in both (Egyptian first).
 - **Groups**: Egyptian hieroglyph joiners (`<:above 𓀀 𓁐>`) and CJK composition (`<:beside 犭 句>` → 狗).
 - **Meta information**: font styles for scripts Unicode unified (`<:font cuneiform-old-babylonian> … <:/font>`,
   `<:font han-japanese>`), languages, colors and angles (`<:color #ff8800 angle 90 A>`), carried in plain text as
@@ -220,6 +223,7 @@ plus a walk over all index tables.
 | `*suffix egyptian` | the same, only after hieroglyphs (`mirror`: U+13440) |
 | `*prefix cjk` | goes before the parts of a CJK group (IDS operators ⿰ ⿱) |
 | `*infix egyptian` | goes between the parts of a hieroglyph group (joiners U+13430, U+13431) |
+| `*rare` | a rare script's block (`egyptian`, `anatolian`): its names stay out of the web manifest and are fetched when used |
 | `*meta` | the attached meta a block becomes where it has no suffix control (colors: `color red`, so `<:red 𓀀>` → 𓀀 + TAG `:color red`) |
 
 ## Licenses

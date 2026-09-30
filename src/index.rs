@@ -60,6 +60,15 @@ fn filter_positions(key: &str, bits: u32, hashes: u32) -> impl Iterator<Item = u
 	(0..hashes as u64).map(move |i| ((first + i * second) % bits as u64) as u32)
 }
 
+/// The control key of a block of a rare script (`egyptian *rare`): the filter of absent names leaves its names out, so
+/// the manifest everybody loads does not grow with them; a lookup of one fetches its chunk
+const RARE_KEY: &str = "*rare";
+
+/// A block type whose names the filter covers: in the common chunk (`red `), and not rare
+fn is_filtered_block_type(word: &str, common_name: impl Fn(&str) -> bool) -> bool {
+	common_name(&format!("{word} ")) && !common_name(&format!("{word} {RARE_KEY}"))
+}
+
 /// The names the filter of absent names covers: one word (`Hello`), or starting with a block type (`mirror-R`, `fracture H`)
 fn is_filtered(key: &str, is_block_type: impl Fn(&str) -> bool) -> bool {
 	let first_word = key.split([' ', '-']).next().unwrap_or(key);
@@ -224,7 +233,8 @@ impl<'a> Chunked<'a> {
 	/// loaded common chunk); it never errs on names it holds, and 1 % of absent ones pass it
 	fn surely_absent(&self, key: &str) -> bool {
 		let Some((bits, hashes, filter)) = self.filter() else { return false };
-		let is_block_type = |word: &str| self.common().and_then(|common| self.chunks[common].get()).is_some_and(|chunk| chunk.entry(Table::Names, &format!("{word} ")).is_some());
+		let common = self.common().and_then(|common| self.chunks[common].get());
+		let is_block_type = |word: &str| is_filtered_block_type(word, |key| common.is_some_and(|chunk| chunk.entry(Table::Names, key).is_some()));
 		is_filtered(key, is_block_type) && !filter_positions(key, bits, hashes).all(|bit| filter[bit as usize / 8] & (1 << (bit % 8)) != 0)
 	}
 
@@ -494,12 +504,11 @@ fn common_entries(tables: &[Entries], plan: &ChunkPlan) -> Vec<Entries> {
 	common
 }
 
-/// The names outside the common chunk that the filter of absent names covers
+/// The names outside the common chunk that the filter of absent names covers; block types and their rare marks are all in it
 fn names_outside(common: &[Entries], index: &Index) -> Vec<String> {
 	let in_common: std::collections::HashSet<&str> = common[Table::Names as usize].iter().map(|(key, _)| key.as_str()).collect();
-	let block_types: std::collections::HashSet<&str> = index.entries(Table::Names).filter_map(|(key, _)| key.strip_suffix(' ')).collect();
 	let names = index.entries(Table::Names).map(|(key, _)| key).filter(|key| !in_common.contains(key));
-	names.filter(|key| is_filtered(key, |word| block_types.contains(word))).map(str::to_string).collect()
+	names.filter(|key| is_filtered(key, |word| is_filtered_block_type(word, |key| in_common.contains(key)))).map(str::to_string).collect()
 }
 
 /// The filter section of the manifest: bit count, hash count, the bits padded to 4 bytes

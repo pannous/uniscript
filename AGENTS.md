@@ -46,7 +46,8 @@ normal reader searches it. Git-ignored, rebuilt from `data/entities.idx`.
 
 The filter (Bloom, 10 bits and 7 hashes per name, ~1 % false positives, bit `(h1 + i·(h2|1)) mod m` with `h1` the
 index hash and `h2` the same hash with multiplier 131) holds the names outside the common chunk that are one word or
-start with a block type. A lookup of such a name the filter lacks is absent without a fetch: the converter's tries
+start with a block type, except a rare one (its control key `egyptian *rare` in the common chunk): names of rare
+scripts are fetched when used, so they do not grow the manifest everybody loads. A lookup of such a name the filter lacks is absent without a fetch: the converter's tries
 like `Hello`, `mirror-R`, `fracture-Hello`. `chunks.pack` lets clients fetch the misses of one round with a single HTTP
 multi-range request (`js/src/chunkFetcher.js`, shared by js/ and wasm/). A server without ranges sends the whole pack,
 which is slower but still correct. Without the offsets, the client fetches `<n>.idx` one by one.

@@ -588,6 +588,7 @@ names {
 
 blocks {
 	anatolian {
+		"*rare": ""
 		"1": "𔐀"
 		"2": "𔐁"
 		"3": "𔐂"

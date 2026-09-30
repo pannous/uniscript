@@ -1077,6 +1077,7 @@ names {
 
 blocks {
 	egyptian {
+		"*rare": ""
 		A1: "𓀀"
 		A2: "𓀁"
 		A3: "𓀂"

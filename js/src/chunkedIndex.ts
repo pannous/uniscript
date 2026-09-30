@@ -12,6 +12,7 @@ const FILTER_SECOND_MULTIPLIER = 131;
 const MANIFEST_TABLE_SIZE = 12;
 const CHUNK_START_SIZE = 8;
 const FIRST_WORD_END = /[ -]/;
+const RARE_KEY = "*rare"; // a block of a rare script (`egyptian *rare`): the filter leaves its names out
 
 /** Where a key sorts among the chunks of its table: characters by code point, the rest by the hash of their first word, then by hash */
 export function chunkOrder(table: Table, key: string): [number, number] {
@@ -150,13 +151,15 @@ export class ChunkedIndex implements Lookup {
 
 	/**
 	 * A name the filter of absent names (after the chunk starts) does not know is in no chunk: operand words and whole
-	 * tags the converter tries (`Hello`, `mirror-R`) need no fetch. It covers names of one word or starting with a block type.
+	 * tags the converter tries (`Hello`, `mirror-R`) need no fetch. It covers names of one word or starting with a block type,
+	 * except a rare one (`egyptian *rare`), whose names are fetched.
 	 */
 	#surelyAbsent(key: string, common: EntityIndex): boolean {
 		const at = this.#filterOffset();
 		const [bits, hashes] = [this.#u32(at), this.#u32(at + 4)];
 		const firstWord = key.split(FIRST_WORD_END)[0];
-		if (bits === 0 || (firstWord.length !== key.length && common.get(Table.names, `${firstWord} `) === undefined)) return false;
+		const isFilteredBlockType = common.get(Table.names, `${firstWord} `) !== undefined && common.get(Table.names, `${firstWord} ${RARE_KEY}`) === undefined;
+		if (bits === 0 || (firstWord.length !== key.length && !isFilteredBlockType)) return false;
 		return !filterPositions(key, bits, hashes).every((bit) => (this.#manifest.getUint8(at + 8 + (bit >>> 3)) & (1 << (bit & 7))) !== 0);
 	}
 
