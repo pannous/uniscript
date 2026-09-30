@@ -71,8 +71,10 @@ Online, two pages:
   box, running the wasp implementation (`uniscript.wasp`) compiled to WebAssembly by warp.
 - **[pannous.com/uniscript/rust](https://pannous.com/uniscript/rust/)**: [docs/demo.html](docs/demo.html), this Rust crate
   compiled to WebAssembly ([wasm/](wasm/)), with a live editor that renders meta information (fonts, colors, angles) as
-  HTML. Redeploy with `docs/make_demo.sh deploy`.
+  HTML. 
+  <!-- Redeploy with `docs/make_demo.sh deploy`. -->
 
+### Rust
 ```sh
 cargo install uniscript               # or: cargo install --git https://github.com/pannous/uniscript
 uniscript "<:alpha> <:fracture A>"     # α 𝔄
