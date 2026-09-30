@@ -30,6 +30,8 @@ public func readsVersion(_ version: String) -> Bool {
 private let headerOpen = "<:uniscript"
 private let versionAttribute = "version=\""
 private let suffixKey = "*suffix"
+/// The block control naming the meta a block becomes where it has no suffix control (`red *meta` → `color red`)
+private let metaFallbackKey = "*meta"
 
 public enum UniscriptError: Error, Equatable, CustomStringConvertible {
 	/// `<:name>` or `\:name` that is no entity, block or block operand
@@ -273,16 +275,24 @@ private final class Conversion {
 		return scripted ?? name("\(block) \(suffixKey)")
 	}
 
-	/// The control of an effect after one character, "" with a warning when it has none for it
-	private func effectSuffix(_ block: String, _ character: Unicode.Scalar, _ at: Int) -> String {
-		if let suffix = suffix(of: block, after: character), !suffix.isEmpty { return suffix }
+	/// The control of an effect after one character. Without one, a block with a `*meta` fallback (the colors:
+	/// `red *meta` → `color red`) becomes that attached meta sequence, anything else nothing; both warn.
+	private func effectControl(_ block: String, _ character: Unicode.Scalar, _ at: Int) -> (suffix: String, meta: String) {
+		if let suffix = suffix(of: block, after: character), !suffix.isEmpty { return (suffix, "") }
+		if let fallback = name("\(block) \(metaFallbackKey)"), let space = fallback.firstIndex(of: " ") {
+			let key = String(fallback[..<space])
+			warn("\(block) on \(character) kept as \(key) meta", at)
+			return ("", Meta.attached(key: key, value: String(fallback[fallback.index(after: space)...])).tags)
+		}
 		warn("\(block) does not apply to \(character)", at)
-		return ""
+		return ("", "")
 	}
 
-	/// The suffixes of the stacked effect words (`mirror` in `<:mirror red A>`) for one character
+	/// The suffix controls of the stacked effect words (`mirror` in `<:mirror red A>`) for one character, then the meta
+	/// sequences of the effects it has no control for: a meta follows the character's suffix controls
 	private func effectSuffixes(_ effects: [String], _ character: Unicode.Scalar, _ at: Int) -> String {
-		effects.map { effectSuffix($0, character, at) }.joined()
+		let controls = effects.map { effectControl($0, character, at) }
+		return controls.map(\.suffix).joined() + controls.map(\.meta).joined()
 	}
 
 	/// One character in a block: its own entry (greek a → α), else followed by the block's suffix; then the effects.
@@ -295,7 +305,7 @@ private final class Conversion {
 			warn("no \(block) form of \(character)", at)
 			styled = String(character)
 		} else {
-			styled = "\(character)\(effectSuffix(block, character, at))"
+			return "\(character)\(effectSuffixes([block] + effects, character, at))"
 		}
 		return styled + effectSuffixes(effects, character, at)
 	}

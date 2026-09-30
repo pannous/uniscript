@@ -55,8 +55,11 @@ final class UniscriptTests: XCTestCase {
 	func testUnsupportedCharactersAndCombinationsWarn() throws {
 		try warns("<:greek c>", "c", "no greek form of c", at: 0)
 		try warns("x <:fracture 7>", "x 7", "no fracture form of 7", at: 2)
-		try warns("<:red 𓀀>", "𓀀", "red does not apply to 𓀀", at: 0)
-		try warns("<:mirror red 狗>", "狗\u{E004D}", "red does not apply to 狗", at: 0)
+		try warns("<:left 𓀀>", "𓀀", "left does not apply to 𓀀", at: 0)
+		// a color the fonts cannot show on a character becomes its color meta, after the character's suffix controls
+		let red = Meta.attached(key: "color", value: "red").tags
+		try warns("<:red 𓀀>", "𓀀\(red)", "red on 𓀀 kept as color meta", at: 0)
+		try warns("<:mirror red 狗>", "狗\u{E004D}\(red)", "red on 狗 kept as color meta", at: 0)
 		try warns("<:beside a b>", "ab", "no beside group of a", at: 0)
 		let (text, warnings) = try Uniscript.convert("<:greek a>", mode: .error)
 		XCTAssertEqual(text, "α")
