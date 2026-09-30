@@ -20,7 +20,8 @@ pub use meta::{Font, Meta, MetaRun, Styled};
 use std::cell::RefCell;
 use std::fmt;
 
-/// The index built from data/entities/, compiled into the library
+/// The index built from data/entities/, compiled into the library (feature `embedded-index`, on by default)
+#[cfg(feature = "embedded-index")]
 pub const ENTITIES_INDEX: &[u8] = include_bytes!("../data/entities.idx");
 
 const MARKER_COLON: char = ':';
@@ -89,6 +90,7 @@ pub enum WarningMode {
 }
 
 /// Uniscript → Unicode with the built-in entities; warnings go to stderr
+#[cfg(feature = "embedded-index")]
 pub fn to_unicode(source: &str) -> Result<String, Error> {
 	let (text, warnings) = Uniscript::default().convert(source, WarningMode::Warn)?;
 	warnings.iter().for_each(|warning| eprintln!("warning: {warning}"));
@@ -96,11 +98,13 @@ pub fn to_unicode(source: &str) -> Result<String, Error> {
 }
 
 /// Uniscript → Unicode and its warnings; in [`WarningMode::Error`] the first warning is the error
+#[cfg(feature = "embedded-index")]
 pub fn convert(source: &str, mode: WarningMode) -> Result<(String, Vec<Warning>), Error> {
 	Uniscript::default().convert(source, mode)
 }
 
 /// Unicode → uniscript with the built-in entities; `to_unicode` gives the text back
+#[cfg(feature = "embedded-index")]
 pub fn to_uniscript(text: &str) -> String {
 	Uniscript::default().to_uniscript(text)
 }
@@ -137,6 +141,7 @@ pub struct Uniscript<'a> {
 	warnings: RefCell<Vec<Warning>>,
 }
 
+#[cfg(feature = "embedded-index")]
 impl Default for Uniscript<'static> {
 	fn default() -> Self {
 		Uniscript::new(Index::new(ENTITIES_INDEX).expect("the built-in index is valid"))
@@ -185,6 +190,11 @@ fn is_closing(content: &str) -> bool {
 impl<'a> Uniscript<'a> {
 	pub fn new(index: Index<'a>) -> Self {
 		Uniscript { index, warnings: RefCell::default() }
+	}
+
+	/// A converter over an index loaded at runtime (the bytes of `data/entities.idx`)
+	pub fn from_bytes(bytes: &'a [u8]) -> Result<Self, String> {
+		Ok(Uniscript::new(Index::new(bytes)?))
 	}
 
 	fn name(&self, key: &str) -> Option<&'a str> {

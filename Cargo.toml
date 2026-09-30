@@ -8,4 +8,15 @@ repository = "https://github.com/pannous/uniscript"
 keywords = ["unicode", "entities", "text", "encoding"]
 categories = ["text-processing", "encoding"]
 
+[features]
+default = ["embedded-index"]
+# compiles data/entities.idx into the library: Uniscript::default() and the free functions; without it, load the index
+# at runtime with Uniscript::from_bytes (the WebAssembly build does)
+embedded-index = []
+
+[[bin]]
+name = "uniscript"
+path = "src/main.rs"
+required-features = ["embedded-index"]
+
 [dependencies]
