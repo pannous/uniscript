@@ -33,8 +33,8 @@ The full specification is [[docs/uniscript.md]]
 ```
 <:alpha> <:fracture Hello> <:double R> \:infinity     →   α ℌ𝔢𝔩𝔩𝔬 ℝ ∞
 <:red ○> or <:red circle> → 🔴
-<!-- <:mirror red R>                                     →   a mirrored red R  (if renderer supports it) -->
 ```
+<!-- <:mirror red R>                                     →   a mirrored red R  (if renderer supports it) -->
 
 ![Uniscript examples rendered with Uniscript fonts](docs/demo.png)
 
