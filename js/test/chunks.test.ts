@@ -72,3 +72,13 @@ test("the demo examples fetch a fraction of the index", { skip: !chunksBuilt && 
 	assert.ok(index.fetched.bytes < readFileSync(INDEX_FILE).length / 10, `${index.fetched.bytes} bytes`);
 	await new Uniscript(whole).ensure("<:alpha>"); // a no-op for a whole index
 });
+
+test("load fetches the common chunk: LaTeX names and common prose convert without more", { skip: !chunksBuilt && "no cargo" }, async () => {
+	const index = await ChunkedIndex.load(MANIFEST);
+	assert.deepEqual(index.fetched.chunks, [index.commonChunk]);
+	const converter = new Uniscript(index);
+	for (const text of ["<:alpha> + <:beta> <:leq> <:infty>, <:sum> <:partial> <:rightarrow> <:times>", "Café “quoted” — it’s 20 °C, 5 € · © ®"]) {
+		assert.deepEqual(converter.missingChunks(text), [], text);
+		assert.deepEqual(results(converter, text), results(reference, text));
+	}
+});
