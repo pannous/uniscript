@@ -1,3 +1,29 @@
+# Uniscript
+  
+**Uniscript** is a human readable and editable [unicode](https://en.wikipedia.org/wiki/Unicode) encoding format which only uses ASCII characters to describe code points.  
+  
+The constituents of uniscript are entities and block types.    
+  
+Block types influencing the character stream would be    
+    
+• languages          (greek a => α)    
+• modifiers          (upper A => ᴬ , italic A => 𝐴 , bold A => 𝝖 bold+italic A => 𝘼 … )    
+• calligraphic hands (fracture A => 𝔄 , double-struck A => 𝔸 … )    
+• ligature           (ligature ae => æ )    
+• colors             (red circle ○ => 🔴, brown heart ♡ => 🤎)    
+• mirroring          (reverseInPlace e => ɘ )    
+• text direction     (phonician a b c => 𐤂 𐤁 𐤀 )    
+• icons              (iconic warning ⚠ => ⚠️ emoji-style U+FE0F )    
+• plain              (undo all styles to ⚠️ => ⚠ 𝐴 => A text-style 0xFE0E )    
+  
+Uniscript entities are case sensitive    
+  
+upper a => ᵃ  
+upper A => ᴬ    
+
+ 
+The full specification is [[docs/uniscript.md]]
+
 # uniscript
 
 **Type any Unicode character in plain ASCII, and style it: mirrored, rotated, colored.**
@@ -22,8 +48,6 @@ followed by TAG characters (U+E0020…E007E). Any font shows the plain letter. T
   (`lower`), small capitals, circled, fullwidth, ligatures, phonetic Greek (`<:greek> athos <:/greek>` → αθοσ).
 - **Effects**: mirror, flip, turn, left, right and 11 colors, which you can stack: `<:mirror red R>`.
 - **Groups**: Egyptian hieroglyph joiners (`<:above 𓀀 𓁐>`) and CJK composition (`<:beside 犭 句>` → 狗).
-- **Hieroglyphs** by Gardiner number or description: `<:egyptian A1>`, `<:gardiner A1>`, `<:hieroglyph A1>`,
-  `<:egyptian seated man>`, `<:egyptian man sitting>` → 𓀀.
 - **Meta information**: font styles for scripts Unicode unified (`<:font cuneiform-old-babylonian> … <:/font>`,
   `<:font han-japanese>`), languages, colors and angles (`<:color #ff8800 angle 90 A>`), carried in plain text as
   invisible TAG sequences and rendered by `--html` as spans with CSS.
@@ -78,15 +102,16 @@ assert!(uniscript::convert("<:fracture 7>", uniscript::WarningMode::Error).is_er
 
 ## Meta information
 
-Unicode encodes characters, not glyphs, so a font normally belongs to markup. Where Unicode unified forms that carry
-meaning (Cuneiform of different periods, Han characters of different regions), uniscript names a font style anyway,
-and so any other meta information: one general grammar of invisible TAG sequences (TAG characters spelling ASCII, ended
-by CANCEL TAG U+E007F, like the emoji subdivision flags). The design and its reasons:
-[docs/uniscript.md, "Meta information"](docs/uniscript.md#meta-information-fonts-languages-colors).
+Unicode encodes characters, not glyphs, so a font normally belongs to markup. Unicode often unifies forms that carry
+meaning (Cuneiform of different periods, Egyptian hieroglyphics versus hieratic, Han characters of different regions), uniscript can express that via **meta information**: one general grammar of invisible TAG sequences (A built-in Unicode mechanism that we can use). If a renderer does not support them, they are simply invisible. 
+
+The design and its reasons: [docs/uniscript.md, "Meta information"](docs/uniscript.md#meta-information-fonts-languages-colors).
+
+Depending on the context, these unicode tags can be used, for example, in HTML and Markdown:
 
 | uniscript | plain text | HTML (`--html`) |
 |---|---|---|
-| `<:font han-japanese>直<:/font>` | TAG `<font han-japanese`, 直, TAG `</font` | `<span lang="ja" style="font-family: 'Noto Sans CJK JP', 'Hiragino Sans'">直</span>` |
+| `<:font japanese>直<:/font>` | TAG `japanese` 直 TAG `END` | `<span lang="ja" style="font-family: 'Noto Sans CJK JP', 'Hiragino Sans'">直</span>` |
 | `<:color #ff8800 mirror A>` | A, TAG M, TAG `:color #ff8800` | `<span style="color: #ff8800">A…</span>` |
 
 ```rust
@@ -99,7 +124,7 @@ let html = converter.html(&styled);
 ![Meta information rendered in headless Chrome](probes/meta_demo.png)
 
 `probes/render_meta.sh` renders this sample; the font styles and meta keys are the sections `fonts` and `meta` of
-`data/entities/meta.wasp`.
+`data/entities.wasp`.
 
 ### Swift
 
@@ -135,11 +160,11 @@ plus a walk over all index tables.
 
 | file | what |
 |---|---|
-| `data/entities/` | the readable source of truth (wasp data syntax), merged in path order (the first entry of a key wins): `uniscript.wasp` own names (its header explains the sections), `latex.wasp`, `html.wasp`, `styles.wasp` block types, `meta.wasp` font styles and meta keys, and `unicode/<block>.wasp` for each Unicode 16 block its character names and its script's block types (`greek-and-coptic.wasp`: `greek`; `egyptian-hieroglyphs.wasp`: `egyptian`, `gardiner`, `hieroglyph`) |
+| `data/entities.wasp` | the readable source of truth (wasp data syntax): Unicode 16 names, LaTeX (unicode-math) and HTML5 names, block types, font styles, meta keys |
 | `data/entities.idx` | the binary index built from it, compiled into the library |
-| `data/uniscript_index.py` | seeds `data/entities/` from the sources (Python's `unicodedata`, TeX Live's `unicode-math-table.tex`, `data/sources/`: Unicode's `Blocks.txt`, Wikipedia's list of hieroglyphs) |
+| `data/uniscript_index.py` | seeds `entities.wasp` from the sources (needs Python's `unicodedata` and TeX Live's `unicode-math-table.tex`) |
 
-After editing `data/entities/`, run `cargo run -- build`; `cargo run -- check` and the tests verify that the index matches.
+After editing `entities.wasp`, run `cargo run -- build`; `cargo run -- check` and the tests verify that the index matches.
 The Rust builder and the Python one produce the same bytes.
 
 ### Index format
@@ -160,6 +185,11 @@ itself as `red `), 1 characters → preferred uniscript, 2 suffix controls → b
 `han-japanese lang` → `ja`), 4 meta keys → CSS declaration (`color` → `color: {}`). Readers need at least the tables they
 use: older readers ignore the later tables.
 
+# Header
+Renderers might choose to switch on Uniscript mode when encountering 
+`<:uniscript version="https://uniscript.org/v1">` or `<:` at the start of a file.
+[Warp](https://github.com/pannous/warp/) has built-in support for Uniscript, so all code should be rendered with it. 
+
 ### Block control keys
 
 | key | meaning |
@@ -172,5 +202,4 @@ use: older readers ignore the later tables.
 ## Licenses
 
 Code: MIT. The seeded names come from the Unicode Character Database (Unicode License v3), the HTML5 entity list (W3C)
-and unicode-math-table.tex (LPPL 1.3c), the hieroglyph descriptions from Wikipedia's
-[list of hieroglyphs](https://en.wikipedia.org/wiki/Template:List_of_hieroglyphs) (CC BY-SA 4.0). Fonts: SIL Open Font License 1.1.
+and unicode-math-table.tex (LPPL 1.3c). Fonts: SIL Open Font License 1.1.
