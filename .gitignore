@@ -3,3 +3,7 @@ target
 .swiftpm
 docs/demo.html
 probes/meta_demo.html
+intellij/build
+intellij/.gradle
+intellij/.kotlin
+intellij/.intellijPlatform
