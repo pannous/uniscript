@@ -1,0 +1,9 @@
+// Uniscript entities: unicode/specials.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	interlinear-annotation-anchor: "\u{FFF9}"
+	interlinear-annotation-separator: "\u{FFFA}"
+	interlinear-annotation-terminator: "\u{FFFB}"
+	object-replacement-character: "￼"
+	replacement-character: "�"
+}

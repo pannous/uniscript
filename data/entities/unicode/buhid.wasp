@@ -1,0 +1,24 @@
+// Uniscript entities: unicode/buhid.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	buhid-letter-a: "ᝀ"
+	buhid-letter-i: "ᝁ"
+	buhid-letter-u: "ᝂ"
+	buhid-letter-ka: "ᝃ"
+	buhid-letter-ga: "ᝄ"
+	buhid-letter-nga: "ᝅ"
+	buhid-letter-ta: "ᝆ"
+	buhid-letter-da: "ᝇ"
+	buhid-letter-na: "ᝈ"
+	buhid-letter-pa: "ᝉ"
+	buhid-letter-ba: "ᝊ"
+	buhid-letter-ma: "ᝋ"
+	buhid-letter-ya: "ᝌ"
+	buhid-letter-ra: "ᝍ"
+	buhid-letter-la: "ᝎ"
+	buhid-letter-wa: "ᝏ"
+	buhid-letter-sa: "ᝐ"
+	buhid-letter-ha: "ᝑ"
+	buhid-vowel-sign-i: "\u{1752}"
+	buhid-vowel-sign-u: "\u{1753}"
+}

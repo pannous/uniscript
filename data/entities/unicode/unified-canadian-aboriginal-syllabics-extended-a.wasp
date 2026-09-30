@@ -1,0 +1,20 @@
+// Uniscript entities: unicode/unified-canadian-aboriginal-syllabics-extended-a.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	canadian-syllabics-nattilik-hi: "𑪰"
+	canadian-syllabics-nattilik-hii: "𑪱"
+	canadian-syllabics-nattilik-ho: "𑪲"
+	canadian-syllabics-nattilik-hoo: "𑪳"
+	canadian-syllabics-nattilik-ha: "𑪴"
+	canadian-syllabics-nattilik-haa: "𑪵"
+	canadian-syllabics-nattilik-shri: "𑪶"
+	canadian-syllabics-nattilik-shrii: "𑪷"
+	canadian-syllabics-nattilik-shro: "𑪸"
+	canadian-syllabics-nattilik-shroo: "𑪹"
+	canadian-syllabics-nattilik-shra: "𑪺"
+	canadian-syllabics-nattilik-shraa: "𑪻"
+	canadian-syllabics-spe: "𑪼"
+	canadian-syllabics-spi: "𑪽"
+	canadian-syllabics-spo: "𑪾"
+	canadian-syllabics-spa: "𑪿"
+}

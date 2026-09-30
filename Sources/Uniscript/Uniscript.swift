@@ -280,9 +280,14 @@ private final class Conversion {
 		return out
 	}
 
-	/// The space separated operands, spaces dropped; a group (above, beside) joins its parts unstyled with the prefix
-	/// before or the infix between them that the script of the first part has
+	/// The space separated operands, spaces dropped, or one operand of several words (egyptian seated man);
+	/// a group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script
+	/// of the first part has
 	private func operands(_ block: String, _ content: String, _ effects: [String], _ at: Int) -> String {
+		let phrase = splitOnSpaces(content).joined(separator: "-")
+		if phrase.contains("-") && name("\(block) \(phrase)") != nil {
+			return operand(block, phrase, effects, at)
+		}
 		let group = name("\(block) *group") != nil
 		var out = ""
 		var script = ""

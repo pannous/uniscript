@@ -1,0 +1,5 @@
+// Uniscript entities: unicode/lisu-supplement.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	lisu-letter-yha: "𑾰"
+}

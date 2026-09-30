@@ -1,0 +1,21 @@
+// Uniscript entities (docs/uniscript.md), the human readable source of data/entities.idx, read with all other
+// files of data/entities/ in path order (the first entry of a key wins); entities/unicode/ has one file per Unicode block.
+// Seeded by data/uniscript_index.py from Unicode 16.0.0 character names and blocks, the HTML5 entity list,
+// unicode-math-table.tex and Wikipedia's list of hieroglyphs; edit freely, then run `cargo run -- build`.
+//   uniscript      own names, win over all others
+//   names          Unicode names, lower case, spaces as hyphens: <:greek-small-letter-alpha> or <:greek small letter alpha>
+//   latex          unicode-math command names without backslash: <:alpha> <:infty> <:mfrakA>
+//   html           HTML5 entities, backwards compatible but discouraged: <:dopf>
+//   blocks         block types: <:fracture A>, <:greek> a b <:/greek>, <:egyptian A1> <:egyptian seated man>; control
+//                  keys: "*suffix" follows any other character, "*suffix egyptian" a hieroglyph, "*prefix cjk" / "*infix egyptian" go before / between the parts of a group
+//   block-aliases  other names of block types
+//   fonts          font styles: <:font cuneiform-hittite> … <:/font>; lang (BCP 47), families (CSS), features (OpenType)
+//   meta           meta keys (<:color #ff8800 A>, <:font han-japanese> … <:/font>) → CSS declaration, {} is the value
+// Values are quoted text; invisible and combining characters are written \u{hex}.
+
+uniscript {
+	less: "<"
+	colon: ":"
+	greater: ">"
+	empty: "∅"
+}

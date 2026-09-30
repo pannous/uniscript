@@ -1,0 +1,27 @@
+// Uniscript entities: unicode/hanunoo.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	hanunoo-letter-a: "ᜠ"
+	hanunoo-letter-i: "ᜡ"
+	hanunoo-letter-u: "ᜢ"
+	hanunoo-letter-ka: "ᜣ"
+	hanunoo-letter-ga: "ᜤ"
+	hanunoo-letter-nga: "ᜥ"
+	hanunoo-letter-ta: "ᜦ"
+	hanunoo-letter-da: "ᜧ"
+	hanunoo-letter-na: "ᜨ"
+	hanunoo-letter-pa: "ᜩ"
+	hanunoo-letter-ba: "ᜪ"
+	hanunoo-letter-ma: "ᜫ"
+	hanunoo-letter-ya: "ᜬ"
+	hanunoo-letter-ra: "ᜭ"
+	hanunoo-letter-la: "ᜮ"
+	hanunoo-letter-wa: "ᜯ"
+	hanunoo-letter-sa: "ᜰ"
+	hanunoo-letter-ha: "ᜱ"
+	hanunoo-vowel-sign-i: "\u{1732}"
+	hanunoo-vowel-sign-u: "\u{1733}"
+	hanunoo-sign-pamudpod: "\u{1734}"
+	philippine-single-punctuation: "᜵"
+	philippine-double-punctuation: "᜶"
+}

@@ -1,0 +1,22 @@
+// Uniscript entities: unicode/tagbanwa.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	tagbanwa-letter-a: "ᝠ"
+	tagbanwa-letter-i: "ᝡ"
+	tagbanwa-letter-u: "ᝢ"
+	tagbanwa-letter-ka: "ᝣ"
+	tagbanwa-letter-ga: "ᝤ"
+	tagbanwa-letter-nga: "ᝥ"
+	tagbanwa-letter-ta: "ᝦ"
+	tagbanwa-letter-da: "ᝧ"
+	tagbanwa-letter-na: "ᝨ"
+	tagbanwa-letter-pa: "ᝩ"
+	tagbanwa-letter-ba: "ᝪ"
+	tagbanwa-letter-ma: "ᝫ"
+	tagbanwa-letter-ya: "ᝬ"
+	tagbanwa-letter-la: "ᝮ"
+	tagbanwa-letter-wa: "ᝯ"
+	tagbanwa-letter-sa: "ᝰ"
+	tagbanwa-vowel-sign-i: "\u{1772}"
+	tagbanwa-vowel-sign-u: "\u{1773}"
+}

@@ -1,0 +1,14 @@
+// Uniscript entities: unicode/devanagari-extended-a.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	devanagari-head-mark: "𑬀"
+	devanagari-head-mark-with-headstroke: "𑬁"
+	devanagari-sign-bhale: "𑬂"
+	devanagari-sign-bhale-with-hook: "𑬃"
+	devanagari-sign-extended-bhale: "𑬄"
+	devanagari-sign-extended-bhale-with-hook: "𑬅"
+	devanagari-sign-western-five-like-bhale: "𑬆"
+	devanagari-sign-western-nine-like-bhale: "𑬇"
+	devanagari-sign-reversed-nine-like-bhale: "𑬈"
+	devanagari-sign-mindu: "𑬉"
+}

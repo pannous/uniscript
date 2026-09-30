@@ -7,7 +7,7 @@ fn converts(uniscript: &str, unicode: &str) {
 }
 
 fn entities() -> Entities {
-	Entities::parse(&std::fs::read_to_string("data/entities.wasp").unwrap()).unwrap()
+	Entities::load("data/entities").unwrap()
 }
 
 #[test]
@@ -81,6 +81,19 @@ fn effect_words_stack_on_one_operand() {
 fn groups_join_hieroglyphs_and_compose_ideographs() {
 	converts("<:above 𓀀 𓁐>", "𓀀\u{13430}𓁐");
 	converts("<:beside 犭 句>", "⿰犭句");
+}
+
+#[test]
+fn hieroglyphs_have_gardiner_numbers_and_descriptions() {
+	converts("<:egyptian A1>", "𓀀");
+	converts("<:gardiner A1>", "𓀀");
+	converts("<:hieroglyph A1>", "𓀀");
+	converts("<:egyptian seated man>", "𓀀");
+	converts("<:egyptian man sitting>", "𓀀");
+	converts("<:egyptian man-sitting>", "𓀀");
+	converts("<:egyptian> A1 Aa1 <:/egyptian>", "𓀀𓐍");
+	converts("<:mirror egyptian A1>", "𓀀\u{13440}");
+	assert_eq!(to_uniscript("𓀀 𓐍"), "<:egyptian A1> <:egyptian Aa1>");
 }
 
 #[test]

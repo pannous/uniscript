@@ -235,7 +235,7 @@ public func escapeHTML(_ text: String) -> String {
 		.replacingOccurrences(of: ">", with: "&gt;").replacingOccurrences(of: "\"", with: "&quot;")
 }
 
-/// A font style of entities.wasp: the value of `<:font cuneiform-hittite>`
+/// A font style of data/entities/meta.wasp: the value of `<:font cuneiform-hittite>`
 public struct Font: Equatable, Sendable {
 	public let name: String
 	/// BCP 47 language tag: `hit-Xsux`, `ja`, `akk-Xsux-x-oldbab`

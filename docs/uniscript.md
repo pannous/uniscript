@@ -267,7 +267,7 @@ reads like markup whose `>` is the CANCEL TAG:
 | `<:color #ff8800 A>` | A `:color #ff8800` | attaches to the character before it |
   
 Keys are lower case words; a value is one word of letters, digits and `# . % + - _ , ( ) /` (no spaces, quotes or `;`,  
-so it stays safe in CSS). The keys and how they render live in `entities.wasp` (section `meta`: `font`, `lang`,  
+so it stays safe in CSS). The keys and how they render live in `data/entities/meta.wasp` (section `meta`: `font`, `lang`,  
 `color`, `background`, `angle`, `size`, `weight`, `style`, `features`); the font styles in section `fonts` give each  
 name a BCP 47 language, a CSS font family list and OpenType features.    
   

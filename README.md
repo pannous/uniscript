@@ -22,6 +22,8 @@ followed by TAG characters (U+E0020…E007E). Any font shows the plain letter. T
   (`lower`), small capitals, circled, fullwidth, ligatures, phonetic Greek (`<:greek> athos <:/greek>` → αθοσ).
 - **Effects**: mirror, flip, turn, left, right and 11 colors, which you can stack: `<:mirror red R>`.
 - **Groups**: Egyptian hieroglyph joiners (`<:above 𓀀 𓁐>`) and CJK composition (`<:beside 犭 句>` → 狗).
+- **Hieroglyphs** by Gardiner number or description: `<:egyptian A1>`, `<:gardiner A1>`, `<:hieroglyph A1>`,
+  `<:egyptian seated man>`, `<:egyptian man sitting>` → 𓀀.
 - **Meta information**: font styles for scripts Unicode unified (`<:font cuneiform-old-babylonian> … <:/font>`,
   `<:font han-japanese>`), languages, colors and angles (`<:color #ff8800 angle 90 A>`), carried in plain text as
   invisible TAG sequences and rendered by `--html` as spans with CSS.
@@ -97,7 +99,7 @@ let html = converter.html(&styled);
 ![Meta information rendered in headless Chrome](probes/meta_demo.png)
 
 `probes/render_meta.sh` renders this sample; the font styles and meta keys are the sections `fonts` and `meta` of
-`data/entities.wasp`.
+`data/entities/meta.wasp`.
 
 ### Swift
 
@@ -133,11 +135,11 @@ plus a walk over all index tables.
 
 | file | what |
 |---|---|
-| `data/entities.wasp` | the readable source of truth (wasp data syntax): Unicode 16 names, LaTeX (unicode-math) and HTML5 names, block types, font styles, meta keys |
+| `data/entities/` | the readable source of truth (wasp data syntax), merged in path order (the first entry of a key wins): `uniscript.wasp` own names (its header explains the sections), `latex.wasp`, `html.wasp`, `styles.wasp` block types, `meta.wasp` font styles and meta keys, and `unicode/<block>.wasp` for each Unicode 16 block its character names and its script's block types (`greek-and-coptic.wasp`: `greek`; `egyptian-hieroglyphs.wasp`: `egyptian`, `gardiner`, `hieroglyph`) |
 | `data/entities.idx` | the binary index built from it, compiled into the library |
-| `data/uniscript_index.py` | seeds `entities.wasp` from the sources (needs Python's `unicodedata` and TeX Live's `unicode-math-table.tex`) |
+| `data/uniscript_index.py` | seeds `data/entities/` from the sources (Python's `unicodedata`, TeX Live's `unicode-math-table.tex`, `data/sources/`: Unicode's `Blocks.txt`, Wikipedia's list of hieroglyphs) |
 
-After editing `entities.wasp`, run `cargo run -- build`; `cargo run -- check` and the tests verify that the index matches.
+After editing `data/entities/`, run `cargo run -- build`; `cargo run -- check` and the tests verify that the index matches.
 The Rust builder and the Python one produce the same bytes.
 
 ### Index format
@@ -170,4 +172,5 @@ use: older readers ignore the later tables.
 ## Licenses
 
 Code: MIT. The seeded names come from the Unicode Character Database (Unicode License v3), the HTML5 entity list (W3C)
-and unicode-math-table.tex (LPPL 1.3c). Fonts: SIL Open Font License 1.1.
+and unicode-math-table.tex (LPPL 1.3c), the hieroglyph descriptions from Wikipedia's
+[list of hieroglyphs](https://en.wikipedia.org/wiki/Template:List_of_hieroglyphs) (CC BY-SA 4.0). Fonts: SIL Open Font License 1.1.

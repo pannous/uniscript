@@ -9,7 +9,7 @@
 //! suffix controls (`<:mirror red A>` → A + TAG r + TAG M), hieroglyph and CJK groups (`<:beside 犭 句>` → ⿰犭句).
 //! Meta information (`<:font cuneiform-hittite> … <:/font>`, `<:color #ff8800 A>`) becomes invisible TAG sequences
 //! ([`meta`]), rendered by the application, e.g. as HTML spans with CSS ([`Uniscript::html`]).
-//! All names, block types, font styles and meta keys come from `data/entities.wasp` through its binary index `data/entities.idx`.
+//! All names, block types, font styles and meta keys come from `data/entities/` through its binary index `data/entities.idx`.
 
 pub mod entities;
 pub mod index;
@@ -20,7 +20,7 @@ pub use meta::{Font, Meta, MetaRun, Styled};
 use std::cell::RefCell;
 use std::fmt;
 
-/// The index built from data/entities.wasp, compiled into the library
+/// The index built from data/entities/, compiled into the library
 pub const ENTITIES_INDEX: &[u8] = include_bytes!("../data/entities.idx");
 
 const MARKER_COLON: char = ':';
@@ -273,9 +273,14 @@ impl<'a> Uniscript<'a> {
 		out
 	}
 
-	/// The space separated operands, spaces dropped; a group (above, beside) joins its parts unstyled with the prefix
-	/// before or the infix between them that the script of the first part has
+	/// The space separated operands, spaces dropped, or one operand of several words (egyptian seated man);
+	/// a group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script
+	/// of the first part has
 	fn operands(&self, block: &str, content: &str, effects: &[&str], at: usize) -> String {
+		let phrase = content.split_whitespace().collect::<Vec<_>>().join("-");
+		if phrase.contains('-') && self.name(&format!("{block} {phrase}")).is_some() {
+			return self.operand(block, &phrase, effects, at);
+		}
 		let group = self.name(&format!("{block} *group")).is_some();
 		let mut out = String::new();
 		let mut script = "";

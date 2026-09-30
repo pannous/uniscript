@@ -1,0 +1,8 @@
+// Uniscript entities: unicode/shorthand-format-controls.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	shorthand-format-letter-overlap: "\u{1BCA0}"
+	shorthand-format-continuing-overlap: "\u{1BCA1}"
+	shorthand-format-down-step: "\u{1BCA2}"
+	shorthand-format-up-step: "\u{1BCA3}"
+}

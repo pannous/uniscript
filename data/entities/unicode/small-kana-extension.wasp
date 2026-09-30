@@ -1,0 +1,13 @@
+// Uniscript entities: unicode/small-kana-extension.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	hiragana-letter-small-ko: "𛄲"
+	hiragana-letter-small-wi: "𛅐"
+	hiragana-letter-small-we: "𛅑"
+	hiragana-letter-small-wo: "𛅒"
+	katakana-letter-small-ko: "𛅕"
+	katakana-letter-small-wi: "𛅤"
+	katakana-letter-small-we: "𛅥"
+	katakana-letter-small-wo: "𛅦"
+	katakana-letter-small-n: "𛅧"
+}

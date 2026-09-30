@@ -2,15 +2,15 @@
 //! uniscript -r "α"            → <:alpha>        (--strict: unsupported characters are errors, not warnings)
 //! echo "<:alpha>" | uniscript → α (stdin when no text is given)
 //! uniscript --html "<:font cuneiform-hittite>𒀭<:/font>"   meta information as <span lang style> instead of TAG sequences
-//! uniscript build [entities.wasp] [entities.idx]   rebuild the index from the readable file
-//! uniscript check [entities.wasp] [entities.idx]   verify both agree
+//! uniscript build [entities/] [entities.idx]   rebuild the index from the readable files
+//! uniscript check [entities/] [entities.idx]   verify both agree
 
 use std::io::Read;
 use std::process::ExitCode;
 use uniscript::entities::Entities;
 use uniscript::index::{self, Index};
 
-const DEFAULT_ENTITIES: &str = "data/entities.wasp";
+const DEFAULT_ENTITIES: &str = "data/entities";
 const DEFAULT_INDEX: &str = "data/entities.idx";
 const REVERSE_FLAGS: [&str; 2] = ["-r", "--reverse"];
 const STRICT_FLAG: &str = "--strict";
@@ -76,20 +76,15 @@ fn convert(arguments: &[String]) -> Result<(), String> {
 	Ok(())
 }
 
-fn read_entities(path: &str) -> Result<Entities, String> {
-	let source = std::fs::read_to_string(path).map_err(|e| format!("{path}: {e}"))?;
-	Entities::parse(&source).map_err(|e| format!("{path}: {e}"))
-}
-
 fn build(entities_path: &str, index_path: &str) -> Result<(), String> {
-	let bytes = index::build(&read_entities(entities_path)?);
+	let bytes = index::build(&Entities::load(entities_path)?);
 	std::fs::write(index_path, &bytes).map_err(|e| format!("{index_path}: {e}"))?;
 	println!("wrote {index_path} ({} bytes)", bytes.len());
 	Ok(())
 }
 
 fn check(entities_path: &str, index_path: &str) -> Result<(), String> {
-	let entities = read_entities(entities_path)?;
+	let entities = Entities::load(entities_path)?;
 	let data = std::fs::read(index_path).map_err(|e| format!("{index_path}: {e}"))?;
 	let failures = index::check(&entities, &Index::new(&data)?);
 	if failures.is_empty() {

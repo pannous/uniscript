@@ -85,6 +85,18 @@ final class UniscriptTests: XCTestCase {
 		converts("<:beside 犭 句>", "⿰犭句")
 	}
 
+	func testHieroglyphsHaveGardinerNumbersAndDescriptions() {
+		converts("<:egyptian A1>", "𓀀")
+		converts("<:gardiner A1>", "𓀀")
+		converts("<:hieroglyph A1>", "𓀀")
+		converts("<:egyptian seated man>", "𓀀")
+		converts("<:egyptian man sitting>", "𓀀")
+		converts("<:egyptian man-sitting>", "𓀀")
+		converts("<:egyptian> A1 Aa1 <:/egyptian>", "𓀀𓐍")
+		converts("<:mirror egyptian A1>", "𓀀\u{13440}")
+		XCTAssertEqual(Uniscript.toUniscript("𓀀 𓐍"), "<:egyptian A1> <:egyptian Aa1>")
+	}
+
 	func testTheMarkerIsEscapedBySingleCharacterEntities() {
 		converts("<:<> <::> <<::>", "< : <:")
 		converts("<:less>:", "<:")

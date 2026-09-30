@@ -1,0 +1,7744 @@
+{| class="wikitable sortable collapsible" style="font-size:90%; width:100%; vertical-align:top;"
+|-
+! colspan="7" style="background:#E0D569;" | {{navbar-collapsible | List of [[Egyptian hieroglyphs]] | Template:List of hieroglyphs}}
+|-
+! Hieroglyph 
+! [[Gardiner's sign list|Gardiner]]<br />{{mono|1=Unicode}}
+! Description
+! Ideogram
+! Phonogram
+! Notes<!-- the ../row template adds the "|-" (new tablerow) -->
+
+{{List of hieroglyphs/subheader
+|gardiner=A
+|notes=
+}}
+
+
+{{List of hieroglyphs/row
+|H=𓀀 |gardiner=A1 |unicode=13000
+|desc=seated man
+|tl1='''I, me, my''' (masculine) (''.j'')
+|tl2='''man''' (''z'')
+|notes= Determinative for masculine names}}
+
+{{List of hieroglyphs/row
+|H=𓀁|gardiner=A2 |unicode=13001
+|desc=man with hand to mouth 
+|tl1='''eat''' (''wnm'')
+|tl2='''drink''' (''zwr'')
+|tl3='''speak''', '''think''', '''recount''' (''sḏd'')
+|tl4='''refrain from speech, be(come) silent''' (''gr'')
+|tl5='''plan, plot''' (''kꜣj'')
+|tl6='''love''' (''mrj'')
+|notes= [[Determinative]] for activities involving the mouth, head, or ideas
+}}
+
+{{List of hieroglyphs/row
+|H=𓀂 |gardiner=A3 |unicode=13002
+|desc=man sitting on heel 
+|tl1='''sit, besiege, dwell''' (''ḥmsj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀃 |gardiner=A4 |unicode=13003
+|desc=[[Man-seated: arms in adoration|seated man with hands raised]] 
+|tl1='''offer, praise, beseech''' (''dwꜣ'')
+|tl2='''hide, conceal''' (''jmn'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀄 |gardiner=A5 |unicode=13004
+|desc=crouching man hiding behind wall 
+|tl1='''hide''' (''jmn'')
+|notes= Determinative for words relating to concealing, secret, mysterious}}
+
+{{List of hieroglyphs/row
+|H=𓀅 |gardiner=A5A |unicode=13005
+|desc=seated man hiding behind wall 
+|tl1='''hide''' (''jmn'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀆 |gardiner=A6 |unicode=13006
+|desc=seated man under vase from which water flows 
+|tl1='''to be clean''' (''wꜤb'')
+|notes= Possibly refers to all aspects of 'clean' dependent on context, i.e. 'cleanliness', 'to cleanse', 'purify', etc.
+}}
+
+{{List of hieroglyphs/row
+|H=𓀇 |gardiner=A6A |unicode=13007
+|desc=seated man reaching for libation stone, under vase from which water flows 
+|tl1='''to be clean''' (''wꜤb'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀈 |gardiner=A6B |unicode=13008
+|desc=seated man reaching down, under vase from which water flows 
+|tl1='''to be clean''' (''wꜤb'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀉 |gardiner=A7 |unicode=13009
+|desc= fatigued man 
+|tl1='''to be tired''' or '''weak''' (''wrḏ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀊 |gardiner=A8 |unicode=1300A
+|desc= man performing [[Hennu|hnw]]-rite 
+|tl1='''rejoice''', '''celebrate''', '''to be jubilant''' (''hnw'')
+|notes= Possibly also 'joyful', 'celebratory', etc.
+}}
+
+{{List of hieroglyphs/row
+|H=𓀋 |gardiner=A9 |unicode=1300B
+|desc= man steadying basket on head
+|tl1='''work''', '''toil''' (''kꜣt'')
+|tl2='''load''' <small>(verb or noun)</small>, '''burden''' (''ꜣdp'')
+|tl3='''carry, haul''' (''fꜣj'')
+|pron= f, .f (Ptolemaic, from ''fꜣj'')
+|notes= 1a. to load, to be laden, master of the load; equals [[Coptic language]], '''ⲱⲧⲡ'''; (minor use for ''ꜣtp'', ''ꜣṯp'');<br />1b. to carry, to bear; additional constructs for carrier, bearer, supporter, (and types thereof); for '''fꜣ dnj''', the "bearer-of-the-basket", see: Greek [[Kanephoros]];<br />2. for ''kꜣt'', ''kꜣwtj''
+}}
+
+{{List of hieroglyphs/row
+|H=𓀌 |gardiner=A10 |unicode=1300C
+|desc= seated man holding oar 
+|tl1='''to saw''' (''sqdw'')
+|tl2='''rower, oarsman''' (''ẖn'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀍 |gardiner=A11 |unicode=1300D
+|desc= seated man holding scepter of authority and shepherd's crook 
+|tl1='''friend''' (''ḫnms'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀎 |gardiner=A12 |unicode=1300E
+|desc= soldier with bow and quiver 
+|tl1='''soldier''', '''company/unit of soldiers''' (''mnfyt''), '''army/expedition''' (''mšꜥ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀏 |gardiner=A13 |unicode=1300F
+|desc= man with arms tied behind his back 
+|tl1='''enemy''' (''ḫfty'')
+|tl2='''rebel''' (''sbj'')
+|notes= Possibly also 'criminal', 'traitor', 'prisoner'
+}}
+
+{{List of hieroglyphs/row
+|H=𓀐 |gardiner=A14 |unicode=13010
+|desc= falling man with blood streaming from his head 
+|tl1='''die''' (''mwt'')
+|tl2='''enemy''' (''ḫfty'')
+|notes= The wound is either self-inflicted or from a weapon strike.
+The A14 figure could be a youth or child, being depicted without clothing, while [[#A14A|A14A]] would be an adult.
+}}
+
+{{List of hieroglyphs/row
+|H=𓀑 |gardiner=A14A |unicode=13011
+|desc= man whose head is hit with an axe 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓀒 |gardiner=A15 |unicode=13012
+|desc= man falling 
+|tl1='''trap''' (''ḫr'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓀓 |gardiner=A16 |unicode=13013
+|desc= man bowing down
+|tl1= '''to bend''' or '''bow''' oneself (''ksj'') 
+|notes= A. [[Determinative]] for ''ks'', ''ksj'', & ''ks'', to bow, to do homage, to submit;<br />B. same for ''ḫꜣb'', (and thematic words of ḫꜣ-ꜣ-b, star & luminary, hippopotamus, lamp & light, etc.)
+}}
+
+{{List of hieroglyphs/row
+|H=𓀔 |gardiner=A17 |unicode=13014
+|desc= child sitting with hand to mouth 
+|tl1='''young''', '''child''' (''šrj'')
+|tl2='''orphan''' (''nmḥ'')
+|tl3='''child''' (''ẖrd, ḫy'')
+|tl4='''infant''' (''nnj'')
+|pron= ms, nn
+|notes= A17, depicted with bare head, indicates the figure as a 'lower' class than [[#A17A|A17A]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓀕 |gardiner=A17A |unicode=13015
+|desc= child sitting with arms hanging down 
+|tl1=Noble/Aristocratic Supplement for [[#A3|A3]] and [[#A17|A17]] ''sitting'', ''sitting youth''
+|notes= The head of A17A indicates the class of the figure to be of a 'higher' class than [[#A17|A17]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓀖 |gardiner=A18 |unicode=13016
+|desc= child wearing red crown 
+|tl1='''foster child''' (''jmty'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀗 |gardiner=A19 |unicode=13017
+|desc= bent man leaning on staff 
+|tl1='''old''', '''to be fragile''' (''jꜣw'')
+|tl2='''elder''' (''smsw'')
+|tl3='''great''' (''wr'')
+|tl4='''to lean''' (''rhn'')
+|tl5='''to hit''' (''ḥwj'')
+|pron=jk 
+|notes= Perhaps also wise and sage
+}}
+
+{{List of hieroglyphs/row
+|H=𓀘 |gardiner=A20 |unicode=13018
+|desc= man leaning on forked staff 
+|tl1='''elder''' (''smsw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀙 |gardiner=A21 |unicode=13019
+|desc= man holding staff with handkerchief 
+|tl1='''Civil Servant''' (''sr'')
+|tl2='''Courtier''' (''smr'')
+|tl3='''great''' (''wr'')
+|tl4='''strike''' (''ḥwj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀚 |gardiner=A22 |unicode=1301A
+|desc= statue of man with staff and scepter of authority 
+|tl1='''statue''' (''ḥnṯ''), (''twt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀛 |gardiner=A23 |unicode=1301B
+|desc= king with staff and mace with round head 
+|tl1='''monarch''', '''lord''', '''ruler'''(''jty'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀜 |gardiner=A24 |unicode=1301C
+|desc= man striking with both hands 
+|tl1='''to hit''' or '''strike''' (''ḥwj'')
+|tl2='''power''', '''strength''' (''nḫt'')
+|tl3='''teach lesson''' or '''instruct''' (''sbꜣ'')
+|tl4='''call''' (''njs'')
+|tl5='''be happy''' (''ḥꜥj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀝 |gardiner=A25 |unicode=1301D
+|desc= man striking, with left arm hanging behind back 
+|tl1='''to hit''' or '''strike''' (''ḥwj'')
+|notes= Most likely synonymous with [[#A24|A24]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓀞 |gardiner=A26 |unicode=1301E
+|desc= man with one arm pointing forward 
+|tl1='''call''' (''njs, Ꜥš'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀟 |gardiner=A27 |unicode=1301F
+|desc= hastening man 
+|tl1= '''bring''' (''jnj'')
+|pron= jn
+}}
+
+{{List of hieroglyphs/row
+|H=𓀠 |gardiner=A28 |unicode=13020
+|desc= man with hands raised on either side
+|tl1= '''to be high, in high spirits, elevate''' (''qꜣj'')
+|tl2='''mourn''' (''ḥꜣj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀡 |gardiner=A29 |unicode=13021
+|desc= man upside down 
+|tl1='''headlong''' or '''[[Wikt:head over heels|head over heels]]''' (''sḫd'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀢 |gardiner=A30 |unicode=13022
+|desc= man with hands raised in front 
+|tl1='''praise''', '''adore''', '''laud''', '''thank''' (''dwꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀣 |gardiner=A31 |unicode=13023
+|desc= man with hands raised behind him 
+|tl1='''to turn away''' (''Ꜥn'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀤 |gardiner=A32 |unicode=13024
+|desc= man dancing with arms to the back
+|tl1= '''dance''' (''ḫbj'')
+|tl2='''cheer''', '''rejoice''' (''hy-hnw'')
+|tl3='''dance, dancer''' (''jb'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓀥 |gardiner=A32A |unicode=13025
+|desc= man dancing with arms to the front 
+|tl1= (see above)
+}}
+
+{{List of hieroglyphs/row
+|H=𓀦 |gardiner=A33 |unicode=13026
+|desc= man with stick and bundle on shoulder 
+|tl1='''to herd, shepherd''' (''mnjw'')
+|tl2= '''journey''', '''tramp''' (''ḫwsj'')
+|tl3='''construction''', (''qd'')
+|tl4='''foreign''', '''strange'''(''šmꜣw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀧 |gardiner=A34 |unicode=13027
+|desc= man pounding in a mortar
+|tl1='''to stomp''' (''ḫwsj'')
+|notes= Man grinding (etc.); to grind in a mortar, to build, to construct, etc.
+}}
+
+{{List of hieroglyphs/row
+|H=𓀨 |gardiner=A35 |unicode=13028
+|desc= man building wall
+|tl1='''to build''' (''qd'') 
+|notes= Man constructing: a "'''Mason'''"; [[Ideogram]] or [[determinative|det.]] for ''qd'', Coptic “ⲔⲰⲦ“  "to construct"; (see Wall, (Collapsing)-Wall)
+}}
+
+{{List of hieroglyphs/row
+|H=𓀩 |gardiner=A36 |unicode=13029
+|desc= man kneading into vessel 
+|tl1='''brewer''' (''ꜥftj'')
+|tl2='''grind''' (''nḏ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀪 |gardiner=A37 |unicode=1302A
+|desc= man in vessel 
+|tl1='''brewer''' (''ꜥftj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀫 |gardiner=A38 |unicode=1302B
+|desc= man holding necks of two emblematic animals with panther heads 
+|tl1=[[Cusae]] (''qjs'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀬 |gardiner=A39 |unicode=1302C
+|desc= man on two giraffes 
+|tl1=[[Cusae]] (''qjs'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀭 |gardiner=A40 |unicode=1302D
+|desc= seated god 
+|tl1='''I, me, my''' (when the speaker is a god) (''.j'')
+|tl2='''God'''(''nṯr'')
+|notes=Determinative for God’s names
+}}
+
+{{List of hieroglyphs/row
+|H=𓀮 |gardiner=A40A |unicode=1302E
+|desc= seated god with Was-sceptre 
+|tl1='''I, me, my''' (when the speaker is a god) (''.j'')
+|tl2='''God'''(''nṯr'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀯 |gardiner=A41 |unicode=1302F
+|desc= king with uraeus 
+|tl1='''king''' (''nsw'')
+|tl2='''majesty''' (''ḥm'')
+|tl3='''I, me, my''' (when speaker is a king) (''.j'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀰 |gardiner=A42 |unicode=13030
+|desc= king with uraeus and flagellum 
+|tl1='''king''' (''nsw'')
+|tl2='''majesty''' (''ḥm'')
+|tl3='''I, me, my''' (when speaker is a king) (''.j'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀱 |gardiner=A42A |unicode=13031
+|desc= king with uraeus and flagellum 
+|tl1='''king''' (''nsw'')
+|tl2='''majesty''' (''ḥm'')
+|tl3='''I, me, my''' (when speaker is a king) (''.j'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀲 |gardiner=A43 |unicode=13032
+|desc= king wearing white crown 
+|tl1='''King of [[Upper Egypt]]''' (''nsw'')
+|tl2='''[[Osiris]]''' (''wsjr'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀳 |gardiner=A43A |unicode=13033
+|desc= king wearing white crown with sceptre 
+|tl1='''King of [[Upper Egypt]]''' (''nsw'')
+|tl2='''[[Osiris]]''' (''wsjr'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀴 |gardiner=A44 |unicode=13034
+|desc= king wearing white crown with flagellum 
+|tl1='''King of Upper Egypt''' (''nsw'')
+|tl2='''Atum''' (''jtmw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀵 |gardiner=A45 |unicode=13035
+|desc= king wearing red crown 
+|tl1='''King of [[Lower Egypt]]''' (''bjtj'')
+|tl2='''King''' (''nsw'')
+|pron= n
+}}
+
+{{List of hieroglyphs/row
+|H=𓀶 |gardiner=A45A |unicode=13036
+|desc= king wearing red crown with sceptre 
+|tl1= '''Atum''' (''jtmw'')
+|pron= n
+}}
+
+{{List of hieroglyphs/row
+|H=𓀷 |gardiner=A46 |unicode=13037
+|desc= king wearing red crown with flagellum 
+|tl1='''King of Lower Egypt''' (''bjtj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀸 |gardiner=A47 |unicode=13038
+|desc= shepherd seated and wrapped in mantle, holding stick 
+|tl1='''shepherd''' (''mnjw'')
+|tl2='''guard''' (''sꜣw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀹 |gardiner=A48 |unicode=13039
+|desc= beardless man seated and holding knife 
+|tl1='''belonging to, keeper''' (''jrj'')
+|tl2='''Guardian, keeper''' (''jrj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀺 |gardiner=A49 |unicode=1303A
+|desc= seated Syrian holding stick 
+|tl1='''foreigner''', '''Asian''' (''ꜥꜣmw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀻 |gardiner=A50 |unicode=1303B
+|desc= noble on chair 
+|tl1='''courtier''' (''smr'')
+|tl2='''I, me, my '''(when speaker is a nobleman) (''.j'')
+|tl3='''noble''' (''šps'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀼 |gardiner=A51 |unicode=1303C
+|desc= noble on chair with flagellum 
+|tl1='''to be of noble blood''' (''špsj'')
+|tl2='''undertake a task''' (''špsj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀽 |gardiner=A52 |unicode=1303D
+|desc= noble squatting with flagellum 
+|tl1='''to be of noble blood''' (''špsj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓀾 |gardiner=A53 |unicode=1303E
+|desc= standing mummy
+|tl1= '''Image''' (''twt'')
+|notes= Form, likeness, image, (double)<br />[[Tutankhamun]]: '''Form-Living-(of)-[[Amun]]'''
+}}
+
+{{List of hieroglyphs/row
+|H=𓀿 |gardiner=A54 |unicode=1303F
+|desc= lying mummy 
+|tl1='''death''' (''mnj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁀 |gardiner=A55 |unicode=13040
+|desc= mummy on bed
+|tl1= '''lie down, spend the night'''(''sḏr'')
+|tl2='''corpse''' (''ẖꜣt'')
+|notes= Overnight meaning an overnight stay in any location, i.e. 'spend the night at home', 'spent the night in a hotel', 'slept over at (random person's name)'s house', etc.
+}}
+
+{{List of hieroglyphs/row
+|H=𓁁 |gardiner=A56 |unicode=13041
+|desc= seated man holding stick 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁂 |gardiner=A57 |unicode=13042
+|desc= man holding loaf on mat 
+|tl1= '''An offering which the King gives''' (''ḥtp-dj-nsw'')
+|notes=Abbreviation for the beginning of the [[Ancient Egyptian offering formula|Offering Formula]]. 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁃 |gardiner=A58 |unicode=13043
+|desc= man applying hoe to ground 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁄 |gardiner=A59 |unicode=13044
+|desc= man threatening with stick 
+|tl1=
+}}
+
+{{List of hieroglyphs/row
+|H=𓁅 |gardiner=A60 |unicode=13045
+|desc= man sowing seeds 
+|tl1= '''Spill, pour''' (''stj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁆 |gardiner=A61 |unicode=13046
+|desc= man looking over his shoulder 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁇 |gardiner=A62 |unicode=13047
+|desc= Asiatic 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁈 |gardiner=A63 |unicode=13048
+|desc= king on throne holding staff 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁉 |gardiner=A64 |unicode=13049
+|desc= man sitting on heels holding forward cup 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁊 |gardiner=A65 |unicode=1304A
+|desc= man wearing tunic with fringes and holding mace 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁋 |gardiner=A66 |unicode=1304B
+|desc= man holding sistrum 
+|tl1= '''[[Ihy]]''' (''jḥy'')
+|tl2= '''Great God (Ptolemaic)''' (''nṯr-Ꜥꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁌 |gardiner=A67 |unicode=1304C
+|desc= dwarf 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁍 |gardiner=A68 |unicode=1304D
+|desc= man holding up knife 
+|tl1= '''Black eye paint''' (''msdmt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁎 |gardiner=A69 |unicode=1304E
+|desc= seated man with raised right arm and left arm hanging down 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁏 |gardiner=A70 |unicode=1304F
+|desc= seated man with raised arms 
+|tl1= '''[[Heh (god)|Heh]]''' (''ḥḥ'')
+}}
+
+
+{{List of hieroglyphs/subheader
+|gardiner=B
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓁐 |gardiner=B1 |unicode=13050
+|desc= seated woman 
+|tl1='''woman''' (''[[:wikt:zt#Egyptian|zt]]'')
+|tl2='''I, me, my (when speaker is feminine)''' (''[[:wikt:.j#Egyptian|.j]]'')
+|notes= Determinative for feminine names
+}}
+
+{{List of hieroglyphs/row
+|H=𓁑 |gardiner=B2 |unicode=13051
+|desc= pregnant woman 
+|tl1='''to be pregnant''' (''bkꜣ'')
+|tl2='''conceive''' (''jwr'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁒 |gardiner=B3 |unicode=13052
+|desc= woman giving birth 
+|tl1='''to give birth''' (''msj'')
+|tl2='''conceive''' (''jwr'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁓 |gardiner=B4 |unicode=13053
+|desc= combination of woman giving birth and three skins tied together 
+|tl1='''to give birth''' (''msj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁔 |gardiner=B5 |unicode=13054
+|desc= woman suckling child 
+|tl1='''to nurse''', '''to nurture''', '''to care for''' (''rnn'')
+|tl2='''wet nurse''' <small>(noun def. 1)</small> (''mnꜥt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁕 |gardiner=B5A |unicode=13055
+|desc= woman suckling child (simplified) 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁖 |gardiner=B6 |unicode=13056
+|desc= woman on chair with child on lap 
+|tl1='''to nurse''', '''to nurture''', '''to care for''' (''rnn'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁗 |gardiner=B7 |unicode=13057
+|desc= queen wearing diadem and holding flower 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁘 |gardiner=B8 |unicode=13058
+|desc= woman holding lotus flower 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁙 |gardiner=B9 |unicode=13059
+|desc= woman holding sistrum 
+|tl1= 
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=C
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓁚 |gardiner=C1 |unicode=1305A
+|desc= god with sun-disk and uraeus
+|tl1='''[[Ra]]''' (''rꜤ'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁛 |gardiner=C2 |unicode=1305B
+|desc= god with falcon head and sun-disk holding ankh 
+|tl1='''Ideogram and Determinative for [[Ra]]''' (''rꜤ'')
+|notes= Variant of [[#C1|C1]] ''god with sun-disk and uraeus''
+}}
+
+{{List of hieroglyphs/row
+|H=𓁜 |gardiner=C2A |unicode=1305C
+|desc= god with falcon head and sun-disk 
+|tl1='''Id. & Det. for [[Ra]]''' (''rꜤ'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁝 |gardiner=C2B |unicode=1305D
+|desc= [[#C2A|C2A]] reversed 
+|tl1='''[[Ra]]''' (''rꜤ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁞 |gardiner=C2C |unicode=1305E
+|desc= [[#C2|C2]] reversed 
+|tl1='''[[Ra]]''' (''rꜤ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁟 |gardiner=C3 |unicode=1305F
+|desc= god with [[ibis]] head
+|tl1='''Id. & Det. for [[Thoth]]''' (''ḏḥwty'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁠 |gardiner=C4 |unicode=13060
+|desc= god with ram head
+|tl1='''Id. & Det. for [[Khnum]]''' (''ẖnmw'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁡 |gardiner=C5 |unicode=13061
+|desc= god with ram head holding ankh
+|tl1='''Id. & Det. for [[Khnum]]''' (''ẖnmw'') 
+|notes= Variant of [[#C4|C4]] ''god with ram head''
+}}
+
+{{List of hieroglyphs/row
+|H=𓁢 |gardiner=C6 |unicode=13062
+|desc= god with [[jackal]] head
+|tl1= '''Id. & Det. for [[Anubis]]''' (''jnpw'')
+|tl2= '''Id. & Det. for [[Wepwawet]]''' (''wp-wꜣwt'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁣 |gardiner=C7 |unicode=13063
+|desc= god with [[Set animal|Seth-animal]] head
+|tl1= '''Id. & Det. for [[Set (deity)|Seth]]''' (''stḫ, stẖ, stš'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁤 |gardiner=C8 |unicode=13064
+|desc= ithyphallic god with two plumes, uplifted arm and flagellum
+|tl1='''Id. & Det. for [[Min (god)|Min]]''' (''mnw'') 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁥 |gardiner=C9 |unicode=13065
+|desc= goddess with horned sun-disk
+|tl1='''Id. & Det. for [[Hathor]]''' (''ḥwt-ḥr'') 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁦 |gardiner=C10 |unicode=13066
+|desc= goddess with feather
+|tl1='''Id. & Det. for [[Maat]]''' (''mꜣꜥt'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁧 |gardiner=C10A |unicode=13067
+|desc= goddess with feather holding ankh
+|tl1='''Id. & Det. for [[Maat]]''' (''mꜣꜥt'') 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁨 |gardiner=C11 |unicode=13068
+|desc= god with arms supporting the sky and palm branch on head
+|tl1='''Id. & Det. for [[Heh (god)|Heh]]''' (''ḥḥ'')
+|tl2='''Million''' (''ḥḥ'')
+|notes= Million, many<br />[[Heh (god)]]<!--?-->
+}}
+
+{{List of hieroglyphs/row
+|H=𓁩 |gardiner=C12 |unicode=13069
+|desc= god with two plumes and scepter
+|tl1='''Id. & Det. for [[Amun]]''' (''jmn'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁪 |gardiner=C13 |unicode=1306A
+|desc= C12 reversed 
+|tl1='''[[Amun]]''' (''jmn'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁫 |gardiner=C14 |unicode=1306B
+|desc= god with two plumes and scimitar 
+|tl1= '''Amun is with his Strong Arm''' (Amunherkhepeshef) (''jmn-ḥr-ḫpš.f'') 
+|notes=Abbreviated form found In royal cartouches. 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁬 |gardiner=C15 |unicode=1306C
+|desc= C14 reversed 
+|tl1= '''Amun is with his Strong Arm''' (Amunherkhepeshef) (''jmn-ḥr-ḫpš.f'') 
+|notes=Abbreviated form found In royal cartouches. 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁭 |gardiner=C16 |unicode=1306D
+|desc= god wearing red crown with ankh 
+|tl1= '''Id. & Det. for [[Atum]]''' (''jtmw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁮 |gardiner=C17 |unicode=1306E
+|desc= god with falcon head and two plumes 
+|tl1='''Id. & Det. for [[Montu]]''' (''mnṯw'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁯 |gardiner=C18 |unicode=1306F
+|desc= squatting god
+|tl1='''Id. & Det. for [[Tatenen]]''' (''tꜣ-ṯnn'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁰 |gardiner=C19 |unicode=13070
+|desc= mummy-shaped god
+|tl1='''Id. & Det. for [[Ptah]]''' (''ptḥ'') 
+|tl2= '''Divine''' (''nṯry'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁱 |gardiner=C20 |unicode=13071
+|desc= mummy-shaped god in shrine 
+|tl1= '''Id. & Det. for [[Ptah]]''' (''ptḥ'')
+|tl2= '''Divine''' (''nṯry'')
+|notes= Variant of [[#C19|C19]] ''mummy-shaped god''
+}}
+
+{{List of hieroglyphs/row
+|H=𓁲 |gardiner=C21 |unicode=13072
+|desc= [[Bes]]
+|tl1='''[[Bes]]''' (''bs'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓁳 |gardiner=C22 |unicode=13073
+|desc= god with falcon head and moon 
+|tl1= '''Id. & Det. for [[Khonsu]]''' (''ḫnsw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁴 |gardiner=C23 |unicode=13074
+|desc= goddess with feline head and sun with uraeus 
+|tl1='''Id. & Det. for [[Sekhmet]]''' (''sḫmt''), '''[[Menhit]]''' (''mnḥyt''), '''[[Mehit]]''' (''mḥyt''), '''[[Bastet]]''' (''bꜣstt'')
+
+}}
+
+{{List of hieroglyphs/row
+|H=𓁵 |gardiner=C24 |unicode=13075
+|desc= god wearing red crown with scepter 
+|tl1= '''Id. & Det. for [[Atum]]''' (''jtmw'')
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=D
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓁶 |gardiner=D1 |unicode=13076
+|desc= head
+|tl1= '''head''' (''tp'') (''ḏꜣḏꜣ'')
+|tl2='''back of head''' (''ḥꜣ'')
+|tl3='''behind''' (''ḥꜣ'')
+|tl4='''neglect''', '''to leave behind''' (''mkḥꜣ'')
+|notes= 1. [[Ideogram]] for ''tp'', "head"; other uses related to actions of the head; (example "the tp of the rebels", 'the "chief" of the rebels')<br />2. also for ''tp'', see '''archaic dagger'''<br />3. ([[Narmer Palette]] shows 10 enemy heads-(decapitated)) <br /><br />Possibly ancestral to [[Proto-Sinaitic script|Proto-Sinaitic]] [[Resh]] and its descendants
+}}
+
+{{List of hieroglyphs/row
+|H=𓁷 |gardiner=D2 |unicode=13077
+|desc= [[face (hieroglyph)|face]]
+|tl1= '''face''' (''ḥr'')
+|tl2='''on,''' '''around''', '''over''', '''for''' (''ḥr'')
+|pron=  ḥr
+|notes= 1. [[Egyptian biliteral signs|Bil.]] ''hr''-(ḥr)<br />2. [[Ideogram]] for 'face'<br />3. A major [[preposition]] for "on, upon", etc.; additional preposition constructs.
+}}
+
+{{List of hieroglyphs/row
+|H=𓁸 |gardiner=D3 |unicode=13078
+|desc= hair 
+|tl1='''hair''' (''šnj'')
+|tl2='''skin''' (''jnm'')
+|tl3='''color''' (''jwn'')
+|tl5='''empty''', '''barely''', '''loss of hair''' (''wš'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁹 |gardiner=D4 |unicode=13079
+|desc= eye
+|tl1= '''eye''' (''jrt'')
+|tl2='''make, create, do''' (''jrj'')
+|tl3='''see''' (''mꜣꜣ'')
+|tl4='''watch''', '''to be watchful''', '''to be awake''' (''rs'')
+|tl5='''to be blind''' (''šp'')
+|pron= jr
+|notes= Part of the name  [[Osiris]] <br /><br />Possibly ancestral to [[Proto-Sinaitic script|Proto-Sinaitic]] [[Ayin]] and its descendants
+}}
+
+{{List of hieroglyphs/row
+|H=𓁺 |gardiner=D5 |unicode=1307A
+|desc= eye touched up with paint 
+|tl1='''eye''' (''jrt'')
+|tl2='''view''' (''dgi'')
+|tl3='''to be blind''' (''šp'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁻 |gardiner=D6 |unicode=1307B
+|desc= eye with painted upper lid 
+|tl1='''eye''' (''jrt'')
+|tl2='''view''' (''dgi'')
+|tl3='''to be blind''' (''šp'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁼 |gardiner=D7 |unicode=1307C
+|desc= eye with painted lower lid 
+|tl1='''eye make-up''' / '''eye paint''' (''msdmt'')
+|tl2='''decorate''', '''adorn''', '''to be beautiful''' (''ꜥn'')
+|tl4='''view''' (''ptr'')
+|tl5='''see''' (''mꜣꜣ'') (seldom, rarely used)
+}}
+
+{{List of hieroglyphs/row
+|H=𓁽 |gardiner=D8 |unicode=1307D
+|desc= eye enclosed in sandy tract 
+|tl1='''decorate''', '''adorn''', '''to be beautiful''' (''ꜥn'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁾 |gardiner=D8A |unicode=1307E
+|desc= eye with painted lower lid enclosed in sandy tract 
+|tl1= '''decorate''', '''adorn''', '''to be beautiful''' (''ꜥn'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓁿 |gardiner=D9 |unicode=1307F
+|desc= eye with flowing tears 
+|tl1= '''weep''' (''rmj'')
+|tl2= '''person''' (''rmṯ'') (Ptolemaic rebus) 
+}}
+
+{{List of hieroglyphs/row
+|H=𓂀 |gardiner=D10 |unicode=13080
+|desc= [[Eye of Horus]] 
+|tl1= '''Udjat-eye''' (''wḏꜣt'')
+|tl2= '''Eye''' (''jrt'')
+|tl3= '''Bright''' (''bꜣq'', in ''bꜣqt'' '''Egypt''')
+|notes= [[Eye of Horus]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓂁 |gardiner=D11 |unicode=13081
+|desc= left part of Eye of Horus 
+|tl1= abbreviation for Heqat-measure grain: 1/2
+}}
+
+{{List of hieroglyphs/row
+|H=𓂂 |gardiner=D12 |unicode=13082
+|desc= pupil
+|tl1= '''Eye''' (''jr'') (Pars-pro-toto substitution) 
+|tl2= abbreviation for Heqat-measure grain: 1/4
+|notes= Determinative for pupil (ḏfḏ)
+}}
+
+{{List of hieroglyphs/row
+|H=𓂃 |gardiner=D13 |unicode=13083
+|desc= eyebrow 
+|tl1=abbreviation for Heqat-measure grain: 1/8
+|pron=smd
+}}
+
+{{List of hieroglyphs/row
+|H=𓂄 |gardiner=D14 |unicode=13084
+|desc= right part of Eye of Horus 
+|tl1= abbreviation for Heqat-measure grain: 1/16
+}}
+
+{{List of hieroglyphs/row
+|H=𓂅 |gardiner=D15 |unicode=13085
+|desc= diagonal marking of Eye of Horus 
+|tl1= abbreviation for Heqat-measure grain: 1/32
+}}
+
+{{List of hieroglyphs/row
+|H=𓂆 |gardiner=D16 |unicode=13086
+|desc= vertical marking of Eye of Horus 
+|tl1=abbreviation for Heqat-measure grain: 1/64
+}}
+
+{{List of hieroglyphs/row
+|H=𓂇 |gardiner=D17 |unicode=13087
+|desc= diagonal and vertical markings of Eye of Horus 
+|tl1= '''Image''' (''twt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂈 |gardiner=D18 |unicode=13088
+|desc= ear 
+|tl1= '''to listen''' (''sḏm'')
+|tl2= '''Ear''' (''msḏr'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂉 |gardiner=D19 |unicode=13089
+|desc= nose, eye and cheek
+|tl1= '''nose''' (''fnḏ''),
+|tl2='''smell''' (''sn''), 
+|tl3='''be happy''' (''ršw''), 
+|tl4='''face, front''' (''ḫnt''), 
+|pron=ḫnt
+|notes= [[Ideogram]] or [[determinative|det.]] for the "nose", fnḏ/fnd, det. for words relating to ''smell, joy,'' and the ''nose''
+}}
+
+{{List of hieroglyphs/row
+|H=𓂊 |gardiner=D20 |unicode=1308A
+|desc= nose, eye and cheek (cursive) 
+|tl1= '''nose''' (''fnḏ''),
+|tl2='''smell''' (''sn''), 
+|tl3='''be happy''' (''ršw''), 
+|tl4='''face, front''' (''ḫnt''), 
+|notes= [[Ideogram]] or [[determinative|det.]] for the "nose", fnḏ/fnd, det. for words relating to ''smell, joy,'' and the ''nose''
+}}
+
+{{List of hieroglyphs/row
+|H=𓂋 |gardiner=D21 |unicode=1308B
+|desc= mouth; compare V38
+|tl1= '''mouth, utterance''' (''r[ꜣ]'')
+|tl2= '''Turn about''' (''pẖr'')
+|pron= r, jw (Ptolemaic)
+|notes= [[Egyptian uniliteral signs|Uniliteral ''r'']]. Possibly ancestral to [[Proto-Sinaitic script|Proto-Sinaitic]] [[Pe (Semitic letter)|Pe]] and its descendants
+}}
+
+{{List of hieroglyphs/row
+|H=𓂌 |gardiner=D22 |unicode=1308C
+|desc= mouth with two strokes 
+|tl1= '''2/3''' (''rꜣwj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂍 |gardiner=D23 |unicode=1308D
+|desc= mouth with three strokes 
+|tl1= '''3/4''' (''ḫmt-rꜣw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂎 |gardiner=D24 |unicode=1308E
+|desc= upper lip with teeth 
+|tl1='''Lip''' (''spt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂏 |gardiner=D25 |unicode=1308F
+|desc= lips 
+|tl1= '''(both) lips''' (''sptj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂐 |gardiner=D26 |unicode=13090
+|desc= liquid issuing from lips 
+|tl1= '''spit''' (''psg'')
+|tl2= '''to spit, to vomit''' (''bšj'')
+|tl3= '''blood''' (''snf'')
+|pron= p (Ptolemaic) 
+}}
+
+{{List of hieroglyphs/row
+|H=𓂑 |gardiner=D27 |unicode=13091
+|desc= small breast 
+|tl1='''to suckle''' (''snq'')
+|tl2='''breast''' (''mnḏ'')
+|tl3='''wet nurse''' (''mnꜥt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂒 |gardiner=D27A |unicode=13092
+|desc= large breast 
+|tl1='''to suckle''' (''snq'')
+|tl2='''breast''' (''mnḏ'')
+|tl3='''wet nurse''' (''mnꜥt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂓 |gardiner=D28 |unicode=13093
+|desc= two arms upraised
+|tl1='''the [[ancient Egyptian concept of the soul#kꜣ "double"|Ka]] (life spirit)''' (''kꜣ'')
+|pron= kꜣ
+}}
+
+{{List of hieroglyphs/row
+|H=𓂔 |gardiner=D29 |unicode=13094
+|desc= combination of two arms upraised (D28) and standard (R12) 
+|tl1='''the [[ancient Egyptian concept of the soul#kꜣ "double"|Ka]] (life spirit)''' (''kꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂕 |gardiner=D30 |unicode=13095
+|desc= two arms upraised with tail 
+|tl1='''The god [[Nehebkau]]''' (''nḥb-kꜣw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂖 |gardiner=D31 |unicode=13096
+|desc= arms embracing club 
+|tl1='''mortuary priest''' (''ḥm-kꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂗 |gardiner=D31A |unicode=13097
+|desc=combination of two arms upraised (D28) and club 
+|tl1= '''mortuary priest''' (''ḥm-kꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂘 |gardiner=D32 |unicode=13098
+|desc= arms embracing 
+|tl1='''enclose''' (''jnq'')
+|tl2='''embrace''' (''ḥpt, sḫn'')
+|tl3='''open the arms''' (''pgꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂙 |gardiner=D33 |unicode=13099
+|desc= arms rowing
+|tl1='''to row''' (''ẖnj'')
+|pron= ẖn
+}}
+
+{{List of hieroglyphs/row
+|H=𓂚 |gardiner=D34 |unicode=1309A
+|desc= arms<br />with shield<br />and battle axe
+|tl1= '''Fight, combat''' (''ꜥḥꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂛 |gardiner=D34A |unicode=1309B
+|desc= arms with shield and mace 
+|tl1= '''Fight, combat''' (''ꜥḥꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂜 |gardiner=D35 |unicode=1309C
+|desc= arms in gesture of negation 
+|tl1='''not''' (''n'', ''nn'')
+|tl2='''that which is not''' (''jwtj'')
+|tl3='''to not know''' (''ḫm'')
+|tl4='''shrine''' (''ḫm'')
+|tl5='''forget''' (''smḫ'')
+|pron=n, nj
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓂝 |gardiner=D36 |unicode=1309D
+|desc= forearm (palm upwards)
+|tl1= '''arm''' (''ꜥ'')
+|tl2= '''cubit''' (''mḥ'')
+|pron= ꜥ
+
+|notes= Uniliteral sign representing [[Egyptian ayin]] <br /><br />Possibly ancestral to [[Proto-Sinaitic script|Proto-Sinaitic]] [[Yodh]] and its descendants
+}}
+
+{{List of hieroglyphs/row
+|H=𓂞 |gardiner=D37 |unicode=1309E
+|desc= forearm with bread cone
+|tl1='''give''' ''(jmj)''
+|tl2='''give''' (''rḏj'', ''ḏj'')
+|pron= ḏ (only in ḏdw busiris), d, mj, m
+}}
+
+{{List of hieroglyphs/row
+|H=𓂟 |gardiner=D38 |unicode=1309F
+|desc= forearm with rounded loaf 
+|tl1= '''to give''' (''jmj'')
+|tl2='''to give''' (''rḏj'', ''ḏj'')
+|tl3= '''to present''' (''ḥnk'')
+|pron= mj, m, mwt (mother)
+}}
+
+{{List of hieroglyphs/row
+|H=𓂠 |gardiner=D39 |unicode=130A0
+|desc= forearm with bowl
+|tl1= '''to present''' (''ḥnk'')
+|pron= m, mwt (Mother)
+}}
+
+{{List of hieroglyphs/row
+|H=𓂡 |gardiner=D40 |unicode=130A1
+|desc= forearm with stick 
+|tl1='''strength''' (''nḫt'')
+|tl2='''to strike''' (''ḥwj'')
+|tl4='''to examine''' (''ḫꜣj'')
+|notes= Determinative for words involving strength, physical force, the use of the arm
+}}
+
+{{List of hieroglyphs/row
+|H=𓂢 |gardiner=D41 |unicode=130A2
+|desc= forearm with palm down and bent upper arm
+|tl1='''arm''' (''gbꜣ'')
+|tl2='''shoulder''' (''rmn'')
+|tl3= '''left''' (''jꜣbj'')
+|tl4= '''sing''' (''ḥsj'') 
+|tl5= '''bend''' (''ḥms'')
+|tl6= '''end''' (''grḥ'')
+|tl7='''negation''' (''nj'') 
+|pron= nj
+|notes= Determinative for the arm and actions involving it.
+}}
+
+{{List of hieroglyphs/row
+|H=𓂣 |gardiner=D42 |unicode=130A3
+|desc= [[arm, cubit symbol (hieroglyph)|forearm with palm down and straight upper arm]]
+|tl1= '''Cubit''' (''mḥ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂤 |gardiner=D43 |unicode=130A4
+|desc= forearm with flail
+|tl1= '''protect''' (''ḫwj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂥 |gardiner=D44 |unicode=130A5
+|desc= arm with [[sekhem scepter]]
+|tl1= '''control''' (''ḫrp'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂦 |gardiner=D45 |unicode=130A6
+|desc= arm with wand
+|tl1= '''sacred, holy, be holy''' (''ḏsr'')
+|notes= ''to be holy'', ''to segregate''<br />See [[Djsr (arm with powerstick)|ḏsr]]<!--Betro profile, pg. 60-->
+}}
+
+{{List of hieroglyphs/row
+|H=𓂧 |gardiner=D46 |unicode=130A7
+|desc= hand 
+|tl1= '''hand''' (''ḏrt'')
+|pron= d, rarely t
+|notes= [[Egyptian uniliteral signs|Uniliteral]] ''d''. Possibly ancestral to [[Proto-Sinaitic script|Proto-Sinaitic]] [[Kaph]] and its descendants
+}}
+
+{{List of hieroglyphs/row
+|H=𓂨 |gardiner=D46A |unicode=130A8
+|desc= liquid falling from hand 
+|tl1='''to cense, to pour out a libation''' (''jdj'')
+|tl2='''dew''' (''jdt, jꜣdt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂩 |gardiner=D47 |unicode=130A9
+|desc= hand with palm up 
+|tl1='''hand''' (''ḏrt'')
+|tl2='''receive''' (''sšp, šsp'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂪 |gardiner=D48 |unicode=130AA
+|desc= hand without thumb 
+|tl1='''hand width''' (''šsp'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂫 |gardiner=D48A |unicode=130AB
+|desc= '''hand holding egg''' 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓂬 |gardiner=D49 |unicode=130AC
+|desc= fist 
+|tl1='''grasp''' (''ꜣmm, ḫfꜥ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂭 |gardiner=D50 |unicode=130AD
+|desc= one finger 
+|tl1='''finger''' (''ḏbꜥ'')
+|tl2='''abbreviation for 10,000''' (''ḏbꜥ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂮 |gardiner=D50A |unicode=130AE
+|desc= two fingers 
+|tl1= 20,000
+}}
+
+{{List of hieroglyphs/row
+|H=𓂯 |gardiner=D50B |unicode=130AF
+|desc= three fingers 
+|tl1= 30,000
+}}
+
+{{List of hieroglyphs/row
+|H=𓂰 |gardiner=D50C |unicode=130B0
+|desc= four fingers 
+|tl1= 40,000
+}}
+
+{{List of hieroglyphs/row
+|H=𓂱 |gardiner=D50D |unicode=130B1
+|desc= five fingers 
+|tl1= 50,000
+}}
+
+{{List of hieroglyphs/row
+|H=𓂲 |gardiner=D50E |unicode=130B2
+|desc= six fingers 
+|tl1= 60,000
+}}
+
+{{List of hieroglyphs/row
+|H=𓂳 |gardiner=D50F |unicode=130B3
+|desc= seven fingers 
+|tl1= 70,000
+}}
+
+{{List of hieroglyphs/row
+|H=𓂴 |gardiner=D50G |unicode=130B4
+|desc= eight fingers 
+|tl1= 80,000
+}}
+
+{{List of hieroglyphs/row
+|H=𓂵 |gardiner=D50H |unicode=130B5
+|desc= nine fingers 
+|tl1= 90,000
+}}
+
+{{List of hieroglyphs/row
+|H=𓂶 |gardiner=D50I |unicode=130B6
+|desc= five fingers (row) 
+|tl1= 50,000
+}}
+
+{{List of hieroglyphs/row
+|H=𓂷 |gardiner=D51 |unicode=130B7
+|desc= one finger (horizontal) 
+|tl1='''finger nail''' (''ꜥnt'')
+|tl2='''Activities with finger: measure''' (''ḫꜣj''), '''take''' (''ṯꜣj''), '''press''' (''dqr'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂸|gardiner=D52 |unicode=130B8
+|desc= phallus 
+|tl1='''phallus''' (''ḥnn'')
+|tl2='''man-like, man''' (''ṯꜣy'')
+|tl3='''donkey''' (''ꜥꜣ'')
+|tl4='''bull''' (''kꜣ'')
+|tl5='''presence''' (''bꜣḥ'')
+|pron= mt
+|notes= <hiero>D52</hiero><br />Excluded from default fonts by some [[operating system|OS]] vendors.{{citation needed|reason=Need a correct source|date=December 2025}}
+<!-- Don't change this to the unicode character. Firefox censors the unicode characters of the phallus hieroglyphs D52, D52A and D53 meaning that it doesn't render for a lot of users. D52A is not from wikihiero due to it not being implemented. -->
+Determinative in words relating to men, masculinity, fluids. 
+}}
+
+{{List of hieroglyphs/row
+|H=𓂹 |gardiner=D52A |unicode=130B9
+|desc= phallus with folded cloth 
+|tl1= '''Bear witness''' (''smtr'')
+|notes= <!-- <hiero>D52A</hiero><br /> -->Excluded from default fonts by some [[operating system|OS]] vendors.{{citation needed|reason=Need a correct source|date=December 2025}}
+}}
+
+{{List of hieroglyphs/row
+|H=𓂺 |gardiner=D53 |unicode=130BA
+|desc= phallus with emission
+|tl1='''phallus''' (''ḥnn'')
+|tl2='''man-like, man''' (''ṯꜣy'')
+|tl4='''bull''' (''kꜣ'')
+|tl5='''presence''' (''bꜣḥ'')
+|tl6= '''urinate''' (''wsš'')
+|notes= <hiero>D53</hiero><br />Excluded from default fonts by some [[operating system|OS]] vendors.{{citation needed|reason=Need a correct source|date=December 2025}}
+}}
+
+{{List of hieroglyphs/row
+|H=𓂻 |gardiner=D54 |unicode=130BB
+|desc= legs walking 
+|tl1='''stride''' (''nmtt'')
+|tl2='''come''' (''jw'')
+|pron=jw
+|notes=Determinative for words involving motion
+}}
+
+{{List of hieroglyphs/row
+|H=𓂼 |gardiner=D54A |unicode=130BC
+|desc= hieratic legs walking
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓂽 |gardiner=D55 |unicode=130BD
+|desc= legs walking backwards 
+|tl1= '''come''' (''jw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓂾 |gardiner=D56 |unicode=130BE
+|desc= leg 
+|tl1= '''leg''' (''rd'') 
+|tl2='''Gazelle''' (''gḥs'')
+|tl3='''foot, part''' (''wꜥrt'')
+|pron=pd
+|notes= [[Ideogram|Ideo.]], [[determinative|det.]] for leg, to tread
+}}
+
+{{List of hieroglyphs/row
+|H=𓂿 |gardiner=D57 |unicode=130BF
+|desc= leg with knife 
+|tl1='''mutilate''' (''jꜣtj'')
+|tl2='''injure''' (''nkn'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓃀 |gardiner=D58 |unicode=130C0 |qid= Q3160823
+|desc= foot 
+|tl1='''place''' (''bw'')
+|pron= b
+|notes= [[Egyptian uniliteral signs|uniliteral]] ''b''
+}}
+
+{{List of hieroglyphs/row
+|H=𓃁 |gardiner=D59 |unicode=130C1
+|desc= foot and forearm 
+|tl1= 
+|pron= ꜥb, bꜥ
+}}
+
+{{List of hieroglyphs/row
+|H=𓃂 |gardiner=D60 |unicode=130C2
+|desc= foot under vase from which water flows 
+|tl1= '''be pure, clean''' (''wꜥb'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓃃 |gardiner=D61 |unicode=130C3
+|desc= three toes oriented leftward 
+|tl1='''toe''' (''sꜣḥ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓃄 |gardiner=D62 |unicode=130C4
+|desc= three toes oriented rightward 
+|tl1='''toe''' (''sꜣḥ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓃅 |gardiner=D63 |unicode=130C5
+|desc= two toes oriented leftward 
+|tl1='''toe''' (''sꜣḥ'')
+|tl2='''The god [[Sah (god)|Sah]]''' (''sꜣḥ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓃆 |gardiner=D64 |unicode=130C6
+|desc= hand with palm down 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃇 |gardiner=D65 |unicode=130C7
+|desc= Sidelock of hair 
+|tl1= '''Sidelock''' (''ḥnsqty'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓃈 |gardiner=D66 |unicode=130C8
+|desc= arm with reed pen 
+|tl1= '''Inscribe''' (''spẖr'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓃉 |gardiner=D67 |unicode=130C9
+|desc= one dot 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃊 |gardiner=D67A |unicode=130CA
+|desc= two dots 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃋 |gardiner=D67B |unicode=130CB
+|desc= three dots 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃌 |gardiner=D67C |unicode=130CC
+|desc= four dots 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃍 |gardiner=D67D |unicode=130CD
+|desc= five dots 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃎 |gardiner=D67E |unicode=130CE
+|desc= six dots 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃏 |gardiner=D67F |unicode=130CF
+|desc= seven dots 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃐 |gardiner=D67G |unicode=130D0
+|desc= eight dots 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃑 |gardiner=D67H |unicode=130D1
+|desc= nine dots 
+|tl1= 
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=E
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓃒 |gardiner=E1 |unicode=130D2
+|desc= bull
+|tl1='''Bull''' (''kꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓃓 |gardiner=E2 |unicode=130D3
+|desc= bull charging 
+|tl1='''Bull''' (''kꜣ'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃔 |gardiner=E3 |unicode=130D4
+|desc= calf 
+|tl1= '''Calf''' (''bḥs'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃕 |gardiner=E4 |unicode=130D5
+|desc= [[Apis (deity)|sacred cow]] 
+|tl1= '''[[Hesat]]''' (''ḥsꜣt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓃖 |gardiner=E5 |unicode=130D6
+|desc= cow suckling calf 
+|tl1= '''Be friendly''' (''ꜣms'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃗 |gardiner=E6 |unicode=130D7
+|desc= [[horse]]
+|tl1= '''Horse''' (''ssmt, jbr'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃘 |gardiner=E7 |unicode=130D8
+|desc= [[donkey]] 
+|tl1= '''Donkey''' (''ꜥꜣ'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃙 |gardiner=E8 |unicode=130D9
+|desc= [[goat|kid]]
+|tl1= '''Kid (goat)''' (''jb'')
+|pron=jb
+}}
+
+{{List of hieroglyphs/row
+|H=𓃚 |gardiner=E8A |unicode=130DA
+|desc= kid jumping 
+|tl1= '''Kid (goat)''' (''jb'')
+|pron=jb
+}}
+
+{{List of hieroglyphs/row
+|H=𓃛 |gardiner=E9 |unicode=130DB
+|desc= newborn [[hartebeest]] 
+|tl1= 
+|pron= jw
+|notes= Determinative for ''newborn animals'', etc.
+}}
+
+{{List of hieroglyphs/row
+|H=𓃜 |gardiner=E9A |unicode=130DC
+|desc= mature bovine lying down 
+|tl1= '''Be friendly''' (''ꜣms'')
+|tl2= '''Cow''' (''jḥ'')
+|tl3= '''Lady''' (''nbt'') (Ptolemaic)
+}}
+
+{{List of hieroglyphs/row
+|H=𓃝 |gardiner=E10 |unicode=130DD
+|desc= ram 
+|tl1= '''Ba-Soul''' (''bꜣ'')
+|tl2= '''[[Khnum]]''' (''ẖnmw'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃞 |gardiner=E11 |unicode=130DE
+|desc= ram 
+|tl1= '''Ba-Soul''' (''bꜣ'')
+|tl2= '''[[Khnum]]''' (''ẖnmw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓃟 |gardiner=E12 |unicode=130DF
+|desc= [[pig]]
+|tl1= '''Pig''' (''rrj'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃠 |gardiner=E13 |unicode=130E0
+|desc= [[cat]]
+|tl1= '''Cat''' (''mjw'')
+|tl2= '''When''' (''ḫft-ḥr'') (Ptolemaic)
+|pron=mj
+|notes= [[Determinative]] for cat, as well as for the [[onomatopoeia|onomatopoeic]] Egyptian ''miu'' ([[meow]])
+}}
+
+{{List of hieroglyphs/row
+|H=𓃡 |gardiner=E14 |unicode=130E1
+|desc= [[dog]] 
+|tl1= '''Dog''' (''ṯsm'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃢 |gardiner=E15 |unicode=130E2
+|desc= lying canine 
+|tl1= '''[[Anubis]]''' (''jnpw'')
+|tl2= '''He Who is Privy to Secrets (A priestly title)''' (''ḥrj-sštꜣ'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃣 |gardiner=E16 |unicode=130E3
+|desc= lying canine on shrine 
+|tl1= '''[[Anubis]]''' (''jnpw'')
+|tl2= '''He Who is Privy to Secrets (A priestly title)''' (''ḥrj-sštꜣ'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃤 |gardiner=E16A |unicode=130E4
+|desc= lying canine on shrine with flagellum 
+|tl1= '''[[Anubis]]''' (''jnpw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓃥 |gardiner=E17 |unicode=130E5
+|desc= [[jackal]] 
+|tl1= '''jackal, ''' (''sꜣb'')
+|tl2= '''dignitary, senior''' (''sꜣb'')
+|tl3= '''come''' (''jw'')
+|tl4= '''East''' (''jꜣbtt'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃦 |gardiner=E17A |unicode=130E6
+|desc= jackal looking back 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃧 |gardiner=E18 |unicode=130E7
+|desc= wolf on standard 
+|tl1= '''[[Wepwawet]]''' (''wpj-wꜣwt'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃨 |gardiner=E19 |unicode=130E8
+|desc= wolf on standard with mace 
+|tl1= '''[[Wepwawet]]''' (''wpj-wꜣwt'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃩 |gardiner=E20 |unicode=130E9
+|desc= [[Set-animal (hieroglyph)|Set-animal]]
+|tl1= '''[[Set (deity)|Set]]''' (''stẖ, stš, swty'') 
+|tl2 '''Tumult''' (''ẖnnw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓃪 |gardiner=E20A |unicode=130EA
+|desc= Set-animal on basket 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃫 |gardiner=E21 |unicode=130EB
+|desc= lying Set-animal 
+|tl1= '''[[Set (deity)|Set]]''' (''stẖ, stš, swty'') 
+|tl2='''storm''' (''nšnj'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃬 |gardiner=E22 |unicode=130EC
+|desc= [[lion]]
+|tl1= '''lion''' (''mꜣj'')
+|tl2='''exclude''' (''šnꜥ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓃭 |gardiner=E23 |unicode=130ED
+|desc= lying lion 
+|tl1= '''lion''' (''rw'')
+|tl2='''lord''' (''nb'') (Ptolemaic)
+|pron= rw, r, later l
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃮 |gardiner=E24 |unicode=130EE
+|desc= [[Leopard|panther]] 
+|tl1= '''leopard''' (''ꜣby'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃯 |gardiner=E25 |unicode=130EF
+|desc= [[hippopotamus]]
+|tl1= '''Hippo''' (''db'')
+|pron=db
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃰 |gardiner=E26 |unicode=130F0
+|desc= [[African elephant|elephant]]
+|tl1= '''elephant''' (''ꜣbw, ꜣb, dnhr'')
+|notes= 1. Determinative in ''ꜣbw'', elephant (ultimate source of English word ''[[ivory]]'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓃱 |gardiner=E27 |unicode=130F1
+|desc= [[giraffe]]
+|tl1= '''giraffe''' (''mmj, sr'')
+|tl2='''fortell''' (''sr'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃲 |gardiner=E28 |unicode=130F2
+|desc= [[oryx]]
+|tl1= '''gazelle''' (''gḥs, mꜣ-ḥḏ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓃳 |gardiner=E28A |unicode=130F3
+|desc= oryx with irrigation system 
+|tl1= '''Oryx, Ma-hedj''' (''mꜣ-ḥḏ'')
+|notes= 16th [[Nome of Upper Egypt]] (see NU16), [[Oryx nome|Ma-hedj]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓃴 |gardiner=E29 |unicode=130F4
+|desc= [[gazelle]] 
+|tl1= '''gazelle''' (''gḥs'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃵 |gardiner=E30 |unicode=130F5
+|desc= [[ibex]] 
+|tl1= '''Ibex''' (''njꜣw'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃶 |gardiner=E31 |unicode=130F6
+|desc= goat with collar 
+|tl1= '''Noble, rank, be noble''' (''sꜥḥ'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃷 |gardiner=E32 |unicode=130F7
+|desc= [[baboon]]
+|tl1= '''baboon''' (''jꜥn, ky, qnd'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃸 |gardiner=E33 |unicode=130F8
+|desc= [[Cercopithecid|monkey]] 
+|tl1= '''monkey''' (''gjf, qnd'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓃹 |gardiner=E34 |unicode=130F9
+|desc= [[hare]]
+|tl1='''Hare''' (''wn'')
+|pron= wn
+|notes= Biliteral ''wn'' in wn ‘open’, wn ‘to be, exist’
+}}
+
+{{List of hieroglyphs/row
+|H=𓃺 |gardiner=E34A |unicode=130FA
+|desc= hare (low) 
+|tl1= See E34
+}}
+
+{{List of hieroglyphs/row
+|H=𓃻 |gardiner=E36 |unicode=130FB
+|desc= baboon 
+|tl1='''[[Thoth]]''' (''ḏḥwty'')
+|tl2='''King''' (''nswt'') (Ptolemaic)
+|tl3='''beautiful, good''' (''nfr'') (Ptolemaic)
+|tl4='''scribe''' (''sẖꜣ'') (Ptolemaic)
+|tl5='''son''' (''sꜣ'') (Ptolemaic)
+|tl6='''speak''' (''ḏd'') (Ptolemaic)
+|notes=Used most commonly for various cryptographic values in Ptolemaic texts.
+}}
+
+{{List of hieroglyphs/row
+|H=𓃼 |gardiner=E37 |unicode=130FC
+|desc= baboon with receptacle and basket 
+|tl1= '''water-clock (Clepsydra)''' (''šbt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓃽 |gardiner=E38 |unicode=130FD
+|desc= long-horned bull 
+|tl1='''Bull''' (''kꜣ'')
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=F
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓃾 |gardiner=F1 |unicode=130FE
+|desc= ox head 
+|tl1= 
+|pron=kꜣ
+|notes= Possibly ancestral to [[Proto-Sinaitic script|Proto-Sinaitic]] [[Aleph]] and its descendants
+}}
+
+{{List of hieroglyphs/row
+|H=𓃿 |gardiner=F1A |unicode=130FF
+|desc= bovine head 
+|tl1= '''nose''' (''fnḏ'')
+|tl2='''Front, foremost''' (''ḫnt'')
+|notes= Interchangeable with D19
+}}
+
+{{List of hieroglyphs/row
+|H=𓄀 |gardiner=F2 |unicode=13100
+|desc= charging ox head 
+|tl1= '''Bull''' (''kꜣ'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄁 |gardiner=F3 |unicode=13101
+|desc= hippopotamus head
+|tl1='''Moment''' (''ꜣt'')
+|tl2='''head''' (''dp'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄂 |gardiner=F4 |unicode=13102
+|desc= forepart of lion 
+|tl1= '''Front, foremost, prow''' (''ḥꜣt'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄃 |gardiner=F5 |unicode=13103
+|desc= hartebeest head 
+|tl1= '''wise, skilled''' (''šsꜣ'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄄 |gardiner=F6 |unicode=13104
+|desc= forepart of hartebeest 
+|tl1= '''wise, skilled''' (''šsꜣ'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄅 |gardiner=F7 |unicode=13105
+|desc= ram head 
+|tl1= '''Terror, awe''' (''šfyt'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄆 |gardiner=F8 |unicode=13106
+|desc= forepart of ram 
+|tl1= '''Terror, awe''' (''šfyt'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄇 |gardiner=F9 |unicode=13107
+|desc= [[leopard head (hieroglyph)|leopard]]<br />[[leopard head (hieroglyph)|head]]
+|tl1= '''Strength''' (''pḥty'')
+|tl2='''Moment''' (''ꜣt'')
+|notes= [[Determinative]] or [[abbreviation]] for ''pḥty'', "strength"
+}}
+
+{{List of hieroglyphs/row
+|H=𓄈 |gardiner=F10 |unicode=13108
+|desc= head and neck of animal 
+|tl1= '''Throat''' (''ḫḫ'')
+|tl2= '''know''' (''ꜥm'')
+|tl3= '''swallow''' (''ꜥm'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄉 |gardiner=F11 |unicode=13109
+|desc= head and neck of animal 
+|tl1= '''Throat''' (''ḫḫ'')
+|tl2= '''know''' (''ꜥm'')
+|tl3= '''swallow''' (''ꜥm'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄊 |gardiner=F12 |unicode=1310A
+|desc= head and neck of animal 
+|tl1= '''Power''' (''wsr'')
+|pron=wsr
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄋 |gardiner=F13 |unicode=1310B
+|desc= horns
+|tl1= '''open''' (''wpj'')
+|pron= wp, jp
+|notes= in the '''[[New Year]]''' festival, wp-rnpt ‘opening the year’
+}}
+
+{{List of hieroglyphs/row
+|H=𓄌 |gardiner=F13A |unicode=1310C
+|desc= horns 
+|tl1= 
+|pron=wp
+}}
+
+{{List of hieroglyphs/row
+|H=𓄍 |gardiner=F14 |unicode=1310D
+|desc= horns with palm branch
+|tl1= '''opening the year (New year festival)''' (''wp[t]-rnpt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓄎 |gardiner=F15 |unicode=1310E
+|desc= horns with palm branch and sun 
+|tl1= '''opening the year (New year festival)''' (''wp[t]-rnpt'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄏 |gardiner=F16 |unicode=1310F
+|desc= horn 
+|tl1= '''horn''' (''ꜥb'')
+|pron=ꜥb
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄐 |gardiner=F17 |unicode=13110
+|desc= horn and vase from which water flows 
+|tl1= '''purity''' (''ꜥbw'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄑 |gardiner=F18 |unicode=13111
+|desc= tusk 
+|tl1= 
+|pron=bḥ, ḥw, ḥ
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄒 |gardiner=F19 |unicode=13112
+|desc= lower jaw-bone of ox 
+|tl1= '''jaw''' (''ꜥrt'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄓 |gardiner=F20 |unicode=13113
+|desc= tongue
+|tl1= '''tongue''' (''ns'')
+|pron=ns
+|notes= 1. [[Egyptian biliteral signs|Egyp. bil.]] ''ns''. <br />2. A-tongue, and related words for speech; B-30th-(the 'Last Day of the Month'), and therefore, (next)-last
+}}
+
+{{List of hieroglyphs/row
+|H=𓄔 |gardiner=F21 |unicode=13114
+|desc= ear of bovine 
+|tl1= '''Ear''' (''msḏr'')
+|tl2='''leaf''' (''ḏrḏ'')
+|tl3='''hear, listen''' (''sḏm'')
+|pron=jdn
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄕 |gardiner=F21A |unicode=13115
+|desc= hieratic ear of bovine 
+|tl1= '''Ear''' (''msḏr'')
+|tl2='''hear, listen''' (''sḏm'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓄖 |gardiner=F22 |unicode=13116
+|desc= hind-quarters of lion
+|tl1='''hindquarters, back part''' (''pḥt'')
+|tl2='''strength''' (''pḥty'')
+|pron= pḥ
+|notes= [[Egyptian biliteral signs|Biliteral]] '''pḥ'''<br /> 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄗 |gardiner=F23 |unicode=13117
+|desc= [[foreleg of ox|foreleg]]<br />[[foreleg of ox|of ox]]
+|tl1='''Foreleg''' (''ḫpš'')
+|tl2='''power''' (''ḫpš'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓄘 |gardiner=F24 |unicode=13118
+|desc= F23 reversed 
+|tl1='''power''' (''ḫpš'')
+|pron=ḫpš
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄙 |gardiner=F25 |unicode=13119
+|desc= leg of<br />ox
+|tl1= '''Cow’s leg''' (''wḥm'')
+|tl2='''Repeat''' (''wḥm'')
+|pron= wḥm
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄚 |gardiner=F26 |unicode=1311A
+|desc= skin of goat 
+|tl1= '''Interior''' (''ẖn'')
+|pron=ẖn
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄛 |gardiner=F27 |unicode=1311B
+|desc= skin of cow with bent tail 
+|tl1= '''Leather, hide''' (''dḥr'')
+|notes= Determinative for animals
+}}
+
+{{List of hieroglyphs/row
+|H=𓄜 |gardiner=F28 |unicode=1311C
+|desc= skin of cow with straight tail 
+|tl1= '''Spotted, dappled''' (''sꜣb'')
+|pron=k (Ptolemaic)
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄝 |gardiner=F29 |unicode=1311D
+|desc= cow's skin pierced by arrow
+|tl1= '''Shoot, ejaculate, shine''' (''sṯj'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄞 |gardiner=F30 |unicode=1311E
+|desc= water-<br />skin
+|tl1= '''Save''' (''šdj'')
+|tl2='''Read aloud''' (''šdj'')
+|pron= šd
+|notes= 1. [[Determinative]] for šdw, "belly"; [[phonogram (linguistics)|phon.]] for šd<br />2. (See: similar shaped hieroglyph: [[#V22|V22]] ''whip'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓄟 |gardiner=F31 |unicode=1311F
+|desc= three skins tied together
+|tl1= '''Create, give birth''' (''msj'')
+|pron= ms
+|notes= [[Egyptian biliteral signs|Bil.]] ''ms'', "born", "born-of"; example, Pharaoh [[Ahmose I|Ahmose]], '''''"Moon-Born"'''''; [[Kamose]], '''''"Spirit-Born"'''''
+}}
+
+{{List of hieroglyphs/row
+|H=𓄠 |gardiner=F31A |unicode=13120
+|desc= three skins tied together 
+|tl1= '''Create, give birth''' (''msj'')
+|pron= ms
+}}
+
+{{List of hieroglyphs/row
+|H=𓄡 |gardiner=F32 |unicode=13121
+|desc= animal's belly 
+|tl1= '''body''' (''ẖt'')
+|pron=ẖ
+|notes= [[Egyptian uniliteral signs|Uniliteral]] ''ẖ''
+}}
+
+{{List of hieroglyphs/row
+|H=𓄢 |gardiner=F33 |unicode=13122
+|desc= tail
+|tl1= '''Tail''' (''sd'')
+|pron= sd
+|notes= 1. [[Determinative]] for ''sd'', "tail"; then [[phonogram (linguistics)|phon.]], ''sd''<br />2. (See: the [[Sed festival]], 'Festival of the Tail')
+}}
+
+{{List of hieroglyphs/row
+|H=𓄣 |gardiner=F34 |unicode=13123
+|desc= heart
+|tl1= '''Heart''' (''jb'')
+|tl2='''heart''' (''ḥ3ty'')
+|pron=jb
+|notes= [[Ideogram]] or [[determinative|det.]] for [[Egyptian soul#Jb|''ib'']], "heart" or also ḥ3ty,"heart"
+}}
+
+{{List of hieroglyphs/row
+|H=𓄤 |gardiner=F35 |unicode=13124
+|desc= heart and<br />windpipe
+|tl1='''Good, beautiful, perfect, young''' (''nfr'')
+|pron=nf (Ptolemaic)
+|notes= [[Egyptian triliteral signs|Egyptian triliteral sign]] for '''nfr''', (beauty), or "perfect"<br /><br />Possibly ancestral to [[Proto-Sinaitic script|Proto-Sinaitic]] [[Teth]] and its descendants
+}}
+
+{{List of hieroglyphs/row
+|H=𓄥 |gardiner=F36 |unicode=13125
+|desc= lung and windpipe
+|tl1= '''Unite, join''' (''smꜣ'') ([[Union symbol (hieroglyph)|smꜣ]])
+|pron=smꜣ
+|notes= Egyptian "lung", used for '''union''', (as in the '''"Two Lands"''', "[[Upper Egypt|Upper]] and [[Lower Egypt]])
+}}
+
+{{List of hieroglyphs/row
+|H=𓄦 |gardiner=F37 |unicode=13126
+|desc= backbone and ribs and spinal cord
+|tl1= '''Slaughtering, massacre''' (''šꜥt'')
+|tl2='''Back''' (''jꜣt'')
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓄧 |gardiner=F37A |unicode=13127
+|desc= backbone and ribs 
+|tl1= '''Slaughtering, massacre''' (''šꜥt'')
+|tl2='''Back''' (''jꜣt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓄨 |gardiner=F38 |unicode=13128
+|desc= backbone and ribs 
+|tl1='''Back''' (''jꜣt'')
+|pron=psḏ
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄩 |gardiner=F38A |unicode=13129
+|desc= backbone and ribs and spinal cord 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄪 |gardiner=F39 |unicode=1312A
+|desc= backbone and spinal cord 
+|tl1= '''Spinal cord''' (''jmꜣḫ'')
+|tl2='''Veneration, reveredness''' (''jmꜣḫ'')
+|pron=jmꜣḫ, psḏ
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄫 |gardiner=F40 |unicode=1312B
+|desc= backbone and spinal cords
+|tl1= '''Be long, extend''' (''ꜣw'')
+|pron= ꜣw
+|notes= To be long, length, ''to extend''<br />Pharaoh: '''Extent of Happiness'''-(for Egypt-Land), <hiero>F40:F34</hiero>, (on ''[[relief]]s'')<br />(i.e. the '''''Welfare of the Nation''''')
+}}
+
+{{List of hieroglyphs/row
+|H=𓄬 |gardiner=F41 |unicode=1312C
+|desc= vertebrae 
+|tl1= '''Slaughtering, massacre''' (''šꜥt'')
+|pron=psḏ
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄭 |gardiner=F42 |unicode=1312D
+|desc= rib 
+|tl1= '''rib''' (''spr'')
+|pron=spr
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄮 |gardiner=F43 |unicode=1312E
+|desc= ribs 
+|tl1= '''Beef ribs''' (''spḥt'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄯 |gardiner=F44 |unicode=1312F
+|desc= [[Bone-with-meat (hieroglyph)|bone with meat]]
+|tl1= '''reward''' (''jsw'')
+|tl2='''Heir, inheritor, inheritance''' (''jwꜥ'')
+|tl3='''Thigh bone''' (''swt'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄰 |gardiner=F45 |unicode=13130
+|desc= uterus 
+|tl1='''vulva, womb, cow''' (''jdt'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄱 |gardiner=F45A |unicode=13131
+|desc= uterus 
+|tl1= 
+|pron=m (Ptolemaic)
+}}
+
+{{List of hieroglyphs/row
+|H=𓄲 |gardiner=F46 |unicode=13132
+|desc= intestine
+|tl1= '''Turn about''' (''pẖr'')
+|tl2='''Fold, turn back''' (''wḏb'')
+|pron= dbn
+}}
+
+{{List of hieroglyphs/row
+|H=𓄳 |gardiner=F46A |unicode=13133
+|desc= intestine 
+|tl1= '''Turn about''' (''pẖr'')
+|tl2='''Fold, turn back''' (''wḏb'')
+|pron= dbn
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄴 |gardiner=F47 |unicode=13134
+|desc= intestine 
+|tl1= '''Turn about''' (''pẖr'')
+|tl2='''Fold, turn back''' (''wḏb'')
+|pron= dbn
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄵 |gardiner=F47A |unicode=13135
+|desc= intestine 
+|tl1= '''Turn about''' (''pẖr'')
+|tl2='''Fold, turn back''' (''wḏb'')
+|pron= dbn
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄶 |gardiner=F48 |unicode=13136
+|desc= intestine 
+|tl1= '''Turn about''' (''pẖr'')
+|tl2='''Fold, turn back''' (''wḏb'')
+|pron= dbn
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄷 |gardiner=F49 |unicode=13137
+|desc= intestine 
+|tl1= '''Turn about''' (''pẖr'')
+|tl2='''Fold, turn back''' (''wḏb'')
+|pron= dbn
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄸 |gardiner=F50 |unicode=13138
+|desc= combination of F46 and S29
+|tl1= '''Inscribe''' (''spẖr'')
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓄹 |gardiner=F51 |unicode=13139
+|desc= piece of flesh 
+|tl1= '''Flesh''' (''jwf'')
+|pron=ꜣs, ws, f (Ptolemaic)
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄺 |gardiner=F51A |unicode=1313A
+|desc= three pieces of flesh horizontally 
+|tl1= '''Flesh''' (''jwf'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓄻 |gardiner=F51B |unicode=1313B
+|desc= three pieces of flesh vertically 
+|tl1= '''Flesh''' (''jwf'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓄼 |gardiner=F51C |unicode=1313C
+|desc= F51 reversed 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄽 |gardiner=F52 |unicode=1313D
+|desc= excrement
+|tl1= '''Excrement''' (''ḥs'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓄾 |gardiner=F53 |unicode=1313E
+|desc= divine rod with ram head 
+|tl1= 
+|pron=mt
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=G
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓄿 |gardiner=G1 |unicode=1313F
+|desc= [[Egyptian vulture]]
+|tl1=
+|pron= ꜣ
+|notes= Uniliteral sign representing [[Egyptian alef]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓅀 |gardiner=G2 |unicode=13140
+|desc= two Egyptian vultures 
+|tl1=
+|pron=ꜣꜣ
+}}
+
+{{List of hieroglyphs/row
+|H=𓅁 |gardiner=G3 |unicode=13141
+|desc= combination of Egyptian vulture and sickle 
+|tl1= 
+|pron=mꜣ
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅂 |gardiner=G4 |unicode=13142
+|desc= buzzard 
+|tl1= tjw
+|pron=tjw
+|notes= [[Egyptian triliteral signs|Tril.]] ''tjw'', often used as a plural Nisbe ending -tjw
+}}
+
+{{List of hieroglyphs/row
+|H=𓅃 |gardiner=G5 |unicode=13143
+|desc= [[falcon]]
+|tl1='''[[Horus|Horus]]''' (''ḥrw'')
+|tl2='''God''' (''nṯr'') (Ptolemaic)
+|tl3='''Above''' (''ḥry'') (Ptolemaic)
+|tl4='''lord''' (''nb'') (Ptolemaic)
+|notes= [[Horus]];  about 200 forms of Horus; for example: Horus-the-Child, [[Greek language]]-equivalent, ''Harpokrates''; Egyptian, ḥrw-pꜣ-ẖrd, <hiero>G5-Q3:F32-D21:D46-A17</hiero>
+}}
+
+{{List of hieroglyphs/row
+|H=𓅄 |gardiner=G6 |unicode=13144
+|desc= combination of falcon and flaggellum 
+|tl1= '''falcon''' (''bjk'')
+|tl2='''[[Horus]]''' (''ḥrw'')
+|tl3='''God''' (''nṯr'') (Ptolemaic)
+|tl4='''lord''' (''nb'') (Ptolemaic)
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅅 |gardiner=G6A |unicode=13145
+|desc= falcon on basket 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅆 |gardiner=G7 |unicode=13146
+|desc= falcon on standard 
+|tl1='''God''' (''nṯr'')
+|tl2='''King''' (''nswt'') (Rarely)
+|notes= Determinative for god names
+}}
+
+{{List of hieroglyphs/row
+|H=𓅇 |gardiner=G7A |unicode=13147
+|desc= falcon in boat 
+|tl1= '''[[Nemty]]''' (''nmty'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓅈 |gardiner=G7B |unicode=13148
+|desc= falcon in boat 
+|tl1= '''[[Nemty]]''' (''nmty'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓅉 |gardiner=G8 |unicode=13149
+|desc= falcon on collar of beads 
+|tl1= '''Horus/Falcon of Gold''' (''ḥr-nbw/bjk-nbw'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅊 |gardiner=G9 |unicode=1314A
+|desc= falcon with sun on head 
+|tl1= '''Ra-Horus''' (''rꜥ-ḥrw'')
+|notes= Most often in the name of Ra-Horakhty (rꜥ-ḥrw-ꜣḫtj)
+}}
+
+{{List of hieroglyphs/row
+|H=𓅋 |gardiner=G10 |unicode=1314B
+|desc= falcon in Sokar barque 
+|tl1='''Sokar''' (''skr'')
+|tl2='''Henu-bark''' (''ḥnw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓅌 |gardiner=G11 |unicode=1314C
+|desc= image of falcon 
+|tl1= '''[[Sopdu]]''' (''spdw'')
+|tl2='''Image''' (''ꜥẖm, ꜥšm, ꜥḫm'')
+|tl3='''Falcon''' (''gnḥsw, šnbt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓅍 |gardiner=G11A |unicode=1314D
+|desc= image of falcon on standard 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅎 |gardiner=G12 |unicode=1314E
+|desc= combination of image of falcon and flagellum 
+|tl1= '''[[Sopdu]]''' (''spdw'')
+|tl2='''Image''' (''ꜥẖm, ꜥšm, ꜥḫm'')
+|tl3='''Falcon''' (''gnḥsw, šnbt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓅏 |gardiner=G13 |unicode=1314F
+|desc= image of falcon with two plumes 
+|tl1= '''[[Sopdu]]''' (''spdw'')
+|tl2=''Horus of [[Nekhen]] (Hierakonpolis)'' (''ḥrw-nḫnj'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅐 |gardiner=G14 |unicode=13150
+|desc= [[Old World vulture|vulture]] 
+|tl1='''Mother''' (''mwt'')
+|tl2= '''vulture''' (''nrt'')
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓅑 |gardiner=G15 |unicode=13151
+|desc= combination of vulture and flagellum 
+|tl1='''Mother''' (''mwt'')
+|tl2= '''vulture''' (''nrt'')
+|tl3= '''[[Mut]]''' (''mwt'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅒 |gardiner=G16 |unicode=13152
+|desc= vulture and cobra each on a basket 
+|tl1= '''Two Ladies''' (''nbtj'')
+|notes= See [[Two Ladies]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓅓 |gardiner=G17 |unicode=13153
+|desc= [[owl]]
+|pron= m, jm, n (Ptolemaic)
+|notes= [[Egyptian uniliteral signs|Uniliteral]] ''m''.
+}}
+
+{{List of hieroglyphs/row
+|H=𓅔 |gardiner=G18 |unicode=13154
+|desc= two owls 
+|tl1= 
+|pron= mm, m, nm
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅕 |gardiner=G19 |unicode=13155
+|desc= combination of owl and forearm with conical loaf 
+|tl1= 
+|pron= m, mj
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅖 |gardiner=G20 |unicode=13156
+|desc= combination of owl and forearm 
+|tl1= '''In the hand''' (''m-ꜥ'')
+|pron= m, mj, mꜥ, ꜥm, m-ꜥ
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅗 |gardiner=G20A |unicode=13157
+|desc= combination of owl and mouth (D21)
+|tl1= 
+|pron= mr
+}}
+
+{{List of hieroglyphs/row
+|H=𓅘 |gardiner=G21 |unicode=13158
+|desc= [[guineafowl]]
+|tl1= 
+|pron= nḥ, nḥḥ
+|notes= 1. [[Egyptian biliteral signs|Egyp. bil.]] ''nḥ'', for the bird; [[phonogram (linguistics)|phon.]] for ''nḥ'';<br />2. Ideas of petition, supplicate, beseech; for [[Egyptian language]] ''nḥ-t'', ''nḥḥ-t'', oil, unguent, equivalent of [[Coptic language]], "ⲛⲉϩ";<br />3. for ''nḥḥ'', eternity, or ever and ever, (see also ''ḥḥ'''), Coptic "ⲉⲛⲉϩ"
+}}
+
+{{List of hieroglyphs/row
+|H=𓅙 |gardiner=G22 |unicode=13159
+|desc= [[hoopoe]] 
+|tl1= 
+|pron= ḏb
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅚 |gardiner=G23 |unicode=1315A
+|desc= [[lapwing]] 
+|tl1='''The common (Rekhyt-) people, subjects''' (''rḫyt'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅛 |gardiner=G24 |unicode=1315B
+|desc= lapwing with [[Distraction display|twisted wings]] 
+|tl1='''The common (Rekhyt-) people, subjects''' (''rḫyt'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅜 |gardiner=G25 |unicode=1315C
+|desc= [[northern bald ibis]]
+|tl1= '''Be effective, effective (Akh) spirit''' (''ꜣḫ'')
+|pron= ꜣḫ
+|notes= [[Egyptian biliteral signs|Bil.]] ''ꜣḫ''
+}}
+
+{{List of hieroglyphs/row
+|H=𓅝 |gardiner=G26 |unicode=1315D
+|desc= [[African sacred ibis|sacred Ibis]] on standard
+|tl1= '''[[Ibis]]''' (''hb'') 
+|tl2= '''[[Thoth]]''' (''ḏḥwtj'')
+|notes= God [[Thoth]], the god of [[scribe]]s
+}}
+
+{{List of hieroglyphs/row
+|H=𓅞 |gardiner=G26A |unicode=1315E
+|desc= sacred Ibis 
+|tl1= '''[[Ibis]]''' (''hb'') 
+|tl2= '''[[Thoth]]''' (''ḏḥwtj'')
+|tl3= '''Excellent, skilled''' (''jqr'')
+|tl4= '''Discern, reckon''' (''jp'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓅟 |gardiner=G27 |unicode=1315F
+|desc= [[flamingo]] 
+|tl1= '''flamingo''' (''dšr'')
+|tl2= '''red''' (''dšr'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅠 |gardiner=G28 |unicode=13160
+|desc= [[glossy ibis]]
+|tl1= '''to find, discover''' (''gmj'')
+|pron= ''gm''
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅡 |gardiner=G29 |unicode=13161
+|desc= [[saddle-billed stork]] 
+|tl1= '''Ba-soul''' (''bꜣ'')
+|pron=''bꜣ''
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅢 |gardiner=G30 |unicode=13162
+|desc= three saddle-billed storks 
+|tl1= '''Ba-souls; metaphorically: Power, glory, respect''' (''bꜣw'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅣 |gardiner=G31 |unicode=13163
+|desc= [[heron]]
+|tl1= '''Heron/[[Bennu]]-bird''' (''bnw'')
+|notes= 1. the heron-like [[Bennu]]<br />2. [[Determinative]] for ''bnw'', the "[[Phoenix (mythology)|Phoenix]]-bird"
+}}
+
+{{List of hieroglyphs/row
+|H=𓅤 |gardiner=G32 |unicode=13164
+|desc= heron on perch 
+|tl1='''to inundate''' (''bꜥḥj'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅥 |gardiner=G33 |unicode=13165
+|desc= [[cattle egret]] 
+|tl1='''to tremble''' (''sdꜣ/sdꜣdꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓅦 |gardiner=G34 |unicode=13166
+|desc= [[ostrich]] 
+|tl1='''ostrich''' (''njw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓅧 |gardiner=G35 |unicode=13167
+|desc= [[cormorant]] 
+|tl1= '''to enter''' (''ꜥq'')
+|pron=''ꜥq''
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅨 |gardiner=G36 |unicode=13168 |qid=Q3136285
+|desc= [[swallow (hieroglyph)|swallow]]
+|tl1= '''swallow''' (''mnt'')
+|tl2='''great, elder''' (''wr'')
+|pron= ''wr''
+|notes= [[Egyptian biliteral signs|bil.]] ''wr''
+}}
+
+{{List of hieroglyphs/row
+|H=𓅩 |gardiner=G36A |unicode=13169
+|desc= swallow (low) 
+|tl1= '''swallow''' (''mnt'')
+|tl2='''great, elder''' (''wr'')
+|pron= ''wr''
+}}
+
+{{List of hieroglyphs/row
+|H=𓅪 |gardiner=G37 |unicode=1316A
+|desc= [[Old World sparrow|sparrow]] 
+|tl1= '''Bad''' (''bjn'')
+|tl2='''Small, weak''' (''nḏs'')
+|notes= Determinative for various words related to negativity, small, bad
+}}
+
+{{List of hieroglyphs/row
+|H=𓅫 |gardiner=G37A |unicode=1316B
+|desc= sparrow (low) 
+|tl1= '''Bad''' (''bjn'')
+|tl2='''Small, weak''' (''nḏs'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓅬 |gardiner=G38 |unicode=1316C
+|desc= [[goose]]
+|tl1= '''Bird''' (''ꜣpd'')
+|tl2= '''[[Geb]]''' (''gb'')
+|tl3='''Destroy''' (''ḥtm'')
+|notes=The main example cited in Gardiner’s original is shown in the [https://en.wikipedia.org/wiki/Khnumhotep_II#Goose_painting_as_example_of_hieroglyph_gb tomb BH3]
+}}
+
+{{List of hieroglyphs/row
+|H=𓅭 |gardiner=G39 |unicode=1316D
+|desc= [[Northern pintail|pintail duck]] 
+|tl1= '''Son''' (''sꜣ/zꜣ'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅮 |gardiner=G40 |unicode=1316E
+|desc= pintail flying
+|tl1= '''Fly''' (''pꜣ'')
+|pron= pꜣ
+|notes= [[Ideogram]] and [[Egyptian biliteral signs|bil.]] for ''pꜣ''
+}}
+
+{{List of hieroglyphs/row
+|H=𓅯 |gardiner=G41 |unicode=1316F
+|desc= pintail alighting 
+|tl1= '''Alight''' (''ḫnj'')
+|pron=pꜣ, qmꜣ
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅰 |gardiner=G42 |unicode=13170
+|desc= [[Wigeon|widgeon]] 
+|tl1='''to fatten''' (''wšꜣ'')
+|tl2= '''Food''' (''ḏfꜣw'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅱 |gardiner=G43 |unicode=13171
+|desc= [[quail]] chick
+|tl1='''Field, district, region''' (''w'')
+|pron= w
+|notes= 1. [[Egyptian uniliteral signs|Unil.]] ''w''<br />2. Either "quail chick" or equivalent [[coil (hieroglyph)]], Gardiner [[#Z7|Z7]], <hiero>Z7</hiero>, used also for the ''plural'' word ending
+}}
+
+{{List of hieroglyphs/row
+|H=𓅲 |gardiner=G43A |unicode=13172
+|desc= combination of quail chick and flat loaf 
+|tl1= 
+|pron=tw
+}}
+
+{{List of hieroglyphs/row
+|H=𓅳 |gardiner=G44 |unicode=13173
+|desc= two quail chicks 
+|tl1= 
+|pron=ww
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅴 |gardiner=G45 |unicode=13174
+|desc= combination of quail chick and forearm 
+|tl1= 
+|pron= wꜥ, ꜥw
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅵 |gardiner=G45A |unicode=13175
+|desc= combination of quail chick and forearm with conical loaf 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅶 |gardiner=G46 |unicode=13176
+|desc= combination of quail chick and sickle 
+|tl1= 
+|pron= mꜣw
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅷 |gardiner=G47 |unicode=13177
+|desc= duckling
+|tl1= '''Fledgeling''' (''ṯꜣ'')
+|tl2='''Vizier''' (''ṯꜣty'')
+|pron= ṯꜣ
+|notes= [[Egyptian biliteral signs|Bil.]] ṯꜣ
+}}
+
+{{List of hieroglyphs/row
+|H=𓅸 |gardiner=G48 |unicode=13178
+|desc= three ducklings in nest 
+|tl1='''nest, pond, marsh''' (''sš'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅹 |gardiner=G49 |unicode=13179
+|desc= three ducklings in pool 
+|tl1='''nest, pond, marsh''' (''sš'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅺 |gardiner=G50 |unicode=1317A
+|desc= two [[plover]]s 
+|tl1= '''Washerman''' (''rḫtj'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓅻 |gardiner=G51 |unicode=1317B
+|desc= bird pecking at fish 
+|tl1='''to catch fish''' (''ḥꜣm/ḥjm'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓅼 |gardiner=G52 |unicode=1317C
+|desc= goose picking up grain 
+|tl1='''to feed''' (''snm'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓅽 |gardiner=G53 |unicode=1317D
+|desc= human-headed bird with bowl with smoke 
+|tl1= '''Ba-soul''' (''bꜣ'')
+|notes= [[Ancient Egyptian concept of the soul#Bâ|Ba]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓅾 |gardiner=G54 |unicode=1317E
+|desc= plucked bird
+|tl1= '''to wring''' (birds' necks) (''wšn'')
+|tl2='''to fear''' (''snḏ'')
+|notes= 1. [[Determinative]] for ''wšn'', Egyptian: "twist the neck (of a bird)"<br />2. [[phonogram (linguistics)|Phonetically]] ''sn(tj)'', (snṯ)<br />3. (see [[List of ancient Egyptian palettes#Shield-shape palettes|Trussed-goose Palette]])
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=H
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓅿 |gardiner=H1 |unicode=1317F
+|desc= head of pintail 
+|tl1= '''bird''' (''ꜣpd'')
+|tl2= '''Wring (the neck of a bird''' (''wšn'')
+|pron= mꜣꜥ, wšm, pq (pꜣq)
+|notes= 1. <!--?--> an abbreviation for ''ꜣpd'', "bird"
+}}
+
+{{List of hieroglyphs/row
+|H=𓆀 |gardiner=H2 |unicode=13180
+|desc= head of [[heron]]
+|tl1='''Be effective''' (''ꜣḫ'')
+|pron= mꜣꜥ, wšm, pq (pꜣq)
+|notes= 1. [[phonogram (linguistics)|Phoneme]] for ''pq''<br />2. Also as: <hiero>H2a-(head-of-duck-(one-type))</hiero> or <hiero>Q3:W11-S28-(cloth-apparel-covering-etc.)</hiero>
+}}
+
+{{List of hieroglyphs/row
+|H=𓆁 |gardiner=H3 |unicode=13181
+|desc= head of [[spoonbill]] 
+|tl1= '''Speak''' (''ḏd'') (Ptolemaic)
+|pron=pꜣq, pq
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆂 |gardiner=H4 |unicode=13182
+|desc= head of vulture 
+|tl1= '''Fear''' (''nr'')
+|tl2= '''Person''' (''rmṯ'') 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆃 |gardiner=H5 |unicode=13183
+|desc= wing
+|tl1= '''wing''' (''ḏnḥ'')
+|tl2='''fly''' (''pꜣ'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆄 |gardiner=H6 |unicode=13184
+|desc= feather
+|tl1='''feather, plumage''' (''šwt'')
+|tl2='''[[Maat]]''' (''mꜣꜥt'')
+|tl3='''[[Shu (god)|Shu]]''' (''šw'')
+|tl4='''True''' (''mꜣꜥ'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆅 |gardiner=H6A |unicode=13185
+|desc= [[hieratic]] feather 
+|tl1='''feather, plumage''' (''šwt'')
+|tl2='''[[Maat]]''' (''mꜣꜥt'')
+|tl3='''[[Shu (god)|Shu]]''' (''šw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓆆 |gardiner=H7 |unicode=13186
+|desc= bird foot 
+|tl1= '''Claw''' (''ꜥnt'')
+|pron=šꜣ (only in country šꜣt)
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆇 |gardiner=H8 |unicode=13187
+|desc= [[egg (hieroglyph)|egg]]
+|tl1= '''son''' (''sꜣ/zꜣ'')
+|tl2, '''egg''' (''swḥt'') 
+|pron=
+|notes= [[determinative|det.]] for feminine in goddess names, wives, etc.; det. in ''swḥt'', 'egg'
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=I
+|notes=
+}}
+
+
+{{List of hieroglyphs/row
+|H=𓆈 |gardiner=I1 |unicode=13188
+|desc= [[gecko]]
+|tl1= '''Multitudes, countless''' (''ꜥšꜣ'')
+|tl2='''Lizard''' (''ꜥšꜣ'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆉 |gardiner=I2 |unicode=13189
+|desc= [[turtle]] 
+|tl1= '''Turtle''' (''št'') 
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓆊 |gardiner=I3 |unicode=1318A
+|desc= [[crocodile]] 
+|tl1= '''Crocodile''' (''msḥ, jt, ḥntj'')
+|tl2= '''[[Sobek]]''' (''sbk'')
+|pron= jt, m 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆋 |gardiner=I4 |unicode=1318B
+|desc= crocodile<br />on shrine 
+|tl1= '''[[Sobek]]''' (''sbk'')
+|notes= [[Ideogram]] of [[determinative|det.]] for ''sbk'', ([[Sobek]]); (see also Crocodile)
+}}
+
+{{List of hieroglyphs/row
+|H=𓆌 |gardiner=I5 |unicode=1318C
+|desc= crocodile with curved tail 
+|tl1='''pull together, be wary''' (''sꜣq'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆍 |gardiner=I5A |unicode=1318D
+|desc= image of crocodile 
+|tl1= '''[[Sobek]]''' (''sbk'')
+|tl2='''image''' (''ꜥẖm, ꜥšm'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓆎 |gardiner=I6 |unicode=1318E
+|desc= crocodile scales 
+|tl1= '''black, dark''' (''km'')
+|pron=km
+}}
+
+{{List of hieroglyphs/row
+|H=𓆏 |gardiner=I7 |unicode=1318F
+|desc= [[frog]]
+|tl1= '''[[Heket]]''' (''ḥqt'')
+|tl2= '''Frog''' (''ꜥbḫn, qrr'') 
+|tl3= '''Frog (lit. ‘repeating life’)''' (''wḥm-ꜥnḫ'')
+|tl4='''100,000''' (''ḥfn'') (see I8)
+|notes= [[Determinative]], frog; (See also (frog)-Goddess [[Heket]], her 'emblem')
+}}
+
+{{List of hieroglyphs/row
+|H=𓆐 |gardiner=I8 |unicode=13190
+|desc= [[tadpole]] 
+|tl1= '''100,000''' (''ḥfn'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆑 |gardiner=I9 |unicode=13191
+|desc= [[Cerastes (genus)|horned viper]]
+|pron=f
+|notes= [[Egyptian uniliteral signs|Uniliteral]] ''f'', 3rd person singular masculine suffix pronoun .f, also determinative for unknown reasons in jt ‘Father’. 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆒 |gardiner=I9A |unicode=13192
+|desc= horned viper crawling out of enclosure 
+|tl1= '''Come forth''' (''prj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓆓 |gardiner=I10 |unicode=13193
+|desc= [[cobra]] in repose
+|tl1= '''Cobra''' (''ḏt'')
+|pron=ḏ
+|notes=[[Egyptian uniliteral signs|Uniliteral]] ḏ
+}}
+
+{{List of hieroglyphs/row
+|H=𓆔 |gardiner=I10A |unicode=13194
+|desc= cobra with feather 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆕 |gardiner=I11 |unicode=13195
+|desc= two cobras 
+|tl1= 
+|pron=ḏḏ
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓆖 |gardiner=I11A |unicode=13196
+|desc= combination of cobra, flat loaf and sandy tract 
+|tl1= '''(linear/stable) eternity''' (''ḏt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓆗 |gardiner=I12 |unicode=13197 |qid=Q2981158
+|desc= cobra erect as on the forehead of the Pharaoh
+|tl1= '''[[Uraeus]]''' (''jꜥrt'') 
+|tl2='''Lady''' (''nbt'') (Ptolemaic) 
+|pron=k (Ptolemaic)
+|notes= [[Uraeus]]; [[Determinative]] for ''jꜥrt'' "uraeus", determinative for all goddesses, but especially those to whom the appearance of a snake was attributed
+}}
+
+{{List of hieroglyphs/row
+|H=𓆘 |gardiner=I13 |unicode=13198
+|desc= erect cobra on basket 
+|tl1= '''[[Wadjet]]''' (''wꜣḏt'')
+|tl2= '''Lady''' (''nbt'')
+|notes= [[Uraeus]]; [[Determinative]] for goddesses, especially Wadjet
+}}
+
+{{List of hieroglyphs/row
+|H=𓆙 |gardiner=I14 |unicode=13199
+|desc= snake 
+|tl1= '''Snake''' (''ḥfꜣw'')
+|pron=r (ptolemaic), f (Ptolemaic), ḏ (Ptolemaic)
+}}
+
+{{List of hieroglyphs/row
+|H=𓆚 |gardiner=I15 |unicode=1319A
+|desc= snake 
+|tl1= '''Snake''' (''ḥfꜣw'')
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=K
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓆛 |gardiner=K1 |unicode=1319B
+|desc= [[Nile tilapia|tilapia]]
+|tl1= '''[[Nile tilapia]]''' (''jnt'') 
+|pron= jn
+|notes= [[Egyptian biliteral signs|Egyptian biliteral sign]] ''jn''; [[determinative|det.]] for "Tilapia", ''jnt''; the common fish shape for [[relief]]s & art; also for the [[fish cosmetic palette]]s
+}}
+
+{{List of hieroglyphs/row
+|H=𓆜 |gardiner=K2 |unicode=1319C
+|desc= [[Labeobarbus bynni|barbel]] 
+|tl1= '''Abomination''' (''bwt'')
+|pron=bw, s (Late period)
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆝 |gardiner=K3 |unicode=1319D
+|desc= [[Mullet (fish)|mullet]] 
+|tl1='''flathead mullet''' (''ꜥḏw'')
+|pron= ꜥḏ 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆞 |gardiner=K4 |unicode=1319E
+|desc= [[Mormyridae|elephant-snout fish]]
+|tl1='''[[Mormyrus]]''' (''ẖꜣt'') 
+|tl2='''Corpse''' (''ẖꜣt'')
+|pron= ẖꜣ
+|notes= 1. [[phonogram (linguistics)|Phonetic]] value ''ẖꜣ'', from name, [[ideogram]] ''ẖjt''<br />2. [[Egyptian biliteral signs|Bil.]] for ''ẖꜣ''
+}}
+
+{{List of hieroglyphs/row
+|H=𓆟 |gardiner=K5 |unicode=1319F
+|desc= [[Petrocephalus bane]] 
+|tl1='''Fish''' (''rm'')
+|pron=bs
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆠 |gardiner=K6 |unicode=131A0
+|desc= [[fish scale]] 
+|tl1='''fish scale''' (''nšmt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓆡 |gardiner=K7 |unicode=131A1
+|desc= [[Pufferfish|puffer]] 
+|tl1='''[[Nile puffer|Nile pufferfish]], angry, discontent''' (''špt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓆢 |gardiner=K8 |unicode=131A2
+|desc= [[catfish]] 
+|tl1= '''Catfish''' (''nꜥr'')
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=L
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓆣 |gardiner=L1 |unicode=131A3
+|desc= [[dung beetle]] 
+|tl1= '''dung beetle/scarab, become, emerge, manifest''' (''ḫpr'')
+|tl2='''land''' (''tꜣ'') (Late period)
+|notes= See: [[Scarab (artifact)]]<br />See: God [[Khepri]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓆤 |gardiner=L2 |unicode=131A4
+|desc= [[Honey bee|bee]] 
+|tl1= '''bee''' (''bjt'')
+|pron= bjt (only in "king of lower Egypt" (bjt))
+|notes= In the royal title “Dual King” (''nswt-bjty'')- possibly a symbol for [[Lower Egypt]] together with the sedge for [[Upper Egypt]] (see L2A)
+}}
+
+{{List of hieroglyphs/row
+|H=𓆥 |gardiner=L2A |unicode=131A5
+|desc= combination of bee, sedge and two flat loafs 
+|tl1= '''Dual King''' (''nswt-bjty'')
+|notes= Title preceding the [[Prenomen (Ancient Egypt)|Throne name]] of a king. Translation contested.
+}}
+
+{{List of hieroglyphs/row
+|H=𓆦 |gardiner=L3 |unicode=131A6
+|desc= [[fly]] 
+|tl1= '''fly''' (''ꜥff'')
+|notes=Depicted on necklaces awarded for military bravery
+}}
+
+{{List of hieroglyphs/row
+|H=𓆧 |gardiner=L4 |unicode=131A7
+|desc= [[locust]] 
+|tl1='''Grasshopper''' (''znḥm'')
+|pron=r (Cryptographic)
+}}
+
+{{List of hieroglyphs/row
+|H=𓆨 |gardiner=L5 |unicode=131A8
+|desc= [[centipede]] 
+|tl1='''centipede''' (''spꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓆩 |gardiner=L6 |unicode=131A9
+|desc= shell 
+|tl1= 
+|pron=ḫꜣ (rarely)
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆪 |gardiner=L6A |unicode=131AA
+|desc= L6 reversed 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆫 |gardiner=L7 |unicode=131AB
+|desc= [[scorpion]] 
+|tl1='''[[Serket]]''' (''srqt'')
+|notes= Mutilated for superstitious reasons
+}}
+
+{{List of hieroglyphs/row
+|H=𓆬 |gardiner=L8 |unicode=131AC
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=M
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓆭 |gardiner=M1 |unicode=131AD
+|desc= tree 
+|tl1= '''Charm''' (''jmꜣ'')
+|tl2='''[[Sycamore]]''' (''nht'')
+|tl3='''Bright''' (''bꜣq'')
+|tl4='''(A tree)''' (''nꜥrt'')
+|pron=m, jmꜣ, jm
+}}
+
+{{List of hieroglyphs/row
+|H=𓆮 |gardiner=M1A |unicode=131AE
+|desc= combination of tree and branch 
+|tl1= '''After, following''' (''m-ḫt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓆯 |gardiner=M1B |unicode=131AF
+|desc= combination of tree and horned viper 
+|tl1= '''Within him/it''' (''jm.f'')
+|tl2='''(A kind of tree)''' (''nḏft'')
+|tl3='''(A kind of tree)''' (''ꜣtf'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓆰 |gardiner=M2 |unicode=131B0
+|desc= plant
+|tl1='''True of Voice''' (''mꜣꜥ-ḫrw'') 
+|pron=ḥn, js, j (cryptographic)
+|notes= 1. [[Determinative]] for various ''plants'' or ''flowers''<br />2. Two [[phonogram (linguistics)|phonemes]] for "cane", and "canes", ''ḥn''-(from ḥnj), ''js''-(from jsw). <br />3. flower (garland), plant, branch, seed <br />4. [[Rosetta Stone]], line R12, ''The people shall wear garlands on their heads, shall be made festal...''
+}}
+
+{{List of hieroglyphs/row
+|H=𓆱 |gardiner=M3 |unicode=131B1
+|desc= [[branch (hieroglyph)|branch]]
+|tl1='''Wood''' (''ḫt'')
+|tl2='''Throughout''' (''ḫt'')
+|pron= ḫt
+}}
+
+{{List of hieroglyphs/row
+|H=𓆲 |gardiner=M3A |unicode=131B2
+|desc= combination of owl and branch 
+|tl1= '''After, following''' (''m-ḫt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓆳 |gardiner=M4 |unicode=131B3
+|desc= palm branch 
+|tl1= '''Year''' (''rnpt'')
+|tl2='''Young''' (''rnp'')
+|tl3='''time''' (''tr'')
+|pron=rnp, tr
+}}
+
+{{List of hieroglyphs/row
+|H=𓆴 |gardiner=M5 |unicode=131B4
+|desc= combination of palm branch and flat loaf 
+|tl1= '''Year''' (''rnpt'')
+|tl2='''time''' (''tr'')
+|pron=tr
+}}
+
+{{List of hieroglyphs/row
+|H=𓆵 |gardiner=M6 |unicode=131B5
+|desc= combination of palm branch and mouth (D21)
+|tl1= 
+|pron=tr
+}}
+
+{{List of hieroglyphs/row
+|H=𓆶 |gardiner=M7 |unicode=131B6
+|desc= combination of palm branch and stool 
+|tl1='''Young''' (''rnp'')
+|pron=rnp
+}}
+
+{{List of hieroglyphs/row
+|H=𓆷 |gardiner=M8 |unicode=131B7
+|desc= pool with lotus flowers
+|tl1='''Field, Inundation season''' (''ꜣḫt'')
+|tl2='''Field''' (''šꜣ'')
+|pron='''šꜣ''' 
+|notes= 1. [[Ideogram]] & [[phonogram (linguistics)|Phoneme]] for ''šꜣ'', "flooded country"<br />2. [[Ideogram]] for ''ꜣḫt'', [[Season of the Inundation]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓆸 |gardiner=M9 |unicode=131B8
+|desc= lotus flower
+|tl1= '''Lotus''' (''sšn, snšn, nḫb'')
+|tl2= '''Beautiful''' (''nfr'')
+|notes= A. [[Ideogram]] or [[determinative|det.]] in ''sšn'', lotus flower;<br />B. [[Greek language]] 'souson';<br />C. also [[determinative|det.]] for ''snšn'', for lily, lotus
+}}
+
+{{List of hieroglyphs/row
+|H=𓆹 |gardiner=M10 |unicode=131B9
+|desc= lotus bud with straight stem 
+|tl1= '''Lotus bud''' (''nḥbt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓆺 |gardiner=M10A |unicode=131BA
+|desc= lotus bud with winding stem 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆻 |gardiner=M11 |unicode=131BB
+|desc= flower on long twisted stalk
+|tl1= '''Offer''' (''wdn'')
+|tl2= '''Divert, revert''' (''wḏb'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓆼 |gardiner=M12 |unicode=131BC
+|desc= one [[egyptian lotus|lotus plant]]
+|tl1='''1,000''' (''ḫꜣ'')
+|pron=ḫꜣ
+|notes= [[Ideogram]] for ''ḫꜣ'', a part of the lotus; [[phonogram (linguistics)|phonetically]] used for ''ḫꜣ''; in [[Egyptian mathematics]], '''1,000''': (see also '''[[:wikt:ksj#Egyptian|ksj]]''', ''bow, bend, do homage, etc.'', for ''ḫꜣ-ꜣ-b'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓆽 |gardiner=M12A |unicode=131BD
+|desc= two lotus plants 
+|tl1= 2,000 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆾 |gardiner=M12B |unicode=131BE
+|desc= three lotus plants 
+|tl1= 3,000 
+}}
+
+{{List of hieroglyphs/row
+|H=𓆿 |gardiner=M12C |unicode=131BF
+|desc= four lotus plants 
+|tl1= 4,000 
+}}
+
+{{List of hieroglyphs/row
+|H=𓇀 |gardiner=M12D |unicode=131C0
+|desc= five lotus plants 
+|tl1= 5,000 
+}}
+
+{{List of hieroglyphs/row
+|H=𓇁 |gardiner=M12E |unicode=131C1
+|desc= six lotus plants 
+|tl1= 6,000 
+}}
+
+{{List of hieroglyphs/row
+|H=𓇂 |gardiner=M12F |unicode=131C2
+|desc= seven lotus plants 
+|tl1= 7,000 
+}}
+
+{{List of hieroglyphs/row
+|H=𓇃 |gardiner=M12G |unicode=131C3
+|desc= eight lotus plants 
+|tl1= 8,000 
+}}
+
+{{List of hieroglyphs/row
+|H=𓇄 |gardiner=M12H |unicode=131C4
+|desc= nine lotus plants 
+|tl1= 9,000 
+}}
+
+{{List of hieroglyphs/row
+|H=𓇅 |gardiner=M13 |unicode=131C5
+|desc= [[papyrus stem (hieroglyph)|papyrus]]<br />[[papyrus stem (hieroglyph)|stem]]
+|tl1= '''Fresh, green, raw''' (''wꜣḏ'')
+|tl2='''Lower Egypt''' (''mḥw'') 
+|notes= [[Egyptian triliteral signs|Tril.]] wꜣḏ<!--?-->
+}}
+
+{{List of hieroglyphs/row
+|H=𓇆 |gardiner=M14 |unicode=131C6
+|desc= combination of papyrus and cobra 
+|tl1= '''Fresh, green, raw''' (''wꜣḏ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇇 |gardiner=M15 |unicode=131C7
+|desc= clump of papyrus with buds 
+|tl1='''Lower Egypt''' (''mḥw'') 
+|tl2='''Around''' (''ḥꜣ'')
+|pron=ḥꜣ, ꜣḫ (in ꜣḫ-bjt “Chemmis”)
+}}
+
+{{List of hieroglyphs/row
+|H=𓇈 |gardiner=M15A |unicode=131C8
+|desc= combination of clump of papyrus with buds and village 
+|tl1='''Lower Egypt''' (''mḥw'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓇉 |gardiner=M16 |unicode=131C9
+|desc= clump of papyrus 
+|tl1='''Lower Egypt''' (''mḥw'') 
+|tl2='''Around''' (''ḥꜣ'')
+|pron=ḥꜣ, ꜣḫ (in ꜣḫ-bjt “Chemmis”)
+}}
+
+{{List of hieroglyphs/row
+|H=𓇊 |gardiner=M16A |unicode=131CA
+|desc= combination of clump of papyrus and village 
+|tl1='''Lower Egypt''' (''mḥw'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓇋 |gardiner=M17 |unicode=131CB
+|desc= reed
+|tl1='''Reed''' (''j'')
+|tl2='''I, me, my''' (''.j'')
+|pron=j
+|notes= Alphabetic [[Egyptian uniliteral signs|uniliteral]] vowel '''j'''
+}}
+
+{{List of hieroglyphs/row
+|H=𓇌 |gardiner=M17A |unicode=131CC
+|desc= two reeds 
+|tl1= 
+|pron= y, j
+|notes= Alphabetic [[Egyptian uniliteral signs|uniliteral]] vowel '''y'''
+}}
+
+{{List of hieroglyphs/row
+|H=𓇍 |gardiner=M18 |unicode=131CD
+|desc= combination of reed (M17) and legs walking (D54)
+|tl1='''Come''' (''jj'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓇎 |gardiner=M19 |unicode=131CE
+|desc= heaped conical cakes between reed (M17) and club 
+|tl1= '''Pleasing''' (''ꜥꜣb'')
+|tl2='''Offerings, provisions''' (''ꜥꜣbt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇏 |gardiner=M20 |unicode=131CF
+|desc= field of reeds 
+|tl1= '''Field''' (''sḫt'')
+|tl2='''Help''' (''sm'')
+|pron=sm
+}}
+
+{{List of hieroglyphs/row
+|H=𓇐 |gardiner=M21 |unicode=131D0
+|desc= reeds with root 
+|tl1='''Help''' (''sm'')
+|pron=sm
+}}
+
+{{List of hieroglyphs/row
+|H=𓇑 |gardiner=M22 |unicode=131D1
+|desc= rush
+|tl1='''[[Elkab| El Kab]]''' (''nḫb'')
+|tl2='''[[Nekhbet]] (She of El Kab)''' (''nḫbt'')
+|pron=n
+|notes= Possibly ancestral to [[Proto-Sinaitic script|Proto-Sinaitic]] [[Tsade]] and its descendants
+}}
+
+{{List of hieroglyphs/row
+|H=𓇒 |gardiner=M22A |unicode=131D2
+|desc= two rushes 
+|tl1= '''This, that''' (''nn'')
+|pron=nn
+|notes= proximal demonstrative "this, that"
+}}
+
+{{List of hieroglyphs/row
+|H=𓇓 |gardiner=M23 |unicode=131D3
+|desc= [[sedge]] 
+|tl1= '''Sedge''' (''swt'')
+|tl2='''King''' (''nswt'')
+|tl3='''Upper Egypt(ian)''' (''šmꜥw'')
+|tl4='''South, Southern''' (''rs, rsj, šmꜥw'')
+|pron=sw
+|notes= See [[nswt-bjt]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓇔 |gardiner=M24 |unicode=131D4
+|desc= combination of sedge (M23) and mouth (D21)
+|tl1='''South, Southern''' (''rs, rsj, rsw'')
+|notes= Alternate version of M25 𓇖.  South
+}}
+
+{{List of hieroglyphs/row
+|H=𓇕 |gardiner=M24A |unicode=131D5
+|desc= lily 
+|tl1= '''Upper Egypt''' (''šmꜥw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇖 |gardiner=M25 |unicode=131D6
+|desc= combination of flowering sedge (M26) and mouth (D21)
+|tl1='''South, Southern''' (''rs, rsj, rsw'')
+|pron=
+}}
+
+{{List of hieroglyphs/row
+|H=𓇗 |gardiner=M26 |unicode=131D7
+|desc= flowering<br />sedge
+|tl1='''Make music''' (''šmꜥ'')
+|tl2= '''South, Southern, Upper Egypt(ian)''' (''šmꜥw'')
+|pron= šmꜥ 
+|notes= Flowering rush; also Gardiner nos. M25, M27, M28, <hiero>M25-.-M27-.-M28</hiero>
+}}
+
+{{List of hieroglyphs/row
+|H=𓇘 |gardiner=M27 |unicode=131D8
+|desc= combination of flowering sedge (M26) and forearm 
+|tl1='''Make music''' (''šmꜥ'')
+|tl2= '''South, Southern, Upper Egypt(ian)''' (''šmꜥw'')
+|pron= šmꜥ 
+}}
+
+{{List of hieroglyphs/row
+|H=𓇙 |gardiner=M28 |unicode=131D9
+|desc= combination of flowering sedge (M26) and hobble (V20)
+|tl1= '''Upper Egyptian 10’s''' (''mḏw-šmꜥw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇚 |gardiner=M28A |unicode=131DA
+|desc= three lilies on village 
+|tl1= '''Upper Egypt''' (''šmꜥw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇛 |gardiner=M29 |unicode=131DB
+|desc= Carob seed-pod
+|tl1='''Carob''' (''nḏm'')
+|tl2= '''Sweet''' (''nḏm'') 
+|pron=nḏm
+}}
+
+{{List of hieroglyphs/row
+|H=𓇜 |gardiner=M30 |unicode=131DC
+|desc= root 
+|tl1= '''Date''' (''bnr'')
+|tl2='''Sweet''' (''bnr'')
+|pron=
+|notes= [[Ideogram]] or [[determinative|det.]] for ''bnr'', sweet, date; for [[Egyptian language]] '''bnrjt''', sweetness, a favor, anything sweet, pleasant or nice; for '''bnryty''', the 'confectioner'
+}}
+
+{{List of hieroglyphs/row
+|H=𓇝 |gardiner=M31 |unicode=131DD
+|desc= [[rhizome]] 
+|tl1= '''Prosper''' (''rwḏ'')
+|pron=rwḏ
+}}
+
+{{List of hieroglyphs/row
+|H=𓇞 |gardiner=M31A |unicode=131DE
+|desc= tree in vase 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓇟 |gardiner=M32 |unicode=131DF
+|desc= rhizome 
+|tl1= '''Prosper''' (''rwḏ'')
+|pron=rwḏ
+}}
+
+{{List of hieroglyphs/row
+|H=𓇠 |gardiner=M33 |unicode=131E0
+|desc= 3 grains horizontally 
+|tl1= '''Barley''' (''jt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇡 |gardiner=M33A |unicode=131E1
+|desc= 3 grains vertically 
+|tl1= '''Barley''' (''jt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇢 |gardiner=M33B |unicode=131E2
+|desc= 3 grains in triangular arrangement 
+|tl1= '''Barley''' (''jt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇣 |gardiner=M34 |unicode=131E3
+|desc= ear of [[emmer]] 
+|tl1= '''Emmer''' (''bdt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇤 |gardiner=M35 |unicode=131E4
+|desc= stack<br />(of grain)
+|tl1='''Pile, stack''' (''ꜥḥꜥ, ꜥḥꜥw'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓇥 |gardiner=M36 |unicode=131E5
+|desc= bundle of flax
+|tl1= '''End, limit''' (''ḏr'')
+|pron=ḏr
+}}
+
+{{List of hieroglyphs/row
+|H=𓇦 |gardiner=M37 |unicode=131E6
+|desc= bundle of flax 
+|tl1= '''End, limit''' (''ḏr'')
+|pron=ḏr
+}}
+
+{{List of hieroglyphs/row
+|H=𓇧 |gardiner=M38 |unicode=131E7
+|desc= wide bundle of flax 
+|tl1= '''Bind together''' (''dmꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇨 |gardiner=M39 |unicode=131E8
+|desc= basket of fruit or grain
+|tl1= '''End, limit''' (''ḏr'')
+|tl2= '''Bind together''' (''dmꜣ'') 
+|pron=ḏr
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓇩 |gardiner=M40 |unicode=131E9
+|desc= bundle of reeds 
+|tl1= '''Gang (of workmen''' (''js'')
+|pron=js
+}}
+
+{{List of hieroglyphs/row
+|H=𓇪 |gardiner=M40A |unicode=131EA
+|desc= bundle of reeds 
+|tl1= 
+|pron=js
+}}
+
+{{List of hieroglyphs/row
+|H=𓇫 |gardiner=M41 |unicode=131EB
+|desc= piece of wood 
+|tl1='''Juniper''' (''wꜥn'')
+|tl2= '''Cedar''' (''ꜥš'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇬 |gardiner=M42 |unicode=131EC
+|desc= flower 
+|tl1= '''Eat''' (''wnm'')
+|tl2='''Be, exist''' (''wn'')
+|pron=wn
+}}
+
+{{List of hieroglyphs/row
+|H=𓇭 |gardiner=M43 |unicode=131ED
+|desc= vine on trellis 
+|tl1= '''Wine''' (''jrp'')
+|tl2= '''Vintner, Gardener''' (''kꜣny'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇮 |gardiner=M44 |unicode=131EE
+|desc= thorn
+|tl1='''Sharp''' (''spd'')
+|tl2='''Thorn''' (''srt'')
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=N
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓇯 |gardiner=N1 |unicode=131EF
+|desc= sky
+|tl1= '''Sky, heaven''' (''pt'')
+|tl2='''Above''' (''ḥry'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇰 |gardiner=N2 |unicode=131F0
+|desc= sky with sceptre 
+|tl1= '''Darkness''' (''kkw'')
+|tl2='''Night''' (''grḥ'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓇱 |gardiner=N3 |unicode=131F1
+|desc= sky with sceptre 
+|tl1= '''Darkness''' (''kkw'')
+|tl2='''Night''' (''grḥ'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓇲 |gardiner=N4 |unicode=131F2
+|desc= sky with rain 
+|tl1= '''Dew''' (''jꜣdt'')
+|tl2='''Storm''' (''šnyt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇳 |gardiner=N5 |unicode=131F3
+|desc= sun 
+|tl1='''[[Ra]], the sun''' (''rꜥ'')
+|tl2='''Day''' (''hrw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇴 |gardiner=N6 |unicode=131F4
+|desc= sun with uraeus 
+|tl1='''[[Ra]], the sun''' (''rꜥ'')
+|tl2='''Day''' (''hrw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇵 |gardiner=N7 |unicode=131F5
+|desc= combination of sun (N5) and butcher's block 
+|tl1= '''Every day''' (''ẖrt-hrw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇶 |gardiner=N8 |unicode=131F6
+|desc= sunshine 
+|tl1='''Shine''' (''psḏ'')
+|tl2='''Rise''' (''wbn'')
+|tl3='''Illuminate''' (''sḥḏ'')
+|tl4='''Sunfolk (of Heliopolis)''' (''ḥnmmt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇷 |gardiner=N9 |unicode=131F7
+|desc= moon with lower half obscured 
+|tl1= '''Primeval time''' (''pꜣwt'')
+|tl2= '''[[Ennead]]''' (''psḏt'')
+|tl3= '''New moon festival''' (''psḏntyw'')
+|pron=psḏ
+}}
+
+{{List of hieroglyphs/row
+|H=𓇸 |gardiner=N10 |unicode=131F8
+|desc= moon with lower section obscured 
+|tl1= '''Primeval time''' (''pꜣwt'')
+|tl2= '''[[Ennead]]''' (''psḏt'')
+|tl3= '''New moon festival''' (''psḏntyw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇹 |gardiner=N11 |unicode=131F9
+|desc= crescent moon
+|tl1='''Moon''' (''jꜥḥ'')
+|tl2='''Month''' (''ꜣbd'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓇺 |gardiner=N12 |unicode=131FA
+|desc= crescent moon 
+|tl1='''Moon''' (''jꜥḥ'')
+|tl2='''Month''' (''ꜣbd'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓇻 |gardiner=N13 |unicode=131FB
+|desc= combination of crescent moon (N12) and star (N14)
+|tl1= '''Half-month festival''' (''smdt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇼 |gardiner=N14 |unicode=131FC
+|desc= star
+|tl1= '''Star''' (''sbꜣ'')
+|tl2='''Praise, adore, thank''' (''dwꜣ'')
+|tl3='''5''' (''djw'')
+|tl4='''God''' (''nṯr'') (Ptolemaic)
+|pron=sbꜣ, dwꜣ
+}}
+
+{{List of hieroglyphs/row
+|H=𓇽 |gardiner=N15 |unicode=131FD
+|desc= star in circle 
+|tl1= '''[[Duat]]''' (''dwꜣt'') 
+|pron=
+}}
+
+{{List of hieroglyphs/row
+|H=𓇾 |gardiner=N16 |unicode=131FE
+|desc= land with grains 
+|tl1= '''Land, Earth''' (''tꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓇿 |gardiner=N17 |unicode=131FF
+|desc= land 
+|tl1= '''Land, Earth''' (''tꜣ'')
+|notes= Variant of N16
+}}
+
+{{List of hieroglyphs/row
+|H=𓈀 |gardiner=N18 |unicode=13200
+|desc= sandy tract 
+|tl1= '''Horizon''' (''ꜣḫt'')
+|tl2='''Island''' (''jw'')
+|tl3='''Kilt, loincloth''' (''dꜣjw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓈁 |gardiner=N18A |unicode=13201
+|desc= combination of sandy tract (N18) and ripple of water (N35)
+|tl1= '''[[Amun]]''' (''jmn'') (Cryptographic)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈂 |gardiner=N18B |unicode=13202
+|desc= combination of roll of bread and bolt 
+|tl1= '''Shenes (location)''' (''šns'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓈃 |gardiner=N19 |unicode=13203
+|desc= two sandy tracts 
+|tl1= '''Two horizons''' (''ꜣḫty'')
+|notes= In ''rꜥ-ḥrw-ꜣḫty'' “Ra-Horus of the Two Horizons”
+}}
+
+{{List of hieroglyphs/row
+|H=𓈄 |gardiner=N20 |unicode=13204
+|desc= tongue of land 
+|tl1= '''Riverbank''' (''jdb'')
+|tl2='''Revert, divert''' (''wḏb'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓈅 |gardiner=N21 |unicode=13205
+|desc= short tongue of land 
+|tl1= '''Riverbank''' (''jdb'')
+|tl2='''Revert, divert''' (''wḏb'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓈆 |gardiner=N22 |unicode=13206
+|desc= broad tongue of land 
+|tl1= '''Riverbank''' (''jdb'')
+|tl2='''Revert, divert''' (''wḏb'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓈇 |gardiner=N23 |unicode=13207
+|desc= irrigation canal 
+|tl1= 
+|notes=Determinative for words involving land, especially farmland
+}}
+
+{{List of hieroglyphs/row
+|H=𓈈 |gardiner=N24 |unicode=13208
+|desc= [[land, irrigated (hieroglyph)|irrigation canal system]]
+|tl1= '''District''' (''spꜣt'')
+|notes= Base for the Nome signs (categories NL and NU)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈉 |gardiner=N25 |unicode=13209
+|desc= three hills 
+|tl1= '''Foreign land''' (''ḫꜣst'')
+|notes= Determinative for foreign locations
+}}
+
+{{List of hieroglyphs/row
+|H=𓈊 |gardiner=N25A |unicode=1320A
+|desc= three hills (low) 
+|tl1= '''Foreign land''' (''ḫꜣst'')
+|notes= Determinative for foreign locations
+}}
+
+{{List of hieroglyphs/row
+|H=𓈋 |gardiner=N26 |unicode=1320B
+|desc= two hills
+|tl1= '''Mountain''' (''ḏw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓈌 |gardiner=N27 |unicode=1320C
+|desc= sun over mountain
+|tl1= '''Horizon''' (''ꜣḫt'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓈍 |gardiner=N28 |unicode=1320D
+|desc= rays of sun over hill
+|tl1= '''Appear''' (''ḫꜥj'')
+|pron=ḫꜥ
+}}
+
+{{List of hieroglyphs/row
+|H=𓈎 |gardiner=N29 |unicode=1320E
+|desc= slope of hill 
+|tl1='''Hill''' (''qꜣꜣ'')
+|pron= q
+|notes= [[Egyptian uniliteral signs|Uniliteral]] ''q''.
+}}
+
+{{List of hieroglyphs/row
+|H=𓈏 |gardiner=N30 |unicode=1320F
+|desc= mound of earth 
+|tl1= '''Mound''' (''jꜣt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓈐 |gardiner=N31 |unicode=13210
+|desc= road with shrubs 
+|tl1= '''Path, way''' (''wꜣt'')
+|tl2= '''Course, road''' (''mṯn'')
+|tl3= '''Distant''' (''ḥr'')
+|pron=ḥr
+}}
+
+{{List of hieroglyphs/row
+|H=𓈑 |gardiner=N32 |unicode=13211
+|desc= lump of clay 
+|tl1= '''Clay''' (''sjn'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓈒 |gardiner=N33 |unicode=13212
+|desc= grain 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓈓 |gardiner=N33A |unicode=13213
+|desc= three grains 
+|tl1=
+|notes=Alternative plural marker. See Z2. 
+}}
+
+{{List of hieroglyphs/row
+|H=𓈔 |gardiner=N34 |unicode=13214
+|desc= ingot of metal 
+|tl1= '''Iron''' (''bjꜣ'')
+|tl2= '''Copper''' (''ḥmt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓈕 |gardiner=N34A |unicode=13215
+|desc= ingot of metal 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓈖 |gardiner=N35 |unicode=13216
+|desc= ripple of water 
+|tl1= '''To, for (Dative preposition)''' (''n'')
+|tl2='''Of (Genitival adjective)''' (''n[j]'')
+|pron=n
+|notes= [[Egyptian uniliteral signs|Uniliteral]] ''n''. Possibly ancestral to [[Proto-Sinaitic script|Proto-Sinaitic]] [[Mem]] and its descendants
+}}
+
+{{List of hieroglyphs/row
+|H=𓈗 |gardiner=N35A |unicode=13217
+|desc= three ripples of water 
+|tl1= '''Water''' (''mw'')
+|notes= Determinative for water and liquid
+}}
+
+{{List of hieroglyphs/row
+|H=𓈘 |gardiner=N36 |unicode=13218
+|desc= canal 
+|tl1='''Canal''' (''mr'')
+|tl2= '''Beloved [of]''' (''mry'') 
+|pron=mr
+}}
+
+{{List of hieroglyphs/row
+|H=𓈙 |gardiner=N37 |unicode=13219
+|desc= [[Pool-lake-basin (hieroglyph)|pool]]
+|tl1= '''Lake, pool''' (''š'') 
+|pron=š, ẖ (Old kingdom)
+|notes=[[Egyptian uniliteral signs|Uniliteral ''š'']].
+}}
+
+{{List of hieroglyphs/row
+|H=𓈚 |gardiner=N37A |unicode=1321A
+|desc= pool 
+|tl1= '''Lake, pool''' (''š'') 
+|pron=š, ẖ (Old kingdom)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈛 |gardiner=N38 |unicode=1321B
+|desc= deep pool 
+|tl1= '''Lake, pool''' (''š'') 
+|pron=š, ẖ (Old kingdom)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈜 |gardiner=N39 |unicode=1321C
+|desc= pool with water 
+|tl1= '''Lake, pool''' (''š'') 
+|pron=š, ẖ (Old kingdom)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈝 |gardiner=N40 |unicode=1321D
+|desc= pool<br />with legs
+|tl1='''Go, set out''' (''šm'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓈞 |gardiner=N41 |unicode=1321E
+|desc= well with ripple of water
+|tl1= '''Copper''' (''ḥmt'')
+|tl2= '''Metal''' (''bjꜣ'')
+|tl3='''Wife''' (''ḥmt'') 
+|pron=ḥm, bjꜣ
+}}
+
+{{List of hieroglyphs/row
+|H=𓈟 |gardiner=N42 |unicode=1321F
+|desc= well with line of water 
+|tl1= '''Copper''' (''ḥmt'')
+|tl2= '''Metal''' (''bjꜣ'')
+|tl3='''Wife''' (''ḥmt'') 
+|pron=ḥm, bjꜣ
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=NL
+|notes=See: [[Nome (Egypt)#Lower Egypt|Lower Egyptian Nomes]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓈠 |gardiner=NL1|unicode=13220
+|desc= Nome sign with wall and mace
+|tl1='''White-Walls''' (''jnb-ḥḏ'')
+|notes= 1st [[Nome of Lower Egypt]] (NL001), the Memphite nome [[Inebu-hedj]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓈡 |gardiner=NL2
+|unicode=13221
+|desc= Nome sign with cow thigh
+|tl1='''Cow thigh''' (''ḫpš'')
+|notes= 2nd [[Nome of Lower Egypt]] (NL002)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈢 |gardiner=NL3
+|unicode=13222
+|desc= Nome sign with falcon and feather
+|tl1='''West''' (''jmntt'')
+|notes= 3rd [[Nome of Lower Egypt]] (NL003)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈣 |gardiner=NL4
+|unicode=13223
+|desc= Nome sign with shield, crossed arrows, and sedge
+|tl1= '''Southern Neith''' (''nt-rst'')
+|notes= 4th [[Nome of Lower Egypt]] (NL004)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈤 |gardiner=NL5
+|unicode=13224
+|desc= Nome sign with shield, crossed arrows, and papyrus plant
+|tl1= '''Northern Neith''' (''nt-mḥt'')
+|notes= 5th [[Nome of Lower Egypt]] (NL005)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈥 |gardiner=NL5a |unicode=13225
+|desc= Nome sign with shield, crossed arrows, and whip upon bread loaf
+|tl1= '''Northern Neith''' (''nt-mḥt'')
+|notes= 5th [[Nome of Lower Egypt]] (NL005A)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈦 |gardiner=NL6
+|unicode=13226
+|desc= Nome sign with mountain and bull
+|tl1= ḫꜣsww (Mountain bull)
+|notes= 6th [[Nome of Lower Egypt]] (NL006), [[Khaset (nome)|Khaset]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓈧 |gardiner=NL7
+|unicode=13227
+|desc= Nome sign with harpoon and West-emblem
+|tl1= '''Western harpoon''' (''ḥww-(gs)-jmnty'')
+|notes= 7th [[Nome of Lower Egypt]] (NL007)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈨 |gardiner=NL8
+|unicode=13228
+|desc= Nome sign with harpoon and East-emblem 
+|tl1= '''Eastern harpoon''' (''ḥww-(gs)-jꜣbty'')
+|notes= 8th [[Nome of Lower Egypt]] (NL008)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈩 |gardiner=NL9
+|unicode=13229
+|desc= Nome sign with Andjety
+|tl1= '''[[Andjety]]''' (''ꜥnḏty'')
+|notes= 9th [[Nome of Lower Egypt]] (NL009)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈪 |gardiner=NL10
+|unicode=1322A
+|desc= Nome sign with bull and crocodile skin
+|tl1= '''Black bull''' (''kꜣ-km'')
+|notes= 10th [[Nome of Lower Egypt]] (NL010)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈫 |gardiner=NL11
+|unicode=1322B
+|desc= Nome sign with bull and pustule
+|tl1= '''Heseb-Bull''' (''kꜣ-ḥsb'')
+|notes= 11th [[Nome of Lower Egypt]] (NL011)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈬 |gardiner=NL12
+|unicode=1322C
+|desc= Nome sign with bull and calf
+|tl1= '''Calf and Bull''' (''ṯb-kꜣ?'')
+|notes= 12th [[Nome of Lower Egypt]] (NL012)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈭 |gardiner=NL13
+|unicode=1322D
+|desc= Nome sign with shuttle and crook
+|tl1= '''Prospering scepter''' (''ḥqꜣ-ꜥḏ'')
+|notes= 13th [[Nome of Lower Egypt]] (NL013), the Heliopolite nome, [[Heliopolite Nome|Heqat-Adj]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓈮 |gardiner=NL14
+|unicode=1322E
+|desc= Nome sign with simplified jars and East-emblem
+|tl1= '''Foremost of the East''' (''ḫnty-jꜣbty'')
+|notes= 14th [[Nome of Lower Egypt]] (NL014)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈯 |gardiner=NL15
+|unicode=1322F
+|desc= Nome sign with ibis
+|tl1= '''[[Thoth]]''' (''ḏḥwty'')
+|notes= 15th [[Nome of Lower Egypt]] (NL015)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈰 |gardiner=NL16
+|unicode=13230
+|desc= Nome sign with fish
+|tl1= '''[[Hatmehit]]''' (''ḥꜣt-mḥyt'')
+|notes= 16th [[Nome of Lower Egypt]] (NL016)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈱 |gardiner=NL17
+|unicode=13231
+|desc= Nome sign with tusk, hand, bread loaf, and crossroads
+|tl1= '''Throne''' (''bḥdt'')
+|notes= 17th [[Nome of Lower Egypt]] (NL017)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈲 |gardiner=NL17a
+|unicode=13232
+|desc= Nome sign with lungs, tusk, hand, bread loaf, and crossroads
+|tl1= '''Uniting the throne (?)''' (''smꜣ-bḥdt'')
+|notes= 17th [[Nome of Lower Egypt]] (NL017A)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈳 |gardiner=NL18 |unicode=13233
+|desc= Nome sign with child wearing white crown and cow’s head
+|tl1= '''Southern prince''' (''jmty-ḫnt'')
+|notes= 18th [[Nome of Lower Egypt]] (NL018)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈴 |gardiner=NL19
+|unicode=13234
+|desc= Nome sign with child wearing white crown and hindquarters of lion
+|tl1= '''Northern prince''' (''jmty-pḥw'')
+|notes= 19th [[Nome of Lower Egypt]] (NL019)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈵 |gardiner=NL20
+|unicode=13235
+|desc= Nome sign with thorn and Sopdu
+|tl1= '''[[Sopdu]]''' (''spdw'')
+|notes= 20th [[Nome of Lower Egypt]] (NL020)
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=NU
+|notes=See: [[Nome (Egypt)#Upper Egypt|Upper Egyptian Nomes]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓈶 |gardiner=NU1
+|unicode=13236
+|desc= Nome sign with land, bow, bread loaf and land
+|tl1= '''Land of the Bow''' (''tꜣ-stj'')
+|notes=1st [[Nome of Upper Egypt]] (NU001), [[Ta-Seti]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓈷 |gardiner=NU2
+|unicode=13237
+|desc= Nome sign with balance column and falcon
+|tl1= '''Throne of Horus''' (''wṯst-ḥrw'')
+|notes=2nd [[Nome of Upper Egypt]] (NU002), [[Wetjes-Hor]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓈸 |gardiner=NU3
+|unicode=13238
+|desc= Nome sign with emblem of Nekhen
+|tl1= '''Shrine ([[Nekhen]])''' (''nḫn'')
+|notes=3rd [[Nome of Upper Egypt]] (NU003), [[Nekhen (nome)]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓈹 |gardiner=NU4
+|unicode=13239
+|desc= Nome sign with Was-scepter 
+|tl1= '''Scepter ([[Thebes, Egypt|Waset]])''' (''wꜣst'')
+|notes= 4th [[Nome of Upper Egypt]] (NU004) 
+}}
+
+{{List of hieroglyphs/row
+|H=𓈺 |gardiner=NU5
+|unicode=1323A
+|desc= Nome sign with two falcons
+|tl1= '''Two falcons/Two gods/Two Horuses''' (''bjkwy/nṯrwy/ḥrwy'')
+|notes= 5th [[Nome of Upper Egypt]] (NU005), [[Nomos of Harawî|Herui]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓈻 |gardiner=NU6
+|unicode=1323B
+|desc= Nome sign with crocodile with feather
+|tl1= '''Crocodile''' (''jqr, msḥ?'')
+|notes= 6th [[Nome of Upper Egypt]] (NU006), [[Iqer]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓈼 |gardiner=NU7
+|unicode=1323C
+|desc= Nome sign with Sistrum
+|tl1= '''[[Bat (goddess)|Bat]]''' (''bꜣt'')
+|tl2= '''Sistrum''' (''sšš'')
+|notes= 7th [[Nome of Upper Egypt]] (NU007)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈽 |gardiner=NU8
+|unicode=1323D
+|desc= Nome sign with Osiris fetish
+|tl1= '''Great land''' (''tꜣ-wr'')
+|notes= 8th [[Nome of Upper Egypt]] (NU008), the Thinite nome, [[Ta-wer]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓈾 |gardiner=NU9
+|unicode=1323E
+|desc= Nome sign with emblem of Min
+|tl1= '''Min''' (''mnw'')
+|notes= 9th [[Nome of Upper Egypt]] (NU009)
+}}
+
+{{List of hieroglyphs/row
+|H=𓈿 |gardiner=NU10
+|unicode=1323F
+|desc= Nome sign with cobra with feather
+|tl1= '''[[Wadjet]]''' (''wꜣḏyt'')
+|notes= 10th [[Nome of Upper Egypt]] (NU010), [[Aphroditopolite Nome|Wadjet]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓉀 |gardiner=NU10a|unicode=13240
+|desc= Nome sign with papyrus column, cobra, and bread loaf
+|tl1= '''[[Wadjet]]''' (''wꜣḏyt'')
+|notes= 10th [[Nome of Upper Egypt]] (NU010A), [[Aphroditopolite Nome|Wadjet]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓉁 |gardiner=NU11
+|unicode=13241
+|desc= Nome sign with Set-animal
+|tl1= '''Set-animal''' (''šꜣ'')
+|notes= 11th [[Nome of Upper Egypt]] (NU011)
+}}
+
+{{List of hieroglyphs/row
+|H=𓉂 |gardiner=NU11a
+|unicode=13242
+|desc= Nome sign with wick, Red crown, ripples of water
+|tl1= '''Set-animal''' (''šꜣ'')
+|notes= 11th [[Nome of Upper Egypt]] (NU011A)
+}}
+
+{{List of hieroglyphs/row
+|H=𓉃 |gardiner=NU12
+|unicode=13243
+|desc= Nome sign with mountain and viper
+|tl1= '''Viper mountain''' (''ḏw-ft'')
+|notes= 12th [[Nome of Upper Egypt]] (NU012)
+}}
+
+{{List of hieroglyphs/row
+|H=𓉄 |gardiner=NU13
+|unicode=13244
+|desc= Nome sign with tree crossed by viper and simplified jars
+|tl1= '''Southern ꜣtf/nḏft-tree''' (''ꜣtf-ḫntt/nḏft-ḫntt'')
+|notes= 13th [[Nome of Upper Egypt]] (NU013)
+}}
+
+{{List of hieroglyphs/row
+|H=𓉅 |gardiner=NU14
+|unicode=13245
+|desc= Nome sign with tree crossed by viper, hindquarters of lion, bread loaf
+|tl1= '''Northern ꜣtf/nḏft-tree''' (''ꜣtf-pḥt/nḏft-ḫntt'')
+|notes= 14th [[Nome of Upper Egypt]] (NU014)
+}}
+
+{{List of hieroglyphs/row
+|H=𓉆 |gardiner=NU15
+|unicode=13246
+|desc= Nome sign with hare
+|tl1= '''Hare''' (''wnt'')
+|notes= 15th [[Nome of Upper Egypt]] (NU015), [[Hare nome|Wenet]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓉇 |gardiner=NU16
+|unicode=13247
+|desc= Nome sign with oryx
+|tl1= '''Oryx''' (''mꜣ-ḥḏ'')
+|notes= 16th [[Nome of Upper Egypt]] (NU016), [[Oryx nome|Ma-hedj]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓉈 |gardiner=NU17
+|unicode=13248
+|desc= Nome sign with jackal
+|tl1= '''Jackal ([[Anubis]], [[Anput]])''' (''jnpw(t)'')
+|notes= 17th [[Nome of Upper Egypt]] (NU017)
+}}
+
+{{List of hieroglyphs/row
+|H=𓉉 |gardiner=NU18
+|unicode=13249
+|desc= Nome sign with falcon, wings spread
+|tl1= '''[[Nemty]]''' (''nmty'')
+|notes= 18th [[Nome of Upper Egypt]] (NU018)
+}}
+
+{{List of hieroglyphs/row
+|H=𓉊 |gardiner=NU18a
+|unicode=1324A
+|desc= Nome sign with falcon on boat
+|tl1= '''[[Nemty]]''' (''nmty'')
+|notes= 18th [[Nome of Upper Egypt]] (NU018A)
+}}
+
+{{List of hieroglyphs/row
+|H=𓉋 |gardiner=NU19
+|unicode=1324B
+|desc= Nome sign with two Was-scepters and foot
+|tl1= '''Wabwi, Two Scepters?''' (''wꜣbwy'')
+|notes= 19th [[Nome of Upper Egypt]] (NU019)
+}}
+
+{{List of hieroglyphs/row
+|H=𓉌 |gardiner=NU20
+|unicode=1324C
+|desc= Nome sign with tree and simplified jars
+|tl1= '''Southern nꜥrt-tree''' (''nꜥrt-ḫntt'')
+|notes= 20th [[Nome of Upper Egypt]] (NU020)
+}}
+
+{{List of hieroglyphs/row
+|H=𓉍 |gardiner=NU21
+|unicode=1324D
+|desc= Nome sign with tree, hindquarters of a lion, and bread loaf
+|tl1= '''Northern nꜥrt-tree''' (''nꜥrt-pḥt'')
+|notes= 21st [[Nome of Upper Egypt]] (NU021)
+}}
+
+{{List of hieroglyphs/row
+|H=𓉎 |gardiner=NU22
+|unicode=1324E
+|desc= Nome sign with knife
+|tl1= '''Knife''' (''mdnjt'')
+|notes= 22nd [[Nome of Upper Egypt]] (NU022)
+}}
+
+{{List of hieroglyphs/row
+|H=𓉏 |gardiner=NU22a
+|unicode=1324F
+|desc= 
+|tl1= 
+|notes= 22nd [[Nome of Upper Egypt]] (NU022A)
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=O
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓉐 |gardiner=O1 |unicode=13250
+|desc= [[pr (hieroglyph)|house]]
+|tl1= '''House''' (''pr'')
+|pron=pr
+|notes= Determinative for buildings  <br> Possibly ancestral to [[Proto-Sinaitic script|Proto-Sinaitic]] [[Bet (letter)|Bet]] and its descendants. 
+}}
+
+{{List of hieroglyphs/row
+|H=𓉑 |gardiner=O1A|unicode=13251
+|desc= combination of house and ankh
+|tl1= '''House of Life (Scriptorium)''' (''pr-ꜥnḫ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉒 |gardiner=O2 |unicode=13252
+|desc= combination of house and mace with round head 
+|tl1= '''Treasury''' (''pr-ḥḏ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉓 |gardiner=O3 |unicode=13253
+|desc= combination of house, oar, tall loaf and beer jug 
+|tl1= '''Voice-offering''' (''prt-ḫrw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉔 |gardiner=O4 |unicode=13254
+|desc= shelter
+|tl1= '''Courtyard''' (''h'') 
+|pron=h
+|notes= [[Egyptian uniliteral signs|Uniliteral]] '''h'''
+}}
+
+{{List of hieroglyphs/row
+|H=𓉕 |gardiner=O5 |unicode=13255
+|desc= winding wall from upper-left corner 
+|tl1= '''Avenue''' (''mrrt'')
+|pron=mr
+}}
+
+{{List of hieroglyphs/row
+|H=𓉖 |gardiner=O5A |unicode=13256
+|desc= winding wall from lower-left corner 
+|tl1= '''Avenue''' (''mrrt'')
+|pron=mr
+}}
+
+{{List of hieroglyphs/row
+|H=𓉗 |gardiner=O6 |unicode=13257
+|desc= enclosure
+|tl1='''House, mansion''' (''ḥwt'') 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓉘 |gardiner=O6A |unicode=13258
+|desc= opening of [[Hathor|ḥwt]]-enclosure 
+|tl1= 
+|notes= Egyptological sign used for placing groups of signs inside a ḥwt-enclosure
+}}
+
+{{List of hieroglyphs/row
+|H=𓉙 |gardiner=O6B |unicode=13259
+|desc= opening of ḥwt-enclosure 
+|tl1= 
+|notes= Egyptological sign used for placing groups of signs inside a ḥwt-enclosure
+}}
+
+{{List of hieroglyphs/row
+|H=𓉚 |gardiner=O6C |unicode=1325A
+|desc= opening of ḥwt-enclosure 
+|notes= Egyptological sign used for placing groups of signs inside a ḥwt-enclosure
+}}
+
+{{List of hieroglyphs/row
+|H=𓉛 |gardiner=O6D |unicode=1325B
+|desc= closing of ḥwt-enclosure 
+|notes= Egyptological sign used for placing groups of signs inside a ḥwt-enclosure
+}}
+
+{{List of hieroglyphs/row
+|H=𓉜 |gardiner=O6E |unicode=1325C
+|desc= closing of ḥwt-enclosure 
+|notes= Egyptological sign used for placing groups of signs inside a ḥwt-enclosure
+}}
+
+{{List of hieroglyphs/row
+|H=𓉝 |gardiner=O6F |unicode=1325D
+|desc= closing of ḥwt-enclosure 
+|notes= Egyptological sign used for placing groups of signs inside a ḥwt-enclosure
+}}
+
+{{List of hieroglyphs/row
+|H=𓉞 |gardiner=O7 |unicode=1325E
+|desc= combination of enclosure and flat loaf 
+|tl1='''House, mansion''' (''ḥwt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉟 |gardiner=O8 |unicode=1325F
+|desc= combination of enclosure, flat loaf and wooden column 
+|tl1= '''Great house''' (''ḥwt-ꜥꜣt'') (Not to be confused with pr-ꜥꜣ)
+}}
+
+{{List of hieroglyphs/row
+|H=𓉠 |gardiner=O9 |unicode=13260
+|desc= combination of enclosure, flat loaf and basket 
+|tl1= '''[[Nephthys]]''' (''nbt-ḥwt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉡 |gardiner=O10 |unicode=13261
+|desc= combination of enclosure and falcon 
+|tl1= '''[[Hathor]]''' (''ḥwt-ḥrw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉢 |gardiner=O10A |unicode=13262
+|desc= combination of enclosure and ankh
+|tl1= '''House of Life''' (''ḥwt-ꜥnḫ'') (Not to be confused with pr-ꜥnḫ)
+}}
+
+{{List of hieroglyphs/row
+|H=𓉣 |gardiner=O10B |unicode=13263
+|desc= combination of enclosure and bee 
+|tl1= '''House of the king of Lower Egypt''' (''ḥwt-bjty'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉤 |gardiner=O10C |unicode=13264
+|desc= combination of shrine in profile and face 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓉥 |gardiner=O11 |unicode=13265
+|desc= palace
+|tl1='''Palace''' (''ꜥḥ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉦 |gardiner=O12 |unicode=13266
+|desc= combination of palace and forearm 
+|tl1='''Palace''' (''ꜥḥ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉧 |gardiner=O13 |unicode=13267
+|desc= battlemented enclosure 
+|tl1= '''Portal''' (''sbḫt'')
+|tl2='''Wide''' (''wsḫ'')
+|tl3='''Wide hall''' (''wsḫt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉨 |gardiner=O14 |unicode=13268
+|desc= part of battlemented enclosure 
+|tl1= '''Portal''' (''sbḫt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉩 |gardiner=O15 |unicode=13269
+|desc= enclosure with cup and flat loaf 
+|tl1='''Wide hall''' (''wsḫt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉪 |gardiner=O16 |unicode=1326A
+|desc= gateway with serpents 
+|tl1= '''Gate''' (''rwt'')
+|tl2= '''Shroud, door''' (''tꜣyt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉫 |gardiner=O17 |unicode=1326B
+|desc= open gateway with serpents 
+|tl1= '''Gate''' (''rwt'')
+|tl2= '''Shroud, door''' (''tꜣyt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉬 |gardiner=O18 |unicode=1326C
+|desc= shrine in profile 
+|tl1= '''Shrine''' (''kꜣrj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉭 |gardiner=O19 |unicode=1326D
+|desc= shrine with fence 
+|tl1= '''Shrine''' (''jtrt'')
+|tl2='''Great House (archaic shrine of [[Elkab|El Kab]] and Upper Egypt)''' (''pr-wr'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉮 |gardiner=O19A |unicode=1326E
+|desc= shrine 
+|tl1= '''Shrine''' (''jtrt'')
+|tl2='''Great House (archaic shrine of [[Elkab|El Kab]] and Upper Egypt)''' (''pr-wr'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉯 |gardiner=O20 |unicode=1326F
+|desc= shrine 
+|tl1= '''Shrine''' (''jtrt'')
+|tl2='''House of the Jar (archaic shrine of [[Buto]]) and Lower Egypt''' (''pr-nw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉰 |gardiner=O20A |unicode=13270
+|desc= shrine 
+|tl1= '''Shrine''' (''jtrt'')
+|tl2='''House of the Jar (archaic shrine of [[Buto]]) and Lower Egypt''' (''pr-nw'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓉱 |gardiner=O21 |unicode=13271
+|desc= façade of shrine 
+|tl1= '''Booth''' (''sḥ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉲 |gardiner=O22 |unicode=13272
+|desc= booth with pole 
+|tl1= '''Booth''' (''sḥ'')
+|tl2= '''Festival''' (''ḥ(ꜣ)b'')
+|pron=ꜥrq
+}}
+
+{{List of hieroglyphs/row
+|H=𓉳 |gardiner=O23 |unicode=13273
+|desc= double platform 
+|tl1= '''[[Sed festival]]''' (''ḥ(ꜣ)b-sd'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉴 |gardiner=O24 |unicode=13274
+|desc= pyramid 
+|tl1= '''Pyramid''' (''mr'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉵 |gardiner=O24A |unicode=13275
+|desc= pedestal of sun temple 
+|tl1= '''Ascend''' (''jꜥ(r)'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉶 |gardiner=O25 |unicode=13276
+|desc= obelisk
+|tl1= '''Obelisk''' (''tḫn'')
+|tl2='''Monument''' (''mn'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓉷 |gardiner=O25A |unicode=13277
+|desc= obelisk and pedestal of sun temple 
+|tl1= 
+|notes=determinative for Sun temples
+}}
+
+{{List of hieroglyphs/row
+|H=𓉸 |gardiner=O26 |unicode=13278
+|desc= stela
+|tl1= '''Stela''' (''ꜥḥꜥw'')
+|tl2= '''Decree''' (''wḏ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉹 |gardiner=O27 |unicode=13279
+|desc= hall of columns 
+|tl1= '''Office''' (''ḫꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉺 |gardiner=O28 |unicode=1327A
+|desc= column 
+|tl1= '''Column''' (''jwn'')
+|pron=jwn
+}}
+
+{{List of hieroglyphs/row
+|H=𓉻 |gardiner=O29 |unicode=1327B
+|desc= horizontal wooden column 
+|tl1= '''Column''' (''ꜥꜣ'')
+|tl2='''Great (esp. of size)''' (''ꜥꜣ'')
+|pron=ꜥꜣ
+}}
+
+{{List of hieroglyphs/row
+|H=𓉼 |gardiner=O29A |unicode=1327C
+|desc= vertical wooden column 
+|tl1= '''Column''' (''ꜥꜣ'')
+|tl2='''Great (esp. of size)''' (''ꜥꜣ'')
+|pron=ꜥꜣ
+}}
+
+{{List of hieroglyphs/row
+|H=𓉽 |gardiner=O30 |unicode=1327D
+|desc= support 
+|tl1= '''Post, support''' (''sḫnt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉾 |gardiner=O30A |unicode=1327E
+|desc= four supports 
+|tl1= '''The 4 supports of the sky''' (''sḫnt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓉿 |gardiner=O31 |unicode=1327F
+|desc= door
+|tl1= '''Door''' (''ꜥꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊀 |gardiner=O32 |unicode=13280
+|desc= gateway 
+|tl1= '''Gate''' (''sbꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊁 |gardiner=O33 |unicode=13281
+|desc= façade of palace 
+|tl1= '''Palace''' (''srḫ'')
+|notes=See: [[Serekh]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓊂 |gardiner=O33A |unicode=13282
+|desc= closing of [[Serekh|srḫ]]-enclosure 
+|tl1= 
+|notes=Egyptological sign used in the horizontal writing of the Horus name (see: [[Serekh]])
+}}
+
+{{List of hieroglyphs/row
+|H=𓊃 |gardiner=O34 |unicode=13283
+|desc= [[door bolt (s hieroglyph)|door bolt]]
+|tl1= '''Doorbolt''' (''s'') 
+|pron=s
+|notes= [[Egyptian uniliteral signs|Unil.]] '''s''', used for horizontal spaces instead of the vertical s-sign [[#S29|S29]], a [[folded cloth (s hieroglyph)|folded cloth]], <hiero>S29</hiero> 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊄 |gardiner=O35 |unicode=13284
+|desc= combination of bolt and legs 
+|tl1= '''Go''' (''sj'')
+|pron=sj, sb
+|notes= alone translates to "go!", can also be used in ''zbj'', "perish".
+}}
+
+{{List of hieroglyphs/row
+|H=𓊅 |gardiner=O36 |unicode=13285
+|desc= wall
+|tl1= '''Wall''' (''jnb'') 
+|notes= 1. [[Ideogram]] or [[determinative|det.]] for ''jnb'', "wall";<br />2. (a [[determinative|det.]] for related words)
+}}
+
+{{List of hieroglyphs/row
+|H=𓊆 |gardiner=O36A |unicode=13286
+|desc= opening of oval fortified wall enclosure 
+|notes= Egyptological sign used to enclose groups of signs in a fortified wall
+}}
+
+{{List of hieroglyphs/row
+|H=𓊇 |gardiner=O36B |unicode=13287
+|desc= closing of oval fortified wall enclosure 
+|notes= Egyptological sign used to enclose groups of signs in a fortified wall
+}}
+
+{{List of hieroglyphs/row
+|H=𓊈 |gardiner=O36C |unicode=13288
+|desc= opening of square fortified wall enclosure 
+|notes= Egyptological sign used to enclose groups of signs in a fortified wall
+}}
+
+{{List of hieroglyphs/row
+|H=𓊉 |gardiner=O36D |unicode=13289
+|desc= closure of square fortified wall enclosure 
+|notes= Egyptological sign used to enclose groups of signs in a fortified wall
+
+}}
+
+{{List of hieroglyphs/row
+|H=𓊊 |gardiner=O37 |unicode=1328A
+|desc= falling wall 
+|tl1= '''Tilt, favor''' (''gsꜣ'')
+|tl2= '''Demolish''' (''sẖnn'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊋 |gardiner=O38 |unicode=1328B
+|desc= corner of wall 
+|tl1= '''Corner, angle, court of magistrates''' (''qnbt'')
+|tl2='''Gateway''' (''ꜥrrt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊌 |gardiner=O39 |unicode=1328C
+|desc= stone 
+|tl1= '''Stone''' (''jnr'')
+|notes=Determinative for types of stone
+}}
+
+{{List of hieroglyphs/row
+|H=𓊍 |gardiner=O40 |unicode=1328D
+|desc= [[stair-single (hieroglyph)|stair single]]
+|tl1= '''Throne, stairs''' (''ḫndw'')
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓊎 |gardiner=O41 |unicode=1328E
+|desc= double stairway
+|tl1='''Ascend''' (''jꜥ(r)'')
+|notes= 1. 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊏 |gardiner=O42 |unicode=1328F
+|desc= fence
+|tl1='''Palm''' (''šsp'')
+|tl2='''Receive''' (''šsp'')
+|pron= šsp 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊐 |gardiner=O43 |unicode=13290
+|desc= low fence 
+|tl1='''Palm''' (''šsp'')
+|tl2='''Receive''' (''šsp'')
+|pron= šsp 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊑 |gardiner=O44 |unicode=13291
+|desc= emblem of Min
+|tl1= '''Office, position''' (''jꜣt'') 
+|notes= '''Fetish of the Temple of [[Min (god)|Min]]'''
+}}
+
+{{List of hieroglyphs/row
+|H=𓊒 |gardiner=O45 |unicode=13292
+|desc= domed building 
+|tl1= '''Harem, temple chamber''' (''jpt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊓 |gardiner=O46 |unicode=13293
+|desc= domed building 
+|tl1= '''Harem, temple chamber''' (''jpt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊔 |gardiner=O47 |unicode=13294
+|desc= enclosed mound 
+|tl1= '''[[Nekhen]]''' (''nḫn'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊕 |gardiner=O48 |unicode=13295
+|desc= enclosed mound
+|tl1= '''[[Nekhen]]''' (''nḫn'')
+|tl2= '''Twice, doubled''' (''sp-snw'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊖 |gardiner=O49 |unicode=13296
+|desc= village 
+|tl1= '''Town''' (''njwt'')
+|tl2='''[[Buto]]''' (''p'')
+|notes=Determinative for towns, locations within Egypt
+}}
+
+{{List of hieroglyphs/row
+|H=𓊗 |gardiner=O50 |unicode=13297
+|desc= threshing floor
+|tl1= '''Threshing floor''' (''spt'')
+|tl2='''Time, occasion, etc.''' (''sp'')
+|pron=sp 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊘 |gardiner=O50A |unicode=13298
+|desc= hieratic threshing floor 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊙 |gardiner=O50B |unicode=13299
+|desc= O50A reversed 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊚 |gardiner=O51 |unicode=1329A
+|desc= pile of grain 
+|tl1= '''Granary''' (''šnwt'')
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=P
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓊛 |gardiner=P1 |unicode=1329B
+|desc= 
+|tl1='''ship, boat''' (''dpt, jmw'')
+|tl2= '''Ships''' (''ꜥhꜥw'')
+|tl3= '''sail, go downstream''' (''ḫdj'')
+|pron=jm
+}}
+
+{{List of hieroglyphs/row
+|H=𓊜 |gardiner=P1A |unicode=1329C
+|desc= boat upside down 
+|tl1= '''Turn over''' (''pnꜥ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊝 |gardiner=P2 |unicode=1329D
+|desc= ship under sail 
+|tl1='''sail upstream''' (''ḫntj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊞 |gardiner=P3 |unicode=1329E
+|desc= sacred barque 
+|tl1='''Ferry, traverse''' (''ḏꜣj'')
+|tl2='''sacred barque''' (''wiꜣ'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊟 |gardiner=P3A |unicode=1329F
+|desc= sacred barque without steering oar 
+|tl1='''sacred barque''' (''wiꜣ'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊠 |gardiner=P4 |unicode=132A0
+|desc= boat with net 
+|tl1= '''Release''' (''wḥꜥ'')
+|tl2='''Fisherman, fowler''' (''wḥꜥ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊡 |gardiner=P5 |unicode=132A1
+|desc= [[sail (hieroglyph)|sail]]
+|tl1='''sail''' (''ṯꜣwt'')
+|tl2= '''sailor''' (''nfw''),
+|tl3= '''wind, breath''' (''ṯꜣw'')
+|tl4= '''north wind''' (''mḥyt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊢 |gardiner=P6 |unicode=132A2
+|desc= [[mast (hieroglyph)|mast]]<br />
+|tl1= '''mast''' (''ꜥḥꜥ'')
+|tl2= '''to stand''' (''ꜥḥꜥ'') 
+|pron= ꜥḥꜥ
+|notes= [[Egyptian triliteral signs|Triliteral]] '''ꜥḥꜥ''', "to erect, stand,", related concepts
+}}
+
+{{List of hieroglyphs/row
+|H=𓊣 |gardiner=P7 |unicode=132A3
+|desc= combination of mast and forearm 
+|tl1= '''to stand''' (''ꜥḥꜥ'') 
+|pron=ꜥḥꜥ, ꜥḥꜥw
+|notes= Combination of P6 and D36
+}}
+
+{{List of hieroglyphs/row
+|H=𓊤 |gardiner=P8 |unicode=132A4
+|desc= oar
+|tl1= '''oar''' (''wsr'') 
+|tl2='''Voice''' (''ḫrw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊥 |gardiner=P9 |unicode=132A5
+|desc= combination of oar and horned viper 
+|tl1='''says (parenthetic)''' (''ḫrwfj'')
+|notes= Combination of P8 and I9
+}}
+
+{{List of hieroglyphs/row
+|H=𓊦 |gardiner=P10 |unicode=132A6
+|desc= rudder
+|tl1= '''steering oar''' (''ḥmw'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊧 |gardiner=P11 |unicode=132A7
+|desc= mooring<br />post
+|tl1= '''mooring post''' (''m(j)njt'')
+|pron=qd 
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=Q
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓊨 |gardiner=Q1 |unicode=132A8
+|desc= seat<br />throne 
+|tl1= '''Seat, place''' (''st'')
+|pron=st, js, ws (in wsjr, “Osiris”), ḥtm 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊩 |gardiner=Q2 |unicode=132A9
+|desc= carrying<br />chair
+|tl1='''Seat, place''' (''st'')
+|pron= ws (in wsjr, “Osiris”)
+}}
+
+{{List of hieroglyphs/row
+|H=𓊪 |gardiner=Q3 |unicode=132AA
+|desc= stool 
+|tl1= '''Base, mat, stool''' (''p'')
+|tl2='''[[Buto]]''' (''p'')
+|pron=p
+|notes=[[Egyptian uniliteral sign|Uniliteral]] ''p''.
+}}
+
+{{List of hieroglyphs/row
+|H=𓊫 |gardiner=Q4 |unicode=132AB
+|desc= headrest
+|tl1= '''Headrest''' (''wrs'') 
+|notes= A. [[Determinative]] for ''wrs''', the "headrest";<br />B. headrest is also [[Egyptian language]], ''wꜣrst'', <hiero>wA-rw-Aa18:Z1-M3:t*Z1-</hiero> ([[Coptic language]], "ⲟⲩⲣⲁⲥ"). <br />C. See also: WikiCommons: [http://commons.wikimedia.org/wiki/Category:Ancient Egyptian headrests]
+}}
+
+{{List of hieroglyphs/row
+|H=𓊬 |gardiner=Q5 |unicode=132AC
+|desc= chest 
+|tl1='''box''' (''hn'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊭 |gardiner=Q6 |unicode=132AD
+|desc= sarcophagus
+|tl1='''coffin, burial''' (''qrst''), '''bury''' (''qrs'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊮 |gardiner=Q7 |unicode=132AE
+|desc= [[Brazier (hieroglyph)|brazier]]
+|tl1='''fire, flame''' (''nsr(sr)'')
+|tl2='''torch''' (''tkꜣ'')
+|tl3='''cook''' (''psj'')
+|tl4='''warmth''' (''srf'')
+|tl5= '''Lamp''' (''ḫꜣbs'')
+|notes=Ideogram and determinative for various words related to fire, warmth, burning
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=R
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓊯 |gardiner=R1 |unicode=132AF
+|desc= high table with offerings 
+|tl1='''offering table''' (''ḫꜣwt'')
+|tl2='''Offerings''' (''wdḥw'')
+|tl3='''Offering, satisfy''' (''ḥtp'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊰 |gardiner=R2 |unicode=132B0
+|desc= table with slices of bread 
+|tl1='''offering table''' (''ḫꜣwt'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊱 |gardiner=R2A |unicode=132B1
+|desc= high table with offerings 
+|tl1='''offering table''' (''ḫꜣwt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊲 |gardiner=R3 |unicode=132B2
+|desc= low table with offerings 
+|tl1='''offering table''' (''ḫꜣwt'')
+|tl2='''Offerings''' (''wdḥw'')
+|tl3='''Offering, satisfy''' (''ḥtp'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊳 |gardiner=R3A |unicode=132B3
+|desc= low table 
+|tl1='''offering table''' (''ḫꜣwt'')
+|tl2='''Offerings''' (''wdḥw'')
+|tl3='''Offering, satisfy''' (''ḥtp'')
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊴 |gardiner=R3B |unicode=132B4
+|desc= low table with offerings (simplified) 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊵 |gardiner=R4 |unicode=132B5
+|desc= loaf on mat
+|tl1='''Altar, offering, peace, be satisfied, be at peace, rest, set (of the sun)''' (''([[Hotep|ḥtp]]'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓊶 |gardiner=R5 |unicode=132B6
+|desc= narrow censer 
+|tl1= '''Cense, fumigate''' (''kꜣp'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊷 |gardiner=R6 |unicode=132B7
+|desc= broad censer 
+|tl1= '''Cense, fumigate''' (''kꜣp'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊸 |gardiner=R7 |unicode=132B8
+|desc= bowl with smoke 
+|tl1= '''Incense''' (''snṯr'')
+|tl2='''Ba-soul''' (''bꜣ'')
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓊹 |gardiner=R8 |unicode=132B9
+|desc= Cloth on pole 
+|tl1='''God''' (''nṯr'')
+|pron=
+}}
+
+{{List of hieroglyphs/row
+|H=𓊺 |gardiner=R9 |unicode=132BA
+|desc= combination of cloth on pole and bag 
+|tl1= '''[[Natron]]''' (''bd, nṯry'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊻 |gardiner=R10 |unicode=132BB
+|desc= combination of cloth on pole, butcher's block and slope of hill 
+|tl1= '''Necropolis''' (''ẖrt-nṯr'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊼 |gardiner=R10A |unicode=132BC
+|desc= combination of cloth on pole and butcher's block 
+|tl1='''Necropolis''' (''ẖrt-nṯr'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊽 |gardiner=R11 |unicode=132BD
+|desc= reed column
+|tl1= '''Be stable''' (''ḏd'') 
+|notes= [[Djed]], a symbol of [[Osiris]]- originally probably a reed column, later reinterpreted as a spinal column
+}}
+
+{{List of hieroglyphs/row
+|H=𓊾 |gardiner=R12 |unicode=132BE
+|desc= standard 
+|tl1= '''Standard''' (''jꜣt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓊿 |gardiner=R13 |unicode=132BF
+|desc= falcon and feather on standard 
+|tl1= '''West''' (''jmnty, jmntt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋀 |gardiner=R14 |unicode=132C0
+|desc= [[Emblem of the West (hieroglyph)|Emblem of the West]]
+|tl1= '''West''' (''jmnty, jmntt'')
+|tl2= '"right"' (''wnmj'') 
+|notes= Emblem of the West
+}}
+
+{{List of hieroglyphs/row
+|H=𓋁 |gardiner=R15 |unicode=132C1
+|desc= spear, [[Emblem of the East]]
+|tl1= '''East''' (''jꜣbty, jꜣbtt'')
+|tl2= '''Left''' (''jꜣbj'') 
+|notes= Emblem of the East
+}}
+
+{{List of hieroglyphs/row
+|H=𓋂 |gardiner=R16 |unicode=132C2
+|desc= sceptre with feathers and string 
+|tl1= '''Wekh-fetish of [[Nefertem]]''' (''wḫ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋃 |gardiner=R16A |unicode=132C3
+|desc= sceptre with feathers 
+|tl1= '''Wekh-fetish''' (''wḫ'')
+|notes=Wekh-fetish of [[Nefertem]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓋄 |gardiner=R17 |unicode=132C4
+|desc= wig on pole 
+|tl1= '''Great Land (8th nome of Upper Egypt)''' (''tꜣ-wr'')
+|notes=Abydine fetish of [[Osiris]]. See also NU8, 8th nome of Upper Egypt
+}}
+
+{{List of hieroglyphs/row
+|H=𓋅 |gardiner=R18 |unicode=132C5
+|desc= combination of wig on pole and irrigation canal system 
+|tl1= '''Great Land (8th nome of Upper Egypt)''' (''tꜣ-wr'')
+|notes=Abydine fetish of [[Osiris]]. See also NU8, 8th nome of Upper Egypt
+}}
+
+{{List of hieroglyphs/row
+|H=𓋆 |gardiner=R19 |unicode=132C6
+|desc= scepter with feather 
+|tl1= '''[[Thebes, Egypt|Waset (Thebes]]''' (''wꜣst'')
+|tl2='''Iatet (A milk goddess)''' (''jꜣtt'')
+|notes= Emblem of Waset ([[Thebes, Egypt|Thebes]])
+}}
+
+{{List of hieroglyphs/row
+|H=𓋇 |gardiner=R20 |unicode=132C7
+|desc= flower with horns 
+|tl1= '''[[Seshat]]''' (''sšꜣt, sẖꜣt'')
+|notes= Emblem of [[Seshat]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓋈 |gardiner=R21 |unicode=132C8
+|desc= flower with horns 
+|tl1= '''[[Seshat]]''' (''sšꜣt, sẖꜣt'')
+|notes= Emblem of [[Seshat]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓋉 |gardiner=R22 |unicode=132C9
+|desc= two narrow belemnites 
+|tl1= '''[[Min (god)|Min]]''' (''mnw'')
+|tl2='''Shrine''' (''ḫm'')
+|tl3= '''[[Letopolis]]''' (''ḫm'')
+|notes= Emblem of Min. Interpreted as belemnite fossils or a lightning bolt. 
+}}
+
+{{List of hieroglyphs/row
+|H=𓋊 |gardiner=R23 |unicode=132CA
+|desc= two broad belemnites 
+|tl1= '''[[Min (god)|Min]]''' (''mnw'')
+|tl2='''Shrine''' (''ḫm'')
+|tl3= '''[[Letopolis]]''' (''ḫm'')
+|notes= Emblem of [[Min (god)|Min]]. Interpreted as belemnite fossils or a lightning bolt. 
+}}
+
+{{List of hieroglyphs/row
+|H=𓋋 |gardiner=R24 |unicode=132CB
+|desc= two bows tied horizontally
+|tl1= '''[[Neith]]''' (''nt'') 
+|notes= Emblem of [[Neith]]. Alternatively interpreted as a weaver’s [[Shuttle (weaving)|shuttle]] or a simplified [[Click beetle]]. 
+}}
+
+{{List of hieroglyphs/row
+|H=𓋌 |gardiner=R25 |unicode=132CC
+|desc= two bows tied vertically 
+|tl1= '''[[Neith]]''' (''nt'') 
+|notes= Emblem of [[Neith]]. Alternatively interpreted as a weaver’s [[Shuttle (weaving)|shuttle]] or a simplified [[Click beetle]]. 
+}}
+
+{{List of hieroglyphs/row
+|H=𓋍 |gardiner=R26 |unicode=132CD
+|desc= combination of land, lung and windpipe, lily, and papyrus 
+|tl1= '''To unite the two lands''' (''smꜣ-tꜣwy'')
+|notes=’Sema-Tawy’, heraldic symbol of the unification of the two lands. See: [[Upper and Lower Egypt#Sema Tawy and symbolism|Sema Tawy]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓋎 |gardiner=R27 |unicode=132CE
+|desc= two arrows crossed over a shield 
+|tl1= '''[[Neith]]''' (''nt'') 
+|notes= Emblem of [[Neith]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓋏 |gardiner=R28 |unicode=132CF
+|desc= [[Bat (goddess)|Bat]] 
+|tl1= '''[[Bat (goddess)|Bat]]''' (''bꜣt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋐 |gardiner=R29 |unicode=132D0
+|desc= niche with serpent 
+|tl1= '''Shrine''' (''jtrt''), in ''jtrty'' “Double shrines”
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=S
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓋑 |gardiner=S1 |unicode=132D1
+|desc= white crown 
+|tl1= '''White crown''' (''ḥḏt, wrt, wrrt'')
+|tl2='''Beautiful, good''' (''nfr'') (Ptolemaic)
+|tl3='''Kingship''' (''nsyt'')
+|tl4='''King( of Upper Egypt)''' (''nswt'')
+|tl5='''Upper Egypt(ian)''' (''šmꜥw'')
+|notes= See [[Hedjet]]; (see also Red crown & [[Pschent]])
+}}
+
+{{List of hieroglyphs/row
+|H=𓋒 |gardiner=S2 |unicode=132D2
+|desc= combination of white crown and basket 
+|tl1= '''White crown''' (''ḥḏt, wrt, wrrt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋓 |gardiner=S2A |unicode=132D3
+|desc= combination of white crown and village 
+|tl1= '''Upper Egypt(ian)''' (''šmꜥw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋔 |gardiner=S3 |unicode=132D4
+|desc= red crown
+|tl1='''Red crown''' (''dšrt, nt'') 
+|tl2='''King (of Lower Egypt)''' (''bjty'')
+|tl3='''Lower Egypt(ian), North''' (''mḥw'')
+|pron=n, jn
+|notes= See [[Deshret]]; [[N-red crown (n hieroglyph)|Red crown (hieroglyph)]]-([[Egyptian uniliteral signs|uniliteral]] '''n'''- used in vertical spaces instead of the flat n-sign N35 
+}}
+
+{{List of hieroglyphs/row
+|H=𓋕 |gardiner=S4 |unicode=132D5
+|desc= combination of red crown and basket 
+|tl1='''Red crown''' (''dšrt, nt'') 
+|tl2='''King (of Lower Egypt)''' (''bjty'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋖 |gardiner=S5 |unicode=132D6
+|desc= [[Pschent]] Crown
+|tl1= '''Double crown''' (''sḫmty'') (lit. ‘two powers’)
+|tl2= '''Upper and Lower Egypt''' (''šmꜥw-mḥw'')
+|tl3='''Dual king''' (''nswt-bjty'')
+|notes= See: [[Pschent]], derived from late Egyptian pꜣ-sḫmty “The double crown”
+}}
+
+{{List of hieroglyphs/row
+|H=𓋗 |gardiner=S6 |unicode=132D7
+|desc= combination of [[Pschent]] Crown and basket 
+|tl1= '''Double crown''' (''sḫmty'') (lit. ‘two powers’)
+|tl2='''Dual king''' (''nswt-bjty'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋘 |gardiner=S6A |unicode=132D8
+|desc= combination of red crown and village 
+|tl1='''Lower Egypt(ian), North''' (''mḥw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋙 |gardiner=S7 |unicode=132D9
+|desc= blue crown
+|tl1= '''[[Khepresh]]''' (''ḫprš'') 
+|notes= [[khepresh]]-helmet, a.k.a. the “Blue crown” or “War crown”
+}}
+
+{{List of hieroglyphs/row
+|H=𓋚 |gardiner=S8 |unicode=132DA
+|desc= [[atef crown (hieroglyph)|Atef]]<br />[[atef crown (hieroglyph)|crown]]
+|tl1= '''[[Atef]]''' (''ꜣtf'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋛 |gardiner=S9 |unicode=132DB
+|desc= [[shuti hieroglyph (two-feather adornment)|shuty-crown (two falcon feathers)]]]
+|tl1='''[[shuti hieroglyph (two-feather adornment)|shuty-crown]]''' (''šwty'') 
+|notes= '''two feathers''', a crown related to Amun
+}}
+
+{{List of hieroglyphs/row
+|H=𓋜 |gardiner=S10 |unicode=132DC
+|desc= headband 
+|tl1= '''[[Fillet (clothing)|Fillet]]''' (''mḏḥ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋝 |gardiner=S11 |unicode=132DD
+|desc= [[Usekh collar|broad collar]]
+|tl1= '''Broad collar''' (''wsḫ'')
+|notes=see: [[Usekh collar]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓋞 |gardiner=S12 |unicode=132DE
+|desc= collar of beads 
+|tl1= '''Gold''' (''nbw'')
+|tl2='''Lord''' (''nb'') (Ptolemaic)
+}}
+
+{{List of hieroglyphs/row
+|H=𓋟 |gardiner=S13 |unicode=132DF
+|desc= combination of collar of beads and foot 
+|tl1= '''Gold''' (''nbw'')
+|tl2='''Lord''' (''nb'') (Ptolemaic)
+}}
+
+{{List of hieroglyphs/row
+|H=𓋠 |gardiner=S14 |unicode=132E0
+|desc= combination of collar of beads and mace with round head 
+|tl1= '''Silver''' (''ḥḏ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋡 |gardiner=S14A |unicode=132E1
+|desc= combination of collar of beads and sceptre
+|tl1='''[[Electrum]]''' (''ḏꜥm'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋢 |gardiner=S14B |unicode=132E2
+|desc= combination of collar of beads and sceptre 
+|tl1='''[[Electrum]]''' (''ḏꜥm'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋣 |gardiner=S15 |unicode=132E3
+|desc= pectoral
+|tl1='''Sparkle, gleam, glitter''' (''ṯḥn'')
+|tl2='''[[Faience]]''' (''ṯḥnt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋤 |gardiner=S16 |unicode=132E4
+|tl1='''Sparkle, gleam, glitter''' (''ṯḥn'')
+|tl2='''[[Faience]]''' (''ṯḥnt'')
+|tl3='''[[Malachite]]''' (''šsmt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋥 |gardiner=S17 |unicode=132E5
+|desc= pectoral 
+|tl1='''Sparkle, gleam, glitter''' (''ṯḥn'')
+|tl2='''[[Faience]]''' (''ṯḥnt'')
+|tl3='''[[Malachite]]''' (''šsmt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋦 |gardiner=S17A |unicode=132E6
+|desc= girdle 
+|tl1='''[[Malachite]]''' (''šsmt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋧 |gardiner=S18 |unicode=132E7
+|desc= "menat<br />necklace<br />and<br />counterpoise"
+|tl1='''[[Menat]]''' (''mnjt'') 
+|notes= [[Menat]] necklace
+}}
+
+{{List of hieroglyphs/row
+|H=𓋨 |gardiner=S19 |unicode=132E8
+|desc= seal<br />with necklace
+|tl1= '''Seal''' (''ḫtm'')
+|tl2='''Seal-bearer''' (''sḏꜣwty'')
+|notes= Seal<br />with necklace
+}}
+
+{{List of hieroglyphs/row
+|H=𓋩 |gardiner=S20 |unicode=132E9
+|desc= necklace with seal
+|tl1= '''Seal''' (''ḫtm'')
+|tl2='''Seal-bearer''' (''sḏꜣwty'')
+|tl3'''To seal''' (''ḏb'') 
+}}
+
+{{List of hieroglyphs/row
+|H=𓋪 |gardiner=S21 |unicode=132EA
+|desc= ring 
+|tl1= '''Ring''' (''jwꜥw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋫 |gardiner=S22 |unicode=132EB
+|desc= shoulder-knot 
+|tl1= '''Shoot''' (''stj'')
+|tl2='''[[Shesmetet]]''' (''šsmtt'')
+|pron=sṯ, st, tꜣ-wr
+}}
+
+{{List of hieroglyphs/row
+|H=𓋬 |gardiner=S23 |unicode=132EC
+|desc= [[two whips with shen ring (hieroglyph)|two whips]]<br />[[two whips with shen ring (hieroglyph)|with shen ring]]
+|tl1= '''Bring together, collect''' (''dmḏ'') 
+|pron=
+}}
+
+{{List of hieroglyphs/row
+|H=𓋭 |gardiner=S24 |unicode=132ED
+|desc= girdle knot
+|tl1= '''Bind, tie''' (''ṯs'')
+|pron=ṯs
+|notes= 1. knot; to tie in a knot, fetter;<br />2. [[Egyptian biliteral signs|Bil.]] ''ṯs''
+}}
+
+{{List of hieroglyphs/row
+|H=𓋮 |gardiner=S25 |unicode=132EE
+|desc= garment with ties 
+|tl1= '''Foreigner''' (''ꜣꜥꜥ, jꜥꜣw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋯 |gardiner=S26 |unicode=132EF
+|desc= apron 
+|tl1= '''[[Shendyt]] kilt''' (''šndyt/šnḏyt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋰 |gardiner=S26A |unicode=132F0
+|desc= apron 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓋱 |gardiner=S26B |unicode=132F1
+|desc= apron 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓋲 |gardiner=S27 |unicode=132F2
+|desc= cloth with two strands 
+|tl1= '''Linen''' (''mnḫt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋳 |gardiner=S28 |unicode=132F3
+|desc= cloth with fringe on top and folded cloth 
+|tl1= '''Clothes, to clothe''' (''ḥbs'')
+|tl2= ''''Be naked''' (''ḥꜣy'')
+|pron=s (Cryptographic)
+}}
+
+{{List of hieroglyphs/row
+|H=𓋴 |gardiner=S29 |unicode=132F4
+|desc= folded cloth
+|tl1='''She, her, hers''' (''.s'') (Suffix pronoun)
+|pron=s
+|notes=[[Egyptian uniliteral signs|Uniliteral]] ''s''.
+}}
+
+{{List of hieroglyphs/row
+|H=𓋵 |gardiner=S30 |unicode=132F5
+|desc= combination of folded cloth and horned viper 
+|pron=sf
+}}
+
+{{List of hieroglyphs/row
+|H=𓋶 |gardiner=S31 |unicode=132F6
+|desc= combination of folded cloth and sickle 
+|tl1= '''Slaughter''' (''smꜣ'')
+|pron=smꜣ
+}}
+
+{{List of hieroglyphs/row
+|H=𓋷 |gardiner=S32 |unicode=132F7
+|desc= cloth with fringe on the side 
+|tl1= '''Perceive''' (''sjꜣ'')
+|tl2= '''[[Sia (god)|Sia]]''' (''sjꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋸 |gardiner=S33 |unicode=132F8
+|desc= sandal 
+|tl1= '''Sandal''' (''ṯb'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋹 |gardiner=S34 |unicode=132F9
+|desc= life<br />ankh, possibly representing a sandal-strap
+|tl1='''Life, to live''' (''[[ankh|ꜥnḫ]]'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋺 |gardiner=S35 |unicode=132FA
+|desc= sunshade 
+|tl1= '''Shadow, shade, sunshade''' (''ḫꜣbyt, šwt'')
+|tl2='''Standard''' (''sryt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋻 |gardiner=S35A |unicode=132FB
+|desc= sunshade 
+|tl1= '''Shadow, shade, sunshade''' (''ḫꜣbyt, šwt'')
+|tl2='''Standard''' (''sryt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋼 |gardiner=S36 |unicode=132FC
+|desc= sunshade 
+|tl1= '''Shadow, shade, sunshade''' (''ḫꜣbyt, šwt'')
+|tl2='''Standard''' (''sryt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋽 |gardiner=S37 |unicode=132FD
+|desc= fan 
+|tl1= '''Fan''' (''ḫw'')
+|tl2='''Protect''' (''ḫwj'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋾 |gardiner=S38 |unicode=132FE
+|desc= crook
+|tl1='''Rule, ruler''' (''ḥqꜣ'') 
+|tl2='''Scepter''' (''ḥqꜣt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓋿 |gardiner=S39 |unicode=132FF
+|desc= shepherd's crook 
+|tl1= '''Crook, scepter''' (''ꜥwt'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓌀 |gardiner=S40 |unicode=13300
+|desc= wꜣs scepter<br />(uꜣs)
+|tl1='''Power, dominion''' (''wꜣs'')
+|tl2='''Iatet (a milk goddess)''' (''jꜣtt'')
+|notes=See [[Was scepter]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓌁 |gardiner=S41 |unicode=13301
+|desc= sceptre 
+|tl1= '''[[Electrum]]''' (''ḏꜥm'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓌂 |gardiner=S42 |unicode=13302
+|desc= [[sekhem scepter|Sekhem]]<br />[[sekhem scepter|scepter]]
+|tl1= '''Power, force''' (''sḫm'')
+|tl2='''ḫrp-scepter, control, direct''' (''ḫrp'')
+|tl3='''ꜥbꜣ-scepter''' (''ꜥbꜣ'')
+|notes= see: [[Sekhem scepter]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓌃 |gardiner=S43 |unicode=13303
+|desc= walking stick 
+|tl1= '''Speak, word(s)''' (''md(w)'')
+|tl2='''Staff''' (''mdw'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓌄 |gardiner=S44 |unicode=13304
+|desc= walking stick with flagellum 
+|tl1= '''Club, mace, ꜣms-scepter''' (''ꜣms'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓌅 |gardiner=S45 |unicode=13305
+|desc= flagellum 
+|tl1= '''Flail''' (''nḫꜣḫꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓌆 |gardiner=S46 |unicode=13306
+|desc= covering for head and neck 
+|pron=k (Ptolemaic)
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=T
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓌇 |gardiner=T1 |unicode=13307
+|desc= mace with flat head 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌈 |gardiner=T2 |unicode=13308
+|desc= mace with round head 
+|tl1= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌉 |gardiner=T3 |unicode=13309
+|desc= mace with round head 
+|tl1= ḥḏ 
+|notes= [[Ideogram]] for mace and and [[phonogram (linguistics)|phonogram]] for ''ḥḏ'' <br> Possibly ancestral to [[Proto-Sinaitic script|Proto-Sinaitic]] [[Waw]] and its descendants
+}}
+
+{{List of hieroglyphs/row
+|H=𓌊 |gardiner=T3A |unicode=1330A
+|desc= combination of mace with round head and two hills 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌋 |gardiner=T4 |unicode=1330B
+|desc= mace with strap 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌌 |gardiner=T5 |unicode=1330C
+|desc= combination of mace with round head and cobra 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌍 |gardiner=T6 |unicode=1330D
+|desc= combination of mace with round head and two cobras 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌎 |gardiner=T7 |unicode=1330E
+|desc= axe 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌏 |gardiner=T7A |unicode=1330F
+|desc= axe 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌐 |gardiner=T8 |unicode=13310
+|desc= dagger
+|tl1= tp 
+|notes= "top", or "first"<br />"first", "foremost"<br />[[Ideogram]] in ''tp'', ''tpy''; [[Determinative|det.]] in ''mtpnt''
+}}
+
+{{List of hieroglyphs/row
+|H=𓌑 |gardiner=T8A |unicode=13311
+|desc= dagger 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌒 |gardiner=T9 |unicode=13312
+|desc= bow
+|tl1= pḏ 
+|notes= To stretch, to extend, to be wide
+}}
+
+{{List of hieroglyphs/row
+|H=𓌓 |gardiner=T9A |unicode=13313
+|desc= bow 
+|tl1= pḏ
+|notes= To stretch, to extend, to be wide
+}}
+
+{{List of hieroglyphs/row
+|H=𓌔 |gardiner=T10 |unicode=13314
+|desc= composite bow 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌕 |gardiner=T11 |unicode=13315
+|desc= arrow 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌖 |gardiner=T11A |unicode=13316
+|desc= two crossed arrows 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌗 |gardiner=T12 |unicode=13317
+|desc= [[bowstring (hieroglyph)|bowstring]]
+|tl1= rwḏ 
+|pron=
+|notes= 1. [[Egyptian triliteral signs|Tril.]] ''rwḏ''; [[Ideogram|Ideo.]] for "bowstring"<br />2. items that are "hard, durable, strong, rooted," thus "growth, growing"<br />3. (see Pharaoh [[Rudamun]])
+}}
+
+{{List of hieroglyphs/row
+|H=𓌘 |gardiner=T13 |unicode=13318
+|desc= joined pieces of wood
+|tl1='''rs''' 
+|notes= [[Phonogram (linguistics)|phonogram]], ''rs''
+}}
+
+{{List of hieroglyphs/row
+|H=𓌙 |gardiner=T14 |unicode=13319
+|desc= throw stick vertically 
+|tl1= 
+|notes= Possibly ancestral to [[Proto-Sinaitic script|Proto-Sinaitic]] [[Gimel]] and its descendants. 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌚 |gardiner=T15 |unicode=1331A
+|desc= throw stick slanted 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌛 |gardiner=T16 |unicode=1331B
+|desc= scimitar 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌜 |gardiner=T16A |unicode=1331C
+|desc= scimitar 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌝 |gardiner=T17 |unicode=1331D
+|desc= chariot
+|tl1= wrrt 
+|notes= [[Ideogram]] or [[determinative|det.]] for chariot
+}}
+
+{{List of hieroglyphs/row
+|H=𓌞 |gardiner=T18 |unicode=1331E
+|desc= crook with package attached
+|tl1=
+|pron= šms 
+|notes= Follower sign
+}}
+
+{{List of hieroglyphs/row
+|H=𓌟 |gardiner=T19 |unicode=1331F
+|desc= harpoon head
+|tl1= gn
+|notes= "memorial, record, archive, memorandum"; in plural: "annals"
+}}
+
+{{List of hieroglyphs/row
+|H=𓌠 |gardiner=T20 |unicode=13320
+|desc= harpoon head 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌡 |gardiner=T21 |unicode=13321
+|desc= [[harpoon (hieroglyph)|harpoon]]
+|tl1= '''wꜥ'''<br />([[Egyptian biliteral signs|bil.]]) 
+|pron=
+|notes= 1. "single" items; "1", 'each', etc.; 2. [[Egyptian biliteral signs|Bil.]] '''wꜥ'''
+}}
+
+{{List of hieroglyphs/row
+|H=𓌢 |gardiner=T22 |unicode=13322
+|desc= arrowhead
+|tl1= sn 
+|notes= Bil. ''sn''; [[Ideogram|Ideo.]] for "arrow"<br />used for:<br />brother, husband<br />sister, wife<br />"smell"<br />touch, grasp<br />2, "second", 'the same'-('''twin'''), '''two''', ''both'', etc.
+}}
+
+{{List of hieroglyphs/row
+|H=𓌣 |gardiner=T23 |unicode=13323
+|desc= arrowhead 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌤 |gardiner=T24 |unicode=13324
+|desc= fishingnet
+|tl1= iꜥḥ 
+|notes= See moon, (also '''iꜥh''');<br />A. plough, break ground;<br />B. field laborer, peasant;<br />C. field;<br />D. [[determinative|det.]] in name of a god "I'h-ur"-(I'h-''Great'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓌥 |gardiner=T25 |unicode=13325
+|desc= float
+|tl1= ḏb<br />ḏbꜣ 
+|notes= ''to supply, furnish with, equip, provide, & to decorate''...(thus the "[[Personal flotation device|life preserver]]")<br />see also: seal, (''to seal'', '''ḏbꜥj-t''')
+}}
+
+{{List of hieroglyphs/row
+|H=𓌦 |gardiner=T26 |unicode=13326
+|desc= birdtrap 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌧 |gardiner=T27 |unicode=13327
+|desc= trap
+|tl1= sḫt 
+|notes= 1. ''trap, bird-trap,'' (the device); 2. [[Ideogram]] or [[determinative|det.]] in ''sḫt'', Egyptian "trap" and related words
+}}
+
+{{List of hieroglyphs/row
+|H=𓌨 |gardiner=T28 |unicode=13328
+|desc= butcher's block
+|tl1='''ẖr''' 
+|notes= 1. [[Egyptian biliteral signs|Bil.]] ''ẖr'';<br />2. Ideas of items below, (butchered, segmented, then 'owned'); and major use of 'below', or 'under', as a [[preposition]]al use
+}}
+
+{{List of hieroglyphs/row
+|H=𓌩 |gardiner=T29 |unicode=13329
+|desc= butcher's block with knife 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌪 |gardiner=T30 |unicode=1332A
+|desc= knife
+|tl1=šꜥ 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌫 |gardiner=T31 |unicode=1332B
+|desc= knife-sharpener 
+|tl1= 
+|notes=phonogram for  sšm
+}}
+
+{{List of hieroglyphs/row
+|H=𓌬 |gardiner=T32 |unicode=1332C
+|desc= combination of knife-sharpener and legs 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌭 |gardiner=T32A |unicode=1332D
+|desc= combination of knife and folded cloth 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌮 |gardiner=T33 |unicode=1332E
+|desc= knife-sharpener of butcher 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌯 |gardiner=T33A |unicode=1332F
+|desc= combination of knife-sharpener and folded cloth 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌰 |gardiner=T34 |unicode=13330
+|desc= butcher's knife 
+|tl1= '''nm'''
+|notes= [[Egyptian biliteral signs|bil.]] ''nm''
+}}
+
+{{List of hieroglyphs/row
+|H=𓌱 |gardiner=T35 |unicode=13331
+|desc= butcher's knife 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌲 |gardiner=T36 |unicode=13332
+|desc= shield 
+|tl1= 
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=U
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓌳 |gardiner=U1 |unicode=13333
+|desc= sickle 
+|tl1= mꜣ.
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌴 |gardiner=U2 |unicode=13334
+|desc= sickle 
+|tl1= Can have the same phonetic value as U1.
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌵 |gardiner=U3 |unicode=13335
+|desc= 			
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌶 |gardiner=U4 |unicode=13336
+|desc= 
+|tl1= mꜣꜥ
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌷 |gardiner=U5 |unicode=13337
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌸 |gardiner=U6 |unicode=13338
+|desc= 
+|tl1= mr
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌹 |gardiner=U6A |unicode=13339
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌺 |gardiner=U6B |unicode=1333A
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌻 |gardiner=U7 |unicode=1333B
+|desc= hoe
+|tl1= ''mr''
+|notes= 1. [[Egyptian biliteral signs|bil.]] ''mr'', for ''"beloved"''<br />2. used in Pharaoh, individuals, other names, etc.: (''Pharaoh XX, Beloved of God/Goddess YY'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓌼 |gardiner=U8 |unicode=1333C
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌽 |gardiner=U9 |unicode=1333D
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌾 |gardiner=U10 |unicode=1333E
+|desc= grain measure (with plural, for grain particles)
+|tl1= dbḥ 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓌿 |gardiner=U11 |unicode=1333F
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍀 |gardiner=U12 |unicode=13340
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍁 |gardiner=U13 |unicode=13341
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍂 |gardiner=U14 |unicode=13342
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍃 |gardiner=U15 |unicode=13343
+|desc= sled<br />(sledge)
+|tl1= tm 
+|notes= [[Egyptian biliteral signs|Bil.]] ''tm''
+}}
+
+{{List of hieroglyphs/row
+|H=𓍄 |gardiner=U16 |unicode=13344
+|desc= sled with jackal head
+|tl1= bjꜣ
+|notes= ''bjꜣ'' as in wonder or marvel, or [[Determinative]] for ''wnš'', sledge.
+}}
+
+{{List of hieroglyphs/row
+|H=𓍅 |gardiner=U17 |unicode=13345
+|desc= Pick, opening earth
+|tl1= grg<br />gr 
+|notes= To have, hold, possess; (used in building new town-locations)
+}}
+
+{{List of hieroglyphs/row
+|H=𓍆 |gardiner=U18 |unicode=13346
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍇 |gardiner=U19 |unicode=13347
+|desc= 
+|pron= nw
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍈 |gardiner=U20 |unicode=13348
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍉 |gardiner=U21 |unicode=13349
+|desc= adze-<br />on-block
+|tl1= stp 
+|notes= [[Egyptian triliteral signs|triliteral]], ''stp'', for "chosen"<br />often used in Pharaonic [[cartouche]] names as: ''"Chosen of God XXXX"'', (example: ''Beloved of Maat, Chosen of [[Maat]]'')
+May be a combination of U19 (Adze), Z1 (singular), and N26 (mountain)
+}}
+
+{{List of hieroglyphs/row
+|H=𓍊 |gardiner=U22 |unicode=1334A
+|desc= clapper-(of-bell)<br />tool/instrument<br />forked-staff, etc.
+|tl1=''mnḫ''
+|notes= 1. [[Determinative]] for ''mnḫ'', for "cut", "give shape to"<br />2. [[Ideogram]] in ''mnḫ'', for "'''to be excellent'''"<br />3. The grandfather of [[Ptolemy V]] of the [[Rosetta Stone]] is [[Ptolemy III Euergetes]]-(the [[Canopus Stone]]), the '''"Well-doer Gods"'''-(pharaohs).<ref>Budge, 1989, (1929). ''The [[Rosetta Stone]]'', p. 126.</ref> Their name is a [[quadrat (hieroglyph block)|composition block]] of two 'God' hieroglyphs-(husband & wife), ([[#R8|R8]]), <hiero>R8-R8</hiero>, with a chisel at the base of each, <hiero>-.-U22-R8--.-U22-R8</hiero>
+}}
+
+{{List of hieroglyphs/row
+|H=𓍋 |gardiner=U23 |unicode=1334B
+|desc= chisel
+|tl1= '''ꜣb'''<br />'''mr'''
+|notes= See: [[Narmer Palette]]<br />[[Egyptian biliteral signs|bil.]], ''ꜣb'', ''mr''; (see also for ''mr'', Canal)<!--?-->
+}}
+
+{{List of hieroglyphs/row
+|H=𓍌 |gardiner=U23A |unicode=1334C
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍍 |gardiner=U24 |unicode=1334D
+|desc= [[hand drill (hieroglyph)|hand]]<br />[[hand drill (hieroglyph)|drill]]<br />[[hand drill (hieroglyph)|(hieroglyph)]]
+|tl1= ḥmt 
+|notes= 1. [[Ideogram]] in ''ḥmt'', the name for the 'hand drill tool'; also ''ḥmt'' for words of "art", "artisan", etc. <br />2. Ideo. or [[Determinative|det.]] for ''wbꜣ'', to 'rise', to 'open'; see: Rise of a Star: ''wbn'': <hiero>N8</hiero>
+}}
+
+{{List of hieroglyphs/row
+|H=𓍎 |gardiner=U25 |unicode=1334E
+|desc= version of U24 (hand drill)
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍏 |gardiner=U26 |unicode=1334F
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍐 |gardiner=U27 |unicode=13350
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍑 |gardiner=U28 |unicode=13351
+|desc= fire-drill
+|tl1=''ḏꜣ''<br />([[Egyptian biliteral signs|bil.]]) 
+|notes= 1. [[Egyptian biliteral signs|bil.]] ''ḏꜣ''; [[Ideogram]] for "forest"<br />''Emphatically used'' with words as ''ḏꜥḏꜥ'' constructs<br />2. (see [[Ankh wedja seneb|AUS]]-(article), and "Scale-2"-(on list)-''wḏꜣ'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓍒 |gardiner=U29 |unicode=13352
+|tl1= Can have the same value as U28.
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍓 |gardiner=U29A |unicode=13353
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍔 |gardiner=U30 |unicode=13354
+|desc= kiln 
+|tl1= tꜣ 
+|notes= [[Egyptian biliteral signs|Bil.]] ''tꜣ''; [[Ideogram]] for "potter's kiln"<br />(for ''tꜣ'', see also Land, '''tꜣ''')
+}}
+
+{{List of hieroglyphs/row
+|H=𓍕 |gardiner=U31 |unicode=13355
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍖 |gardiner=U32 |unicode=13356
+|desc= 
+|notes= [[Determinative]] for ''smn'', establish, press down, support
+}}
+
+{{List of hieroglyphs/row
+|H=𓍗 |gardiner=U32A |unicode=13357
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍘 |gardiner=U33 |unicode=13358
+|desc= 'pestle'-(curved top)
+|tl1= tj 
+|notes= [[Egyptian biliteral signs|Bil.]] ''tj''
+}}
+
+{{List of hieroglyphs/row
+|H=𓍙 |gardiner=U34 |unicode=13359
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍚 |gardiner=U35 |unicode=1335A
+|desc= 
+|tl1= ḫsf
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍛 |gardiner=U36 |unicode=1335B
+|desc= fuller's-club
+|tl1= ḥm<br />([[Egyptian biliteral signs|bil.]]) 
+|notes= 1. [[Egyptian biliteral signs|Egyptian biliteral sign]] ''ḥm'', for a fuller's club;<br />2. [[Ideogram]] for ''ḥmw'', 'washer', and ''ḥm'', slave, servant; [[phonogram (linguistics)|phonogram]] ''ḥm''
+}}
+
+{{List of hieroglyphs/row
+|H=𓍜 |gardiner=U37 |unicode=1335C
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍝 |gardiner=U38 |unicode=1335D
+|desc= scale
+|tl1= mḫꜣt 
+|notes= [[Ideogram]] and [[determinative|det.]] for ''mḫꜣt'', "scale": see Stand (for Scales)
+}}
+
+{{List of hieroglyphs/row
+|H=𓍞 |gardiner=U39 |unicode=1335E
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍟 |gardiner=U40 |unicode=1335F
+|desc= a support-(to lift)
+|tl1=
+|pron= wṯs<br />wṯs 
+|notes= 1. ''to lift up, support, etc.'' <br />2. see also: '''wṯs'''
+}}
+
+{{List of hieroglyphs/row
+|H=𓍠 |gardiner=U41 |unicode=13360
+|desc= plummet 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍡 |gardiner=U42 |unicode=13361
+|desc= pitchfork 
+|tl1= 
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=V
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓍢 |gardiner=V1 |unicode=13362
+|desc= 
+|notes= 
+"string, rope", [[Egyptian numeral]] 100
+}}
+
+{{List of hieroglyphs/row
+|H=𓍣 |gardiner=V1A |unicode=13363
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 200
+}}
+
+{{List of hieroglyphs/row
+|H=𓍤 |gardiner=V1B |unicode=13364
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 300
+}}
+
+{{List of hieroglyphs/row
+|H=𓍥 |gardiner=V1C |unicode=13365
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 400
+}}
+
+{{List of hieroglyphs/row
+|H=𓍦 |gardiner=V1D |unicode=13366
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 500
+}}
+
+{{List of hieroglyphs/row
+|H=𓍧 |gardiner=V1E |unicode=13367
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 600
+}}
+
+{{List of hieroglyphs/row
+|H=𓍨 |gardiner=V1F |unicode=13368
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 700
+}}
+
+{{List of hieroglyphs/row
+|H=𓍩 |gardiner=V1G |unicode=13369
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 800
+}}
+
+{{List of hieroglyphs/row
+|H=𓍪 |gardiner=V1H |unicode=1336A
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 900
+}}
+
+{{List of hieroglyphs/row
+|H=𓍫 |gardiner=V1I |unicode=1336B
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 500
+}}
+
+{{List of hieroglyphs/row
+|H=𓍬 |gardiner=V2 |unicode=1336C
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍭 |gardiner=V2A |unicode=1336D
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍮 |gardiner=V3 |unicode=1336E
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍯 |gardiner=V4 |unicode=1336F
+|desc= lasso
+|tl1= wꜣ<br />([[Egyptian biliteral signs|bil.]]) 
+|notes= Lasso, for "cord", (possibly earlier, a word related to "lasso")
+}}
+
+{{List of hieroglyphs/row
+|H=𓍰 |gardiner=V5 |unicode=13370
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍱 |gardiner=V6 |unicode=13371
+|desc= rope-(shape)
+|tl1= šs<br />([[Egyptian biliteral signs|bil.]]) 
+|notes= [[Egyptian biliteral signs|Egyptian biliteral sign]] '''šs'''
+}}
+
+{{List of hieroglyphs/row
+|H=𓍲 |gardiner=V7 |unicode=13372
+|desc= rope-(shape)
+|tl1= šn<br />([[Egyptian biliteral signs|bil.]]) 
+|notes= [[Egyptian biliteral signs|Egyptian biliteral sign]] '''šn'''
+}}
+
+{{List of hieroglyphs/row
+|H=𓍳 |gardiner=V7A |unicode=13373
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍴 |gardiner=V7B |unicode=13374
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍵 |gardiner=V8 |unicode=13375
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍶 |gardiner=V9 |unicode=13376
+|desc= shen<br />ring 
+|tl1=
+|pron= šn 
+|notes= [[Determinative]] in ''šnw'', the [[cartouche]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓍷 |gardiner=V10 |unicode=13377
+|desc= [[cartouche (hieroglyph)|cartouche]]
+|tl1= šn<br />rn 
+|notes= Special uses, (often with inserted name)<br />šn-(shen), "circle", "encircle", or a 'ring'; later time period usage for "name", ''rn''
+}}
+
+{{List of hieroglyphs/row
+|H=𓍸 |gardiner=V11 |unicode=13378
+|desc= cartouche-(divided) 
+|tl1= dn 
+|notes= Ideas of ''to divide'', ''to exclude'', words related to Egyptian language '''tn''', etc.
+}}
+
+{{List of hieroglyphs/row
+|H=𓍹 |gardiner=V11A |unicode=13379
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍺 |gardiner=V11B |unicode=1337A
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍻 |gardiner=V11C |unicode=1337B
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐯 |gardiner=V11D |unicode=1342F
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍼 |gardiner=V12 |unicode=1337C
+|desc= Contrast V23A.
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍽 |gardiner=V12A |unicode=1337D
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍾 |gardiner=V12B |unicode=1337E
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓍿 |gardiner=V13 |unicode=1337F
+|desc= tethering rope
+|notes= Uniliteral '''ṯ''' (also written '''č''')
+}}
+
+{{List of hieroglyphs/row
+|H=𓎀 |gardiner=V14 |unicode=13380
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎁 |gardiner=V15 |unicode=13381
+|desc= combination of tethering rope (V13) and legs walking (D54)
+|tl1= ''jṯj''
+|notes= ''to take possession of, seize, carry off, conquer, acquire''
+}}
+
+{{List of hieroglyphs/row
+|H=𓎂 |gardiner=V16 |unicode=13382
+|desc= cattle<br />hobble<br />([[Egyptian biliteral signs|bil.]])
+|tl1= ''sꜣ'' 
+|pron=
+|notes= [[Egyptian biliteral signs|bil.]] ''sꜣ''; equivalent of Gardiner [[#V17|V17]], also ''sꜣ'', <hiero>V17</hiero><br />(see also: [[tether (hieroglyph)|tethering rope]])
+}}
+
+{{List of hieroglyphs/row
+|H=𓎃 |gardiner=V17 |unicode=13383
+|desc= lifesaver
+|tl1=''sꜣ''<br />([[Egyptian biliteral signs|bil.]]) 
+|notes= [[Egyptian biliteral signs|bil.]] ''sꜣ''; equivalent of Gardiner [[#V16|V16]], also ''sꜣ'', <hiero>V16</hiero><br />(see also: [[tether (hieroglyph)|tethering rope]])
+}}
+
+{{List of hieroglyphs/row
+|H=𓎄 |gardiner=V18 |unicode=13384
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎅 |gardiner=V19 |unicode=13385
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎆 |gardiner=V20 |unicode=13386
+|desc= cattle hobble
+|tl1= mḏw<br />(also mḏ) 
+|notes= [[Egyptian numeral]] 10
+}}
+
+{{List of hieroglyphs/row
+|H=𓎇 |gardiner=V20A |unicode=13387
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 20
+}}
+
+{{List of hieroglyphs/row
+|H=𓎈 |gardiner=V20B |unicode=13388
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 30
+}}
+
+{{List of hieroglyphs/row
+|H=𓎉 |gardiner=V20C |unicode=13389
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 40
+}}
+
+{{List of hieroglyphs/row
+|H=𓎊 |gardiner=V20D |unicode=1338A
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 50
+}}
+
+{{List of hieroglyphs/row
+|H=𓎋 |gardiner=V20E |unicode=1338B
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 60
+}}
+
+{{List of hieroglyphs/row
+|H=𓎌 |gardiner=V20F |unicode=1338C
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 70
+}}
+
+{{List of hieroglyphs/row
+|H=𓎍 |gardiner=V20G |unicode=1338D
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 80
+}}
+
+{{List of hieroglyphs/row
+|H=𓎎 |gardiner=V20H |unicode=1338E
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 90
+}}
+
+{{List of hieroglyphs/row
+|H=𓎏 |gardiner=V20I |unicode=1338F
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 20
+}}
+
+{{List of hieroglyphs/row
+|H=𓎐 |gardiner=V20J |unicode=13390
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 30
+}}
+
+{{List of hieroglyphs/row
+|H=𓎑 |gardiner=V20K |unicode=13391
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 40
+}}
+
+{{List of hieroglyphs/row
+|H=𓎒 |gardiner=V20L |unicode=13392
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 50
+}}
+
+{{List of hieroglyphs/row
+|H=𓎓 |gardiner=V21 |unicode=13393
+|desc= Fetter + Cobra
+|tl1= mḏ, mḏwt 
+|notes= Deep place, deep, pit, cavern-extending, subterranean shrine, etc.
+}}
+
+{{List of hieroglyphs/row
+|H=𓎔 |gardiner=V22 |unicode=13394
+|desc= whip
+|tl1='''mḥ''' 
+|notes= [[Egyptian biliteral signs|Bil.]] '''mh''', (mḥ); (See: similar shaped hieroglyph [[#F30|F30]], water-skin)
+}}
+
+{{List of hieroglyphs/row
+|H=𓎕 |gardiner=V23 |unicode=13395
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎖 |gardiner=V23A |unicode=13396
+|desc= Contrast V12.
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎗 |gardiner=V24 |unicode=13397
+|desc= "command staff" (can also be circular)
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎘 |gardiner=V25 |unicode=13398
+|desc= variant of V24 (can also be circular)
+|tl1= wḏ<br />([[Egyptian biliteral signs|bil.]]) 
+|notes= ''to give an order, to command, to decree''; ([[Egyptian biliteral signs|bil.]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓎙 |gardiner=V26 |unicode=13399
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎚 |gardiner=V27 |unicode=1339A
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎛 |gardiner=V28 |unicode=1339B
+|desc= a twisted wick
+|tl1= '''ḥ'''
+|notes= Uniliteral ''ḥ''; eternity, or a long time period, (also variations of time periods, with tweaks of the seated man holding [[renpet]]-constructs)<br />God [[Huh (god)|Huh]]?<br />Possibly ancestral to [[Proto-Sinaitic script|Proto-Sinaitic]] [[Heth]] and its descendants
+}}
+
+{{List of hieroglyphs/row
+|H=𓎜 |gardiner=V28A |unicode=1339C
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎝 |gardiner=V29 |unicode=1339D
+|desc= (fiber)<br />swab<br />(straw broom)
+|tl1= sq, ḫsr<br />wꜣḥ<br /><br />[[Egyptian biliteral signs|bil.]]-[[Egyptian triliteral signs|tril.]]<br />[[Egyptian biliteral signs|bil.]] sq<br />([[Egyptian triliteral signs|tril.]] wꜣḥ 
+|notes= 1. [[Egyptian biliteral signs|Biliteral]] ''sq''; "to clean", "dust";<br />2. [[Egyptian triliteral signs|Triliteral]] ''wꜣḥ''
+}}
+
+{{List of hieroglyphs/row
+|H=𓎞 |gardiner=V29A |unicode=1339E
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎟 |gardiner=V30 |unicode=1339F
+|desc= [[basket (hieroglyph)|basket]]<br />[[basket (hieroglyph)|(hieroglyph)]]
+|tl1=nb<br />([[Egyptian biliteral signs|bil.]]) 
+|notes= Egyptian for ''"everything"'', ''every''; major use: '''"Lord"''', (or feminine, ''Lady'')<br />Bil. '''nb'''<br />[[Ideogram]] for basket: '''master''', '''lord'''
+}}
+
+{{List of hieroglyphs/row
+|H=𓎠 |gardiner=V30A |unicode=133A0
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎡 |gardiner=V31 |unicode=133A1
+|desc= [[basket-with-handle (hieroglyph)|basket-]]<br />[[basket-with-handle (hieroglyph)|with-handle]]<br />[[basket-with-handle (hieroglyph)|(hieroglyph)]]
+|tl1= k<br />([[Egyptian uniliteral signs|unil.]]) 
+|notes= Unil. '''k'''
+}}
+
+{{List of hieroglyphs/row
+|H=𓎢 |gardiner=V31A |unicode=133A2
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎣 |gardiner=V32 |unicode=133A3
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎤 |gardiner=V33 |unicode=133A4
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎥 |gardiner=V33A |unicode=133A5
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎦 |gardiner=V34 |unicode=133A6
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎧 |gardiner=V35 |unicode=133A7
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎨 |gardiner=V36 |unicode=133A8
+|desc= doubled container<br />(or-added-glyphs)<br />many spellings
+|tl1= ḥnty 
+|notes= Period of '''120 years'''; in translation: "for..'henti years'"; from, <hiero>V28-M2:N35-V36-X1:N36</hiero> ''ḥn-t'', border, boundary, end, limit, frontier, etc.
+}}
+
+{{List of hieroglyphs/row
+|H=𓎩 |gardiner=V37 |unicode=133A9
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎪 |gardiner=V37A |unicode=133AA
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎫 |gardiner=V38 |unicode=133AB
+|desc= Compare D21, "mouth," and U28/U29, "fire-drill"
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎬 |gardiner=V39 |unicode=133AC
+|desc= ?stylized [[ankh]]<br />(for [[Isis]])(?)
+|tl1=''ṯt''<br />[[tyet]] 
+|notes= [[Tyet]], '''Knot of [[Isis]]''', '''Girdle of [[Isis]]'''
+}}
+
+{{List of hieroglyphs/row
+|H=𓎭 |gardiner=V40 |unicode=133AD
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎮 |gardiner=V40A |unicode=133AE
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=W
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓎯 |gardiner=W1 |unicode=133AF
+|desc= Oil jar 
+|tl1=Ointment (mrḥt), oil
+}}
+
+{{List of hieroglyphs/row
+|H=𓎰 |gardiner=W2 |unicode=133B0
+|desc= Oil-jar without ties 
+|tl1=Bas-container (bꜣs)
+|pron=bꜣs
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎱 |gardiner=W3 |unicode=133B1
+|desc= alabaster<br />basin
+|tl1= alabaster (šs), festival (ḥꜣb)
+|pron= sš<br />
+|notes= festival<br />(Equivalent to Gardiner [[#W3|W4]], [[Jubilee Pavilion (hieroglyph)]])<br />[[determinative|det.]] in ''sš'', 'alabaster', or "precious stone"; det. in ''hb''
+abbreviation for ḥbt in "ritual book" ḥrj-ḥbt
+}}
+
+{{List of hieroglyphs/row
+|H=𓎲 |gardiner=W3A |unicode=133B2
+|desc= alabaster<br />basin 
+|tl1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎳 |gardiner=W4 |unicode=133B3
+|desc= festival chamber, (the tail is also vertical 'Great': '''ꜥꜣ''')
+|tl1=festival (ḥb)
+|pron= ''' Sṯ'''
+|notes= '''[[Sed festival]]'''
+}}
+
+{{List of hieroglyphs/row
+|H=𓎴 |gardiner=W5 |unicode=133B4
+|desc= 
+|tl1= 
+|notes= Abbreviation for [[Xry Hbt|Lector Priest]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓎵 |gardiner=W6 |unicode=133B5
+|desc=metal vessel 
+|tl1=boiler (wḥꜣt)
+}}
+
+{{List of hieroglyphs/row
+|H=𓎶 |gardiner=W7 |unicode=133B6
+|desc= granite bowl 
+|tl1=red granite (mꜣṯ)
+|pron=mꜣṯ
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎷 |gardiner=W8 |unicode=133B7
+|desc= deformed granite bowl 
+|tl1=red granite (mꜣṯ)
+}}
+
+{{List of hieroglyphs/row
+|H=𓎸 |gardiner=W9 |unicode=133B8
+|desc= stone jug 
+|tl1=Nechnem-oil (nẖnm)
+|pron= ẖnm
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎹 |gardiner=W9A |unicode=133B9
+|desc= stone jug (reversed)
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎺 |gardiner=W10 |unicode=133BA
+|desc= cup
+|TL1= determinative for goblet (jab) 
+|pron= wsḫ, sẖw 
+|notes= A. [[Determinative]] for the "vessel", [[Egyptian language]], ''i'b''-(no. 5 of 6); det. for ''i'b'' (1 & 2), 1: to approach, to come towards, to meet; 2: "to present a gift", to make an offering, 'an offering'; <br />B. ''i', i'y'', bathing; ''i'u'', food, morning meal; ''i'b''-(no. 3 of 6), uses Gardiner no. F16, <hiero>F16</hiero> as det. for "to comb"; the other use of 'to comb', is for 'to card wool' and also uses the Horn hieroglyph, but is the equivalent word: b'-(no. 2, of 3); (no. 1 is a vessel, bowl, but made of "copper", etc.)
+}}
+
+{{List of hieroglyphs/row
+|H=𓎻 |gardiner=W10A |unicode=133BB
+|desc= Pot 
+|TL1= 
+|pron=bA (rarely)
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓎼 |gardiner=W11 |unicode=133BC
+|desc= ring stand/earthenware pot
+|TL1=seat (nst)
+|pron=g
+|notes= Uniliteral ''g''.
+}}
+
+{{List of hieroglyphs/row
+|H=𓎽 |gardiner=W12 |unicode=133BD
+|desc= flat ring stand
+|TL1=seat (nst)
+|pron=g
+|notes= Old Kingdom form of W11.
+}}
+
+{{List of hieroglyphs/row
+|H=𓎾 |gardiner=W13 |unicode=133BE
+|desc= earthenware pot
+|TL1=Heset-pitcher, Senbet-pitcher (snbt) or similar containers
+|notes= Old Kingdom form of W11.
+}}
+
+{{List of hieroglyphs/row
+|H=𓎿 |gardiner=W14 |unicode=133BF
+|desc= water jar
+|TL1= side area (jmw), side (gs)
+|pron= m, m, gs
+|notes= [[Egyptian biliteral signs|Bil.]] '''ḥs'''
+}}
+
+{{List of hieroglyphs/row
+|H=𓏀 |gardiner=W14A |unicode=133C0
+|desc= water jar with water 
+|TL1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏁 |gardiner=W15 |unicode=133C1
+|desc= water jar with water pouring out
+|TL1=clean (qbḥ) (only Ideogram)
+}}
+
+{{List of hieroglyphs/row
+|H=𓏂 |gardiner=W16 |unicode=133C2
+|desc= water jar with water pouring out and ring stand
+|TL1=Libation (qbḥ), (qbb)
+}}
+
+{{List of hieroglyphs/row
+|H=𓏃 |gardiner=W17 |unicode=133C3
+|desc= three water jars in rack
+|TL1=water pitchers in the stand (ḫntw), first ḫnt (j)
+|pron=ḫnt
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏄 |gardiner=W17A |unicode=133C4
+|desc= three water jars in rack (simplified)
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏅 |gardiner=W18 |unicode=133C5
+|desc= four water jars in rack 
+|TL1=water pitchers in the stand (ḫntw), first ḫnt (j)
+|pron=ḫnt
+|notes= Old Kingdom form of W17.
+}}
+
+{{List of hieroglyphs/row
+|H=𓏆 |gardiner=W18A |unicode=133C6
+|desc= four water jars in rack (simplified)
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏇 |gardiner=W19 |unicode=133C7
+|desc= Milk jug with handle
+|TL1= mi 
+|notes= 1. like, as, according to, inasmuch as, since, as well as, together with; all [[adverb]]ial forms, some as a [[segue]]; <br />2. early forms use other hieroglyphs; <br />3. Egyptian: '''mity''' and '''mitt''' relate to "image" or "likeness": ''likeness, copy, resemblance, statue, image, similitude, the like'' etc.
+}}
+
+{{List of hieroglyphs/row
+|H=𓏈 |gardiner=W20 |unicode=133C8
+|desc= Milk jug with cover 
+|TL1=milk (jrṯt), milk container and contents
+}}
+
+{{List of hieroglyphs/row
+|H=𓏉 |gardiner=W21 |unicode=133C9
+|desc= Wine jars
+|TL1= wine (jrp) 
+|notes= [[Determinative]] in ''irp'', "wine"
+}}
+
+{{List of hieroglyphs/row
+|H=𓏊 |gardiner=W22 |unicode=133CA
+|desc= Beer jug 
+|TL1=beer (achnqt), containers and its contents, tribute (jnw), victim, attendant (wdpw)
+}}
+
+{{List of hieroglyphs/row
+|H=𓏋 |gardiner=W23 |unicode=133CB
+|desc= Beer jug with handles
+|TL1=ontainer (qracht), containers and their contents
+}}
+
+{{List of hieroglyphs/row
+|H=𓏌 |gardiner=W24 |unicode=133CC
+|desc= Pot
+|TL1=nw, jn * (accompanies the signs Aa-27 and Aa-28) get (jnj)
+|pron= '''nu'''<br />qd<br />--<br />([[Egyptian biliteral signs|bil.]])-nu
+|notes= [[phonogram (linguistics)|Phoneme]] for ''nw''; [[determinative|det.]] for ''qd'', construct, mold; (see: '''ḥnk''', Arm-with-nu-pot)
+}}
+
+{{List of hieroglyphs/row
+|H=𓏍 |gardiner=W24A |unicode=133CD
+|desc= three pots 
+|TL1= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏎 |gardiner=W25 |unicode=133CE
+|desc=combination of pot (W24) and legs walking (D54)
+|TL1=fetch
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=X
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓏏 |gardiner=X1 |unicode=133CF
+|desc= loaf of bread 
+|TL1= t 
+|notes= [[Transliteration of Ancient Egyptian|Uniliteral]] for "t"
+}}
+
+{{List of hieroglyphs/row
+|H=𓏐 |gardiner=X2 |unicode=133D0
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏑 |gardiner=X3 |unicode=133D1
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏒 |gardiner=X4 |unicode=133D2
+|desc= roll of bread
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏓 |gardiner=X4A |unicode=133D3
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏔 |gardiner=X4B |unicode=133D4
+|desc= alternative of X4
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏕 |gardiner=X5 |unicode=133D5
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏖 |gardiner=X6 |unicode=133D6
+|desc= loaf with decoration
+|TL1= pꜣt<br />([[phoneme]] '''pꜣ''') 
+|notes= 1. [[Determinative]] for the 'decorated bread loaf', ''pꜣt''; [[phonogram (linguistics)|phoneme]] for ''pꜣ''; meanings of: stuff, matter, substance; for 'bread': dough, cake, bread, offering, food, product; <br />2. for the "primordial god(s)": "Pauti", <hiero>G40-X6:X6-(or)-X6:X1*Z4-R8-R8-R8-R8-R8-R8</hiero><br />(many spelling versions)
+}}
+
+{{List of hieroglyphs/row
+|H=𓏗 |gardiner=X6A |unicode=133D7
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏘 |gardiner=X7 |unicode=133D8
+|desc= half-loaf of bread
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏙 |gardiner=X8 |unicode=133D9
+|desc= cone-<br />shaped<br />bread
+|tl1='''ḏj''' 
+|notes= [[Ideogram]] for ''ḏi'', ''rḏj'', give, given, to give; (an equivalent to ''arm offering conical "loaf"''), Gardiner [[#D37|D37]], <hiero>D37</hiero><br />In [[iconography]] and [[relief]]s, used for pharaonic statements: ''"Given, Life, Power...Forever"''-(the vertical form of 'to give')
+}}
+
+{{List of hieroglyphs/row
+|H=𓏚 |gardiner=X8A |unicode=133DA
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=Y
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓏛 |gardiner=Y1 |unicode=133DB
+|desc= [[Papyrus roll-tied (hieroglyph)|papyrus]]<br />[[Papyrus roll-tied (hieroglyph)|roll]]
+|tl1= papyrus scroll, book (mḏꜣt) 
+|pron= mḏꜣ-t<br />mḏꜣt 
+|notes= Determinative for terms connected with ''writing'', or ''<nowiki/>'abstract' concepts''
+}}
+
+{{List of hieroglyphs/row
+|H=𓏜 |gardiner=Y1A |unicode=133DC
+|desc= 
+|notes= (as above, but vertical) 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏝 |gardiner=Y2 |unicode=133DD
+|desc= [[Papyrus roll-open]]
+|tl1=papyrus scroll, book (mḏꜣt) 
+|notes= [[Old Kingdom of Egypt|Old Kingdom]] variation of Y1
+}}
+
+{{List of hieroglyphs/row
+|H=𓏞 |gardiner=Y3 |unicode=133DE
+|desc= [[Scribe equipment (hieroglyph)|Scribe's equipment]]
+|tl1= to write; writing; to become finely ground
+|pron= zẖꜣ; nꜥꜥ
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏟 |gardiner=Y4 |unicode=133DF
+|desc= Scribe's equipment 
+|tl1=(as above)
+|pron= 
+|notes= Rarer alternative of Y3
+}}
+
+{{List of hieroglyphs/row
+|H=𓏠 |gardiner=Y5 |unicode=133E0
+|desc= [[Senet]] board 
+|tl1= 
+|pron= mn
+|notes= Extensive dictionary entries beginning at "Mn"-(or men), since the definitions center around ''permanence'', ''enduring'', etc. A common Pharaonic epithet was: ''Mn-Kheper-Ra'', but many names using "mn" as a name component
+}}
+
+{{List of hieroglyphs/row
+|H=𓏡 |gardiner=Y6 |unicode=133E1
+|desc= [[game piece (hieroglyph)|game piece]]
+|tl1= game figure (jbꜣ) abbreviation for dancer (jbꜣ) 
+|pron= jbꜣ
+|notes= 1. [[Ideogram]] or [[determinative|det.]] in ''ibꜣ'', "pawn", draughtsman; [[phonogram (linguistics)|phoneme]] for ibꜣ; 2. [[determinative|Det.]] for ''ibꜣu'', ''ibꜣ'', dance [of the gods]; also dancer, dancing man, etc.
+}}
+
+{{List of hieroglyphs/row
+|H=𓏢 |gardiner=Y7 |unicode=133E2
+|desc= harp
+|tl1=harp
+|pron= ''bjnt''
+|notes= [[Determinative]] in ''bjnt'', "[[arched harp]]"; (see article [[Medamud]] for [[relief]] usage)
+}}
+
+{{List of hieroglyphs/row
+|H=𓏣 |gardiner=Y8 |unicode=133E3
+|desc= [[Sistrum]] 
+|tl1=[[Sistrum]] (sššt)
+|pron= sš, sššt<br />(also sḫm)
+|notes= A. [[Ideogram|Ideo.]] for "sistrum", ''sššt'', (or ''sḫm'' "sistrum"); [[determinative|det.]] in ''sššt'';<br />B. sḫm is Egyptian for 'power', (confer with [[Sekhem scepter]]-(list '''sḫm''') and [[Medamud]]-(article))
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=Z
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓏤 |gardiner=Z1 |unicode=133E4
+|desc= Single stroke 
+|tl1=singularity, [[Egyptian numeral]] 1
+|notes= Indicates that the prior sign is an Ideogram as if it had no feminine ending; can stand as an abundance stroke at empty places
+}}
+
+{{List of hieroglyphs/row
+|H=𓏥 |gardiner=Z2 |unicode=133E5
+|desc= Plural stroke (horizontal) 
+|notes= Plural, majority, collective concept (e.g. meat, jwf)
+}}
+
+{{List of hieroglyphs/row
+|H=𓏦 |gardiner=Z2A |unicode=133E6
+|desc= 
+|tl1= 
+|notes= Can be used as a replacement for signs perceived to be dangerous to actually write
+}}
+
+{{List of hieroglyphs/row
+|H=𓏧 |gardiner=Z2B |unicode=133E7
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏨 |gardiner=Z2C |unicode=133E8
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏩 |gardiner=Z2D |unicode=133E9
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏪 |gardiner=Z3 |unicode=133EA
+|desc= plural strokes (vertical)
+|tl1= 
+|notes= Can be used as a replacement for signs perceived to be dangerous to actually write
+}}
+
+{{List of hieroglyphs/row
+|H=𓏫 |gardiner=Z3A |unicode=133EB
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏬 |gardiner=Z3B |unicode=133EC
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏭 |gardiner=Z4 |unicode=133ED
+|desc= Dual stroke 
+|tl1=[[Egyptian numeral]] 2,
+plural, majority, collective concept (e.g. meat, ''jwf''),
+duality
+|pron=for j (y) (only if ending sounds like a dual ending)
+|notes= Can be used as a replacement for signs perceived to be dangerous to actually write
+}}
+
+{{List of hieroglyphs/row
+|H=𓏮 |gardiner=Z4A |unicode=133EE
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 2
+}}
+
+{{List of hieroglyphs/row
+|H=𓏯 |gardiner=Z5 |unicode=133EF
+|desc= Diagonal stroke (from [[hieratic]]) 
+|tl1= 
+|notes= Can be used as a replacement for signs perceived to be dangerous to actually write
+}}
+
+{{List of hieroglyphs/row
+|H=𓏰 |gardiner=Z5A |unicode=133F0
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏱 |gardiner=Z6 |unicode=133F1
+|desc= Substitute for various human figures 
+|tl1=for death, die (mwt)
+}}
+
+{{List of hieroglyphs/row
+|H=𓏲 |gardiner=Z7 |unicode=133F2
+|desc= [[coil (hieroglyph)|coil]]<br />(hieratic equivalent)
+|tl1=
+|pron= '''w''' (or '''u''')
+|notes= [[Egyptian uniliteral signs|unil.]], equivalent of unil. '''w''', the [[quail chick (hieroglyph)|quail chick]], <hiero>G43</hiero>; Both chick and coil are used for '''plural''', the '''w''', (or '''u''')<br />(see also: Plural)
+}}
+
+{{List of hieroglyphs/row
+|H=𓏳 |gardiner=Z8 |unicode=133F3
+|desc= Oval 
+|tl1=round (šnw)
+}}
+
+{{List of hieroglyphs/row
+|H=𓏴 |gardiner=Z9 |unicode=133F4
+|desc= Crossed diagonal sticks 
+|tl1=destroy (ḥḏj), break, divide (wpj), over load (ḏꜣj), cross, meet
+|pron= swꜣ, sḏ, ḫbs, šbn, wp, wr
+|notes= Possibly ancestral to [[Proto-Sinaitic script|Proto-Sinaitic]] [[Taw]] and its descendants
+}}
+
+{{List of hieroglyphs/row
+|H=𓏵 |gardiner=Z10 |unicode=133F5
+|desc= Crossed diagonal sticks 
+|tl1= destroy (ḥḏj), break, divide (wpj), over load (ḏꜣj), cross, meet
+|pron= swꜣ, sḏ, ḫbs, šbn, wp, wr
+|notes= Determinative for "break, divide" (wpj), "over load" (ḏꜣj), "cross, meet"
+}}
+
+{{List of hieroglyphs/row
+|H=𓏶 |gardiner=Z11 |unicode=133F6
+|desc= two planks crossed and joined
+|tl1=
+|pron= imi
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏷 |gardiner=Z12 |unicode=133F7
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏸 |gardiner=Z13 |unicode=133F8
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏹 |gardiner=Z14 |unicode=133F9
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓏺 |gardiner=Z15 |unicode=133FA
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 1
+}}
+
+{{List of hieroglyphs/row
+|H=𓏻 |gardiner=Z15A |unicode=133FB
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 2
+}}
+
+{{List of hieroglyphs/row
+|H=𓏼 |gardiner=Z15B |unicode=133FC
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 3
+}}
+
+{{List of hieroglyphs/row
+|H=𓏽 |gardiner=Z15C |unicode=133FD
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 4
+}}
+
+{{List of hieroglyphs/row
+|H=𓏾 |gardiner=Z15D |unicode=133FE
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 5
+}}
+
+{{List of hieroglyphs/row
+|H=𓏿 |gardiner=Z15E |unicode=133FF
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 6
+}}
+
+{{List of hieroglyphs/row
+|H=𓐀 |gardiner=Z15F |unicode=13400
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 7
+}}
+
+{{List of hieroglyphs/row
+|H=𓐁 |gardiner=Z15G |unicode=13401
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 8
+}}
+
+{{List of hieroglyphs/row
+|H=𓐂 |gardiner=Z15H |unicode=13402
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 9
+}}
+
+{{List of hieroglyphs/row
+|H=𓐃 |gardiner=Z15I |unicode=13403
+|desc= 
+|tl1= 
+|notes= [[Egyptian numeral]] 5
+}}
+
+{{List of hieroglyphs/row
+|H=𓐄 |gardiner=Z16 |unicode=13404
+|desc= 
+|notes= Numeral 1 in dates
+}}
+
+{{List of hieroglyphs/row
+|H=𓐅 |gardiner=Z16A |unicode=13405
+|desc= 
+|notes= Numeral 2 in dates
+}}
+
+{{List of hieroglyphs/row
+|H=𓐆 |gardiner=Z16B |unicode=13406
+|desc= 
+|notes= Numeral 3 in dates
+}}
+
+{{List of hieroglyphs/row
+|H=𓐇 |gardiner=Z16C |unicode=13407
+|desc= 
+|notes= Numeral 4 in dates
+}}
+
+{{List of hieroglyphs/row
+|H=𓐈 |gardiner=Z16D |unicode=13408
+|desc= 
+|notes= Numeral 5 in dates
+}}
+
+{{List of hieroglyphs/row
+|H=𓐉 |gardiner=Z16E |unicode=13409
+|desc= 
+|notes= Numeral 6 in dates
+}}
+
+{{List of hieroglyphs/row
+|H=𓐊 |gardiner=Z16F |unicode=1340A
+|desc= 
+|notes= Numeral 7 in dates
+}}
+
+{{List of hieroglyphs/row
+|H=𓐋 |gardiner=Z16G |unicode=1340B
+|desc= 
+|notes= Numeral 8 in dates
+}}
+
+{{List of hieroglyphs/row
+|H=𓐌 |gardiner=Z16H |unicode=1340C
+|desc= 
+|notes= Numeral 9 in dates
+}}
+
+{{List of hieroglyphs/subheader
+|gardiner=Aa
+|notes=
+}}
+
+{{List of hieroglyphs/row
+|H=𓐍 |gardiner=Aa1 |unicode=1340D
+|desc= Placenta or sieve 
+|tl1=
+|pron= ḫ
+|notes=[[Egyptian uniliteral signs|Uniliteral]] ''ḫ''.
+}}
+
+{{List of hieroglyphs/row
+|H=𓐎 |gardiner=Aa2 |unicode=1340E
+|desc= [[Pustule (hieroglyph)|Pustule]] 
+|tl1=bodily growths or conditions, disease
+}}
+
+{{List of hieroglyphs/row
+|H=𓐏 |gardiner=Aa3 |unicode=1340F
+|desc= Pustule with liquid issuing from it 
+|tl1=medical or anatomical condition, specifically soft matter or liquid
+|notes= Rare alternative for AA2
+}}
+
+{{List of hieroglyphs/row
+|H=𓐐 |gardiner=Aa4 |unicode=13410
+|desc= 
+|tl1=
+|pron= bꜣ (rarely) 
+|notes= See {{slink||W10}}
+
+}}
+
+{{List of hieroglyphs/row
+|H=𓐑 |gardiner=Aa5 |unicode=13411
+|desc= Part of steering gear of a ship 
+|tl1=hasten (ḥjp), hepet-device (ḥpt)
+|pron=ḥp (rarely)
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐒 |gardiner=Aa6 |unicode=13412
+|desc= 
+|tl1=mat (ṯmꜣ)
+|pron= tmꜣ, ṯmꜣ
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐓 |gardiner=Aa7 |unicode=13413
+|desc= A [[Smiting-blade symbol (hieroglyph)|Smiting-Blade]] 
+|tl1= spr
+|notes= Abbreviation for "smite" (''spr'')
+}}
+
+{{List of hieroglyphs/row
+|H=𓐔 |gardiner=Aa7A |unicode=13414
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐕 |gardiner=Aa7B |unicode=13415
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐖 |gardiner=Aa8 |unicode=13416
+|desc= Irrigation tunnels 
+|tl1= estate (ḏꜣtt)
+|pron=qn, ḏꜣt, ḏꜣḏꜣt
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐗 |gardiner=Aa9 |unicode=13417
+|desc= 
+|tl1= rich (ḫwd)
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐘 |gardiner=Aa10 |unicode=13418
+|desc= 
+|tl1= drf
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐙 |gardiner=Aa11 |unicode=13419
+|desc= 
+|tl1=Raised platform (ṯntt), platform abbreviation for mꜣꜥ in (mꜣꜥ-ḫrw)
+|pron= mꜣꜥ and mꜣꜥ in mꜣꜥ-ḫrw
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐚 |gardiner=Aa12 |unicode=1341A
+|desc= 
+|tl1=Raised platform (ṯntt), platform abbreviation for mꜣꜥ in (mꜣꜥ-ḫrw)
+|pron= mꜣꜥ
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐛 |gardiner=Aa13 |unicode=1341B
+|desc= 
+|tl1=side area (jmw), side (gs)
+|pron= m, m, gs
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐜 |gardiner=Aa14 |unicode=1341C
+|desc= 
+|tl1=side area (jmw), side (gs)
+|pron= m, m, gs
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐝 |gardiner=Aa15 |unicode=1341D
+|desc= 
+|tl1=
+|pron= jm, m, gs
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐞 |gardiner=Aa16 |unicode=1341E
+|desc= 
+|tl1=side (gs)
+|pron= gs
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐟 |gardiner=Aa17 |unicode=1341F
+|desc= 
+|tl1=back ''(sꜣ)''
+|pron= ''sꜣ''
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐠 |gardiner=Aa18 |unicode=13420
+|desc= 
+|tl1=back ''(sꜣ)''
+|pron= ''sꜣ''
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐡 |gardiner=Aa19 |unicode=13421
+|desc= 
+|tl1=
+|pron= ''ḥr''
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐢 |gardiner=Aa20 |unicode=13422
+|desc= 
+|tl1=
+|pron= ꜥpr
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐣 |gardiner=Aa21 |unicode=13423
+|desc= 
+|tl1=divide (wḏꜥ) 
+|notes= Abbreviation for [[Set (deity)|Seth]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓐤 |gardiner=Aa22 |unicode=13424
+|desc= 
+|tl1=divide (wḏꜥ) 
+|notes= Abbreviation for [[Set (deity)|Seth]]
+}}
+
+{{List of hieroglyphs/row
+|H=𓐥 |gardiner=Aa23 |unicode=13425
+|desc= 
+|tl1= 
+|notes= Often instead of U35
+}}
+
+{{List of hieroglyphs/row
+|H=𓐦 |gardiner=Aa24 |unicode=13426
+|desc= 
+|tl1= 
+|notes= Often instead of U35
+}}
+
+{{List of hieroglyphs/row
+|H=𓐧 |gardiner=Aa25 |unicode=13427
+|desc= 
+|tl1= garment priest (smꜣ)
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐨 |gardiner=Aa26 |unicode=13428
+|desc= 
+|tl1=
+|pron= '''sbj'''
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐩 |gardiner=Aa27 |unicode=13429
+|desc= 
+|tl1=
+|pron= nḏ
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐪 |gardiner=Aa28 |unicode=1342A
+|desc= 
+|tl1=
+|pron= qd
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐫 |gardiner=Aa29 |unicode=1342B
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐬 |gardiner=Aa30 |unicode=1342C
+|desc= 
+|tl1= [[wiktionary:ẖkr|Kheker]]-frieze
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐭 |gardiner=Aa31 |unicode=1342D
+|desc= 
+|notes= 
+}}
+
+{{List of hieroglyphs/row
+|H=𓐮 |gardiner=Aa32 |unicode=1342E
+|desc= 
+|tl1=
+}}
+
+|}
+<!--
+
+--><noinclude>{{documentation}}</noinclude>

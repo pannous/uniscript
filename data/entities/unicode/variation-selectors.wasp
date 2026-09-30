@@ -1,0 +1,20 @@
+// Uniscript entities: unicode/variation-selectors.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	variation-selector-1: "\u{FE00}"
+	variation-selector-2: "\u{FE01}"
+	variation-selector-3: "\u{FE02}"
+	variation-selector-4: "\u{FE03}"
+	variation-selector-5: "\u{FE04}"
+	variation-selector-6: "\u{FE05}"
+	variation-selector-7: "\u{FE06}"
+	variation-selector-8: "\u{FE07}"
+	variation-selector-9: "\u{FE08}"
+	variation-selector-10: "\u{FE09}"
+	variation-selector-11: "\u{FE0A}"
+	variation-selector-12: "\u{FE0B}"
+	variation-selector-13: "\u{FE0C}"
+	variation-selector-14: "\u{FE0D}"
+	variation-selector-15: "\u{FE0E}"
+	variation-selector-16: "\u{FE0F}"
+}

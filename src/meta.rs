@@ -228,7 +228,7 @@ pub fn escape_html(text: &str) -> String {
 	text.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;").replace('"', "&quot;")
 }
 
-/// A font style of entities.wasp: the value of `<:font cuneiform-hittite>`
+/// A font style of data/entities/meta.wasp: the value of `<:font cuneiform-hittite>`
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Font<'a> {
 	pub name: &'a str,

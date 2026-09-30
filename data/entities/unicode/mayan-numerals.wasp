@@ -1,0 +1,24 @@
+// Uniscript entities: unicode/mayan-numerals.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	mayan-numeral-zero: "𝋠"
+	mayan-numeral-one: "𝋡"
+	mayan-numeral-two: "𝋢"
+	mayan-numeral-three: "𝋣"
+	mayan-numeral-four: "𝋤"
+	mayan-numeral-five: "𝋥"
+	mayan-numeral-six: "𝋦"
+	mayan-numeral-seven: "𝋧"
+	mayan-numeral-eight: "𝋨"
+	mayan-numeral-nine: "𝋩"
+	mayan-numeral-ten: "𝋪"
+	mayan-numeral-eleven: "𝋫"
+	mayan-numeral-twelve: "𝋬"
+	mayan-numeral-thirteen: "𝋭"
+	mayan-numeral-fourteen: "𝋮"
+	mayan-numeral-fifteen: "𝋯"
+	mayan-numeral-sixteen: "𝋰"
+	mayan-numeral-seventeen: "𝋱"
+	mayan-numeral-eighteen: "𝋲"
+	mayan-numeral-nineteen: "𝋳"
+}

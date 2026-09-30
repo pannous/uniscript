@@ -1,0 +1,11 @@
+// Uniscript entities: unicode/arabic-extended-c.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	arabic-letter-dal-with-two-dots-vertically-below: "𐻂"
+	arabic-letter-tah-with-two-dots-vertically-below: "𐻃"
+	arabic-letter-kaf-with-two-dots-vertically-below: "𐻄"
+	arabic-combining-alef-overlay: "\u{10EFC}"
+	arabic-small-low-word-sakta: "\u{10EFD}"
+	arabic-small-low-word-qasr: "\u{10EFE}"
+	arabic-small-low-word-madda: "\u{10EFF}"
+}

@@ -1,0 +1,14 @@
+// Uniscript entities: unicode/common-indic-number-forms.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	north-indic-fraction-one-quarter: "꠰"
+	north-indic-fraction-one-half: "꠱"
+	north-indic-fraction-three-quarters: "꠲"
+	north-indic-fraction-one-sixteenth: "꠳"
+	north-indic-fraction-one-eighth: "꠴"
+	north-indic-fraction-three-sixteenths: "꠵"
+	north-indic-quarter-mark: "꠶"
+	north-indic-placeholder-mark: "꠷"
+	north-indic-rupee-mark: "꠸"
+	north-indic-quantity-mark: "꠹"
+}

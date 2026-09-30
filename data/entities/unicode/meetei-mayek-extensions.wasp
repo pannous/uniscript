@@ -1,0 +1,27 @@
+// Uniscript entities: unicode/meetei-mayek-extensions.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	meetei-mayek-letter-e: "ꫠ"
+	meetei-mayek-letter-o: "ꫡ"
+	meetei-mayek-letter-cha: "ꫢ"
+	meetei-mayek-letter-nya: "ꫣ"
+	meetei-mayek-letter-tta: "ꫤ"
+	meetei-mayek-letter-ttha: "ꫥ"
+	meetei-mayek-letter-dda: "ꫦ"
+	meetei-mayek-letter-ddha: "ꫧ"
+	meetei-mayek-letter-nna: "ꫨ"
+	meetei-mayek-letter-sha: "ꫩ"
+	meetei-mayek-letter-ssa: "ꫪ"
+	meetei-mayek-vowel-sign-ii: "\u{AAEB}"
+	meetei-mayek-vowel-sign-uu: "\u{AAEC}"
+	meetei-mayek-vowel-sign-aai: "\u{AAED}"
+	meetei-mayek-vowel-sign-au: "\u{AAEE}"
+	meetei-mayek-vowel-sign-aau: "\u{AAEF}"
+	meetei-mayek-cheikhan: "꫰"
+	meetei-mayek-ahang-khudam: "꫱"
+	meetei-mayek-anji: "ꫲ"
+	meetei-mayek-syllable-repetition-mark: "ꫳ"
+	meetei-mayek-word-repetition-mark: "ꫴ"
+	meetei-mayek-vowel-sign-visarga: "\u{AAF5}"
+	meetei-mayek-virama: "\u{AAF6}"
+}

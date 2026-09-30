@@ -1,0 +1,15 @@
+// Uniscript entities: unicode/syriac-supplement.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	syriac-letter-malayalam-nga: "ࡠ"
+	syriac-letter-malayalam-ja: "ࡡ"
+	syriac-letter-malayalam-nya: "ࡢ"
+	syriac-letter-malayalam-tta: "ࡣ"
+	syriac-letter-malayalam-nna: "ࡤ"
+	syriac-letter-malayalam-nnna: "ࡥ"
+	syriac-letter-malayalam-bha: "ࡦ"
+	syriac-letter-malayalam-ra: "ࡧ"
+	syriac-letter-malayalam-lla: "ࡨ"
+	syriac-letter-malayalam-llla: "ࡩ"
+	syriac-letter-malayalam-ssa: "ࡪ"
+}

@@ -1,0 +1,15 @@
+// Uniscript entities: unicode/optical-character-recognition.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	ocr-hook: "⑀"
+	ocr-chair: "⑁"
+	ocr-fork: "⑂"
+	ocr-inverted-fork: "⑃"
+	ocr-belt-buckle: "⑄"
+	ocr-bow-tie: "⑅"
+	ocr-branch-bank-identification: "⑆"
+	ocr-amount-of-check: "⑇"
+	ocr-dash: "⑈"
+	ocr-customer-account-number: "⑉"
+	ocr-double-backslash: "⑊"
+}

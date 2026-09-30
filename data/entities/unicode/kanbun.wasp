@@ -1,0 +1,20 @@
+// Uniscript entities: unicode/kanbun.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	ideographic-annotation-linking-mark: "㆐"
+	ideographic-annotation-reverse-mark: "㆑"
+	ideographic-annotation-one-mark: "㆒"
+	ideographic-annotation-two-mark: "㆓"
+	ideographic-annotation-three-mark: "㆔"
+	ideographic-annotation-four-mark: "㆕"
+	ideographic-annotation-top-mark: "㆖"
+	ideographic-annotation-middle-mark: "㆗"
+	ideographic-annotation-bottom-mark: "㆘"
+	ideographic-annotation-first-mark: "㆙"
+	ideographic-annotation-second-mark: "㆚"
+	ideographic-annotation-third-mark: "㆛"
+	ideographic-annotation-fourth-mark: "㆜"
+	ideographic-annotation-heaven-mark: "㆝"
+	ideographic-annotation-earth-mark: "㆞"
+	ideographic-annotation-man-mark: "㆟"
+}

@@ -1,0 +1,20 @@
+// Uniscript entities: unicode/supplemental-arrows-a.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	upwards-quadruple-arrow: "⟰"
+	downwards-quadruple-arrow: "⟱"
+	anticlockwise-gapped-circle-arrow: "⟲"
+	clockwise-gapped-circle-arrow: "⟳"
+	right-arrow-with-circled-plus: "⟴"
+	long-leftwards-arrow: "⟵"
+	long-rightwards-arrow: "⟶"
+	long-left-right-arrow: "⟷"
+	long-leftwards-double-arrow: "⟸"
+	long-rightwards-double-arrow: "⟹"
+	long-left-right-double-arrow: "⟺"
+	long-leftwards-arrow-from-bar: "⟻"
+	long-rightwards-arrow-from-bar: "⟼"
+	long-leftwards-double-arrow-from-bar: "⟽"
+	long-rightwards-double-arrow-from-bar: "⟾"
+	long-rightwards-squiggle-arrow: "⟿"
+}

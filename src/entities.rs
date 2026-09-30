@@ -1,7 +1,10 @@
-//! The readable entity file `entities.wasp`: `name {` opens a table, `}` closes it, one `key: value` per line,
+//! The readable entity files `data/entities/**/*.wasp`: `name {` opens a table, `}` closes it, one `key: value` per line,
 //! quoted texts with `\u{hex}` escapes. Sections: uniscript, names, latex, html, blocks, block-aliases, fonts, meta.
+//! The files are read in path order and their sections merged, the first entry of a key wins; `unicode/` has one file
+//! per Unicode block (egyptian-hieroglyphs.wasp: its names and the block types egyptian, gardiner, hieroglyph).
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
+use std::path::{Path, PathBuf};
 
 /// Sections holding plain entities, earlier ones win when a name occurs twice
 const ENTITY_SECTIONS: [&str; 4] = ["uniscript", "names", "latex", "html"];
@@ -11,6 +14,7 @@ const FONTS: &str = "fonts";
 const META: &str = "meta";
 const CONTROL_PREFIX: char = '*';
 const SUFFIX_KEY: &str = "*suffix";
+const ENTITY_EXTENSION: &str = "wasp";
 
 /// Key → entry, in file order
 #[derive(Debug, Default, Clone)]
@@ -40,6 +44,18 @@ impl Table {
 			Entry::Text(text) => Some((key.as_str(), text.as_str())),
 			Entry::Table(_) => None,
 		})
+	}
+
+	/// The entries of `other` whose keys are new; tables of the same key merge
+	fn merge(&mut self, other: Table) {
+		let mut known: HashSet<String> = self.0.iter().map(|(key, _)| key.clone()).collect();
+		for (key, entry) in other.0 {
+			if known.insert(key.clone()) {
+				self.0.push((key, entry));
+			} else if let (Some((_, Entry::Table(existing))), Entry::Table(table)) = (self.0.iter_mut().find(|(name, _)| *name == key), entry) {
+				existing.merge(table);
+			}
+		}
 	}
 
 	pub fn tables(&self) -> impl Iterator<Item = (&str, &Table)> {
@@ -83,7 +99,35 @@ fn is_single_character(text: &str) -> bool {
 	text.chars().count() == 1
 }
 
+/// The entity files under a directory, sorted by path, or the file itself
+fn entity_files(path: &Path) -> Result<Vec<PathBuf>, String> {
+	if !path.is_dir() {
+		return Ok(vec![path.to_path_buf()]);
+	}
+	let mut files = Vec::new();
+	for entry in std::fs::read_dir(path).map_err(|e| format!("{}: {e}", path.display()))? {
+		let entry = entry.map_err(|e| e.to_string())?.path();
+		match entry.is_dir() {
+			true => files.extend(entity_files(&entry)?),
+			false if entry.extension().is_some_and(|extension| extension == ENTITY_EXTENSION) => files.push(entry),
+			false => {}
+		}
+	}
+	files.sort();
+	Ok(files)
+}
+
 impl Entities {
+	/// All entity files of a directory (data/entities), merged in path order, or a single file
+	pub fn load(path: impl AsRef<Path>) -> Result<Self, String> {
+		let mut sections = Table::default();
+		for file in entity_files(path.as_ref())? {
+			let source = std::fs::read_to_string(&file).map_err(|e| format!("{}: {e}", file.display()))?;
+			sections.merge(Entities::parse(&source).map_err(|e| format!("{}: {e}", file.display()))?.sections);
+		}
+		Ok(Entities { sections })
+	}
+
 	pub fn parse(source: &str) -> Result<Self, String> {
 		let mut stack: Vec<(String, Table)> = vec![(String::new(), Table::default())];
 		for (number, raw) in source.lines().enumerate() {

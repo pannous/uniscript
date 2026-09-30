@@ -1,1 +1,5 @@
 - TODO: `<:greek> athos <:/greek>` gives αθοσ; Greek orthography wants final sigma ς at word end (αθος). Decide whether `greek` should apply it (the spec example in docs/uniscript.md shows αθοσ).
+- TODO: the wasp implementation (warp lib/uniscript.wasp) needs the multi-word operand lookup of `operands` (`<:egyptian seated man>` → `egyptian seated-man`); `<:egyptian A1>` already works there through the index.
+- TODO: Egyptian Hieroglyphs Extended-A (U+13460…, Unicode 16) have algorithmic names only; give them Gardiner/Unikemet numbers (Unikemet.txt kEH_UniK, kEH_JSesh) in the `egyptian` block.
+- TODO: 151 hieroglyphs have no description in Wikipedia's list (e.g. Aa28…Aa32); only their Gardiner numbers name them.
+- TODO: `swift test` with the swiftly toolchain first on PATH fails (`unknown argument: '-target-arch-variant'` against the Xcode SDK); `xcrun swift test` works.

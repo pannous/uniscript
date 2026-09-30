@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Uniscript entity data: seed the readable entity file, build its binary index, check that both agree.
 
-    python3 data/uniscript/uniscript_index.py seed    # sources → entities.wasp (overwrites it!)
-    python3 data/uniscript/uniscript_index.py build   # entities.wasp → entities.idx
-    python3 data/uniscript/uniscript_index.py check   # every entry of entities.wasp resolves the same in entities.idx
+    python3 data/uniscript_index.py seed    # sources → entities/*.wasp (overwrites them!)
+    python3 data/uniscript_index.py build   # entities/*.wasp → entities.idx
+    python3 data/uniscript_index.py check   # every entry of entities/*.wasp resolves the same in entities.idx
 
-entities.wasp is the source of truth once seeded: edit it, then build. The index format is documented in README.md.
+The entity files are the source of truth once seeded: edit them, then build. They are read in path order and their
+sections merged (the first entry of a key wins); entities/unicode/ has one file per Unicode block with its character
+names and its script's block types. The index format is documented in README.md.
 """
 import html.entities
 import re
@@ -15,8 +17,12 @@ import unicodedata
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-ENTITIES_FILE = HERE / "entities.wasp"
+ENTITIES_DIRECTORY = HERE / "entities"
+UNICODE_DIRECTORY = "unicode"
 INDEX_FILE = HERE / "entities.idx"
+UNICODE_BLOCKS = HERE / "sources" / "Blocks.txt"  # https://www.unicode.org/Public/16.0.0/ucd/Blocks.txt
+# Wikipedia's Template:List_of_hieroglyphs (CC BY-SA 4.0): Gardiner number, code point and a short description per sign
+HIEROGLYPH_DESCRIPTIONS = HERE / "sources" / "list_of_hieroglyphs.wiki"
 UNICODE_MATH_TABLE = Path("/usr/local/texlive/2026basic/texmf-dist/tex/latex/unicode-math/unicode-math-table.tex")
 
 MAGIC = b"USX1"
@@ -85,6 +91,13 @@ SUFFIX_KEY = "*suffix"  # follows any character without its own entry; "*suffix 
 PREFIX_KEY = "*prefix"  # "*prefix cjk": goes before the parts of a group (an IDS operator)
 GROUP_KEY = "*group"    # the block joins its operands (above, beside) instead of styling them
 INFIX_KEY = "*infix"    # "*infix egyptian": goes between the parts of a group (a hieroglyph joiner)
+# block type 'egyptian': Gardiner numbers (<:egyptian A1>) and descriptions (<:egyptian seated man>) of the hieroglyphs
+EGYPTIAN_BLOCK = "egyptian"
+EGYPTIAN_HIEROGLYPHS_START = 0x13000
+EGYPTIAN_ALIASES = {"gardiner": EGYPTIAN_BLOCK, "hieroglyph": EGYPTIAN_BLOCK}
+GARDINER_NUMBER = re.compile(r"^EGYPTIAN HIEROGLYPH ([A-Z]+?)0*(\d+)([A-Z]*)$")  # A001 → A1, AA001 → Aa1, A014A → A14A
+# more spellings of a description: seated man → man sitting, man seated
+DESCRIPTION_SYNONYMS = [(re.compile(r"^seated-([a-z]+)$"), [r"\1-sitting", r"\1-seated"])]
 PLAIN_CATEGORIES = "LNPS"  # letters, numbers, punctuation, symbols: no marks, controls or separators in block tables
 LETTER_LIGATURES = "AE|DZ|LJ|NJ"  # Unicode calls these LETTER, not LIGATURE
 # font styles for scripts whose glyph form carries meaning but which Unicode unified (wiki/uniscript.md "Font styles"):
@@ -223,53 +236,117 @@ def html_names():
 	return {name.rstrip(";"): text for name, text in sorted(html.entities.html5.items())}
 
 
-def seed_sections():
+def unicode_blocks():
+	"""(first, last, file name) of each block in Blocks.txt: Egyptian Hieroglyphs → egyptian-hieroglyphs"""
+	pattern = re.compile(r"^([0-9A-F]+)\.\.([0-9A-F]+); (.+)$")
+	matches = (pattern.match(line) for line in UNICODE_BLOCKS.read_text().splitlines())
+	return [(int(m.group(1), 16), int(m.group(2), 16), name_key(m.group(3).replace("_", " "))) for m in matches if m]
+
+
+def block_file(character, blocks):
+	block = next((name for first, last, name in blocks if first <= ord(character) <= last), "no-block")
+	return f"{UNICODE_DIRECTORY}/{block}.wasp"
+
+
+def ascii_name(text):
+	"""A description as a name: seated man → seated-man, ḥwt-enclosure → hwt-enclosure"""
+	folded = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode().lower()
+	return re.sub(r"[^a-z0-9]+", "-", folded).strip("-")
+
+
+def wiki_text(markup):
+	markup = re.sub(r"\[\[(?:[^\]|]*\|)?([^\]]*)\]\]", r"\1", markup)  # [[target|text]] → text
+	markup = re.sub(r"\{\{[^}]*\}\}|<[^>]*>|'{2,}|\[\[|\]\]", "", markup)
+	return markup.strip()
+
+
+def hieroglyph_descriptions():
+	"""character → short description, from the rows of Wikipedia's list: |H=𓀀 |gardiner=A1 |unicode=13000 |desc=seated man"""
+	descriptions = {}
+	for row in HIEROGLYPH_DESCRIPTIONS.read_text().split("{{List of hieroglyphs/row")[1:]:
+		code = re.search(r"\|\s*unicode\s*=\s*([0-9A-Fa-f]+)", row)
+		description = re.search(r"\|\s*desc\s*=(.*)", row)
+		if code and description and ascii_name(wiki_text(description.group(1))):
+			descriptions.setdefault(chr(int(code.group(1), 16)), wiki_text(description.group(1)))
+	return descriptions
+
+
+def gardiner_number(unicode_name):
+	match = GARDINER_NUMBER.match(unicode_name)
+	if not match:
+		return None
+	category = match.group(1) if len(match.group(1)) == 1 or match.group(1) in ("NL", "NU") else match.group(1).capitalize()
+	return category + match.group(2) + match.group(3)
+
+
+def egyptian_block(named):
+	"""Gardiner number → hieroglyph, then description (and its synonyms) → hieroglyph; the first entry of a text wins"""
+	numbers = {gardiner_number(n): c for c, n in named if gardiner_number(n)}
+	descriptions = hieroglyph_descriptions()
+	table = dict(numbers)
+	for number, character in numbers.items():
+		if character in descriptions:
+			name = ascii_name(descriptions[character])
+			for spelling in [name] + [pattern.sub(synonym, name) for pattern, synonyms in DESCRIPTION_SYNONYMS
+			                          for synonym in synonyms if pattern.match(name)]:
+				table.setdefault(spelling, character)
+	return table
+
+
+def seed_files():
+	"""file path in entities/ → its sections"""
 	named = [(chr(cp), unicodedata.name(chr(cp))) for cp in range(0x110000) if unicodedata.name(chr(cp), None)]
 	named_plain = [(c, n) for c, n in named if not ALGORITHMIC_NAMES.match(n)]
-	blocks = {"greek": greek_transliteration()}
-	blocks.update(styled_blocks(named))
-	blocks["ligature"] = ligatures(named)
+	styles = styled_blocks(named)
+	styles["ligature"] = ligatures(named)
 	# an empty suffix: the fonts cannot apply the effect to that script (fonts/README.md), uniscript warns
 	for geometry, letter in GEOMETRIES.items():
-		blocks[geometry] = {SUFFIX_KEY: tag(letter), f"{SUFFIX_KEY} egyptian": "", f"{SUFFIX_KEY} cjk": ""}
-	blocks["mirror"][f"{SUFFIX_KEY} egyptian"] = EGYPTIAN_MIRROR
-	del blocks["mirror"][f"{SUFFIX_KEY} cjk"]
+		styles[geometry] = {SUFFIX_KEY: tag(letter), f"{SUFFIX_KEY} egyptian": "", f"{SUFFIX_KEY} cjk": ""}
+	styles["mirror"][f"{SUFFIX_KEY} egyptian"] = EGYPTIAN_MIRROR
+	del styles["mirror"][f"{SUFFIX_KEY} cjk"]
 	for color, letter in COLORS.items():
-		blocks[color] = {SUFFIX_KEY: tag(letter), f"{SUFFIX_KEY} egyptian": "", f"{SUFFIX_KEY} cjk": "", **colored(named, color)}
+		styles[color] = {SUFFIX_KEY: tag(letter), f"{SUFFIX_KEY} egyptian": "", f"{SUFFIX_KEY} cjk": "", **colored(named, color)}
 	for block, suffix in VARIATION_SUFFIXES.items():
-		blocks[block] = {SUFFIX_KEY: suffix}
+		styles[block] = {SUFFIX_KEY: suffix}
 	# groups keep their parts unstyled; a script without prefix or infix cannot be grouped, uniscript warns
-	blocks["above"] = {GROUP_KEY: "", f"{PREFIX_KEY} cjk": IDS_ABOVE_TO_BELOW, f"{INFIX_KEY} egyptian": EGYPTIAN_VERTICAL_JOINER}
-	blocks["beside"] = {GROUP_KEY: "", f"{PREFIX_KEY} cjk": IDS_LEFT_TO_RIGHT, f"{INFIX_KEY} egyptian": EGYPTIAN_HORIZONTAL_JOINER}
-	return {
-		"uniscript": dict(UNISCRIPT_NAMES),
-		"names": {name_key(n): c for c, n in named_plain},
-		"latex": unicode_math_names(),
-		"html": html_names(),
-		"blocks": blocks,
-		"block-aliases": dict(BLOCK_ALIASES),
-		"fonts": FONTS,
-		"meta": META,
+	styles["above"] = {GROUP_KEY: "", f"{PREFIX_KEY} cjk": IDS_ABOVE_TO_BELOW, f"{INFIX_KEY} egyptian": EGYPTIAN_VERTICAL_JOINER}
+	styles["beside"] = {GROUP_KEY: "", f"{PREFIX_KEY} cjk": IDS_LEFT_TO_RIGHT, f"{INFIX_KEY} egyptian": EGYPTIAN_HORIZONTAL_JOINER}
+	files = {
+		"uniscript.wasp": {"uniscript": dict(UNISCRIPT_NAMES)},
+		"latex.wasp": {"latex": unicode_math_names()},
+		"html.wasp": {"html": html_names()},
+		"styles.wasp": {"blocks": styles, "block-aliases": dict(BLOCK_ALIASES)},
+		"meta.wasp": {"fonts": FONTS, "meta": META},
 	}
+	blocks = unicode_blocks()
+	for character, name in named_plain:
+		files.setdefault(block_file(character, blocks), {}).setdefault("names", {})[name_key(name)] = character
+	files[block_file("α", blocks)]["blocks"] = {"greek": greek_transliteration()}
+	egyptian = files[block_file(chr(EGYPTIAN_HIEROGLYPHS_START), blocks)]
+	egyptian["blocks"] = {EGYPTIAN_BLOCK: egyptian_block(named)}
+	egyptian["block-aliases"] = dict(EGYPTIAN_ALIASES)
+	return files
 
 
 # ---- the readable file -------------------------------------------------------------------------------------------
 
 BARE_KEY = re.compile(r"^[A-Za-z][A-Za-z0-9-]*$")
-HEADER = """// Uniscript entities (wiki/uniscript.md), the human readable source of data/uniscript/entities.idx
-// Seeded by data/uniscript/uniscript_index.py from Unicode {unicode} character names, the HTML5 entity list and
-// unicode-math-table.tex; edit freely, then run `python3 data/uniscript/uniscript_index.py build`.
+HEADER = """// Uniscript entities (docs/uniscript.md), the human readable source of data/entities.idx, read with all other
+// files of data/entities/ in path order (the first entry of a key wins); entities/unicode/ has one file per Unicode block.
+// Seeded by data/uniscript_index.py from Unicode {unicode} character names and blocks, the HTML5 entity list,
+// unicode-math-table.tex and Wikipedia's list of hieroglyphs; edit freely, then run `cargo run -- build`.
 //   uniscript      own names, win over all others
 //   names          Unicode names, lower case, spaces as hyphens: <:greek-small-letter-alpha> or <:greek small letter alpha>
 //   latex          unicode-math command names without backslash: <:alpha> <:infty> <:mfrakA>
 //   html           HTML5 entities, backwards compatible but discouraged: <:dopf>
-//   blocks         block types: <:fracture A>, <:greek> a b <:/greek>; control keys: "*suffix" follows any other character,
-//                  "*suffix egyptian" a hieroglyph, "*prefix cjk" / "*infix egyptian" go before / between the parts of a group
+//   blocks         block types: <:fracture A>, <:greek> a b <:/greek>, <:egyptian A1> <:egyptian seated man>; control
+//                  keys: "*suffix" follows any other character, "*suffix egyptian" a hieroglyph, "*prefix cjk" / "*infix egyptian" go before / between the parts of a group
 //   block-aliases  other names of block types
 //   fonts          font styles: <:font cuneiform-hittite> … <:/font>; lang (BCP 47), families (CSS), features (OpenType)
-//   meta           meta keys (<:color #ff8800 A>, <:font han-japanese> … <:/font>) → CSS declaration, {} is the value
+//   meta           meta keys (<:color #ff8800 A>, <:font han-japanese> … <:/font>) → CSS declaration, {{}} is the value
 // Values are quoted text; invisible and combining characters are written \\u{{hex}}.
 """
+FILE_HEADER = "// Uniscript entities: {path}, part of data/entities/ (the sections are explained in uniscript.wasp)\n"
 
 
 def is_visible(character):
@@ -286,8 +363,15 @@ def key_text(key):
 	return key if BARE_KEY.match(key) else quote(key)
 
 
-def write_entities(sections, path):
-	lines = [HEADER.format(unicode=unicodedata.unidata_version)]
+def write_entities(files, directory):
+	for path, sections in files.items():
+		header = HEADER.format(unicode=unicodedata.unidata_version) if path == "uniscript.wasp" else FILE_HEADER.format(path=path)
+		(directory / path).parent.mkdir(parents=True, exist_ok=True)
+		write_sections(sections, header, directory / path)
+
+
+def write_sections(sections, header, path):
+	lines = [header]
 	for section, entries in sections.items():
 		lines.append(f"{section} {{")
 		if section in ("blocks", "fonts"):
@@ -313,8 +397,24 @@ def unquote(token):
 	return ESCAPE.sub(lambda m: chr(int(m.group(1), 16)) if m.group(1) else m.group(2), token[1:-1])
 
 
-def read_entities(path):
-	"""The sections of entities.wasp: one `key: value` per line, `name {` opens a table, `}` closes it"""
+def read_entities(directory):
+	"""The merged sections of all entity files, in path order: tables merge, the first entry of a key wins"""
+	sections = {}
+	for path in sorted(directory.rglob("*.wasp")):
+		merge(sections, read_file(path))
+	return sections
+
+
+def merge(into, table):
+	for key, entry in table.items():
+		if isinstance(entry, dict) and isinstance(into.get(key), dict):
+			merge(into[key], entry)
+		else:
+			into.setdefault(key, entry)
+
+
+def read_file(path):
+	"""The sections of one entity file: one `key: value` per line, `name {` opens a table, `}` closes it"""
 	sections, stack = {}, []
 	for number, raw in enumerate(path.read_text().splitlines(), 1):
 		line = raw.strip()
@@ -496,13 +596,14 @@ def check(sections, data):
 
 def main(command):
 	if command == "seed":
-		write_entities(seed_sections(), ENTITIES_FILE)
-		print(f"wrote {ENTITIES_FILE}")
+		files = seed_files()
+		write_entities(files, ENTITIES_DIRECTORY)
+		print(f"wrote {len(files)} files to {ENTITIES_DIRECTORY}")
 	elif command == "build":
-		INDEX_FILE.write_bytes(build_index(read_entities(ENTITIES_FILE)))
+		INDEX_FILE.write_bytes(build_index(read_entities(ENTITIES_DIRECTORY)))
 		print(f"wrote {INDEX_FILE} ({INDEX_FILE.stat().st_size} bytes)")
 	elif command == "check":
-		sys.exit(0 if check(read_entities(ENTITIES_FILE), INDEX_FILE.read_bytes()) else 1)
+		sys.exit(0 if check(read_entities(ENTITIES_DIRECTORY), INDEX_FILE.read_bytes()) else 1)
 	else:
 		sys.exit(__doc__)
 

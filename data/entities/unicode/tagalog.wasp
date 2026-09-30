@@ -1,0 +1,27 @@
+// Uniscript entities: unicode/tagalog.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	tagalog-letter-a: "ᜀ"
+	tagalog-letter-i: "ᜁ"
+	tagalog-letter-u: "ᜂ"
+	tagalog-letter-ka: "ᜃ"
+	tagalog-letter-ga: "ᜄ"
+	tagalog-letter-nga: "ᜅ"
+	tagalog-letter-ta: "ᜆ"
+	tagalog-letter-da: "ᜇ"
+	tagalog-letter-na: "ᜈ"
+	tagalog-letter-pa: "ᜉ"
+	tagalog-letter-ba: "ᜊ"
+	tagalog-letter-ma: "ᜋ"
+	tagalog-letter-ya: "ᜌ"
+	tagalog-letter-ra: "ᜍ"
+	tagalog-letter-la: "ᜎ"
+	tagalog-letter-wa: "ᜏ"
+	tagalog-letter-sa: "ᜐ"
+	tagalog-letter-ha: "ᜑ"
+	tagalog-vowel-sign-i: "\u{1712}"
+	tagalog-vowel-sign-u: "\u{1713}"
+	tagalog-sign-virama: "\u{1714}"
+	tagalog-sign-pamudpod: "\u{1715}"
+	tagalog-letter-archaic-ra: "ᜟ"
+}

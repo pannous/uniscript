@@ -1,0 +1,18 @@
+// Uniscript entities: unicode/ancient-symbols.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	roman-sextans-sign: "𐆐"
+	roman-uncia-sign: "𐆑"
+	roman-semuncia-sign: "𐆒"
+	roman-sextula-sign: "𐆓"
+	roman-dimidia-sextula-sign: "𐆔"
+	roman-siliqua-sign: "𐆕"
+	roman-denarius-sign: "𐆖"
+	roman-quinarius-sign: "𐆗"
+	roman-sestertius-sign: "𐆘"
+	roman-dupondius-sign: "𐆙"
+	roman-as-sign: "𐆚"
+	roman-centurial-sign: "𐆛"
+	ascia-symbol: "𐆜"
+	greek-symbol-tau-rho: "𐆠"
+}

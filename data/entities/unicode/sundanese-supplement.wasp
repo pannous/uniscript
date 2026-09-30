@@ -1,0 +1,12 @@
+// Uniscript entities: unicode/sundanese-supplement.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	sundanese-punctuation-bindu-surya: "᳀"
+	sundanese-punctuation-bindu-panglong: "᳁"
+	sundanese-punctuation-bindu-purnama: "᳂"
+	sundanese-punctuation-bindu-cakra: "᳃"
+	sundanese-punctuation-bindu-leu-satanga: "᳄"
+	sundanese-punctuation-bindu-ka-satanga: "᳅"
+	sundanese-punctuation-bindu-da-satanga: "᳆"
+	sundanese-punctuation-bindu-ba-satanga: "᳇"
+}

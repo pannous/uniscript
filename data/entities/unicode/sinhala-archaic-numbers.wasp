@@ -1,0 +1,24 @@
+// Uniscript entities: unicode/sinhala-archaic-numbers.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	sinhala-archaic-digit-one: "𑇡"
+	sinhala-archaic-digit-two: "𑇢"
+	sinhala-archaic-digit-three: "𑇣"
+	sinhala-archaic-digit-four: "𑇤"
+	sinhala-archaic-digit-five: "𑇥"
+	sinhala-archaic-digit-six: "𑇦"
+	sinhala-archaic-digit-seven: "𑇧"
+	sinhala-archaic-digit-eight: "𑇨"
+	sinhala-archaic-digit-nine: "𑇩"
+	sinhala-archaic-number-ten: "𑇪"
+	sinhala-archaic-number-twenty: "𑇫"
+	sinhala-archaic-number-thirty: "𑇬"
+	sinhala-archaic-number-forty: "𑇭"
+	sinhala-archaic-number-fifty: "𑇮"
+	sinhala-archaic-number-sixty: "𑇯"
+	sinhala-archaic-number-seventy: "𑇰"
+	sinhala-archaic-number-eighty: "𑇱"
+	sinhala-archaic-number-ninety: "𑇲"
+	sinhala-archaic-number-one-hundred: "𑇳"
+	sinhala-archaic-number-one-thousand: "𑇴"
+}

@@ -1,0 +1,11 @@
+// Uniscript entities: unicode/ideographic-symbols-and-punctuation.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	tangut-iteration-mark: "𖿠"
+	nushu-iteration-mark: "𖿡"
+	old-chinese-hook-mark: "𖿢"
+	old-chinese-iteration-mark: "𖿣"
+	khitan-small-script-filler: "\u{16FE4}"
+	vietnamese-alternate-reading-mark-ca: "\u{16FF0}"
+	vietnamese-alternate-reading-mark-nhay: "\u{16FF1}"
+}

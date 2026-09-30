@@ -1,0 +1,14 @@
+// Uniscript entities: unicode/vertical-forms.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	presentation-form-for-vertical-comma: "︐"
+	presentation-form-for-vertical-ideographic-comma: "︑"
+	presentation-form-for-vertical-ideographic-full-stop: "︒"
+	presentation-form-for-vertical-colon: "︓"
+	presentation-form-for-vertical-semicolon: "︔"
+	presentation-form-for-vertical-exclamation-mark: "︕"
+	presentation-form-for-vertical-question-mark: "︖"
+	presentation-form-for-vertical-left-white-lenticular-bracket: "︗"
+	presentation-form-for-vertical-right-white-lenticular-brakcet: "︘"
+	presentation-form-for-vertical-horizontal-ellipsis: "︙"
+}

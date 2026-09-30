@@ -1,0 +1,24 @@
+// Uniscript entities: unicode/myanmar-extended-c.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	myanmar-pao-digit-zero: "𑛐"
+	myanmar-pao-digit-one: "𑛑"
+	myanmar-pao-digit-two: "𑛒"
+	myanmar-pao-digit-three: "𑛓"
+	myanmar-pao-digit-four: "𑛔"
+	myanmar-pao-digit-five: "𑛕"
+	myanmar-pao-digit-six: "𑛖"
+	myanmar-pao-digit-seven: "𑛗"
+	myanmar-pao-digit-eight: "𑛘"
+	myanmar-pao-digit-nine: "𑛙"
+	myanmar-eastern-pwo-karen-digit-zero: "𑛚"
+	myanmar-eastern-pwo-karen-digit-one: "𑛛"
+	myanmar-eastern-pwo-karen-digit-two: "𑛜"
+	myanmar-eastern-pwo-karen-digit-three: "𑛝"
+	myanmar-eastern-pwo-karen-digit-four: "𑛞"
+	myanmar-eastern-pwo-karen-digit-five: "𑛟"
+	myanmar-eastern-pwo-karen-digit-six: "𑛠"
+	myanmar-eastern-pwo-karen-digit-seven: "𑛡"
+	myanmar-eastern-pwo-karen-digit-eight: "𑛢"
+	myanmar-eastern-pwo-karen-digit-nine: "𑛣"
+}

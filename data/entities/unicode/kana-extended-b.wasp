@@ -1,0 +1,17 @@
+// Uniscript entities: unicode/kana-extended-b.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	katakana-letter-minnan-tone-2: "𚿰"
+	katakana-letter-minnan-tone-3: "𚿱"
+	katakana-letter-minnan-tone-4: "𚿲"
+	katakana-letter-minnan-tone-5: "𚿳"
+	katakana-letter-minnan-tone-7: "𚿵"
+	katakana-letter-minnan-tone-8: "𚿶"
+	katakana-letter-minnan-nasalized-tone-1: "𚿷"
+	katakana-letter-minnan-nasalized-tone-2: "𚿸"
+	katakana-letter-minnan-nasalized-tone-3: "𚿹"
+	katakana-letter-minnan-nasalized-tone-4: "𚿺"
+	katakana-letter-minnan-nasalized-tone-5: "𚿻"
+	katakana-letter-minnan-nasalized-tone-7: "𚿽"
+	katakana-letter-minnan-nasalized-tone-8: "𚿾"
+}

@@ -1,0 +1,20 @@
+// Uniscript entities: unicode/katakana-phonetic-extensions.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	katakana-letter-small-ku: "ㇰ"
+	katakana-letter-small-si: "ㇱ"
+	katakana-letter-small-su: "ㇲ"
+	katakana-letter-small-to: "ㇳ"
+	katakana-letter-small-nu: "ㇴ"
+	katakana-letter-small-ha: "ㇵ"
+	katakana-letter-small-hi: "ㇶ"
+	katakana-letter-small-hu: "ㇷ"
+	katakana-letter-small-he: "ㇸ"
+	katakana-letter-small-ho: "ㇹ"
+	katakana-letter-small-mu: "ㇺ"
+	katakana-letter-small-ra: "ㇻ"
+	katakana-letter-small-ri: "ㇼ"
+	katakana-letter-small-ru: "ㇽ"
+	katakana-letter-small-re: "ㇾ"
+	katakana-letter-small-ro: "ㇿ"
+}

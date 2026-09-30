@@ -1,0 +1,15 @@
+// Uniscript entities: unicode/cyrillic-extended-c.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	cyrillic-small-letter-rounded-ve: "ᲀ"
+	cyrillic-small-letter-long-legged-de: "ᲁ"
+	cyrillic-small-letter-narrow-o: "ᲂ"
+	cyrillic-small-letter-wide-es: "ᲃ"
+	cyrillic-small-letter-tall-te: "ᲄ"
+	cyrillic-small-letter-three-legged-te: "ᲅ"
+	cyrillic-small-letter-tall-hard-sign: "ᲆ"
+	cyrillic-small-letter-tall-yat: "ᲇ"
+	cyrillic-small-letter-unblended-uk: "ᲈ"
+	cyrillic-capital-letter-tje: "Ᲊ"
+	cyrillic-small-letter-tje: "ᲊ"
+}

@@ -1,0 +1,24 @@
+// Uniscript entities: unicode/kaktovik-numerals.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	kaktovik-numeral-zero: "𝋀"
+	kaktovik-numeral-one: "𝋁"
+	kaktovik-numeral-two: "𝋂"
+	kaktovik-numeral-three: "𝋃"
+	kaktovik-numeral-four: "𝋄"
+	kaktovik-numeral-five: "𝋅"
+	kaktovik-numeral-six: "𝋆"
+	kaktovik-numeral-seven: "𝋇"
+	kaktovik-numeral-eight: "𝋈"
+	kaktovik-numeral-nine: "𝋉"
+	kaktovik-numeral-ten: "𝋊"
+	kaktovik-numeral-eleven: "𝋋"
+	kaktovik-numeral-twelve: "𝋌"
+	kaktovik-numeral-thirteen: "𝋍"
+	kaktovik-numeral-fourteen: "𝋎"
+	kaktovik-numeral-fifteen: "𝋏"
+	kaktovik-numeral-sixteen: "𝋐"
+	kaktovik-numeral-seventeen: "𝋑"
+	kaktovik-numeral-eighteen: "𝋒"
+	kaktovik-numeral-nineteen: "𝋓"
+}

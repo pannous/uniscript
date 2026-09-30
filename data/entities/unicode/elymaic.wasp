@@ -1,0 +1,27 @@
+// Uniscript entities: unicode/elymaic.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	elymaic-letter-aleph: "𐿠"
+	elymaic-letter-beth: "𐿡"
+	elymaic-letter-gimel: "𐿢"
+	elymaic-letter-daleth: "𐿣"
+	elymaic-letter-he: "𐿤"
+	elymaic-letter-waw: "𐿥"
+	elymaic-letter-zayin: "𐿦"
+	elymaic-letter-heth: "𐿧"
+	elymaic-letter-teth: "𐿨"
+	elymaic-letter-yodh: "𐿩"
+	elymaic-letter-kaph: "𐿪"
+	elymaic-letter-lamedh: "𐿫"
+	elymaic-letter-mem: "𐿬"
+	elymaic-letter-nun: "𐿭"
+	elymaic-letter-samekh: "𐿮"
+	elymaic-letter-ayin: "𐿯"
+	elymaic-letter-pe: "𐿰"
+	elymaic-letter-sadhe: "𐿱"
+	elymaic-letter-qoph: "𐿲"
+	elymaic-letter-resh: "𐿳"
+	elymaic-letter-shin: "𐿴"
+	elymaic-letter-taw: "𐿵"
+	elymaic-ligature-zayin-yodh: "𐿶"
+}

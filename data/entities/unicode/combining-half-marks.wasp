@@ -1,0 +1,20 @@
+// Uniscript entities: unicode/combining-half-marks.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	combining-ligature-left-half: "\u{FE20}"
+	combining-ligature-right-half: "\u{FE21}"
+	combining-double-tilde-left-half: "\u{FE22}"
+	combining-double-tilde-right-half: "\u{FE23}"
+	combining-macron-left-half: "\u{FE24}"
+	combining-macron-right-half: "\u{FE25}"
+	combining-conjoining-macron: "\u{FE26}"
+	combining-ligature-left-half-below: "\u{FE27}"
+	combining-ligature-right-half-below: "\u{FE28}"
+	combining-tilde-left-half-below: "\u{FE29}"
+	combining-tilde-right-half-below: "\u{FE2A}"
+	combining-macron-left-half-below: "\u{FE2B}"
+	combining-macron-right-half-below: "\u{FE2C}"
+	combining-conjoining-macron-below: "\u{FE2D}"
+	combining-cyrillic-titlo-left-half: "\u{FE2E}"
+	combining-cyrillic-titlo-right-half: "\u{FE2F}"
+}

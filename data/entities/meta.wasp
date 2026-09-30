@@ -1,0 +1,65 @@
+// Uniscript entities: meta.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+fonts {
+	cuneiform-ur3 {
+		lang: "sux-Xsux-x-ur3"
+		families: "CuneiformComposite, Noto Sans Cuneiform"
+	}
+	cuneiform-old-babylonian {
+		lang: "akk-Xsux-x-oldbab"
+		families: "Santakku, CuneiformOB, Noto Sans Cuneiform"
+	}
+	cuneiform-old-babylonian-monumental {
+		lang: "akk-Xsux-x-oldbabm"
+		families: "SantakkuM, Santakku, Noto Sans Cuneiform"
+	}
+	cuneiform-neo-assyrian {
+		lang: "akk-Xsux-x-neoassyr"
+		families: "Assurbanipal, CuneiformNAOutline, Assyrian, Noto Sans Cuneiform"
+	}
+	cuneiform-hittite {
+		lang: "hit-Xsux"
+		families: "UllikummiA, UllikummiB, UllikummiC, Noto Sans Cuneiform"
+	}
+	cuneiform-archaic {
+		lang: "sux-Xsux-x-archaic"
+		families: "Akkadian, Noto Sans Cuneiform"
+	}
+	han-japanese {
+		lang: "ja"
+		families: "Noto Sans CJK JP, Hiragino Sans"
+	}
+	han-simplified {
+		lang: "zh-Hans"
+		families: "Noto Sans CJK SC, PingFang SC"
+	}
+	han-traditional {
+		lang: "zh-Hant"
+		families: "Noto Sans CJK TC, PingFang TC"
+	}
+	han-hong-kong {
+		lang: "zh-HK"
+		families: "Noto Sans CJK HK, PingFang HK"
+	}
+	han-korean {
+		lang: "ko"
+		families: "Noto Sans CJK KR, Apple SD Gothic Neo"
+	}
+	han-jis78 {
+		lang: "ja"
+		families: "Noto Sans CJK JP, Hiragino Sans"
+		features: "jp78"
+	}
+}
+
+meta {
+	font: "font-family: {}"
+	lang: ""
+	color: "color: {}"
+	background: "background-color: {}"
+	angle: "display: inline-block; transform: rotate({}deg)"
+	size: "font-size: {}"
+	weight: "font-weight: {}"
+	style: "font-style: {}"
+	features: "font-feature-settings: '{}'"
+}

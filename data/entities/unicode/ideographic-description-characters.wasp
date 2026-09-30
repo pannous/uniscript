@@ -1,0 +1,20 @@
+// Uniscript entities: unicode/ideographic-description-characters.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	ideographic-description-character-left-to-right: "⿰"
+	ideographic-description-character-above-to-below: "⿱"
+	ideographic-description-character-left-to-middle-and-right: "⿲"
+	ideographic-description-character-above-to-middle-and-below: "⿳"
+	ideographic-description-character-full-surround: "⿴"
+	ideographic-description-character-surround-from-above: "⿵"
+	ideographic-description-character-surround-from-below: "⿶"
+	ideographic-description-character-surround-from-left: "⿷"
+	ideographic-description-character-surround-from-upper-left: "⿸"
+	ideographic-description-character-surround-from-upper-right: "⿹"
+	ideographic-description-character-surround-from-lower-left: "⿺"
+	ideographic-description-character-overlaid: "⿻"
+	ideographic-description-character-surround-from-right: "⿼"
+	ideographic-description-character-surround-from-lower-right: "⿽"
+	ideographic-description-character-horizontal-reflection: "⿾"
+	ideographic-description-character-rotation: "⿿"
+}

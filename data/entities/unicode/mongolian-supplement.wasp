@@ -1,0 +1,17 @@
+// Uniscript entities: unicode/mongolian-supplement.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+
+names {
+	mongolian-birga-with-ornament: "𑙠"
+	mongolian-rotated-birga: "𑙡"
+	mongolian-double-birga-with-ornament: "𑙢"
+	mongolian-triple-birga-with-ornament: "𑙣"
+	mongolian-birga-with-double-ornament: "𑙤"
+	mongolian-rotated-birga-with-ornament: "𑙥"
+	mongolian-rotated-birga-with-double-ornament: "𑙦"
+	mongolian-inverted-birga: "𑙧"
+	mongolian-inverted-birga-with-double-ornament: "𑙨"
+	mongolian-swirl-birga: "𑙩"
+	mongolian-swirl-birga-with-ornament: "𑙪"
+	mongolian-swirl-birga-with-double-ornament: "𑙫"
+	mongolian-turned-swirl-birga-with-double-ornament: "𑙬"
+}
