@@ -1,13 +1,20 @@
 {
-  "name": "uniscript-wasm",
+  "name": "@pannous/uniscript-wasm",
   "version": "0.1.0",
   "description": "Uniscript compiled to WebAssembly: ASCII names for Unicode text (<:alpha> → α) and back",
   "type": "module",
   "main": "uniscript.js",
   "license": "MIT",
-  "files": ["uniscript.js", "pkg/uniscript_wasm.js", "pkg/uniscript_wasm_bg.wasm", "pkg/*.d.ts"],
+  "repository": { "type": "git", "url": "git+https://github.com/pannous/uniscript.git", "directory": "wasm" },
+  "homepage": "https://pannous.com/uniscript/",
+  "bugs": "https://github.com/pannous/uniscript/issues",
+  "keywords": ["unicode", "uniscript", "entities", "text", "ascii", "webassembly", "wasm"],
+  "files": ["uniscript.js", "entities.idx", "pkg/uniscript_wasm.js", "pkg/uniscript_wasm_bg.wasm", "pkg/uniscript_wasm.d.ts", "pkg/uniscript_wasm_bg.wasm.d.ts"],
+  "publishConfig": { "access": "public" },
   "scripts": {
     "build": "CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-/opt/cargo} wasm-pack build --target web --release --no-pack",
-    "test": "npm run build && node --test tests/"
+    "test": "npm run build && node --test tests/",
+    "prepack": "npm run build && rm -f entities.idx && cp ../data/entities.idx entities.idx",
+    "postpack": "ln -sf ../data/entities.idx entities.idx"
   }
 }
