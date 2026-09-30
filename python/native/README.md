@@ -4,6 +4,10 @@ The uniscript converter in pure Python without dependencies, a port of the Rust 
 `data/entities.idx` (bundled as `uniscript/entities.idx`) in place through `mmap`. Same API as the FFI package in
 `python/ffi` (`uniscript-rs`), so either one is a drop-in replacement for the other.
 
+```sh
+pip install uniscript-py     # imported as `import uniscript`
+```
+
 ```python
 import uniscript
 uniscript.to_unicode("<:alpha> <:fracture A>")               # 'α 𝔄'; lenient: warnings go to stderr

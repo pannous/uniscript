@@ -20,6 +20,6 @@
 		"build": "tsc -p .",
 		"test": "node --test test/",
 		"prepack": "tsc -p . && rm -f entities.idx && cp ../data/entities.idx entities.idx",
-		"postpack": "rm entities.idx && ln -s ../data/entities.idx entities.idx"
+		"postpack": "ln -sf ../data/entities.idx entities.idx"
 	}
 }

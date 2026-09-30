@@ -3,13 +3,19 @@ requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "uniscript"
+name = "uniscript-py"
 version = "0.1.0"
 description = "Uniscript (<:alpha> → α, <:fracture A> → 𝔄 and back) in pure Python, reading the shared entity index in place"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.9"
 dependencies = []
+keywords = ["unicode", "uniscript", "entities", "text", "ascii"]
+classifiers = ["Programming Language :: Python :: 3", "Topic :: Text Processing", "Operating System :: OS Independent"]
+
+[project.urls]
+Homepage = "https://pannous.com/uniscript/"
+Repository = "https://github.com/pannous/uniscript"
 
 [project.scripts]
 uniscript-py = "uniscript.__main__:main"
