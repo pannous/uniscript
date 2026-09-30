@@ -68,3 +68,27 @@ as text/plain without gzip; enabling gzip for them would cut that to about 100 K
   Without that rule, `<:alpha> <:beta> <:leq> <:infty>` fetched 4 extra chunks. Now it needs nothing but the common chunk.
 - Demo examples: 185 KB including the common chunk (was 213 KB), 80 KB gzipped. Prose with ’ “ — é € ° © and LaTeX
   names need no chunk after the common one (tests/chunks_test.rs, js/test/chunks.test.ts).
+
+## Fewer requests (pannous.com is HTTP/1.1: 6 connections, requests queue)
+- Absent names were most of the fetches. For every tag the converter tries whole-tag names (`mirror-R`,
+  `fracture-Hello`) and operand words (`Hello`, `Bold`, `both`). The filter of absent names in the manifest answers
+  those without a fetch (Bloom, ~16k names, 20 KB, 1 % false positives, never wrong about names it holds). Demo
+  examples: 55 → 30 chunks.
+- Batching: `ChunkFetcher` (js/src/chunkFetcher.js, symlinked into wasm/) collects the chunks asked for in one
+  microtask and fetches them in **one** multi-range request on chunks.pack. The pack holds the chunks deflated
+  (miniz_oxide, raw deflate, 1.4 MB); `DecompressionStream("deflate-raw")` inflates them. Concurrent `ensure` calls (the
+  demo ensures all examples at once) share the rounds.
+- Apache: DEFLATE on .idx/.usxc (conf-available/uniscript-index.conf) makes it ignore Range headers: a multi-range
+  request on entities.idx came back 200 with the whole file gzipped. .pack is not deflated, so ranges work (206
+  multipart/byteranges). Python's http.server ignores Range: it sends the whole pack (200), which the fetcher accepts.
+- Style names in the common chunk: all block type heads (`mirror `, `red *suffix`, …) were already in it. Their operands
+  (`fracture H`, `bold B`) take about 3 KB per style, 60 KB for 20 styles, over the budget. So style operands stay in
+  their chunks, and batching makes them cheap.
+
+| live demo, fonts excluded (probes/live_chunk_requests.sh) | index requests | index KB transferred | last index response |
+|---|---|---|---|
+| before (common chunk, one request per chunk) | 54 | 99.6 | ~520 ms |
+| after (filter + pack + batching) | 5 | 77.8 | ~340 ms |
+
+The 5 index requests are the manifest (36 KB raw: 11 KB chunk starts, 20 KB filter, 5 KB pack offsets), the common
+chunk, and 3 rounds. The whole page makes 10 requests, 178 KB, fonts excluded.

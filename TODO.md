@@ -45,3 +45,6 @@ DONE - C ffi/native: NULL or invalid UTF-8 input fails with UNISCRIPT_INVALID_IN
 - chunked index: the C, Python and Swift ports have no chunked reader (only Rust/wasm and TypeScript); not needed off the web
 - chunked index: a text with many distinct short names (`alpha`, `beta`, …) fetches one 4 KB chunk per name (spread by hash); a names→block directory would need per-key data, so it isn't done
 - chunked index: fetch rounds are sequential (2–3 per ensure); HTTP/2 on the server would cut the latency of the 6-parallel limit
+- chunked index: manifest.usxc is fetched without cache busting; a stale cached manifest with new chunks would mix builds (`?v=` only protects the chunks). Serve it with Cache-Control: no-cache or name the chunk directory by version
+- chunked index: the manifest is now 36 KB (the filter of absent names is 20 KB, incompressible); a smaller filter (8 bits per name, 2 % false positives) or leaving out the hieroglyph groups would cut 5–8 KB
+- chunked index: init makes two requests one after the other (manifest, then the common chunk); a common.idx next to the manifest could come in parallel

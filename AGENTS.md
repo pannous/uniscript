@@ -34,8 +34,17 @@ normal reader searches it. Git-ignored, rebuilt from `data/entities.idx`.
 8    T                           number of tables
 12   common chunk                the chunk of the most used entries (0xFFFFFFFF: none), the last one
 16   T × (first chunk, chunk count, record count)
-…    chunks × (group, hash)      where each chunk starts, ascending within its table
+…    chunks × (group, hash)      where each chunk starts, ascending within its table (the common chunk has none)
+…    bits, hashes, filter        filter of absent names: bit count m, hash count k, m bits padded to 4 bytes
+…    (chunks + 1) × offset       optional: where each chunk's deflated copy starts in chunks.pack, then its end
 ```
+
+The filter (Bloom, 10 bits and 7 hashes per name, ~1 % false positives, bit `(h1 + i·(h2|1)) mod m` with `h1` the
+index hash and `h2` the same hash with multiplier 131) holds the names outside the common chunk that are one word or
+start with a block type. A lookup of such a name the filter lacks is absent without a fetch: the converter's tries
+like `Hello`, `mirror-R`, `fracture-Hello`. `chunks.pack` lets clients fetch the misses of one round with a single HTTP
+multi-range request (`js/src/chunkFetcher.js`, shared by js/ and wasm/). A server without ranges sends the whole pack,
+which is slower but still correct. Without the offsets, the client fetches `<n>.idx` one by one.
 
 A key sorts by `(group, hash)`: chars by their first code point (a script's characters share chunks), names and the rest
 by the hash of their first word split at space or hyphen (`fracture A`, `fracture-B`, `fracture ` share chunks). Its
