@@ -24,8 +24,8 @@ fn entities_become_characters() {
 fn block_types_style_their_operands() {
 	converts("<:fracture A>", "𝔄");
 	converts("<:fracture A b c >", "𝔄𝔟𝔠");
-	converts("<:fracture> A b c <:>", "𝔄𝔟𝔠");
-	converts("<:greek> a b g d <:/greek>", "αβγδ");
+	converts("<:fracture> A b c <:>", " 𝔄 𝔟 𝔠 ");
+	converts("<:greek> a b g d <:/greek>", " α β γ δ ");
 	converts("<:double d>", "𝕕");
 	converts("<:double-d>", "𝕕");
 	converts("x<:upper a>", "xᵃ");
@@ -36,17 +36,18 @@ fn block_types_style_their_operands() {
 
 #[test]
 fn greek_is_transliterated_phonetically() {
-	converts("<:greek> athos <:/greek>", "αθοσ"); // th is one letter
+	converts("<:greek> athos <:/greek>", " αθοσ "); // th is one letter
 	converts("<:greek th ch ps>", "θχψ");
 	converts("<:greek eta Omega lambda>", "ηΩλ");
 }
 
-/// Spaces between single letters only separate them; spaces next to a word are text and stay as written
+/// Full block tags keep their text as written, spaces and line breaks included; inline tags drop the spaces between operands
 #[test]
-fn spaces_between_words_are_kept() {
-	converts("<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμοσ");
-	converts("<:greek a kosmos>", "α κοσμοσ");
-	converts("<:fracture Hello  World>", "ℌ𝔢𝔩𝔩𝔬  𝔚𝔬𝔯𝔩𝔡");
+fn full_blocks_keep_their_spaces() {
+	converts("<:greek> filosofia kosmos<:/greek>", " φιλοσοφια κοσμοσ");
+	converts("<:greek a kosmos>", "ακοσμοσ");
+	converts("<:greek phi chi>", "φχ");
+	assert_eq!(convert("<:greek>\nkosmos\t<:/greek>", WarningMode::Error), Ok(("\nκοσμοσ\t".to_string(), vec![])));
 }
 
 /// A character or combination without a Unicode counterpart stays plain, with a warning naming it and its position
@@ -99,7 +100,7 @@ fn hieroglyphs_have_gardiner_numbers_and_descriptions() {
 	converts("<:egyptian seated man>", "𓀀");
 	converts("<:egyptian man sitting>", "𓀀");
 	converts("<:egyptian man-sitting>", "𓀀");
-	converts("<:egyptian> A1 Aa1 <:/egyptian>", "𓀀𓐍");
+	converts("<:egyptian> A1 Aa1 <:/egyptian>", " 𓀀 𓐍 ");
 	converts("<:mirror egyptian A1>", "𓀀\u{13440}");
 	assert_eq!(to_uniscript("𓀀 𓐍"), "<:egyptian A1> <:egyptian Aa1>");
 }
