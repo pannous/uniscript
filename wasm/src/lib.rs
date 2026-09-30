@@ -6,16 +6,27 @@
 
 use serde::{Deserialize, Serialize};
 use uniscript::{Error, MetaRun, Styled, Uniscript, Warning, WarningMode};
+use std::cell::RefCell;
 use wasm_bindgen::prelude::*;
 
 const ERROR_NAME: &str = "UniscriptError";
+const NOT_LOADED: &str = "uniscript: no index loaded, await init() first";
 
 thread_local! {
-	static CONVERTER: Uniscript<'static> = Uniscript::default();
+	static CONVERTER: RefCell<Option<Uniscript<'static>>> = const { RefCell::new(None) };
 }
 
-fn with_converter<T>(action: impl FnOnce(&Uniscript<'static>) -> T) -> T {
-	CONVERTER.with(action)
+/// Loads the index (the bytes of data/entities.idx): they live as long as the page, a second load replaces the converter
+/// and keeps the old bytes
+#[wasm_bindgen(js_name = loadIndex)]
+pub fn load_index(bytes: Vec<u8>) -> Result<(), JsValue> {
+	let converter = Uniscript::from_bytes(Box::leak(bytes.into_boxed_slice())).map_err(|error| JsValue::from(js_sys::Error::new(&error)))?;
+	CONVERTER.with(|loaded| loaded.replace(Some(converter)));
+	Ok(())
+}
+
+fn with_converter<T>(action: impl FnOnce(&Uniscript<'static>) -> T) -> Result<T, JsValue> {
+	CONVERTER.with(|loaded| loaded.borrow().as_ref().map(action)).ok_or_else(|| js_sys::Error::new(NOT_LOADED).into())
 }
 
 #[derive(Serialize, Deserialize)]
@@ -126,7 +137,7 @@ pub fn uniscript_version() -> String {
 /// Uniscript → Unicode; warnings go to the console
 #[wasm_bindgen(js_name = toUnicode)]
 pub fn to_unicode(source: &str) -> Result<String, JsValue> {
-	let (text, warnings) = with_converter(|converter| converter.convert(source, WarningMode::Warn)).map_err(thrown)?;
+	let (text, warnings) = with_converter(|converter| converter.convert(source, WarningMode::Warn))?.map_err(thrown)?;
 	warnings.iter().for_each(|warning| web_sys_warn(&format!("warning: {warning}")));
 	Ok(text)
 }
@@ -142,13 +153,13 @@ extern "C" {
 #[wasm_bindgen]
 pub fn convert(source: &str, mode: Option<String>) -> Result<JsValue, JsValue> {
 	let mode = warning_mode(mode)?;
-	let (text, warnings) = with_converter(|converter| converter.convert(source, mode)).map_err(thrown)?;
+	let (text, warnings) = with_converter(|converter| converter.convert(source, mode))?.map_err(thrown)?;
 	Ok(to_js(&Conversion { text, warnings: js_warnings(warnings) }))
 }
 
 /// Unicode → uniscript; `toUnicode` gives the text back
 #[wasm_bindgen(js_name = toUniscript)]
-pub fn to_uniscript(text: &str) -> String {
+pub fn to_uniscript(text: &str) -> Result<String, JsValue> {
 	with_converter(|converter| converter.to_uniscript(text))
 }
 
@@ -160,7 +171,7 @@ pub fn header(source: &str) -> JsValue {
 
 /// A font style of the entities: `{ name, lang, families, features }`, else undefined
 #[wasm_bindgen]
-pub fn font(name: &str) -> JsValue {
+pub fn font(name: &str) -> Result<JsValue, JsValue> {
 	with_converter(|converter| {
 		converter.font(name).map_or(JsValue::UNDEFINED, |found| to_js(&JsFont { name: found.name, lang: found.lang, families: found.families, features: found.features }))
 	})
@@ -168,20 +179,20 @@ pub fn font(name: &str) -> JsValue {
 
 /// The CSS declaration template of a meta key (`color` → `color: {}`), else undefined
 #[wasm_bindgen(js_name = metaTemplate)]
-pub fn meta_template(key: &str) -> Option<String> {
+pub fn meta_template(key: &str) -> Result<Option<String>, JsValue> {
 	with_converter(|converter| converter.meta_template(key).map(str::to_string))
 }
 
 /// Tagged text → `{ styled: { text, runs }, warnings }`
 #[wasm_bindgen(js_name = metaRuns)]
-pub fn meta_runs(tagged: &str) -> JsValue {
-	let (styled, warnings) = with_converter(|converter| converter.meta_runs(tagged));
-	to_js(&MetaRuns { styled: styled.into(), warnings: js_warnings(warnings) })
+pub fn meta_runs(tagged: &str) -> Result<JsValue, JsValue> {
+	let (styled, warnings) = with_converter(|converter| converter.meta_runs(tagged))?;
+	Ok(to_js(&MetaRuns { styled: styled.into(), warnings: js_warnings(warnings) }))
 }
 
 /// HTML of `styled` (from `metaRuns`): each meta run a `<span>` with its lang and CSS
 #[wasm_bindgen]
 pub fn html(styled: JsValue) -> Result<String, JsValue> {
 	let styled: JsStyled = serde_wasm_bindgen::from_value(styled).map_err(JsValue::from)?;
-	Ok(with_converter(|converter| converter.html(&styled.into())))
+	with_converter(|converter| converter.html(&styled.into()))
 }
