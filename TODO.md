@@ -16,10 +16,15 @@ DONE - C ffi/native: NULL or invalid UTF-8 input fails with UNISCRIPT_INVALID_IN
 - wasm: 3.8 MB .wasm, 3.65 MB of it the compiled-in entities.idx; loading the index at runtime needs a reference API for it
 - ports (wasm, C, Python) do not cover index building from data/entities/*.wasp (index::build, Entities::parse); only TypeScript rebuilds the idx
 - DONE macOS 27 beta: rustc's release strip misaligns the LINKEDIT string pool when the indirect symbol count is odd, dyld refuses the dylib; python/ffi uses strip = "none", c/ffi only loads by luck (even count)
-- python/ffi wheel is cp314/arm64 only: no abi3, no CI build matrix
+- DONE python/ffi wheel is cp314/arm64 only: no abi3, no CI build matrix
 - C: no CMake, untested on Linux; native .incbin not MSVC-compatible
 - every reference change needs a manual re-port: run the differential tests (js, python/native, c/native) after src/ changes
 - DONE deploy docs/demo.html (needs fonts/ and built wasm/pkg next to docs/) (pannous.com/uniscript/rust/); TODO publish js to npm and python packages to PyPI
 - TODO: warp vendors a stale copy of the pre-split ground truth (warp data/uniscript/entities.wasp, entities.idx, uniscript_index.py); it should sync from this repo's data/entities/ + data/entities.idx. The local warp checkout ~/dev/angles/warp is 109 commits behind origin/main (no lib/ there yet).
 - 2026-10-03: harden and optimize the published libraries (fuzzing, Linux/Windows builds, CI wheel matrix, re-port drift checks); reminder set in Reminders
 - The live pages at pannous.com/uniscript/ are deployed from working trees (docs/make_demo.sh deploy, warp's web/uniscript/build.sh deploy), so they can carry another session's uncommitted changes; without rsync --delete, files removed from a build stay on the server.
+- Packages ready, not yet uploaded (no credentials on this machine): crates.io uniscript, PyPI uniscript-py + uniscript-rs, npm @pannous/uniscript + @pannous/uniscript-wasm; `scripts/publish.sh --publish` after npm login, cargo login and a PyPI token in ~/.pypirc
+- uniscript-rs has no Windows wheel (maturin + cargo-xwin or CI); other platforms build from the sdist, which needs Rust. Linux wheels are cross-built with zig; only the x86_64 one was smoke-tested (on pannous.com, Python 3.12)
+- uniscript-py and uniscript-rs both install the module `uniscript`: installing both makes pip overwrite one with the other silently
+- @pannous/uniscript-wasm has no types for its entry uniscript.js (only pkg/uniscript_wasm.d.ts); add a uniscript.d.ts and "types"
+- js/ and wasm/ copy entities.idx over their symlink in prepack: an interrupted npm pack leaves a 3.6 MB regular file that git sees as a type change (restore with `ln -sf ../data/entities.idx entities.idx`)

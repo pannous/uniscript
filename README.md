@@ -73,7 +73,7 @@ Online, two pages:
   HTML. Redeploy with `docs/make_demo.sh deploy`.
 
 ```sh
-cargo install --git https://github.com/pannous/uniscript
+cargo install uniscript               # or: cargo install --git https://github.com/pannous/uniscript
 uniscript "<:alpha> <:fracture A>"     # α 𝔄
 uniscript -r "α 𝔄"                     # <:alpha> <:fracture A>
 echo "<:beside 犭 句>" | uniscript      # ⿰犭句 (狗 in the Uniscript CJK font)
@@ -102,10 +102,11 @@ Swift, Rust, Python, JavaScript/TypeScript, C and C++. The Rust crate is the ref
 
 - **C / C++** (Rust-backed, `c/ffi`): header `c/uniscript.h`, header-only C++17 wrapper `c/uniscript.hpp`; `make -C c/ffi test`, usage in [c/ffi/README.md](c/ffi/README.md).
 - **C, native** (C11, no dependencies, `c/native`): the same `c/uniscript.h` and C++ wrapper as `c/ffi`, drop-in interchangeable, index compiled in; `make -C c/native` builds `build/libuniscript.{a,dylib}` and the CLI `build/uniscript`, `make -C c/native test` runs the shared cases under sanitizers.
-- **WebAssembly** (the Rust crate, `wasm/`): `import init, { convert, toUniscript } from "./wasm/uniscript.js"; await init();` then the API of the TypeScript port; `cd wasm && npm test`, live in [docs/demo.html](docs/demo.html).
-- **TypeScript / JavaScript** (a direct port, `js/`, npm package `uniscript`, ESM for Node and browsers): `import { toUnicode, convert, toUniscript } from "uniscript"` loads the bundled `entities.idx`; `uniscript/core` takes your own bytes (`new Uniscript(new EntityIndex(bytes))`); `cd js && npm test`.
-- **Python, pure** (no dependencies, `python/native`): `import uniscript; uniscript.to_unicode("<:alpha>")`, reads `entities.idx` in place via mmap, same API as the FFI package; `cd python/native && PYTHONPATH=. python3 -m pytest tests`, usage in [python/native/README.md](python/native/README.md).
-- **Python, Rust-backed** (PyO3, `python/ffi`, package `uniscript-rs`): the same `import uniscript` API as the pure package, about 6× faster on documents; `python/ffi/build.sh` (maturin, installs into the system python), `python/ffi/test.sh`.
+- **Rust** (the reference, crate `uniscript`): `cargo add uniscript`, then `uniscript::to_unicode("<:alpha>")`; `cargo test`.
+- **WebAssembly** (the Rust crate, `wasm/`, npm package `@pannous/uniscript-wasm`): `npm install @pannous/uniscript-wasm`, `import init, { convert, toUniscript } from "@pannous/uniscript-wasm"; await init();` then the API of the TypeScript port; `cd wasm && npm test`, live in [docs/demo.html](docs/demo.html).
+- **TypeScript / JavaScript** (a direct port, `js/`, npm package `@pannous/uniscript`, ESM for Node and browsers): `npm install @pannous/uniscript`, `import { toUnicode, convert, toUniscript } from "@pannous/uniscript"` loads the bundled `entities.idx`; `@pannous/uniscript/core` takes your own bytes (`new Uniscript(new EntityIndex(bytes))`); `cd js && npm test`.
+- **Python, pure** (no dependencies, `python/native`, package `uniscript-py`): `pip install uniscript-py`, `import uniscript; uniscript.to_unicode("<:alpha>")`, reads `entities.idx` in place via mmap, same API as the FFI package; `cd python/native && PYTHONPATH=. python3 -m pytest tests`, usage in [python/native/README.md](python/native/README.md).
+- **Python, Rust-backed** (PyO3, `python/ffi`, package `uniscript-rs`, abi3 wheels for macOS and Linux): `pip install uniscript-rs`, the same `import uniscript` API as the pure package, about 6× faster on documents; `python/ffi/build.sh` (maturin, installs into the system python), `python/ffi/test.sh`.
 
 Programming languages supporting Uniscript natively are wasp and warp. 
 

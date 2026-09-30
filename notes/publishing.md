@@ -1,0 +1,27 @@
+# Publishing the packages
+
+| registry | name | source | imported as |
+|---|---|---|---|
+| crates.io | `uniscript` | `Cargo.toml` | `uniscript` (lib + CLI) |
+| PyPI | `uniscript-py` | `python/native` | `import uniscript` |
+| PyPI | `uniscript-rs` | `python/ffi` | `import uniscript` |
+| npm | `@pannous/uniscript` | `js/` | `@pannous/uniscript`, `@pannous/uniscript/core` |
+| npm | `@pannous/uniscript-wasm` | `wasm/` | `@pannous/uniscript-wasm` (`await init()`) |
+
+- Taken names (2026-09-30): npm `uniscript` (unrelated, errisy), PyPI `uniscript` (subscript converter). The npm user
+  `pannous` exists (owns `netbase`), so the `@pannous` scope is the user's. Checked free: crates.io `uniscript`, PyPI
+  `uniscript-rs`/`uniscript-py` (json + simple index 404), npm `@pannous/uniscript(-wasm)`.
+- `scripts/publish.sh` builds every artifact into `probes/publish/dist`, runs `cargo publish --dry-run`,
+  `twine check --strict`, `npm pack`, installs each artifact into `probes/publish/site/*` and converts
+  `<:alpha> <:fracture A>` both ways. `--publish` checks the credentials and a clean tree first, then uploads.
+- Crate: `include` in Cargo.toml keeps it at 1.5 MB compressed (limit 10 MB). Patterns must start with `/`: an unanchored
+  `README.md` matches every README in the tree, and maturin's sdist of uniscript-rs (which packs the path dependency
+  through cargo's list) picked up intellij/, sublime/ and .pytest_cache READMEs.
+- uniscript-rs: pyo3 feature `abi3-py39` → one wheel per platform. `maturin build --target universal2-apple-darwin`,
+  Linux via `--zig --target {x86_64,aarch64}-unknown-linux-gnu --compatibility manylinux2014` (needs the rustup targets).
+  The sdist builds (`pip wheel` from it works).
+- npm: `pkg/.gitignore` (`*`, by wasm-pack) hides globbed entries of `files` from npm; list pkg files explicitly.
+  entities.idx is a symlink that npm would not pack: prepack copies it, postpack re-links with `ln -sf`.
+- Credentials the user sets up once: `npm login`; `cargo login <token from crates.io/settings/tokens>`; `~/.pypirc`:
+  `[pypi]` `username = __token__` `password = pypi-…` (a token from pypi.org/manage/account/token/; the first upload
+  needs an account-wide token, a project-scoped one afterwards).
