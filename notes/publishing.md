@@ -41,3 +41,9 @@
    (`intellij/build/distributions/uniscript-intellij-1.0.0.zip`), later `PUBLISH_TOKEN=perm:… scripts/publish_editor_plugins.sh --publish`;
    Sublime: `git tag sublime-1.0.0 && git push origin sublime-1.0.0`,
    `gh release create sublime-1.0.0 probes/publish/dist/Uniscript.sublime-package`, then a PR to wbond/package_control_channel.
+
+## Released 1.0.0 (2026-09-30)
+- crates.io needs a verified account email before the first publish (400 otherwise).
+- npm asks for a browser 2FA confirmation on every `npm publish`, so the user runs it (`! npm publish …`); a session cannot.
+- The confirm-git-destructive hook blocks `git push -f` of a moved tag; the user runs it.
+- Tag only once every port passes the shared cases: the first v1.0.0 was cut mid-rollout and had to be moved.
