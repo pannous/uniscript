@@ -27,7 +27,7 @@ typedef enum {
 	UNISCRIPT_UNCLOSED,       /* detail: the rest of the text from <: */
 	UNISCRIPT_UNSUPPORTED,    /* a warning in UNISCRIPT_ERROR mode; detail: its message, error_at: its offset */
 	UNISCRIPT_INVALID_META,   /* detail: the tag content */
-	UNISCRIPT_INVALID_INPUT   /* NULL or invalid UTF-8 */
+	UNISCRIPT_INVALID_INPUT   /* NULL or invalid UTF-8, except in uniscript_convert with UNISCRIPT_LENIENT */
 } uniscript_error_kind;
 
 /* A character or combination without a Unicode counterpart; message without the "uniscript: " prefix */
@@ -74,7 +74,10 @@ typedef struct {
 } uniscript_font;
 
 /* Uniscript → Unicode (meta information as TAG sequences) and its warnings; in UNISCRIPT_ERROR the first warning is
- * the error */
+ * the error. In UNISCRIPT_LENIENT invalid input is repaired instead of failing: each maximal invalid UTF-8 subpart
+ * becomes U+FFFD with the warning "invalid UTF-8 byte 0xNN replaced by U+FFFD" at its offset in the input (as Rust's
+ * String::from_utf8_lossy), NULL is "" with the warning "input is NULL"; these warnings come first, the conversion's
+ * follow at offsets of the repaired text */
 uniscript_result uniscript_convert(const char *source, uniscript_mode mode);
 
 /* Uniscript → Unicode; NULL on an error, warnings go to stderr as "warning: uniscript: <message> at byte <n>\n" */

@@ -10,7 +10,7 @@
   the artifacts to `c/ffi/build/libuniscript.*`. Builds go to CARGO_TARGET_DIR=/opt/cargo.
 - Strings are allocated with C `malloc` in Rust (not CString), so `uniscript_free` is plain `free` and C-allocated and
   Rust-allocated strings can't be mixed up. The converter is a thread_local `Uniscript::default()` (it holds a RefCell).
-- NULL or invalid UTF-8 input → `UNISCRIPT_INVALID_INPUT` in every mode, even Lenient (there is no text to keep).
+- NULL or invalid UTF-8 input → `UNISCRIPT_INVALID_INPUT` in Warn and Error; Lenient repairs it like `from_utf8_lossy` (`utf8_chunks`: one U+FFFD per maximal invalid subpart) with a warning per replacement at its input offset, NULL → "" with "input is NULL". Later warnings count bytes of the repaired text.
 - Static linking needs nothing beyond `-lm` on macOS (`--print native-static-libs`: -lSystem -lc -lm); Linux also
   `-lpthread -ldl`.
 - Tests are clean under `leaks --atExit` and `-fsanitize=address,undefined`.

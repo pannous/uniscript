@@ -91,6 +91,17 @@ void test_lenient(const lenient_case &c) {
 	check(got == expected, "lenient warnings", c.uniscript, messages(conversion.warnings), expected.empty() ? "" : expected[0]);
 }
 
+void test_repairs(const repair_case &c) {
+	auto conversion = uniscript::convert(c.source, uniscript::Mode::Lenient);
+	check_equal("repaired", c.unicode, conversion.text, std::string(c.unicode));
+	std::vector<uniscript::Warning> expected;
+	for (const auto &warning : c.warnings)
+		if (warning.message) expected.push_back({warning.message, warning.at});
+	check(conversion.warnings == expected, "repair warnings", c.unicode, messages(conversion.warnings), messages(expected));
+	auto error = thrown(c.unicode, [&] { uniscript::convert(c.source, uniscript::Mode::Warn); });
+	if (error) check(error->kind == uniscript::ErrorKind::InvalidInput, "invalid input outside lenient", c.unicode, error->what(), "InvalidInput");
+}
+
 void test_finds_header(const header_case &c) {
 	auto header = uniscript::header(c.source);
 	check_equal("header found", c.source, header.has_value(), static_cast<bool>(c.found));
@@ -132,7 +143,7 @@ void meta_runs_nest() {
 void edges() {
 	check_equal("meta template", "color", uniscript::meta_template("color").value_or("none"), std::string("color: {}"));
 	check_equal("no meta template", "blink", uniscript::meta_template("blink").has_value(), false);
-	auto error = thrown("\\xff", [] { uniscript::convert("\xff<:alpha>", uniscript::Mode::Lenient); });
+	auto error = thrown("\\xff", [] { uniscript::convert("\xff<:alpha>", uniscript::Mode::Error); });
 	if (error) check(error->kind == uniscript::ErrorKind::InvalidInput, "invalid UTF-8", "\\xff", error->what(), "InvalidInput");
 	check_equal("version", "version", std::string(uniscript::version), std::string("https://uniscript.org/v1"));
 	check(uniscript::to_uniscript(expanded(SCOTLAND)).find("green") == std::string::npos, "no green suffix", SCOTLAND, "", "");
@@ -154,6 +165,7 @@ int main() {
 	each(warns, test_warns);
 	each(errors, test_fails);
 	each(lenients, test_lenient);
+	each(repairs, test_repairs);
 	each(headers, test_finds_header);
 	each(htmls, test_renders);
 	each(fonts, test_finds_font);

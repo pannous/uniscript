@@ -95,6 +95,22 @@ static void test_lenient(const lenient_case *c) {
 	uniscript_result_free(&result);
 }
 
+static void test_repairs(const repair_case *c) {
+	uniscript_result result = uniscript_convert(c->source, UNISCRIPT_LENIENT);
+	check_text("repaired", c->unicode, result.text, c->unicode);
+	size_t count = 0;
+	while (count < COUNT(c->warnings) && c->warnings[count].message) count++;
+	check_number("repair warning count", c->unicode, result.warning_count, count);
+	for (size_t i = 0; i < count && i < result.warning_count; i++) {
+		check_text("repair warning", c->unicode, result.warnings[i].message, c->warnings[i].message);
+		check_number("repair warning at", c->warnings[i].message, result.warnings[i].at, c->warnings[i].at);
+	}
+	uniscript_result_free(&result);
+	result = uniscript_convert(c->source, UNISCRIPT_WARN);
+	check_number("invalid input outside lenient", c->unicode, result.error_kind, UNISCRIPT_INVALID_INPUT);
+	uniscript_result_free(&result);
+}
+
 static void test_finds_header(const header_case *c) {
 	const char *version = NULL;
 	size_t version_length = 99, length = 99;
@@ -163,11 +179,16 @@ static void edges(void) {
 	check_text("meta template", "color", template, "color: {}");
 	uniscript_free(template);
 	check(uniscript_meta_template("blink") == NULL, "no meta template", "blink", NULL, NULL);
-	uniscript_result invalid = uniscript_convert("\xff<:alpha>", UNISCRIPT_LENIENT);
+	uniscript_result invalid = uniscript_convert("\xff<:alpha>", UNISCRIPT_ERROR);
 	check_number("invalid UTF-8", "\\xff", invalid.error_kind, UNISCRIPT_INVALID_INPUT);
 	uniscript_result_free(&invalid);
 	invalid = uniscript_convert(NULL, UNISCRIPT_WARN);
 	check_number("NULL input", "NULL", invalid.error_kind, UNISCRIPT_INVALID_INPUT);
+	uniscript_result_free(&invalid);
+	invalid = uniscript_convert(NULL, UNISCRIPT_LENIENT);
+	check_text("lenient NULL", "NULL", invalid.text, "");
+	check_number("lenient NULL warnings", "NULL", invalid.warning_count, 1);
+	if (invalid.warning_count) check_text("lenient NULL warning", "NULL", invalid.warnings[0].message, "input is NULL");
 	uniscript_result_free(&invalid);
 	uniscript_result_free(NULL);
 	uniscript_free(NULL);
@@ -186,6 +207,7 @@ int main(void) {
 	EACH(warns, test_warns);
 	EACH(errors, test_fails);
 	EACH(lenients, test_lenient);
+	EACH(repairs, test_repairs);
 	EACH(headers, test_finds_header);
 	EACH(htmls, test_renders);
 	EACH(fonts, test_finds_font);

@@ -10,6 +10,8 @@ extern "C" {
 	fn free(pointer: *mut c_void);
 }
 
+const NULL_INPUT: &str = "input is NULL";
+
 thread_local! {
 	static CONVERTER: Uniscript<'static> = Uniscript::default();
 }
@@ -151,11 +153,37 @@ fn warning_mode(mode: Mode) -> WarningMode {
 	}
 }
 
+/// The text with each maximal invalid UTF-8 subpart replaced by U+FFFD (as `String::from_utf8_lossy`), and a warning at
+/// the byte offset of each; NULL is the empty text
+unsafe fn repaired(pointer: *const c_char) -> (String, Vec<Warning>) {
+	if pointer.is_null() {
+		return (String::new(), vec![Warning { message: NULL_INPUT.into(), at: 0 }]);
+	}
+	let (mut text, mut warnings) = (String::new(), Vec::new());
+	for chunk in CStr::from_ptr(pointer).to_bytes().utf8_chunks() {
+		let at = chunk.valid().as_ptr() as usize - pointer as usize + chunk.valid().len();
+		text += chunk.valid();
+		if !chunk.invalid().is_empty() {
+			text.push(char::REPLACEMENT_CHARACTER);
+			warnings.push(Warning { message: format!("invalid UTF-8 byte 0x{:02X} replaced by U+FFFD", chunk.invalid()[0]), at });
+		}
+	}
+	(text, warnings)
+}
+
+/// In [`Mode::Lenient`] invalid input is repaired with warnings, else it is an error
 #[no_mangle]
 pub unsafe extern "C" fn uniscript_convert(source: *const c_char, mode: Mode) -> CResult {
-	let Some(source) = text(source) else { return invalid_input() };
-	match CONVERTER.with(|converter| converter.convert(source, warning_mode(mode))) {
-		Ok((text, warnings)) => success(&text, &warnings),
+	let (source, mut warnings) = match (text(source), mode) {
+		(Some(source), _) => (source.to_string(), Vec::new()),
+		(None, Mode::Lenient) => repaired(source),
+		(None, _) => return invalid_input(),
+	};
+	match CONVERTER.with(|converter| converter.convert(&source, warning_mode(mode))) {
+		Ok((text, found)) => {
+			warnings.extend(found);
+			success(&text, &warnings)
+		}
 		Err(error) => error_result(&error),
 	}
 }

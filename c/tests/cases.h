@@ -47,6 +47,9 @@ typedef struct { const char *uniscript, *unicode; } conversion_case;
 typedef struct { const char *uniscript, *unicode, *message; size_t at; } warning_case;
 typedef struct { const char *uniscript; int kind; const char *detail, *error; } error_case;
 typedef struct { const char *uniscript, *unicode, *messages[3]; } lenient_case;
+/* invalid UTF-8 in UNISCRIPT_LENIENT: U+FFFD for each maximal invalid subpart, warnings at offsets of the input; the
+ * conversion's own warnings follow, at offsets of the repaired text */
+typedef struct { const char *source, *unicode; struct { const char *message; size_t at; } warnings[4]; } repair_case;
 typedef struct { const char *source; int found; const char *version; size_t length; } header_case;
 /* uniscript_html of the tagged text: exactly the html, or containing it; at most one warning */
 typedef struct { const char *tagged, *html; int contains; const char *message; size_t at; } html_case;
@@ -142,6 +145,17 @@ static const lenient_case lenients[] = {
 	{"<:color red;x A> <:alpha>", "<:color red;x A> α", {"invalid meta value in <:color red;x A>"}},
 	{"<:alpha> a <: b", "α a <: b", {"unclosed <: at <: b"}},
 	{"<:fracture 7>", "7", {"no fracture form of 7"}},
+};
+
+static const repair_case repairs[] = {
+	{"a\xFF" "b<:alpha>", "a\uFFFDbα", {{"invalid UTF-8 byte 0xFF replaced by U+FFFD", 1}}},
+	{"\xE2\x82<:beta>", "\uFFFDβ", {{"invalid UTF-8 byte 0xE2 replaced by U+FFFD", 0}}}, /* truncated: one U+FFFD */
+	{"\xC0\x80", "\uFFFD\uFFFD", {{"invalid UTF-8 byte 0xC0 replaced by U+FFFD", 0}, {"invalid UTF-8 byte 0x80 replaced by U+FFFD", 1}}},
+	{"\xED\xA0\x80", "\uFFFD\uFFFD\uFFFD", /* a surrogate */
+	 {{"invalid UTF-8 byte 0xED replaced by U+FFFD", 0}, {"invalid UTF-8 byte 0xA0 replaced by U+FFFD", 1},
+	  {"invalid UTF-8 byte 0x80 replaced by U+FFFD", 2}}},
+	{"\xFF<:fracture 7>", "\uFFFD" "7", {{"invalid UTF-8 byte 0xFF replaced by U+FFFD", 0}, {"no fracture form of 7", 3}}},
+	{"\xFF<:nosuch>", "\uFFFD<:nosuch>", {{"invalid UTF-8 byte 0xFF replaced by U+FFFD", 0}, {"unknown uniscript entity: nosuch", 3}}},
 };
 
 static const header_case headers[] = {
