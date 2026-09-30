@@ -15,6 +15,8 @@ const TAG_CLOSE = ">";
 const CLOSING_SLASH = "/";
 const ESCAPED_COLON = "<::>";
 const SUFFIX_KEY = "*suffix";
+/** The block control naming the meta a block becomes where it has no suffix control (`red *meta` → `color red`) */
+const META_FALLBACK_KEY = "*meta";
 const FONT_KEY = "font";
 const LANG_KEY = "lang";
 const VALUE_PLACEHOLDER = "{}";
@@ -230,17 +232,25 @@ export class Uniscript {
 		return scripted ?? this.#name(`${block} ${SUFFIX_KEY}`);
 	}
 
-	/** The control of an effect after one character, "" with a warning when it has none for it */
-	#effectSuffix(block: string, character: string, at: number): string {
+	/** The control of an effect after one character. Without one, a block with a `*meta` fallback (the colors:
+	 * `red *meta` → `color red`) becomes that attached meta sequence, anything else nothing; both warn. */
+	#effectControl(block: string, character: string, at: number): { suffix?: string; meta?: string } {
 		const suffix = this.#suffixOf(block, character);
-		if (suffix) return suffix;
+		if (suffix) return { suffix };
+		const fallback = splitOnce(this.#name(`${block} ${META_FALLBACK_KEY}`) ?? "", " ");
+		if (fallback) {
+			this.#warn(`${block} on ${character} kept as ${fallback[0]} meta`, at);
+			return { meta: Meta.attached(...fallback).tags() };
+		}
 		this.#warn(`${block} does not apply to ${character}`, at);
-		return "";
+		return {};
 	}
 
-	/** The suffixes of the stacked effect words (`mirror` in `<:mirror red A>`) for one character */
+	/** The suffix controls of the stacked effect words (`mirror` in `<:mirror red A>`) for one character, then the meta
+	 * sequences of the effects it has no control for: a meta follows the character's suffix controls */
 	#effectSuffixes(effects: string[], character: string, at: number): string {
-		return effects.map((effect) => this.#effectSuffix(effect, character, at)).join("");
+		const controls = effects.map((effect) => this.#effectControl(effect, character, at));
+		return controls.map((control) => control.suffix ?? "").join("") + controls.map((control) => control.meta ?? "").join("");
 	}
 
 	/** One character in a block: its own entry (greek a → α), else followed by the block's suffix; then the effects.
@@ -251,7 +261,7 @@ export class Uniscript {
 			this.#warn(`no ${block} form of ${character}`, at);
 			styled = character;
 		}
-		styled ??= character + this.#effectSuffix(block, character, at);
+		if (styled === undefined) return character + this.#effectSuffixes([block, ...effects], character, at);
 		return styled + this.#effectSuffixes(effects, character, at);
 	}
 
