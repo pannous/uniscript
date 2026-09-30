@@ -54,6 +54,13 @@ class UniscriptTest {
 	}
 
 	@Test
+	fun spacesBetweenWordsAreKept() {
+		converts("<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμοσ")
+		converts("<:greek a kosmos>", "α κοσμοσ")
+		converts("<:fracture Hello  World>", "ℌ𝔢𝔩𝔩𝔬  𝔚𝔬𝔯𝔩𝔡")
+	}
+
+	@Test
 	fun unsupportedCharactersAndCombinationsWarn() {
 		warns("<:greek c>", "c", "no greek form of c", 0)
 		warns("x <:fracture 7>", "x 7", "no fracture form of 7", 2)

@@ -231,7 +231,12 @@ private class Conversion(val index: EntityIndex, val source: String) {
 		return out.toString()
 	}
 
-	/** The space separated operands, spaces dropped, or one operand of several words (egyptian seated man);
+	/** An operand that is one letter of the block: one character, its own entry (greek th, greek eta) or an entity name */
+	private fun isLetter(block: String, token: String) =
+		token.codePointCount(0, token.length) == 1 || name("$block $token") != null || name(token) != null
+
+	/** The space separated operands, or one operand of several words (egyptian seated man); spaces between letters
+	 *  only separate them, spaces next to a word stay (`<:greek> filosofia kosmos<:/greek>` → φιλοσοφια κοσμοσ);
 	 *  a group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script
 	 *  of the first part has */
 	private fun operands(block: String, content: String, effects: List<String>, at: Int): String {
@@ -241,7 +246,14 @@ private class Conversion(val index: EntityIndex, val source: String) {
 		val group = name("$block *group") != null
 		val out = StringBuilder()
 		var script = ""
-		tokens.forEachIndexed { position, token ->
+		var (position, spaces, previousIsLetter) = Triple(0, 0, true)
+		for (token in content.split(' ')) {
+			spaces++
+			if (token.isEmpty()) continue
+			val isLetter = isLetter(block, token)
+			if (!group && position > 0 && !(previousIsLetter && isLetter)) out.append(" ".repeat(spaces))
+			spaces = 0
+			previousIsLetter = isLetter
 			val part = if (group) (if (token.utf8Size > 1) name(token) else null) ?: token else operand(block, token, effects, at)
 			if (position == 0) {
 				script = part.firstCodePoint()?.let(::scriptOf) ?: ""
@@ -252,6 +264,7 @@ private class Conversion(val index: EntityIndex, val source: String) {
 				out.append(name("$block *infix $script") ?: "")
 			}
 			out.append(part)
+			position++
 		}
 		return out.toString()
 	}
