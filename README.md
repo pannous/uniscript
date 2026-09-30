@@ -33,6 +33,8 @@ escaping, the comparison with LaTeX, the Unicode extensions uniscript wishes for
 
 ## Try it
 
+**Online: [pannous.com/uniscript](https://pannous.com/uniscript/)**. The converter there is the wasp implementation compiled to WebAssembly.
+
 ```sh
 cargo install --git https://github.com/pannous/uniscript
 uniscript "<:alpha> <:fracture A>"     # α 𝔄
