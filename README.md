@@ -38,12 +38,13 @@ The full specification is [[docs/uniscript.md]]
 
 ![Uniscript examples rendered with Uniscript fonts](docs/demo.png)
 
-Uniscript is a human-readable spelling of Unicode that uses only ASCII: every character has a name (`<:alpha>`,
-`<:greek small letter alpha>`, `<:dopf>`), every style is a block type (`<:bold …>`, `<:fracture …>`, `<:upper 2>` → ²),
-and it converts back: `to_uniscript("α 𝔄")` gives `<:alpha> <:fracture A>`.
+Uniscript is a human-readable spelling of Unicode that uses only ASCII:   
+every character has a name (`<:alpha>`,`<:greek small letter alpha>`, `<:dopf>`),  
+  every style is a block type (`<:bold …>`, `<:fracture …>`, `<:upper 2>` → ²),  
+and it converts back: `to_uniscript("α 𝔄")` gives `<:alpha> <:fracture A>`.  
 
 Unicode has no characters for a mirrored R or a red A, so uniscript adds them as invisible **suffix controls**: the letter
-followed by TAG characters (U+E0020…E007E). Any font shows the plain letter. The **Uniscript fonts** show the effect:
+followed by TAG characters (U+E0020…E007E). Basic fonts shows the plain letter. Special HTML or Markdown renderers, or **Uniscript fonts** show the effect:
 `<:mirror red R>` is `R` + TAG r + TAG M.
 
 - **40,000 names**: Unicode 16 character names, LaTeX `unicode-math` commands, HTML5 entities, and uniscript's own names.
@@ -85,9 +86,10 @@ uniscript "<:alpha> <:fracture A>"     # α 𝔄
 uniscript -r "α 𝔄"                     # <:alpha> <:fracture A>
 uniscript /path/notes.txt               # the file's content converted (-r: back to uniscript)
 echo "<:beside 犭 句>" | uniscript      # ⿰犭句 (狗 in the Uniscript CJK font)
-uniscript --html "<:font cuneiform-hittite>𒀭<:/font>"   # <span lang="hit-Xsux" style="font-family: 'UllikummiA', …">𒀭</span>
 ```
-
+<!-- # uniscript --html "<:font cuneiform-hittite>𒀭<:/font>"   
+# <span lang="hit-Xsux" style="font-family: 'UllikummiA', …">𒀭</span>
+ -->
 ## Fonts
 Basic Uniscript does **not require special fonts**, and the standard should be backwards compatible so that __features__ not available in the renderer are simply ignored! Whenever the Unicode standard provides a built-in character for some entity or combination, it will be used immediately, so most of the above examples work out of the box: `<:alpha> <:fracture A>` => `α 𝔄` ...
 
@@ -104,13 +106,15 @@ Download them from the [releases](https://github.com/pannous/uniscript/releases)
 
 ## Support
 
-Libraries for UniScript are provided for all major programming languages in this repository:
-Swift, Rust, Python, JavaScript/TypeScript, C and C++. The Rust crate is the reference implementation. Swift, TypeScript, Python and C each have a native port of it, and Python and C/C++ also have wrappers around the Rust crate (FFI), with the same API as their native port. For fast web use, we recommend the compiled WebAssembly, as shown in [docs/demo.html](docs/demo.html). All of them pass the same reference cases:
+Libraries for UniScript are provided for all major programming languages in this repository:  
+Swift, Rust, Python, JavaScript/TypeScript, C and C++. The Rust crate is the reference implementation.  
+[Warp](https://github.com/pannous/warp) is supporting UniScript natively.  
+See [[Support]] for more details 
 
 
-Programming languages supporting Uniscript natively are wasp and warp. 
+### Apps
 
-An example native app with built-in support on the Mac: you can use it with Markdown via [MarkdownPreview](https://github.com/pannous/MarkdownPreview)
+An example native app with built-in support on the Mac: use it in Markdown via [MarkdownPreview](https://github.com/pannous/MarkdownPreview)
 
 Future: hopefully this will develop into its very own standard. 
 
@@ -123,6 +127,8 @@ Renderers might choose to switch on Uniscript mode when encountering the header 
 [Warp](https://github.com/pannous/warp/) has built-in support for Uniscript, so all code should be rendered with it. 
 
 ## Use
+
+See [[usage.md]] For examples in all programming languages 
 
 ```rust
 assert_eq!(uniscript::to_unicode("<:alpha> <:fracture A>")?, "α 𝔄");
