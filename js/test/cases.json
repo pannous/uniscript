@@ -95,7 +95,24 @@
 		["<:mirror bold italic A>", "𝑨{U+E004D}"],
 		["<:greek bold a>", "𝛂"],
 		["<:bold greek a>", "𝛂"],
-		["<:greek bold alpha>", "𝛂"]
+		["<:greek bold alpha>", "𝛂"],
+		["\\:1F60D", "😍"],
+		["\\:U1F60D", "😍"],
+		["\\:0x1F60D", "😍"],
+		["\\U1F60D", "😍"],
+		["\\:U+1F60D", "😍"],
+		["\\:u+1f60d", "😍"],
+		["<:U+1F60D>", "😍"],
+		["<:0x1F60D>", "😍"],
+		["<:1F60D>", "😍"],
+		["<:u1f60d>", "😍"],
+		["\\U0001F60D", "😍"],
+		["\\:U+41 \\:0x42 <:u+43>", "A B C"],
+		["\\:1F60D. <:1F60D>x (\\U1F60D)", "😍. 😍x (😍)"],
+		["<:greek> a \\:03B2 <:/greek>", " α β "],
+		["\\:bed \\:BbbA \\:U+BBBA", "🛏 𝔸 뮺"],
+		["C:\\Users\\U1F60Dx \\UABC \\u00e9", "C:\\Users\\U1F60Dx \\UABC \\u00e9"],
+		["\\<:U>1F60D", "\\U1F60D"]
 	],
 	"warnCounts": [
 		["<:double bold A>", "𝐀", 1]
@@ -125,12 +142,14 @@
 		["𓀀 𓐍", "<:egyptian A1> <:egyptian Aa1>"],
 		["α Ω 𝔄 ∞ ℝ", "<:alpha> <:Omega> <:fracture A> <:infinity> <:double R>"],
 		["A{U+E0072} 🔴 xᵃ", "<:red A> <:red circle> x<:upper a>"],
-		["a <: b \\: c", "a <<::> b \\<::> c"]
+		["a <: b \\: c", "a <<::> b \\<::> c"],
+		["print(\"\\U0001F60D\") \\Users", "print(\"\\<:U>0001F60D\") \\Users"]
 	],
 	"unicodeRoundTrips": [
 		["∀x∈ℝ: 𝔄 A{U+E0072}{U+E004D} 𓀀{U+13440} ⿰犭句 <: é 🔴 日本語"],
 		["🏴{U+E0067}{U+E0062}{U+E0073}{U+E0063}{U+E0074}{U+E007F}"],
-		["a{attached blink fast}"]
+		["a{attached blink fast}"],
+		["print(\"\\U0001F60D\")"]
 	],
 	"warns": [
 		["<:greek c>", "c", "no greek form of c", 0],
@@ -140,13 +159,18 @@
 		["<:mirror red 狗>", "狗{U+E004D}{attached color red}", "red on 狗 kept as color meta", 0],
 		["<:beside a b>", "ab", "no beside group of a", 0],
 		["<:uniscript version=\"https://example.com/v1\">A", "A", "unsupported uniscript version https://example.com/v1", 0],
-		["<:font Santakku>", "{open font Santakku}", "Santakku is no font style of the entities, used as a font family", 0]
+		["<:font Santakku>", "{open font Santakku}", "Santakku is no font style of the entities, used as a font family", 0],
+		["\\:D800", "\\:D800", "invalid code point U+D800", 0],
+		["x <:U+110000>", "x <:U+110000>", "invalid code point U+110000", 2],
+		["\\UDFFF", "\\UDFFF", "invalid code point U+DFFF", 0]
 	],
 	"errors": [
 		["<:nosuchthing> x", "UnknownEntity", "nosuchthing"],
 		["a <: b", "Unclosed", "<: b"],
 		["x <:uniscript version=\"https://uniscript.org/v1\">", "UnknownEntity", "uniscript version=\"https://uniscript.org/v1\""],
-		["<:color red;x A>", "InvalidMeta", "color red;x A"]
+		["<:color red;x A>", "InvalidMeta", "color red;x A"],
+		["\\:1F60Dx", "UnknownEntity", "1F60Dx"],
+		["\\:ab", "UnknownEntity", "ab"]
 	],
 	"lenient": [
 		["<:alpha> <:nosuchthing> \\:nosuch <:beta>", "α <:nosuchthing> \\:nosuch β", ["unknown uniscript entity: nosuchthing", "unknown uniscript entity: nosuch"]],

@@ -14,6 +14,7 @@ const SHORT_OPEN = "\\";
 const TAG_CLOSE = ">";
 const CLOSING_SLASH = "/";
 const ESCAPED_COLON = "<::>";
+const ESCAPED_UNICODE = "<:U>";
 const SUFFIX_KEY = "*suffix";
 /** The block control naming the meta a block becomes where it has no suffix control (`red *meta` → `color red`) */
 const META_FALLBACK_KEY = "*meta";
@@ -31,6 +32,16 @@ const HEADER_OPEN = "<:uniscript";
 const VERSION_ATTRIBUTE = 'version="';
 const ATTRIBUTE_QUOTE = '"';
 const LINE_BREAKS = ["\r\n", "\n"];
+/** A code point token: `U+1F60D`, `U1F60D`, `0x1F60D` in any case (1–8 hex digits) or bare `1F60D` (4–8, so a mistyped
+ * short name stays unknown) */
+const CODE_POINT = /^(?:(?:[Uu]\+?|0[xX])([0-9A-Fa-f]{1,8})|([0-9A-Fa-f]{4,8}))$/;
+/** `U1F60D` after a backslash: `\U1F60D`, the only marker without a colon, 4–8 hex digits as a whole name token */
+const UNICODE_ESCAPE = /U([0-9A-Fa-f]{4,8})(?![A-Za-z0-9_-])/y;
+/** A name token after `\:`; the `+` of a leading `U+` belongs to it */
+const NAME_TOKEN = /(?:[Uu]\+)?[A-Za-z0-9_-]*/y;
+const MARKERS = /<:|\\:|\\(?=U[0-9A-Fa-f]{4,8}(?![A-Za-z0-9_-]))/g;
+const MAX_CODE_POINT = 0x10ffff;
+const SURROGATES = [0xd800, 0xdfff];
 /** Rust split_inclusive(char::is_whitespace): each piece is a word and the one whitespace character ending it */
 const WHITESPACE_ENDED_PIECES = /\S*\s|\S+$/gu;
 
@@ -106,6 +117,21 @@ function scriptOf(character: string): string {
 }
 
 const isNameCharacter = (character: string) => /^[A-Za-z0-9_-]$/.test(character);
+
+/** The sticky `pattern`'s match at `position` */
+function matchAt(pattern: RegExp, text: string, position: number): RegExpExecArray | null {
+	pattern.lastIndex = position;
+	return pattern.exec(text);
+}
+
+/** The value of a code point token (`U+1F60D`, `1F60D`), else undefined */
+export function codePointValue(token: string): number | undefined {
+	const digits = CODE_POINT.exec(token);
+	return digits ? parseInt(digits[1] ?? digits[2], 16) : undefined;
+}
+
+/** The hex digits of `\U1F60D` whose backslash is at `position - 1`, else undefined */
+const unicodeEscapeAt = (text: string, position: number) => matchAt(UNICODE_ESCAPE, text, position)?.[1];
 
 /** Every order of the parts */
 function permutations(parts: string[]): string[][] {
@@ -393,6 +419,8 @@ export class Uniscript {
 		if (utf8Length(content) === 1) return content; // <:<> <::> escape the marker
 		const text = this.#name(content.replaceAll(" ", "-"));
 		if (text !== undefined) return text;
+		const codePoint = this.#codePoint(content, `<:${content}>`, at);
+		if (codePoint !== undefined) return codePoint;
 		const meta = this.#metaTag(content, at);
 		if (meta !== undefined) return meta;
 		const split = content.includes(" ") ? content.indexOf(" ") : content.indexOf("-");
@@ -459,6 +487,16 @@ export class Uniscript {
 		return { text, warnings };
 	}
 
+	/** The character of a code point token (`U+1F60D`, `1F60D`); an invalid one (surrogate, above 10FFFF) warns and stays
+	 * `written`; undefined for no code point token */
+	#codePoint(token: string, written: string, at: number): string | undefined {
+		const value = codePointValue(token);
+		if (value === undefined) return undefined;
+		if (value <= MAX_CODE_POINT && (value < SURROGATES[0] || value > SURROGATES[1])) return String.fromCodePoint(value);
+		this.#warn(`invalid code point U+${value.toString(16).toUpperCase().padStart(4, "0")}`, at);
+		return written;
+	}
+
 	/** The source text of an error, with a warning, in mode "lenient"; else the error */
 	#kept(error: UniscriptError, source: string, at: number, mode: WarningMode): string {
 		if (mode !== "lenient") throw error;
@@ -466,12 +504,10 @@ export class Uniscript {
 		return source;
 	}
 
-	/** The next `<:` or `\:` from `position`, else the end */
+	/** The next `<:`, `\:` or `\U1F60D` from `position`, else the end */
 	static #marker(source: string, position: number): number {
-		for (let at = source.indexOf(MARKER_COLON, position + 1); at >= 0; at = source.indexOf(MARKER_COLON, at + 1)) {
-			if (source[at - 1] === TAG_OPEN || source[at - 1] === SHORT_OPEN) return at - 1;
-		}
-		return source.length;
+		MARKERS.lastIndex = position;
+		return MARKERS.exec(source)?.index ?? source.length;
 	}
 
 	#unicodeOf(source: string, mode: WarningMode): string {
@@ -489,11 +525,18 @@ export class Uniscript {
 			out += block !== undefined ? this.#blockText(block, plain, bytes) : plain;
 			advance(marker);
 			if (position >= source.length) break;
+			const escaped = unicodeEscapeAt(source, position + 1);
+			if (escaped !== undefined) {
+				const end = position + 2 + escaped.length;
+				out += this.#codePoint(escaped, source.slice(position, end), bytes)!;
+				advance(end);
+				continue;
+			}
 			if (source.startsWith(SHORT_OPEN, position)) {
-				let nameEnd = position + 2;
-				while (nameEnd < source.length && isNameCharacter(source[nameEnd])) nameEnd++;
+				const nameEnd = position + 2 + matchAt(NAME_TOKEN, source, position + 2)![0].length;
 				const name = source.slice(position + 2, nameEnd);
-				out += this.#name(name) ?? this.#kept(new UniscriptError("UnknownEntity", name), source.slice(position, nameEnd), bytes, mode);
+				const written = source.slice(position, nameEnd);
+				out += this.#name(name) ?? this.#codePoint(name, written, bytes) ?? this.#kept(new UniscriptError("UnknownEntity", name), written, bytes, mode);
 				advance(nameEnd);
 				continue;
 			}
@@ -561,6 +604,11 @@ export class Uniscript {
 			if ((character === TAG_OPEN || character === SHORT_OPEN) && text.startsWith(MARKER_COLON, position)) {
 				position += 1;
 				out += character + ESCAPED_COLON;
+				continue;
+			}
+			if (character === SHORT_OPEN && unicodeEscapeAt(text, position) !== undefined) {
+				position += 1;
+				out += character + ESCAPED_UNICODE;
 				continue;
 			}
 			const emojiTags = emojiTagsAt(text, position);
