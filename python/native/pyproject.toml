@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "uniscript-py"
-version = "0.2.0"
+version = "1.0.0"
 description = "Uniscript (<:alpha> → α, <:fracture A> → 𝔄 and back) in pure Python, reading the shared entity index in place"
 readme = "README.md"
 license = "MIT"

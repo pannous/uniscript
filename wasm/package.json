@@ -1,6 +1,6 @@
 {
   "name": "@pannous/uniscript-wasm",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Uniscript compiled to WebAssembly: ASCII names for Unicode text (<:alpha> → α) and back",
   "type": "module",
   "main": "uniscript.js",

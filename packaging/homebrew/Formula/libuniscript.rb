@@ -4,7 +4,7 @@
 class Libuniscript < Formula
   desc "C/C++ library: ASCII names for Unicode text (<:alpha> → α) and back"
   homepage "https://pannous.com/uniscript/"
-  url "https://github.com/pannous/uniscript/releases/download/v0.2.0/uniscript-c-0.2.0.tar.gz"
+  url "https://github.com/pannous/uniscript/releases/download/v1.0.0/uniscript-c-1.0.0.tar.gz"
   sha256 "REPLACE_WITH_SHA256_PRINTED_BY_MAKE_DIST"
   license "MIT"
   head "https://github.com/pannous/uniscript.git", branch: "main"

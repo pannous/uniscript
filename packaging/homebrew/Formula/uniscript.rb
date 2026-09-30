@@ -4,7 +4,7 @@
 class Uniscript < Formula
   desc "ASCII names for Unicode text (<:alpha> → α, <:fracture A> → 𝔄) and back"
   homepage "https://pannous.com/uniscript/"
-  url "https://static.crates.io/crates/uniscript/uniscript-0.2.0.crate"
+  url "https://static.crates.io/crates/uniscript/uniscript-1.0.0.crate"
   sha256 "REPLACE_WITH_SHA256_OF_THE_PUBLISHED_CRATE"
   license "MIT"
   head "https://github.com/pannous/uniscript.git", branch: "main"

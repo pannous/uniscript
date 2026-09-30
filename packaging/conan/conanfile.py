@@ -7,7 +7,7 @@ from conan.tools.files import copy, get, rm
 
 class UniscriptConan(ConanFile):
     name = "uniscript"
-    version = "0.2.0"
+    version = "1.0.0"
     description = "ASCII names for Unicode text (<:alpha> -> alpha) and back: C11 library, header-only C++17 wrapper"
     license = "MIT"
     url = "https://github.com/pannous/uniscript"

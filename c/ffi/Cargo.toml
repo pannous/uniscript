@@ -1,6 +1,6 @@
 [package]
 name = "uniscript-ffi"
-version = "0.2.0"
+version = "1.0.0"
 edition = "2021"
 description = "C ABI of the uniscript crate (header c/uniscript.h, C++ wrapper c/uniscript.hpp)"
 license = "MIT"

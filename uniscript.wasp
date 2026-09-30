@@ -5,7 +5,7 @@
 // Names and block types live in data/entities/*.wasp; this reads their binary index data/entities.idx, whose format
 // src/index.rs documents: tables of 20-byte records sorted by a hash of the key.
 
-version 0.2.0  // the package version, as in Cargo.toml: `use uniscript >= 0.2` checks it
+version 1.0.0  // the package version, as in Cargo.toml: `use uniscript >= 1.0` checks it
 const uniscript_index = read(module_directory + "/data/entities.idx")
 const names_table = 0     // name → text, block entries as "block operand"
 const chars_table = 1     // text → its uniscript

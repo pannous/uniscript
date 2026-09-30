@@ -21,7 +21,7 @@ The converter is a Kotlin port of `src/lib.rs` (`src/main/kotlin/com/pannous/uni
 ```sh
 cd intellij
 ./gradlew test            # converter tests (tests/uniscript_test.rs) and the plugin in a headless IDE
-./gradlew buildPlugin     # build/distributions/uniscript-intellij-0.2.0.zip
+./gradlew buildPlugin     # build/distributions/uniscript-intellij-1.0.0.zip
 ./gradlew verifyPlugin    # JetBrains' plugin verifier against IDEA 2024.3 (since-build 243) and the local IDE
 ```
 
@@ -31,7 +31,7 @@ cd intellij
 version, change notes and since-build are set in `build.gradle.kts` (patched into `plugin.xml`).
 
 1. The **first** upload is manual: sign in at https://plugins.jetbrains.com (vendor pannous), *Upload plugin*, choose
-   `build/distributions/uniscript-intellij-0.2.0.zip`, license and category; JetBrains reviews it (a few days).
+   `build/distributions/uniscript-intellij-1.0.0.zip`, license and category; JetBrains reviews it (a few days).
 2. Later versions: raise `version` and `changeNotes` in `build.gradle.kts`, create a token under *My Tokens*, then
    `PUBLISH_TOKEN=perm:… ./gradlew publishPlugin` (or `PUBLISH_TOKEN=… ../scripts/publish_editor_plugins.sh --publish`).
 3. Signing (optional, recommended): `CERTIFICATE_CHAIN`, `PRIVATE_KEY` (PEM contents) and `PRIVATE_KEY_PASSWORD` in the

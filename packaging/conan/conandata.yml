@@ -1,4 +1,4 @@
 sources:
-  "0.2.0":
-    url: "https://github.com/pannous/uniscript/releases/download/v0.2.0/uniscript-c-0.2.0.tar.gz"
+  "1.0.0":
+    url: "https://github.com/pannous/uniscript/releases/download/v1.0.0/uniscript-c-1.0.0.tar.gz"
     sha256: "REPLACE_WITH_SHA256_PRINTED_BY_MAKE_DIST"
