@@ -24,3 +24,8 @@
   page (web/uniscript/build.sh deploy in warp); locally they fall back to the .ttf of ~/Library/Fonts.
 - No deploy script into /var/www/pannous may use `rsync --delete`: on 2026-09-30 the site's ~/dev/webpage/up.sh wiped all of
   /uniscript/. Stale files on the server have to be removed by hand.
+- Fonts on pannous.com: warp's web/uniscript/slice_fonts.py slices them by unicode-range (fonts/fonts.css) and
+  sequence_fonts.js keeps IDS, hieroglyph groups and TAG effects in one face (details: warp notes/uniscript-web.md).
+  The deployed demo links ../fonts/fonts.css and imports ../sequence_fonts.js; served from the repository both are
+  missing and the local fonts apply. Cold load 12.8 MB → 2.3 MB (probes/page_weight.sh, before/after in
+  probes/page_weight_*.txt); probes/font_slices/shaping.html compares sliced and whole fonts.

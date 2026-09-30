@@ -48,3 +48,6 @@ DONE - C ffi/native: NULL or invalid UTF-8 input fails with UNISCRIPT_INVALID_IN
 - chunked index: manifest.usxc is fetched without cache busting; a stale cached manifest with new chunks would mix builds (`?v=` only protects the chunks). Serve it with Cache-Control: no-cache or name the chunk directory by version
 - chunked index: the manifest is now 36 KB (the filter of absent names is 20 KB, incompressible); a smaller filter (8 bits per name, 2 % false positives) or leaving out the hieroglyph groups would cut 5–8 KB
 - chunked index: init makes two requests one after the other (manifest, then the common chunk); a common.idx next to the manifest could come in parallel
+- The deployed demo requests ../fonts/UniscriptSans-Regular.ttf, NewGardinerOmni2d4.ttf and UniscriptCJK-Regular.otf (404, 0 bytes): the local-font fallbacks of docs/demo.html, needed for docs/make_demo.sh screenshots, do not exist on the server.
+- pannous.com/uniscript/ (the wasp page) still downloads the whole 1.2 MB entities.idx on every load; the chunked index of the Rust demo (54 chunks, ~100 KB) is not ported to the wasp page.
+- Stale whole fonts stay on the server (no rsync --delete): /var/www/pannous/uniscript/fonts/UniscriptCJK-Regular.woff2 and NewGardinerOmni2d4.woff2 are no longer referenced.

@@ -1,0 +1,26 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Serve this directory with fonts/ from warp's web/uniscript/slice_fonts.py, whole/ linking the three font files and
+     sequence_fonts.js linking warp's web/uniscript/sequence_fonts.js. Compares text shaped with the sliced fonts (fonts/fonts.css, sequence_fonts.js) and with the whole fonts: composition, TAG effects, hieroglyph groups -->
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+@font-face{font-family:WholeSans;src:url("whole/UniscriptSans-Regular.ttf")}
+@font-face{font-family:WholeCJK;src:url("whole/UniscriptCJK-Regular.otf")}
+@font-face{font-family:WholeGardiner;src:url("whole/NewGardinerOmni2d4.ttf")}
+body{margin:0;background:#fff} div{font-size:48px;line-height:72px;white-space:nowrap;padding:0 8px;display:inline-block}
+.sliced{font-family:"Uniscript Sans","Uniscript CJK","NewGardinerOmni",serif}
+.whole{font-family:WholeSans,WholeCJK,WholeGardiner,serif}
+</style>
+<script type="module">
+import { watchSequences } from "./sequence_fonts.js";
+const CASES = new URLSearchParams(location.search).has("plain") ? ["中文字 的是在 犭 句 木", "한국어 日本語", "𓀀 𓁐"] : ["⿰犭句", "⿰木木 ⿱木林", "你\u{E004D}", "中文字 的是在", "R\u{E0072}\u{E004D}", "𓀀𓐰𓁐", "𓀀𓑀", "한국어 日本語", "A\u{E0067}\u{E004C}", "⿰犭句你\u{E004D}", "犭 ⿰犭句", "木\u{E004D} ⿱木林"];
+for (const text of CASES) for (const kind of ["sliced", "whole"]) {
+	const line = Object.assign(document.createElement("div"), { className: kind, textContent: text });
+	document.body.append(line, document.createElement("br"));
+}
+if (!new URLSearchParams(location.search).has("css-only")) await watchSequences(...document.querySelectorAll(".sliced"));
+await document.fonts.ready;
+await new Promise(resolve => setTimeout(resolve, 3000));
+await document.fonts.ready;
+document.body.dataset.ready = "true";
+</script>
