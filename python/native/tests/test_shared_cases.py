@@ -47,6 +47,11 @@ def test_converts(case):
     assert convert(case[0], WarningMode.WARN)[0] == case[1]
 
 
+@pytest.mark.parametrize("case", cases("quiet"), ids=str)
+def test_quiet(case):
+    assert convert(case[0], WarningMode.WARN) == (case[1], [])
+
+
 @pytest.mark.parametrize("case", cases("roundTrips"), ids=str)
 def test_round_trips(case):
     assert to_uniscript(case[1]) == case[0]
