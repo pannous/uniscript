@@ -41,7 +41,7 @@ DONE - C ffi/native: NULL or invalid UTF-8 input fails with UNISCRIPT_INVALID_IN
 - TODO: Sublime package depends on the `uniscript` CLI (cargo install): Package Control users without Rust cannot use it. Bundle python/native + entities.idx (loaded via sublime.load_binary_resource, no mmap in a zip) to make it self-contained.
 - TODO: Sublime package not yet in Package Control's default channel: needs a release `sublime-0.1.0` with asset Uniscript.sublime-package and a PR to wbond/package_control_channel (entry in sublime/repository.json). Untested against Package Control itself until the release exists.
 - TODO: IntelliJ build compiles against 2025.3 but declares since-build 243 (verifyPluginProjectConfiguration warns); verifyPlugin on IC-2024.3.6 says Compatible.
-- pannous.com serves data/chunks/*.idx (and entities.idx) as text/plain without gzip: add `gzip_types application/octet-stream` / an .idx mime type in the nginx config (≈2.3× smaller transfers)
+- DONE pannous.com serves data/chunks/*.idx (and entities.idx) as text/plain without gzip: add `gzip_types application/octet-stream` / an .idx mime type in the nginx config (≈2.3× smaller transfers)
 - chunked index: the C, Python and Swift ports have no chunked reader (only Rust/wasm and TypeScript); not needed off the web
 - chunked index: a text with many distinct short names (`alpha`, `beta`, …) fetches one 4 KB chunk per name (spread by hash); a names→block directory would need per-key data, so it isn't done
 - chunked index: fetch rounds are sequential (2–3 per ensure); HTTP/2 on the server would cut the latency of the 6-parallel limit

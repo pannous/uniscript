@@ -41,3 +41,4 @@ keeps the file count (~1350) and request overhead reasonable.
 
 Live (https://pannous.com/uniscript/rust/, examples + editor): 70 requests, 240 KB transferred. The server sends `.idx`
 as text/plain without gzip; enabling gzip for them would cut that to about 100 KB.
+- pannous.com is Apache, not nginx: /etc/apache2/conf-available/uniscript-index.conf types .idx/.usxc as application/octet-stream and gzips them (manifest 10.9 → 7.1 KB)
