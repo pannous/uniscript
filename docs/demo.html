@@ -29,7 +29,9 @@ button{font-size:20px;align-self:center} #warnings{color:#a60;font:14px Menlo,mo
 <p id="about">Converted by the Rust crate compiled to WebAssembly, with meta information (fonts, colors, angles) rendered as HTML.
 	<a href="https://pannous.com/uniscript/">pannous.com/uniscript</a> instead runs <code>lib/uniscript.wasp</code> compiled by warp, with example buttons and a Unicode → uniscript box.</p>
 <script type="module">
-import init, { convert, toUniscript, metaRuns, html } from "../wasm/uniscript.js";
+import init, { convert, ensure, toUniscript, metaRuns, html } from "../wasm/uniscript.js";
+
+const CHUNK_MANIFEST = "../data/chunks/manifest.usxc";
 
 const EXAMPLES = [
 	"<:mirror red R>",
@@ -42,12 +44,14 @@ const EXAMPLES = [
 	"<:above 𓀀 𓁐>  <:mirror 𓀀>  <:beside 犭 句>",
 ];
 
+const examples = document.getElementById("examples");
+const hero = examples.querySelector(".hero");
 const element = (tag, className, text) => Object.assign(document.createElement(tag), { className, textContent: text });
 const unicode = source => convert(source, "lenient").text;
 
-await init();
-const examples = document.getElementById("examples");
-const hero = examples.querySelector(".hero");
+// the index in chunks fetched on demand: ensure(text) loads what a text needs, then the conversions are synchronous
+await init({ chunks: new URL(CHUNK_MANIFEST, import.meta.url) });
+await Promise.all([hero.dataset.uniscript, ...EXAMPLES].map(ensure));
 hero.textContent = unicode(hero.dataset.uniscript);
 for (const source of EXAMPLES) {
 	const row = element("div", "row");
@@ -56,8 +60,11 @@ for (const source of EXAMPLES) {
 }
 
 const [source, output, warningList] = ["source", "output", "warnings"].map(id => document.getElementById(id));
-function render() {
-	const converted = convert(source.value, "lenient");
+async function render() {
+	const text = source.value;
+	await ensure(text);
+	if (source.value !== text) return;
+	const converted = convert(text, "lenient");
 	const { styled, warnings } = metaRuns(converted.text);
 	output.innerHTML = html(styled);
 	output.dataset.text = converted.text;
@@ -68,6 +75,6 @@ document.getElementById("reverse").addEventListener("click", () => {
 	source.value = toUniscript(output.dataset.text);
 	render();
 });
-render();
+await render();
 document.body.dataset.ready = "true";
 </script>

@@ -9,15 +9,17 @@ SERVER="pannous.com"
 SERVER_DIR="/var/www/pannous/uniscript/rust"
 cd "$(dirname "$0")/.."
 (cd wasm && npm run -s build >/dev/null)
+CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-/opt/cargo}" cargo run --release -q -- chunks >/dev/null   # data/chunks/, fetched on demand by the page
 
 if [ "${1:-}" = "deploy" ]; then
 	# on the server wasm/ lies next to the page, not in the parent directory as in the repository
-	page="$(sed 's|"\.\./wasm/|"./wasm/|' docs/demo.html)"
+	page="$(sed 's|"\.\./wasm/|"./wasm/|; s|"\.\./data/chunks/|"./chunks/|' docs/demo.html)"
 	grep -q '"./wasm/uniscript.js"' <<<"$page" || { echo "docs/demo.html no longer imports ../wasm/uniscript.js" >&2; exit 1; }
 	ssh "$SERVER" "mkdir -p $SERVER_DIR/wasm/pkg"
 	ssh "$SERVER" "cat > $SERVER_DIR/index.html" <<<"$page"
 	rsync -aL wasm/uniscript.js wasm/entities.idx "$SERVER:$SERVER_DIR/wasm/"
 	rsync -a --include '*.js' --include '*.wasm' --exclude '*' wasm/pkg/ "$SERVER:$SERVER_DIR/wasm/pkg/"
+	rsync -a --delete data/chunks/ "$SERVER:$SERVER_DIR/chunks/"
 	echo "deployed https://pannous.com/uniscript/rust/"
 	exit
 fi
