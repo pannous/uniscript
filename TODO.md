@@ -26,7 +26,7 @@ DONE - C ffi/native: NULL or invalid UTF-8 input fails with UNISCRIPT_INVALID_IN
 - Packages ready, not yet uploaded (no credentials on this machine): crates.io uniscript, PyPI uniscript-py + uniscript-rs, npm @pannous/uniscript + @pannous/uniscript-wasm; `scripts/publish.sh --publish` after npm login, cargo login and a PyPI token in ~/.pypirc
 - uniscript-rs has no Windows wheel (maturin + cargo-xwin or CI); other platforms build from the sdist, which needs Rust. Linux wheels are cross-built with zig; only the x86_64 one was smoke-tested (on pannous.com, Python 3.12)
 - uniscript-py and uniscript-rs both install the module `uniscript`: installing both makes pip overwrite one with the other silently
-- @pannous/uniscript-wasm has no types for its entry uniscript.js (only pkg/uniscript_wasm.d.ts); add a uniscript.d.ts and "types"
+- DONE @pannous/uniscript-wasm has no types for its entry uniscript.js (only pkg/uniscript_wasm.d.ts); add a uniscript.d.ts and "types"
 - js/ and wasm/ copy entities.idx over their symlink in prepack: an interrupted npm pack leaves a 3.6 MB regular file that git sees as a type change (restore with `ln -sf ../data/entities.idx entities.idx`)
 - Swift: tag v0.1.0 (9cd9659) is stale (no Meta/styles); release `git tag v0.2.0 && git push origin v0.2.0` (keep Cargo.toml version in step), then submit https://github.com/pannous/uniscript to the Swift Package Index (SwiftPackageIndex/PackageList)
 - Swift: Linux build unverified (podman machine fails: vfkit exited with code 1); Bundle.module + Data(.alwaysMapped) should work on Linux Foundation, SPI will show it
