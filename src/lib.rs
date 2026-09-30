@@ -30,6 +30,7 @@ const SHORT_OPEN: char = '\\';
 const TAG_CLOSE: char = '>';
 const CLOSING_SLASH: char = '/';
 const ESCAPED_COLON: &str = "<::>";
+const ESCAPED_UNICODE: &str = "<:U>";
 const SUFFIX_KEY: &str = "*suffix";
 const FONT_KEY: &str = "font";
 const LANG_KEY: &str = "lang";
@@ -43,6 +44,13 @@ const VERSION_PREFIX: &str = "https://uniscript.org/v";
 const HEADER_OPEN: &str = "<:uniscript";
 const VERSION_ATTRIBUTE: &str = "version=\"";
 const ATTRIBUTE_QUOTE: char = '"';
+/// `\U1F60D`: the only marker without a colon, a code point in the notation of Python and C
+const UNICODE_ESCAPE: char = 'U';
+/// `U+1F60D`, `U1F60D`, `0x1F60D` in any case; `U+` before `U`
+const CODE_POINT_PREFIXES: [&str; 6] = ["U+", "u+", "0x", "0X", "U", "u"];
+const MAX_HEX_DIGITS: usize = 8;
+/// Bare hex (`\:1F60D`) and `\U` need at least 4 digits, so a mistyped short name stays unknown
+const MIN_BARE_HEX_DIGITS: usize = 4;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Error {
@@ -181,6 +189,43 @@ fn is_name_character(character: char) -> bool {
 	character.is_ascii_alphanumeric() || character == '-' || character == '_'
 }
 
+/// Bytes of the name token at the start of `text`; the `+` of a leading `U+` belongs to it
+fn token_length(text: &str) -> usize {
+	let prefix = ["U+", "u+"].iter().find(|prefix| text.starts_with(**prefix)).map_or(0, |prefix| prefix.len());
+	prefix + text[prefix..].find(|c: char| !is_name_character(c)).unwrap_or(text.len() - prefix)
+}
+
+/// The value of hex digits with `minimum`–8 digits
+fn hex_value(digits: &str, minimum: usize) -> Option<u32> {
+	let valid = (minimum..=MAX_HEX_DIGITS).contains(&digits.len()) && digits.bytes().all(|byte| byte.is_ascii_hexdigit());
+	valid.then(|| u32::from_str_radix(digits, 16).ok()).flatten()
+}
+
+/// The value of a code point token: `U+1F60D`, `U1F60D`, `0x1F60D` (1–8 hex digits) or bare `1F60D` (4–8)
+pub fn code_point_value(token: &str) -> Option<u32> {
+	match CODE_POINT_PREFIXES.iter().find_map(|prefix| token.strip_prefix(prefix)) {
+		Some(digits) => hex_value(digits, 1),
+		None => hex_value(token, MIN_BARE_HEX_DIGITS),
+	}
+}
+
+/// `U1F60D` after a backslash (`\U1F60D`, 4–8 hex digits as a whole token): the value and the bytes after the backslash
+fn unicode_escape(after_backslash: &str) -> Option<(u32, usize)> {
+	let digits = after_backslash.strip_prefix(UNICODE_ESCAPE)?;
+	let length = token_length(digits);
+	hex_value(&digits[..length], MIN_BARE_HEX_DIGITS).map(|value| (value, 1 + length))
+}
+
+/// Whether a uniscript marker starts the text: `<:`, `\:` or `\U1F60D`
+fn starts_marker(text: &str) -> bool {
+	let mut characters = text.chars();
+	match (characters.next(), characters.as_str()) {
+		(Some(TAG_OPEN | SHORT_OPEN), after) if after.starts_with(MARKER_COLON) => true,
+		(Some(SHORT_OPEN), after) => unicode_escape(after).is_some(),
+		_ => false,
+	}
+}
+
 /// Every order of the parts
 fn permutations<'a>(parts: &[&'a str]) -> Vec<Vec<&'a str>> {
 	if parts.len() <= 1 {
@@ -283,6 +328,16 @@ impl<'a> Uniscript<'a> {
 			attributes += &attribute("style", &style.join("; "));
 		}
 		format!("<span{attributes}>")
+	}
+
+	/// The character of a code point token (`U+1F60D`, `1F60D`); an invalid one (surrogate, above 10FFFF) warns and stays
+	/// `written`; None for no code point token
+	fn code_point(&self, token: &str, written: &str, at: usize) -> Option<String> {
+		let value = code_point_value(token)?;
+		Some(char::from_u32(value).map(String::from).unwrap_or_else(|| {
+			self.warn(format!("invalid code point U+{value:04X}"), at);
+			written.to_string()
+		}))
 	}
 
 	fn warn(&self, message: String, at: usize) {
@@ -497,6 +552,9 @@ impl<'a> Uniscript<'a> {
 		if let Some(text) = self.name(&content.replace(' ', "-")) {
 			return Ok(text.to_string());
 		}
+		if let Some(text) = self.code_point(content, &format!("<:{content}>"), at) {
+			return Ok(text);
+		}
 		if let Some(text) = self.meta_tag(content, at)? {
 			return Ok(text);
 		}
@@ -586,11 +644,7 @@ impl<'a> Uniscript<'a> {
 		let mut position = self.header_length(source);
 		while position < source.len() {
 			let rest = &source[position..];
-			let marker = rest.match_indices(MARKER_COLON)
-				.map(|(at, _)| at)
-				.find(|&at| at > 0 && matches!(rest.as_bytes()[at - 1] as char, TAG_OPEN | SHORT_OPEN))
-				.map(|at| at - 1)
-				.unwrap_or(rest.len());
+			let marker = rest.match_indices([TAG_OPEN, SHORT_OPEN]).map(|(at, _)| at).find(|&at| starts_marker(&rest[at..])).unwrap_or(rest.len());
 			match &block {
 				Some(block) => out += &self.block_text(block, &rest[..marker], position),
 				None => out += &rest[..marker],
@@ -600,11 +654,14 @@ impl<'a> Uniscript<'a> {
 			if rest.is_empty() {
 				break;
 			}
-			if rest.starts_with(SHORT_OPEN) {
-				let name_end = rest[2..].find(|c: char| !is_name_character(c)).map_or(rest.len(), |end| end + 2);
+			if let Some((_, length)) = unicode_escape(&rest[1..]) {
+				out += &self.code_point(&rest[2..=length], &rest[..=length], position).expect("a code point");
+				position += 1 + length;
+			} else if rest.starts_with(SHORT_OPEN) {
+				let name_end = 2 + token_length(&rest[2..]);
 				let name = &rest[2..name_end];
-				out += &match self.name(name) {
-					Some(text) => text.to_string(),
+				out += &match self.name(name).map(str::to_string).or_else(|| self.code_point(name, &rest[..name_end], position)) {
+					Some(text) => text,
 					None => self.kept(Error::UnknownEntity(name.to_string()), &rest[..name_end], position, mode)?,
 				};
 				position += name_end;
@@ -668,6 +725,12 @@ impl<'a> Uniscript<'a> {
 				rest = &rest[1..];
 				out.push(character);
 				out += ESCAPED_COLON;
+				continue;
+			}
+			if character == SHORT_OPEN && unicode_escape(rest).is_some() {
+				rest = &rest[1..];
+				out.push(character);
+				out += ESCAPED_UNICODE;
 				continue;
 			}
 			if let Some(length) = meta::emoji_tags_at(rest) {

@@ -46,6 +46,41 @@ For short sequences of entities there is an inline delineation
 <:type entities>    
     
   
+# Code points
+  
+Any character can be written by its hex code point, in the short and in the tag form. All of these give 😍 (U+1F60D):  
+  
+| form | written |
+|---|---|
+| prefixed: `U+`, `U`, `0x` in any case (`u+`, `u`, `0X`), then 1–8 hex digits | `\:U+1F60D` `\:U1F60D` `\:0x1F60D` `<:U+1F60D>` `<:u+1f60d>` `<:0x1F60D>` |
+| bare: 4–8 hex digits | `\:1F60D` `<:1F60D>` `\:00E9` (é) |
+| `\U` without the colon (Python, C): 4–8 hex digits, capital `U` only | `\U1F60D` `\U0001F60D` |
+  
+Hex digits may be of any case; leading zeros are allowed up to 8 digits, so `\U0001F60D` pasted from Python works.    
+  
+**Where it ends**: a code point is a whole name token and ends where a name ends, at the first character that is no  
+letter, digit, `-` or `_`: `\:1F60D.` ⩵ 😍. and `\:1F60D x` ⩵ 😍 x. A token that is not all hex (`\:1F60Dx`) is a name,  
+here an unknown one; write `<:1F60D>x` for 😍x. The `+` of `U+` is part of the token.    
+  
+**Names win**: the name is looked up first, so a hex-looking name keeps its meaning. Measured against  
+`data/entities.idx`, the names that are hex strings are `ac af dd DD ee acd acE bed` (all shorter than 4 digits) and  
+the LaTeX `BbbA`–`BbbF`, `Bbba`–`Bbbf` (𝔸 …): `\:bed` ⩵ 🛏 and `\:BbbA` ⩵ 𝔸, while `\:U+BBBA` or `\:0xBbbA` is the  
+code point U+BBBA. The bare form needs at least 4 digits, so a mistyped short name (`\:ab`) stays an unknown name  
+instead of silently becoming a character; with a prefix any length works: `\:U+41` ⩵ A.    
+  
+**`\U` without the colon** is the only marker without `:`. It counts only when 4–8 hex digits follow as a whole token  
+(`\U1F60D`, not `\Users` or `\U1F60Dx`, which stay text without a warning), so Windows paths and prose are unaffected.  
+Code quoted in uniscript text is converted too: `"\U0001F60D"` becomes `"😍"`, the same string for Python and C. To keep  
+it as written, escape it like the other markers: `\<:U>0001F60D` (`<:U>` is the single character U).
+Only uppercase `\U`: `\u` is JSON's and JavaScript's escape and stays text.    
+  
+**Invalid code points** (surrogates D800–DFFF, above 10FFFF) warn `invalid code point U+D800` and stay as written:  
+`\:D800` ⩵ `\:D800`.    
+  
+**`to_uniscript`** keeps characters without a name as they are (`日本語`, `é` round trip unchanged), so the round trip is  
+already total without code points; it escapes a literal `\U` code point as `\<:U>`. Writing unnamed characters as  
+code points (ASCII-only output) is left to an option not yet implemented.    
+  
 # Examples
   
 <:alpha> ⩵ α    
