@@ -9,7 +9,8 @@ Each section shows the same five things:
 - **round trip**: `<:alpha> <:fracture A>` ⇄ `α 𝔄`
 - **tag forms**: `\:alpha`, full Unicode names with spaces for hyphens (`<:greek small letter alpha>`), `<:double-R>`,
   stacked styles (`<:bold italic alpha>` → 𝜶), blocks closed by `<:/greek>` or `<:>` (`<:greek>athos<:>` → αθοσ) and
-  the escape `<<::>` (`<<::>alpha>` → `<:alpha>`)
+  the escape `<<::>` (`<<::>alpha>` → `<:alpha>`); code points (`\:1F60D`, `<:U+1F60D>`, `\U0001F60D` → 😍, names win:
+  `\:bed` → 🛏) so far only in Rust and the CLI
 - **warnings**: a character without a counterpart (`<:fracture 7>`) stays plain with a warning; the modes
   - *warn* (the default, Python: *lenient*): unsupported characters warn, an unknown name (`<:nosuch>`) is an error
   - *error*: the first warning is an error too (the CLI's `--strict`)
@@ -60,6 +61,7 @@ fn main() -> Result<(), Error> {
 	for (source, unicode) in [
 		("\\:alpha", "α"), ("<:greek small letter alpha>", "α"), ("<:double-R>", "ℝ"), ("<:bold italic alpha>", "𝜶"),
 		("<:greek>athos<:/greek>", "αθοσ"), ("<:greek>athos<:>", "αθοσ"), ("<<::>alpha>", "<:alpha>"),
+		("\\:1F60D", "😍"), ("<:U+1F60D>", "😍"), ("\\U0001F60D", "😍"), ("\\:bed", "🛏"),
 	] {
 		assert_eq!(uniscript::to_unicode(source)?, unicode);
 	}
@@ -108,6 +110,7 @@ uniscript "<:alpha> <:fracture A>"          # α 𝔄
 uniscript -r "α 𝔄"                          # <:alpha> <:fracture A>
 uniscript '\:alpha <:greek small letter alpha> <:double-R> <:bold italic alpha>'   # α α ℝ 𝜶
 uniscript '<:greek>athos<:/greek> <:greek>athos<:> <<::>alpha>'   # αθοσ αθοσ <:alpha>
+uniscript '\:1F60D <:U+1F60D> \U0001F60D \:bed'   # 😍 😍 😍 🛏
 uniscript "<:fracture 7>"                   # 7, and on stderr: warning: uniscript: no fracture form of 7 at byte 0
 uniscript --strict "<:fracture 7>" || echo "--strict: the warning is an error"
 uniscript "<:nosuch>" || echo "an unknown name is an error"
