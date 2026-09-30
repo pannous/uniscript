@@ -39,7 +39,7 @@ Target size 2/4/8/16/32 KB gave 177/294/465/726/1183 KB for the demo examples be
 requests hardly changes with the size (it follows the number of distinct words), so smaller chunks win on bytes. 4 KB
 keeps the file count (~1350) and request overhead reasonable.
 
-Live (https://pannous.com/uniscript/rust/, examples + editor): 70 requests, 240 KB transferred. The server sends `.idx`
+Live (https://pannous.com/uniscript/rust/, examples + editor): 70 requests, 240 KB transferred before the common chunk and gzip; now 54 requests, 102 KB (gzip on, application/octet-stream). Before, the server sent `.idx`
 as text/plain without gzip; enabling gzip for them would cut that to about 100 KB.
 - pannous.com is Apache, not nginx: /etc/apache2/conf-available/uniscript-index.conf types .idx/.usxc as application/octet-stream and gzips them (manifest 10.9 → 7.1 KB)
 
