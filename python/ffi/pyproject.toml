@@ -6,8 +6,15 @@ build-backend = "maturin"
 name = "uniscript-rs"
 version = "0.1.0"
 description = "Uniscript (<:alpha> → α, <:fracture A> → 𝔄 and back): Python bindings of the Rust reference implementation"
+readme = "README.md"
 license = "MIT"
 requires-python = ">=3.9"
+keywords = ["unicode", "uniscript", "entities", "text", "ascii"]
+classifiers = ["Programming Language :: Python :: 3", "Programming Language :: Rust", "Topic :: Text Processing"]
+
+[project.urls]
+Homepage = "https://pannous.com/uniscript/"
+Repository = "https://github.com/pannous/uniscript"
 
 [tool.maturin]
 python-source = "."
