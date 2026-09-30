@@ -40,7 +40,9 @@ The same converter as a Swift package (`Package.swift`, `Sources/Uniscript`), re
 ```swift
 // .package(url: "https://github.com/pannous/uniscript", branch: "main"), product "Uniscript"
 import Uniscript
-try Uniscript.toUnicode("<:alpha> <:fracture A>")   // "α 𝔄", throws UniscriptError.unknownEntity / .unclosed
+try Uniscript.toUnicode("<:alpha> <:fracture A>")   // "α 𝔄", throws UniscriptError.unknownEntity / .unclosed; warnings to stderr
+try Uniscript.convert("<:greek c>")                 // ("c", [Warning(message: "no greek form of c", at: 0)])
+try Uniscript.convert("<:greek c>", mode: .error)   // throws UniscriptError.unsupported(warning)
 Uniscript.toUniscript("α 𝔄")                       // "<:alpha> <:fracture A>"
 ```
 

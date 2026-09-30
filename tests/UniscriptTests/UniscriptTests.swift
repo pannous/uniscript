@@ -26,13 +26,41 @@ final class UniscriptTests: XCTestCase {
 		converts("<:fracture A>", "𝔄")
 		converts("<:fracture A b c >", "𝔄𝔟𝔠")
 		converts("<:fracture> A b c <:>", "𝔄𝔟𝔠")
-		converts("<:greek> a b c <:/greek>", "αβψ") // Greek keyboard layout: c is ψ
+		converts("<:greek> a b g d <:/greek>", "αβγδ")
 		converts("<:double d>", "𝕕")
 		converts("<:double-d>", "𝕕")
 		converts("x<:upper a>", "xᵃ")
 		converts("<:ligature ae>", "æ")
 		converts("<:reverseInPlace e>", "ɘ")
 		converts("<:iconic ⚠>", "⚠\u{FE0F}")
+	}
+
+	func testGreekIsTransliteratedPhonetically() {
+		converts("<:greek> athos <:/greek>", "αθοσ") // th is one letter
+		converts("<:greek th ch ps>", "θχψ")
+		converts("<:greek eta Omega lambda>", "ηΩλ")
+	}
+
+	/// A character or combination without a Unicode counterpart stays plain, with a warning naming it and its position
+	private func warns(_ uniscript: String, _ unicode: String, _ message: String, at: Int, file: StaticString = #filePath, line: UInt = #line) throws {
+		let warning = Warning(message: message, at: at)
+		let (text, warnings) = try Uniscript.convert(uniscript, mode: .warn)
+		XCTAssertEqual(text, unicode, uniscript, file: file, line: line)
+		XCTAssertEqual(warnings, [warning], uniscript, file: file, line: line)
+		XCTAssertThrowsError(try Uniscript.convert(uniscript, mode: .error), file: file, line: line) {
+			XCTAssertEqual($0 as? UniscriptError, .unsupported(warning), file: file, line: line)
+		}
+	}
+
+	func testUnsupportedCharactersAndCombinationsWarn() throws {
+		try warns("<:greek c>", "c", "no greek form of c", at: 0)
+		try warns("x <:fracture 7>", "x 7", "no fracture form of 7", at: 2)
+		try warns("<:red 𓀀>", "𓀀", "red does not apply to 𓀀", at: 0)
+		try warns("<:mirror red 狗>", "狗\u{E004D}", "red does not apply to 狗", at: 0)
+		try warns("<:beside a b>", "ab", "no beside group of a", at: 0)
+		let (text, warnings) = try Uniscript.convert("<:greek a>", mode: .error)
+		XCTAssertEqual(text, "α")
+		XCTAssertEqual(warnings, [])
 	}
 
 	func testColorsAndGeometryAreSuffixControls() {
@@ -46,6 +74,7 @@ final class UniscriptTests: XCTestCase {
 	func testEffectWordsStackOnOneOperand() {
 		converts("<:mirror red A>", "A\u{E0072}\u{E004D}")
 		converts("<:red mirror A>", "A\u{E004D}\u{E0072}")
+		converts("<:reverse red R>", "R\u{E0072}\u{E004D}") // reverse is mirror
 		converts("<:mirror red A b>", "A\u{E0072}\u{E004D}b\u{E0072}\u{E004D}")
 		converts("<:mirror red circle>", "🔴\u{E004D}")
 		XCTAssertEqual(Uniscript.toUniscript("A\u{E0072}\u{E004D} 🔴\u{E004D}"), "<:mirror red A> <:mirror red circle>")
