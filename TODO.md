@@ -11,3 +11,4 @@
 - TODO: wasp's lib/uniscript.wasp (warp) needs the stacked-style resolution of src/lib.rs `restyled` (combined block over permutations, else commute): `<:bold italic alpha>` → 𝜶, `<:greek bold a>` → 𝛂.
 - TODO: README "Support" lists Python, JavaScript and C++ libraries, but the repository only has Rust, Swift and Kotlin.
 - TODO: combinations Unicode lacks (`<:double bold A>`, `<:bold italic 7>`) stay in the inner style with a warning; the Uniscript fonts could render them with a style control instead.
+- TODO: greek transliteration writes σ at the end of a word (kosmos → κοσμοσ); Greek uses final sigma ς there (κοσμος). Now that words keep their spaces, word ends are known.
