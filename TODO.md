@@ -21,3 +21,4 @@
 - every reference change needs a manual re-port: run the differential tests (js, python/native, c/native) after src/ changes
 - deploy docs/demo.html (needs fonts/ and built wasm/pkg next to docs/); publish js to npm and python packages to PyPI
 - TODO: warp vendors a stale copy of the pre-split ground truth (warp data/uniscript/entities.wasp, entities.idx, uniscript_index.py); it should sync from this repo's data/entities/ + data/entities.idx. The local warp checkout ~/dev/angles/warp is 109 commits behind origin/main (no lib/ there yet).
+- 2026-10-03: harden and optimize the published libraries (fuzzing, Linux/Windows builds, CI wheel matrix, re-port drift checks); reminder set in Reminders
