@@ -7,6 +7,7 @@ import type { Lookup } from "./entityIndex.ts";
 const MANIFEST_MAGIC = "USXC";
 const MANIFEST_FIXED = 16;
 const NO_COMMON_CHUNK = 0xffffffff;
+const FILTER_SECOND_MULTIPLIER = 131;
 const MANIFEST_TABLE_SIZE = 12;
 const CHUNK_START_SIZE = 8;
 const FIRST_WORD_END = /[ -]/;
@@ -22,6 +23,12 @@ const sleep = (milliseconds: number) => new Promise((resolve) => setTimeout(reso
 export function chunkOrder(table: Table, key: string): [number, number] {
 	const group = table === Table.chars ? (key.codePointAt(0) ?? 0) : textHash(key.split(FIRST_WORD_END)[0]);
 	return [group, textHash(key)];
+}
+
+/** The bits of a key in the filter of absent names: double hashing with the index hash and a second one */
+function filterPositions(key: string, bits: number, hashes: number): number[] {
+	const [first, second] = [textHash(key), (textHash(key, FILTER_SECOND_MULTIPLIER) | 1) >>> 0];
+	return Array.from({ length: hashes }, (_, i) => (first + i * second) % bits);
 }
 
 /** A block type itself (`red `) or one of its controls (`red *suffix`): the common chunk holds all of them */
@@ -139,13 +146,25 @@ export class ChunkedIndex implements Lookup {
 		return chunk;
 	}
 
+	/**
+	 * A name the filter of absent names (after the chunk starts) does not know is in no chunk: operand words and whole
+	 * tags the converter tries (`Hello`, `mirror-R`) need no fetch. It covers names of one word or starting with a block type.
+	 */
+	#surelyAbsent(key: string, common: EntityIndex): boolean {
+		const at = this.#chunkStartsOffset() + CHUNK_START_SIZE * (this.commonChunk ?? 0);
+		const [bits, hashes] = [this.#u32(at), this.#u32(at + 4)];
+		const firstWord = key.split(FIRST_WORD_END)[0];
+		if (bits === 0 || (firstWord.length !== key.length && common.get(Table.names, `${firstWord} `) === undefined)) return false;
+		return !filterPositions(key, bits, hashes).every((bit) => (this.#manifest.getUint8(at + 8 + (bit >>> 3)) & (1 << (bit & 7))) !== 0);
+	}
+
 	entry(table: Table, key: string): [string, string] | undefined {
 		const common = this.commonChunk;
 		if (common !== undefined) {
 			const chunk = this.#loaded(common);
 			if (!chunk) return undefined;
 			const found = chunk.entry(table, key);
-			if (found || (table === Table.names && isBlockTypeKey(key))) return found;
+			if (found || (table === Table.names && (isBlockTypeKey(key) || this.#surelyAbsent(key, chunk)))) return found;
 		}
 		const number = this.#chunkOf(table, key);
 		return number === undefined ? undefined : this.#loaded(number)?.entry(table, key);

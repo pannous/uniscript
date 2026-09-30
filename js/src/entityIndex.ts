@@ -34,9 +34,9 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
 
 /** `h = (h * 31 + byte) mod 2^32` over the UTF-8 bytes */
-export function textHash(text: string | Uint8Array): number {
+export function textHash(text: string | Uint8Array, multiplier = HASH_MULTIPLIER): number {
 	const bytes = typeof text === "string" ? encoder.encode(text) : text;
-	return bytes.reduce((hash, byte) => (Math.imul(hash, HASH_MULTIPLIER) + byte) >>> 0, 0);
+	return bytes.reduce((hash, byte) => (Math.imul(hash, multiplier) + byte) >>> 0, 0);
 }
 
 /** The bytes of a file path (Node) or URL (fetch in browsers and Node) */

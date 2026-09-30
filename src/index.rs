@@ -13,6 +13,10 @@ const TABLE_ENTRY_SIZE: usize = 8;
 pub const MANIFEST_MAGIC: &[u8; 4] = b"USXC";
 const MANIFEST_FIXED: usize = 16;
 const NO_COMMON_CHUNK: u32 = u32::MAX;
+/// 10 bits and 7 hashes per name give the filter of absent names about 1 % false positives
+const FILTER_BITS_PER_NAME: usize = 10;
+const FILTER_HASHES: u32 = 7;
+const FILTER_SECOND_MULTIPLIER: u64 = 131;
 const MANIFEST_TABLE_SIZE: usize = 12;
 const CHUNK_START_SIZE: usize = 8;
 /// Chunks close once they pass this many bytes: small enough for a lookup to fetch little, large enough for few requests
@@ -43,7 +47,23 @@ pub fn text_hash(text: &str) -> u32 {
 }
 
 fn bytes_hash(bytes: &[u8]) -> u32 {
-	bytes.iter().fold(0u64, |hash, &byte| (hash * HASH_MULTIPLIER + byte as u64) % HASH_MODULUS) as u32
+	bytes_hash_with(bytes, HASH_MULTIPLIER)
+}
+
+fn bytes_hash_with(bytes: &[u8], multiplier: u64) -> u32 {
+	bytes.iter().fold(0u64, |hash, &byte| (hash * multiplier + byte as u64) % HASH_MODULUS) as u32
+}
+
+/// The bits of a key in the filter of absent names: double hashing with the index hash and a second one
+fn filter_positions(key: &str, bits: u32, hashes: u32) -> impl Iterator<Item = u32> {
+	let (first, second) = (text_hash(key) as u64, (bytes_hash_with(key.as_bytes(), FILTER_SECOND_MULTIPLIER) | 1) as u64);
+	(0..hashes as u64).map(move |i| ((first + i * second) % bits as u64) as u32)
+}
+
+/// The names the filter of absent names covers: one word (`Hello`), or starting with a block type (`mirror-R`, `fracture H`)
+fn is_filtered(key: &str, is_block_type: impl Fn(&str) -> bool) -> bool {
+	let first_word = key.split([' ', '-']).next().unwrap_or(key);
+	first_word.len() == key.len() || is_block_type(first_word)
 }
 
 /// Where a key sorts among the chunks of its table: characters by code point (a script's characters share chunks),
@@ -180,6 +200,22 @@ impl<'a> Chunked<'a> {
 		chunk
 	}
 
+	/// The filter of absent names: its bit count and hash count, then the bits; after the chunk starts
+	fn filter(&self) -> Option<(u32, u32, &'a [u8])> {
+		let at = self.chunk_starts_offset() + CHUNK_START_SIZE * self.common()?;
+		let (bits, hashes) = (u32_at(self.manifest, at), u32_at(self.manifest, at + 4));
+		(bits > 0).then(|| (bits, hashes, &self.manifest[at + 8..at + 8 + (bits as usize).div_ceil(8)]))
+	}
+
+	/// A name the filter does not know is in no chunk: operand words and whole tags the converter tries (`Hello`,
+	/// `mirror-R`) need no fetch. The filter only covers names of one word or starting with a block type (all in the
+	/// loaded common chunk); it never errs on names it holds, and 1 % of absent ones pass it
+	fn surely_absent(&self, key: &str) -> bool {
+		let Some((bits, hashes, filter)) = self.filter() else { return false };
+		let is_block_type = |word: &str| self.common().and_then(|common| self.chunks[common].get()).is_some_and(|chunk| chunk.entry(Table::Names, &format!("{word} ")).is_some());
+		is_filtered(key, is_block_type) && !filter_positions(key, bits, hashes).all(|bit| filter[bit as usize / 8] & (1 << (bit % 8)) != 0)
+	}
+
 	fn table_field(&self, table: Table, field: usize) -> usize {
 		u32_at(self.manifest, MANIFEST_FIXED + MANIFEST_TABLE_SIZE * table as usize + 4 * field) as usize
 	}
@@ -225,6 +261,9 @@ impl<'a> Chunked<'a> {
 			if table == Table::Names && is_block_type_key(key) {
 				return None; // the common chunk holds all of them
 			}
+		}
+		if table == Table::Names && self.surely_absent(key) {
+			return None;
 		}
 		self.loaded(self.chunk_of(table, key)?)?.entry(table, key)
 	}
@@ -435,6 +474,24 @@ fn common_entries(tables: &[Entries], plan: &ChunkPlan) -> Vec<Entries> {
 	common
 }
 
+/// The names outside the common chunk that the filter of absent names covers
+fn names_outside(common: &[Entries], index: &Index) -> Vec<String> {
+	let in_common: std::collections::HashSet<&str> = common[Table::Names as usize].iter().map(|(key, _)| key.as_str()).collect();
+	let block_types: std::collections::HashSet<&str> = index.entries(Table::Names).filter_map(|(key, _)| key.strip_suffix(' ')).collect();
+	let names = index.entries(Table::Names).map(|(key, _)| key).filter(|key| !in_common.contains(key));
+	names.filter(|key| is_filtered(key, |word| block_types.contains(word))).map(str::to_string).collect()
+}
+
+/// The filter section of the manifest: bit count, hash count, the bits padded to 4 bytes
+fn absent_names_filter(names: &[String]) -> Vec<u8> {
+	let bits = (names.len() * FILTER_BITS_PER_NAME).max(8) as u32;
+	let mut filter = vec![0u8; (bits as usize).div_ceil(8).next_multiple_of(4)];
+	for bit in names.iter().flat_map(|name| filter_positions(name, bits, FILTER_HASHES)) {
+		filter[bit as usize / 8] |= 1 << (bit % 8);
+	}
+	[bits.to_le_bytes(), FILTER_HASHES.to_le_bytes()].concat().into_iter().chain(filter).collect()
+}
+
 /// The index cut into chunks by `plan`: the manifest and the chunks, each a USX1 file. The common chunk (the last one)
 /// holds the most used entries of all tables; every other chunk the rest of one range of [`chunk_order`] in one table.
 /// Entries of the same order never straddle two chunks. A semantic group of a quarter chunk or more (a Unicode block, a
@@ -489,11 +546,13 @@ pub fn chunks(index: &Index, plan: &ChunkPlan) -> (Vec<u8>, Vec<Vec<u8>>) {
 		table_fields.extend([first_chunk, chunks.len() - first_chunk, index.len(table)]);
 	}
 	let common_number = chunks.len() as u32;
+	let filter = absent_names_filter(&names_outside(&common, index));
 	chunks.push(build_tables(&common));
 	let version = chunks.iter().fold(0u32, |hash, chunk| hash.wrapping_mul(HASH_MULTIPLIER as u32) ^ bytes_hash(chunk));
 	let mut manifest = MANIFEST_MAGIC.to_vec();
 	let words = [version, TABLES.len() as u32, common_number].into_iter().chain(table_fields.into_iter().map(|field| field as u32));
 	words.chain(starts.into_iter().flat_map(|(group, hash)| [group, hash])).for_each(|word| manifest.extend(word.to_le_bytes()));
+	manifest.extend(filter);
 	(manifest, chunks)
 }
 
