@@ -39,6 +39,7 @@
 		["<:greek> filosofia kosmos<:/greek>", " φιλοσοφια κοσμοσ"],
 		["<:greek a kosmos>", "ακοσμοσ"],
 		["<:greek phi chi>", "φχ"],
+		["<:greek>\nkosmos\t<:/greek>", "\nκοσμοσ\t"],
 		["<:greek eta Omega lambda>", "ηΩλ"],
 		["<:greek a>", "α"],
 		["<:red circle>", "🔴"],

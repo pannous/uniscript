@@ -43,8 +43,8 @@ def test_entities_become_characters():
 def test_block_types_style_their_operands():
     converts("<:fracture A>", "𝔄")
     converts("<:fracture A b c >", "𝔄𝔟𝔠")
-    converts("<:fracture> A b c <:>", "𝔄𝔟𝔠")
-    converts("<:greek> a b g d <:/greek>", "αβγδ")
+    converts("<:fracture> A b c <:>", " 𝔄 𝔟 𝔠 ")
+    converts("<:greek> a b g d <:/greek>", " α β γ δ ")
     converts("<:double d>", "𝕕")
     converts("<:double-d>", "𝕕")
     converts("x<:upper a>", "xᵃ")
@@ -54,7 +54,7 @@ def test_block_types_style_their_operands():
 
 
 def test_greek_is_transliterated_phonetically():
-    converts("<:greek> athos <:/greek>", "αθοσ")
+    converts("<:greek> athos <:/greek>", " αθοσ ")
     converts("<:greek th ch ps>", "θχψ")
     converts("<:greek eta Omega lambda>", "ηΩλ")
 
@@ -94,7 +94,7 @@ def test_hieroglyphs_have_gardiner_numbers_and_descriptions():
     for uniscript in ["<:egyptian A1>", "<:gardiner A1>", "<:hieroglyph A1>", "<:egyptian seated man>",
                       "<:egyptian man sitting>", "<:egyptian man-sitting>"]:
         converts(uniscript, "𓀀")
-    converts("<:egyptian> A1 Aa1 <:/egyptian>", "𓀀𓐍")
+    converts("<:egyptian> A1 Aa1 <:/egyptian>", " 𓀀 𓐍 ")
     converts("<:mirror egyptian A1>", "𓀀\U00013440")
     assert to_uniscript("𓀀 𓐍") == "<:egyptian A1> <:egyptian Aa1>"
 
