@@ -11,3 +11,22 @@
 - The header `<:uniscript version=…>` is handled by the library now (session uniscript-04), not by the plugin.
 - Two sessions staging hunks of the same file (git update-index / add -p) share one git index: a commit can pick up the other session's staged blob. Commit shared files one session at a time, and check `git show --stat` after committing.
 - Sublime reloads a changed plugin module in place (importlib.reload): `from .helper import f` keeps the stale f and exception classes, so uniscript.py refers to `cli.f` at call time.
+
+## Publishing (Package Control)
+
+- Package Control installs a package from a repository root (tag zipballs of GitHub), not from a subdirectory. Since
+  Package Control 4 (schema 4.0.0) a release can instead be a **GitHub release asset** (`"asset": "Uniscript.sublime-package"`)
+  selected by tag prefix (`"tags": "sublime-"`, version = tag minus prefix). So the package ships from this repo:
+  `sublime/repository.json` describes it, `scripts/publish_editor_plugins.sh` zips sublime/Uniscript into
+  probes/publish/dist/Uniscript.sublime-package, and a release `sublime-0.1.0` carries it as asset.
+- Users can install at once via *Package Control: Add Repository* with the raw URL of sublime/repository.json. For the
+  default channel, add the same package entry (without `$schema`/`schema_version`) to wbond/package_control_channel
+  `repository/u.json` (alphabetical) in a PR; reviewers run their checks against the existing release.
+- Alternative if reviewers object to an asset from a multi-purpose repo: a separate repo pannous/sublime-uniscript
+  from `git subtree split --prefix sublime/Uniscript -b sublime-uniscript`, pushed as its main, tagged `0.1.0`, with
+  `"details": "https://github.com/pannous/sublime-uniscript"` and `"tags": true`.
+- The package needs no entities.idx: it runs the `uniscript` CLI (index compiled in). The zip is 7 files, 8 KB; it imports
+  fine from the zip (`from . import uniscript_cli`), tested by probes/test_sublime_package.py (sublime modules stubbed).
+- The price: users must `cargo install` the CLI first. A self-contained package would bundle python/native plus
+  entities.idx (3.6 MB); mmap cannot read inside a .sublime-package, so it would load the index with
+  `sublime.load_binary_resource` or ship a `.no-sublime-package` marker to be extracted.
