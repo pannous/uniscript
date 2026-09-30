@@ -6,3 +6,5 @@
 - DONE: the converter rejects the spec'd header `<:uniscript version="https://uniscript.org/v1">` ("unknown uniscript entity"); the Sublime plugin skips a leading header line itself, MarkdownPreview's probe fails on it. The library should accept (drop) it.
 - TODO: Sublime plugin: typing the closer `<:/greek>` could convert the whole block on that line; for now blocks need the command.
 - TODO: the Swift package and wasp's lib/uniscript.wasp have no lenient mode yet (Rust: WarningMode::Lenient, `--lenient`: errors become warnings, the faulty uniscript stays as written).
+- TODO: the Kotlin port in intellij/ (fourth implementation) must follow src/lib.rs changes; a shared test vector file for Rust, Swift, wasp and Kotlin would keep them in step.
+- TODO: intellij/ plugin: no Settings page (colors, folding on/off); unknown `\:name` is an error in every file, also LaTeX's `\:` spacing command in .tex files.

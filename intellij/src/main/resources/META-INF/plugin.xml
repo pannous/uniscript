@@ -1,0 +1,34 @@
+<idea-plugin>
+	<id>com.pannous.uniscript</id>
+	<name>Uniscript</name>
+	<vendor url="https://github.com/pannous/uniscript">pannous</vendor>
+	<description><![CDATA[
+	<p><a href="https://github.com/pannous/uniscript">Uniscript</a>: type any Unicode character in plain ASCII and style it.
+	<code>&lt;:alpha&gt; &lt;:fracture A&gt; \:infinity</code> → α 𝔄 ∞</p>
+	<ul>
+		<li><b>Edit | Uniscript | Uniscript → Unicode</b> and <b>Unicode → Uniscript</b> convert the selection, or the whole file.</li>
+		<li>Uniscript tags are highlighted in every file type; unknown entities are errors, characters without a
+			Unicode counterpart warnings.</li>
+		<li>Each tag folds to its Unicode (<code>&lt;:fracture A&gt;</code> shows 𝔄) and unfolds under the caret.</li>
+	</ul>
+	]]></description>
+
+	<depends>com.intellij.modules.platform</depends>
+
+	<extensions defaultExtensionNs="com.intellij">
+		<!-- language="": every language -->
+		<annotator language="" implementationClass="com.pannous.uniscript.ide.UniscriptAnnotator"/>
+		<lang.foldingBuilder language="" implementationClass="com.pannous.uniscript.ide.UniscriptFoldingBuilder"/>
+	</extensions>
+
+	<actions>
+		<group id="Uniscript" text="Uniscript" popup="true">
+			<add-to-group group-id="EditMenu" anchor="last"/>
+			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
+			<action id="Uniscript.ToUnicode" class="com.pannous.uniscript.ide.ToUnicodeAction" text="Uniscript → Unicode"
+					description="Convert the selection or file from uniscript (&lt;:alpha&gt;) to Unicode (α)"/>
+			<action id="Uniscript.ToUniscript" class="com.pannous.uniscript.ide.ToUniscriptAction" text="Unicode → Uniscript"
+					description="Convert the selection or file from Unicode (α) to uniscript (&lt;:alpha&gt;)"/>
+		</group>
+	</actions>
+</idea-plugin>
