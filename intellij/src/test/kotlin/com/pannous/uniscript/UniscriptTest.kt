@@ -114,7 +114,8 @@ class UniscriptTest {
 		converts("$header <:alpha>", " α")
 		converts("<:uniscript><:alpha>", "α")
 		converts("<<::>uniscript version=\"$UNISCRIPT_VERSION\">", header) // the escaped header is text
-		warns("<:uniscript version=\"https://uniscript.org/v9\">A", "A", "unsupported uniscript version https://uniscript.org/v9", 0)
+		assertEquals(Converted("A", emptyList()), uniscript.convert("<:uniscript version=\"https://uniscript.org/v2\">A", WarningMode.ERROR)) // backwards compatible
+		warns("<:uniscript version=\"https://example.com/v1\">A", "A", "unsupported uniscript version https://example.com/v1", 0)
 		assertEquals(UniscriptError.UnknownEntity("uniscript version=\"$UNISCRIPT_VERSION\""), assertThrows(UniscriptError::class.java) { uniscript.toUnicode("x $header") })
 	}
 

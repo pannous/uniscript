@@ -15,8 +15,13 @@ private const val CLOSING_SLASH = '/'
 private const val ESCAPED_COLON = "<::>"
 private const val FONT_KEY = "font"
 private const val SUFFIX_KEY = "*suffix"
-/** The uniscript version this implementation reads, declared by the header `<:uniscript version="…">` */
+/** The current uniscript version, declared by the header `<:uniscript version="…">`; every later uniscript.org version is read too */
 const val UNISCRIPT_VERSION = "https://uniscript.org/v1"
+/** Every `https://uniscript.org/vN` is read (backwards compatible, a later version as well as the current tables allow) */
+private val READ_VERSION = Regex("https://uniscript\\.org/v[0-9]+")
+
+/** Whether a header version is read without warning: none, or `https://uniscript.org/vN` for any number N */
+fun readsVersion(version: String): Boolean = version.isEmpty() || READ_VERSION.matches(version)
 private const val HEADER_OPEN = "<:uniscript"
 private const val VERSION_ATTRIBUTE = "version=\""
 private const val ATTRIBUTE_QUOTE = '"'
@@ -327,14 +332,14 @@ private class Conversion(val index: EntityIndex, val source: String) {
 
 	private fun firstIndex(from: Int, matches: (Int) -> Boolean) = (from until source.length).firstOrNull(matches)
 
-	/** Chars of the header `<:uniscript version="…">` and its line break at the start; a version other than
-	 *  [UNISCRIPT_VERSION] warns */
+	/** Chars of the header `<:uniscript version="…">` and its line break at the start; a version that is no
+	 *  uniscript.org version ([readsVersion]) warns */
 	private fun headerLength(): Int {
 		val rest = source.removePrefix(HEADER_OPEN)
 		if (rest.length == source.length || !(rest.startsWith(' ') || rest.startsWith(TAG_CLOSE))) return 0
 		val close = rest.indexOf(TAG_CLOSE).takeIf { it >= 0 } ?: return 0
 		val version = rest.substring(0, close).substringAfter(VERSION_ATTRIBUTE, "").substringBefore(ATTRIBUTE_QUOTE)
-		if (version.isNotEmpty() && version != UNISCRIPT_VERSION) warn("unsupported uniscript version $version", 0)
+		if (!readsVersion(version)) warn("unsupported uniscript version $version", 0)
 		val end = HEADER_OPEN.length + close + 1
 		return end + (LINE_BREAKS.firstOrNull { source.startsWith(it, end) }?.length ?: 0)
 	}
