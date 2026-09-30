@@ -14,7 +14,8 @@
 extern "C" {
 #endif
 
-/* The uniscript version these libraries read, declared by the header <:uniscript version="…"> */
+/* The current uniscript version of the header <:uniscript version="…">; every https://uniscript.org/vN is read
+ * without warning, a foreign version URL warns */
 #define UNISCRIPT_VERSION "https://uniscript.org/v1"
 
 /* Whether unsupported characters are warnings (the output keeps them plain) or errors; LENIENT also turns errors
