@@ -37,8 +37,8 @@ class UniscriptTest {
 	fun blockTypesStyleTheirOperands() {
 		converts("<:fracture A>", "𝔄")
 		converts("<:fracture A b c >", "𝔄𝔟𝔠")
-		converts("<:fracture> A b c <:>", "𝔄𝔟𝔠")
-		converts("<:greek> a b g d <:/greek>", "αβγδ")
+		converts("<:fracture> A b c <:>", " 𝔄 𝔟 𝔠 ")
+		converts("<:greek> a b g d <:/greek>", " α β γ δ ")
 		converts("<:double-d>", "𝕕")
 		converts("x<:upper a>", "xᵃ")
 		converts("<:ligature ae>", "æ")
@@ -48,16 +48,17 @@ class UniscriptTest {
 
 	@Test
 	fun greekIsTransliteratedPhonetically() {
-		converts("<:greek> athos <:/greek>", "αθοσ")
+		converts("<:greek> athos <:/greek>", " αθοσ ")
 		converts("<:greek th ch ps>", "θχψ")
 		converts("<:greek eta Omega lambda>", "ηΩλ")
 	}
 
 	@Test
-	fun spacesBetweenWordsAreKept() {
-		converts("<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμοσ")
-		converts("<:greek a kosmos>", "α κοσμοσ")
-		converts("<:fracture Hello  World>", "ℌ𝔢𝔩𝔩𝔬  𝔚𝔬𝔯𝔩𝔡")
+	fun fullBlocksKeepTheirSpaces() {
+		converts("<:greek> filosofia kosmos<:/greek>", " φιλοσοφια κοσμοσ")
+		converts("<:greek a kosmos>", "ακοσμοσ")
+		converts("<:greek phi chi>", "φχ")
+		converts("<:greek>\nkosmos\t<:/greek>", "\nκοσμοσ\t")
 	}
 
 	@Test
@@ -85,7 +86,7 @@ class UniscriptTest {
 		converts("<:above 𓀀 𓁐>", "𓀀𓐰𓁐")
 		converts("<:beside 犭 句>", "⿰犭句")
 		converts("<:egyptian seated man>", "𓀀")
-		converts("<:egyptian> A1 Aa1 <:/egyptian>", "𓀀𓐍")
+		converts("<:egyptian> A1 Aa1 <:/egyptian>", " 𓀀 𓐍 ")
 		assertEquals("<:egyptian A1> <:egyptian Aa1>", uniscript.toUniscript("𓀀 𓐍"))
 	}
 
