@@ -102,6 +102,22 @@ final class UniscriptTests: XCTestCase {
 		converts("<:less>:", "<:")
 	}
 
+	func testTheHeaderDeclaresUniscriptAndItsVersion() throws {
+		let header = "<:uniscript version=\"https://uniscript.org/v1\">"
+		XCTAssertEqual(uniscriptVersion, "https://uniscript.org/v1")
+		XCTAssertEqual(Header(of: header), Header(version: uniscriptVersion, length: header.utf8.count))
+		XCTAssertEqual(Header(of: header + "\r\nx"), Header(version: uniscriptVersion, length: header.utf8.count + 2))
+		XCTAssertEqual(Header(of: "<:uniscript>"), Header(version: "", length: 12))
+		XCTAssertNil(Header(of: "<:uniscripts>"))
+		XCTAssertNil(Header(of: "x <:uniscript>"))
+		converts(header + "\n<:alpha>\n", "α\n")
+		converts(header + " <:alpha>", " α")
+		converts("<:uniscript><:alpha>", "α")
+		converts("<<::>uniscript version=\"https://uniscript.org/v1\">", header) // the escaped header is text
+		try warns("<:uniscript version=\"https://uniscript.org/v9\">A", "A", "unsupported uniscript version https://uniscript.org/v9", at: 0)
+		fails("x " + header, .unknownEntity("uniscript version=\"https://uniscript.org/v1\""))
+	}
+
 	func testErrorsAreReported() {
 		fails("<:nosuchthing> x", .unknownEntity("nosuchthing"))
 		fails("a <: b", .unclosed("<: b"))

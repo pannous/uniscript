@@ -15,6 +15,10 @@ private let escapedColon = "<::>"
 private let fontKey = "font"
 private let langKey = "lang"
 private let valuePlaceholder = "{}"
+/// The uniscript version this implementation reads, declared by the header `<:uniscript version="…">`
+public let uniscriptVersion = "https://uniscript.org/v1"
+private let headerOpen = "<:uniscript"
+private let versionAttribute = "version=\""
 
 public enum UniscriptError: Error, Equatable, CustomStringConvertible {
 	/// `<:name>` or `\:name` that is no entity, block or block operand
@@ -33,6 +37,32 @@ public enum UniscriptError: Error, Equatable, CustomStringConvertible {
 		case .unsupported(let warning): return warning.description
 		case .invalidMeta(let content): return "invalid meta value in <:\(content)>"
 		}
+	}
+}
+
+/// The header `<:uniscript version="https://uniscript.org/v1">` that starts a uniscript file
+public struct Header: Equatable, Sendable {
+	/// "" when the header names no version
+	public let version: String
+	/// UTF-8 bytes of the header and the line break after it
+	public let length: Int
+
+	public init(version: String, length: Int) {
+		self.version = version
+		self.length = length
+	}
+
+	/// The header at the start of the source; it is no header anywhere else
+	public init?(of source: String) {
+		let bytes = Array(source.utf8)
+		let open = Array(headerOpen.utf8)
+		guard bytes.starts(with: open), open.count < bytes.count, bytes[open.count] == UInt8(ascii: " ") || bytes[open.count] == tagClose,
+		      let close = bytes[open.count...].firstIndex(of: tagClose) else { return nil }
+		let attributes = String(decoding: bytes[open.count..<close], as: UTF8.self)
+		let value = attributes.range(of: versionAttribute).map { attributes[$0.upperBound...] }
+		let end = close + 1
+		let lineBreak = ["\r\n", "\n"].first { bytes[end...].starts(with: $0.utf8) }?.utf8.count ?? 0
+		self.init(version: value.map { String($0.prefix { $0 != "\"" }) } ?? "", length: end + lineBreak)
 	}
 }
 
@@ -365,6 +395,13 @@ private final class Conversion {
 		throw UniscriptError.unknownEntity(content)
 	}
 
+	/// Bytes of the header to skip; a version other than `uniscriptVersion` warns
+	private func headerLength(_ source: String) -> Int {
+		guard let header = Header(of: source) else { return 0 }
+		if !header.version.isEmpty, header.version != uniscriptVersion { warn("unsupported uniscript version \(header.version)", 0) }
+		return header.length
+	}
+
 	func unicode(of source: String) throws -> String {
 		let bytes = Array(source.utf8)
 		func text(_ range: Range<Int>) -> String { String(decoding: bytes[range], as: UTF8.self) }
@@ -376,7 +413,7 @@ private final class Conversion {
 		}
 		var out = ""
 		var block: String?
-		var position = 0
+		var position = headerLength(source)
 		while position < bytes.count {
 			let marker = firstIndex(from: position + 1, where: isMarkerColon).map { $0 - 1 } ?? bytes.count
 			let run = text(position..<marker)

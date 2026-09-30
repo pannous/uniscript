@@ -1,6 +1,6 @@
 use uniscript::entities::Entities;
 use uniscript::index::{self, Index};
-use uniscript::{convert, to_unicode, to_uniscript, Error, Warning, WarningMode, ENTITIES_INDEX};
+use uniscript::{convert, header, to_unicode, to_uniscript, Error, Header, Warning, WarningMode, ENTITIES_INDEX, UNISCRIPT_VERSION};
 
 fn converts(uniscript: &str, unicode: &str) {
 	assert_eq!(to_unicode(uniscript), Ok(unicode.to_string()), "{uniscript}");
@@ -100,6 +100,25 @@ fn hieroglyphs_have_gardiner_numbers_and_descriptions() {
 fn the_marker_is_escaped_by_single_character_entities() {
 	converts("<:<> <::> <<::>", "< : <:");
 	converts("<:less>:", "<:");
+}
+
+const HEADER: &str = "<:uniscript version=\"https://uniscript.org/v1\">";
+
+/// `<:uniscript version="…">` at the start of a file declares it uniscript; the header and its line break convert to nothing
+#[test]
+fn the_header_declares_uniscript_and_its_version() {
+	assert_eq!(UNISCRIPT_VERSION, "https://uniscript.org/v1");
+	assert_eq!(header(HEADER), Some(Header { version: UNISCRIPT_VERSION, length: HEADER.len() }));
+	assert_eq!(header(&format!("{HEADER}\r\nx")), Some(Header { version: UNISCRIPT_VERSION, length: HEADER.len() + 2 }));
+	assert_eq!(header("<:uniscript>"), Some(Header { version: "", length: 12 }));
+	assert_eq!(header("<:uniscripts>"), None);
+	assert_eq!(header("x <:uniscript>"), None);
+	converts(&format!("{HEADER}\n<:alpha>\n"), "α\n");
+	converts(&format!("{HEADER} <:alpha>"), " α");
+	converts("<:uniscript><:alpha>", "α");
+	converts("<<::>uniscript version=\"https://uniscript.org/v1\">", HEADER); // the escaped header is text
+	warns("<:uniscript version=\"https://uniscript.org/v9\">A", "A", "unsupported uniscript version https://uniscript.org/v9", 0);
+	assert_eq!(to_unicode(&format!("x {HEADER}")), Err(Error::UnknownEntity("uniscript version=\"https://uniscript.org/v1\"".into())));
 }
 
 #[test]
