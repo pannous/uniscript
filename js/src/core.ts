@@ -23,6 +23,8 @@ const HEADER_OPEN = "<:uniscript";
 const VERSION_ATTRIBUTE = 'version="';
 const ATTRIBUTE_QUOTE = '"';
 const LINE_BREAKS = ["\r\n", "\n"];
+/** Rust split_inclusive(char::is_whitespace): each piece is a word and the one whitespace character ending it */
+const WHITESPACE_ENDED_PIECES = /\S*\s|\S+$/gu;
 
 /** Whether unsupported characters are warnings (the output keeps them plain) or errors; lenient also turns errors
  * (unknown entities, invalid meta values, an unclosed `<:`) into warnings and keeps their uniscript as written */
@@ -306,13 +308,19 @@ export class Uniscript {
 		return out;
 	}
 
-	/** An operand that is one letter of the block: one character, its own entry (greek th, greek eta) or an entity name */
-	#isLetter(block: string, token: string): boolean {
-		return characterCount(token) === 1 || this.#form(block, token) !== undefined || this.#name(token) !== undefined;
+	/** The text inside a full block (`<:greek> filosofia kosmos<:/greek>`) as written: its whitespace stays, each word is an
+	 * operand; a group block joins its parts */
+	#blockText(block: string, text: string, at: number): string {
+		if (this.#name(`${block} *group`) !== undefined) return this.#operands(block, text, [], at);
+		return (text.match(WHITESPACE_ENDED_PIECES) ?? [])
+			.map((piece) => {
+				const word = piece.trimEnd();
+				return this.#operand(block, word, [], at) + piece.slice(word.length);
+			})
+			.join("");
 	}
 
-	/** The space separated operands, or one operand of several words (egyptian seated man); spaces between letters
-	 * only separate them, spaces next to a word stay (`<:greek> filosofia kosmos<:/greek>` → φιλοσοφια κοσμοσ);
+	/** The space separated operands of an inline tag, spaces dropped, or one operand of several words (egyptian seated man);
 	 * a group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script
 	 * of the first part has */
 	#operands(block: string, content: string, effects: string[], at: number): string {
@@ -321,13 +329,7 @@ export class Uniscript {
 		const group = this.#name(`${block} *group`) !== undefined;
 		let out = "";
 		let script = "";
-		let [position, spaces, previousIsLetter] = [0, 0, true];
-		for (const token of content.split(" ")) {
-			spaces += 1;
-			if (!token) continue;
-			const isLetter = this.#isLetter(block, token);
-			if (!group && position > 0 && !(previousIsLetter && isLetter)) out += " ".repeat(spaces);
-			[spaces, previousIsLetter] = [0, isLetter];
+		words(content).forEach((token, position) => {
 			const named = this.#name(token);
 			const part = !group ? this.#operand(block, token, effects, at)
 				: named !== undefined && utf8Length(token) > 1 ? named : token;
@@ -342,8 +344,7 @@ export class Uniscript {
 				out += this.#name(`${block} *infix ${script}`) ?? "";
 			}
 			out += part;
-			position += 1;
-		}
+		});
 		return out;
 	}
 
@@ -445,7 +446,7 @@ export class Uniscript {
 		while (position < source.length) {
 			const marker = Uniscript.#marker(source, position);
 			const plain = source.slice(position, marker);
-			out += block !== undefined ? this.#operands(block, plain, [], bytes) : plain;
+			out += block !== undefined ? this.#blockText(block, plain, bytes) : plain;
 			advance(marker);
 			if (position >= source.length) break;
 			if (source.startsWith(SHORT_OPEN, position)) {

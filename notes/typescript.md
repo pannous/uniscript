@@ -29,5 +29,5 @@ Direct port of the Rust crate (src/lib.rs, meta.rs, index.rs) to TypeScript; npm
 - `probes/browser.html`: serve js/ and open it headless (`agent-browser`), title `ok`. The page needs
   `<meta charset="utf-8">` or its inline Greek literals are misread.
 
-The reference changes while porting (stacked styles bb55df0, spaces in blocks 822678c came in during this port):
+The reference changes while porting (stacked styles bb55df0, spaces in blocks 822678c then replaced by 48026c8: full blocks keep their whitespace verbatim, inline tags drop it):
 re-read `git log -- src/lib.rs` before declaring parity; the differential test catches drift.
