@@ -56,8 +56,9 @@ followed by TAG characters (U+E0020…E007E). Any font shows the plain letter. T
   invisible TAG sequences and rendered by `--html` as spans with CSS.
 - **Honest**: an unknown name is an error. A character without a counterpart (`<:fracture 7>`) stays plain with a
   warning that can be made an error (`--strict`).
-- **Three implementations, one data file**: this Rust crate, a Swift package in the same repository, and the
-  [wasp](https://github.com/pannous/warp) language's `lib/uniscript.wasp`. All three read `data/entities.idx`.
+- **Three implementations, one data file**: this Rust crate, a Swift package, and `uniscript.wasp` in
+  the [wasp](https://github.com/pannous/warp) language, all in this repository. All three read `data/entities.idx`.
+  In wasp, `use uniscript` fetches this repository as a package and loads `uniscript.wasp`.
 
 The full specification is [docs/uniscript.md](docs/uniscript.md), a hard link to the
 [uniscript page of the warp wiki](https://github.com/pannous/warp/wiki/uniscript). It covers the representation,
@@ -67,7 +68,7 @@ escaping, the comparison with LaTeX, the Unicode extensions uniscript wishes for
 
 Online, two pages:
 - **[pannous.com/uniscript](https://pannous.com/uniscript/)**: the converter with example buttons and a Unicode → uniscript
-  box, running the wasp implementation (`lib/uniscript.wasp`) compiled to WebAssembly by warp.
+  box, running the wasp implementation (`uniscript.wasp`) compiled to WebAssembly by warp.
 - **[pannous.com/uniscript/rust](https://pannous.com/uniscript/rust/)**: [docs/demo.html](docs/demo.html), this Rust crate
   compiled to WebAssembly ([wasm/](wasm/)), with a live editor that renders meta information (fonts, colors, angles) as
   HTML. Redeploy with `docs/make_demo.sh deploy`.
