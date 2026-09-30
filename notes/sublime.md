@@ -9,3 +9,4 @@
 - `sublime_plugin` glue is not probed headlessly; `uniscript_cli.py` is (probes/test_sublime_plugin.py).
 - Conversion never stops on errors: the plugin runs `uniscript --lenient` (unknown entities stay, warnings in the status bar).
 - The header `<:uniscript version=…>` is handled by the library now (session uniscript-04), not by the plugin.
+- Two sessions staging hunks of the same file (git update-index / add -p) share one git index: a commit can pick up the other session's staged blob. Commit shared files one session at a time, and check `git show --stat` after committing.
