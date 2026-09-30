@@ -20,6 +20,7 @@ rust:
 $(STATIC) $(SHARED): rust | $(BUILD)
 	cp $(RUST_LIBRARY).a $(STATIC)
 	cp $(RUST_LIBRARY).$(SHARED_EXTENSION) $(SHARED)
+	$(if $(filter Darwin,$(shell uname)),install_name_tool -id @rpath/libuniscript.dylib $(SHARED))
 
 $(BUILD):
 	mkdir -p $@
@@ -30,9 +31,14 @@ $(BUILD)/test_c: $(TESTS)/test_uniscript.c $(TESTS)/cases.h ../uniscript.h $(STA
 $(BUILD)/test_cpp: $(TESTS)/test_uniscript.cpp $(TESTS)/cases.h ../uniscript.h ../uniscript.hpp $(STATIC)
 	c++ -std=c++17 $(FLAGS) $< $(LINK) -o $@
 
-test: $(BUILD)/test_c $(BUILD)/test_cpp
+# the same C test against the shared library: dyld (or ld.so) must load it
+$(BUILD)/test_c_shared: $(TESTS)/test_uniscript.c $(TESTS)/cases.h ../uniscript.h $(SHARED)
+	cc -std=c11 $(FLAGS) $< -L$(BUILD) -luniscript -Wl,-rpath,$(abspath $(BUILD)) -o $@
+
+test: $(BUILD)/test_c $(BUILD)/test_cpp $(BUILD)/test_c_shared
 	$(BUILD)/test_c
 	$(BUILD)/test_cpp
+	$(BUILD)/test_c_shared
 
 clean:
 	rm -rf $(BUILD)

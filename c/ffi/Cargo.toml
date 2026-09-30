@@ -15,3 +15,5 @@ uniscript = { path = "../.." }
 
 [profile.release]
 panic = "abort"
+# rustc's post-link strip (macOS 27 beta) can misalign the dylib's LINKEDIT string pool: dyld then refuses to load it
+strip = "none"
