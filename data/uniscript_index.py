@@ -23,6 +23,8 @@ INDEX_FILE = HERE / "entities.idx"
 UNICODE_BLOCKS = HERE / "sources" / "Blocks.txt"  # https://www.unicode.org/Public/16.0.0/ucd/Blocks.txt
 # Wikipedia's Template:List_of_hieroglyphs (CC BY-SA 4.0): Gardiner number, code point and a short description per sign
 HIEROGLYPH_DESCRIPTIONS = HERE / "sources" / "list_of_hieroglyphs.wiki"
+# the Anatolian Hieroglyphs section of Unicode's NamesList.txt: Latin logogram names and Luwian syllabic values as aliases
+ANATOLIAN_NAMES_LIST = HERE / "sources" / "anatolian_names_list.txt"
 UNICODE_MATH_TABLE = Path("/usr/local/texlive/2026basic/texmf-dist/tex/latex/unicode-math/unicode-math-table.tex")
 
 MAGIC = b"USX1"
@@ -106,6 +108,15 @@ ANATOLIAN_NUMBER = re.compile(r"^ANATOLIAN HIEROGLYPH A0*(\d+)([A-Z]*)(?: |$)") 
 # an alias may name several blocks, the first holding an operand wins: hieroglyph looks in every hieroglyphic script
 EGYPTIAN_ALIASES = {"gardiner": EGYPTIAN_BLOCK, "hieroglyph": f"{EGYPTIAN_BLOCK} {ANATOLIAN_BLOCK}"}
 ANATOLIAN_ALIASES = {"luwian": ANATOLIAN_BLOCK}
+# aliases of NamesList.txt: "= syllabic tá", "= logosyllabic pari", "= caput+scalprum", "= infans, filius, frater"
+NAMES_LIST_ENTRY = re.compile(r"^([0-9A-F]{4,6})\t")
+NAMES_LIST_ALIAS = re.compile(r"^\t= (.+)$")
+SYLLABIC_PREFIX = re.compile(r"^(?:logo)?syllabic ")
+UNCERTAIN_READING = re.compile(r"\?|[-+.]x\b")  # ta-x?, pugnus+x: not identified
+SYLLABLE = re.compile(r"^[a-z]?[a-z]?[aeiou][0-9]?$|[áàéèíìúù]")  # zi4, tì: a syllabic value though not marked as one
+VOWEL_ALTERNATIVE = re.compile(r"([a-záàíìú]*)([aeiouáàéèíìúù])/([aeiouáàéèíìúù])([0-9]*)")  # wa/i5 → wa5, wi5
+OPTIONAL_PART = re.compile(r"(?<=.)\(([^)]*)\)")  # i(a) → i, ia; a leading (deus) determinative stays
+ACCENT_INDICES = {"\u0301": "2", "\u0300": "3"}  # tá is ta2, tà is ta3
 GARDINER_NUMBER = re.compile(r"^EGYPTIAN HIEROGLYPH ([A-Z]+?)0*(\d+)([A-Z]*)$")  # A001 → A1, AA001 → Aa1, A014A → A14A
 # more spellings of a description: seated man → man sitting, man seated
 DESCRIPTION_SYNONYMS = [(re.compile(r"^seated-([a-z]+)$"), [r"\1-sitting", r"\1-seated"])]
@@ -324,9 +335,63 @@ def egyptian_block(named):
 	return table
 
 
+def names_list_aliases(path):
+	"""character → its aliases in a section of NamesList.txt, in order"""
+	aliases, character = {}, None
+	for line in path.read_text().splitlines():
+		if entry := NAMES_LIST_ENTRY.match(line):
+			character = chr(int(entry.group(1), 16))
+		elif (alias := NAMES_LIST_ALIAS.match(line)) and character:
+			aliases.setdefault(character, []).append(alias.group(1))
+	return aliases
+
+
+def spellings(reading):
+	"""A reading with its alternatives spelled out: wa/i5 → wa5 wi5, i(a) → i ia"""
+	if optional := OPTIONAL_PART.search(reading):
+		return spellings(OPTIONAL_PART.sub("", reading, 1)) + spellings(OPTIONAL_PART.sub(optional.group(1), reading, 1))
+	if alternative := VOWEL_ALTERNATIVE.search(reading):
+		start, vowel, other, index = alternative.groups()
+		return [reading.replace(alternative.group(0), start + v + index, 1) for v in (vowel, other)]
+	return [reading]
+
+
+def accent_index(reading):
+	"""tá → ta2, há-li → ha2-li: each accented syllable gets its index, one with an index already stays"""
+	return re.sub(r"[^-+.]+", lambda syllable: syllable_index(syllable.group(0)), reading)
+
+
+def syllable_index(syllable):
+	decomposed = unicodedata.normalize("NFD", syllable)
+	accents = [ACCENT_INDICES[c] for c in decomposed if c in ACCENT_INDICES]
+	if not accents or syllable[-1].isdigit():
+		return syllable
+	return "".join(c for c in decomposed if c not in ACCENT_INDICES) + accents[0]
+
+
+def anatolian_readings(alias):
+	"""The keys of one NamesList alias: syllabic values in lower case (ka, tá, ta2), logograms in capitals (CAPUT),
+	descriptions of several words hyphenated (word-divider)"""
+	syllabic = bool(SYLLABIC_PREFIX.match(alias))
+	keys = []
+	for reading in SYLLABIC_PREFIX.sub("", alias).split(", "):
+		if UNCERTAIN_READING.search(reading):
+			continue
+		for spelling in spellings(reading):
+			if syllabic or SYLLABLE.search(spelling):
+				keys += [spelling, accent_index(spelling)]
+			else:
+				keys.append(ascii_name(spelling) if " " in spelling else spelling.upper())
+	return keys
+
+
 def anatolian_block(named):
-	"""Laroche number → hieroglyph"""
-	return {match.group(1) + match.group(2): c for c, n in named if (match := ANATOLIAN_NUMBER.match(n))}
+	"""Laroche number → hieroglyph, then its names and syllabic values → hieroglyph; the first sign of a reading wins"""
+	table = {match.group(1) + match.group(2): c for c, n in named if (match := ANATOLIAN_NUMBER.match(n))}
+	for character, aliases in names_list_aliases(ANATOLIAN_NAMES_LIST).items():
+		for key in (key for alias in aliases for key in anatolian_readings(alias)):
+			table.setdefault(key, character)
+	return table
 
 
 def seed_files():

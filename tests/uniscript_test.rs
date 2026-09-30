@@ -119,6 +119,18 @@ fn hieroglyph_looks_in_every_hieroglyphic_script() {
 }
 
 #[test]
+fn anatolian_hieroglyphs_have_their_latin_names_and_syllabic_values() {
+	converts("<:anatolian CAPUT>", "\u{14409}");
+	converts("<:hieroglyph SCRIBA>", "\u{1456D}");
+	converts("<:luwian CAPUT+SCALPRUM>", "\u{1440A}");
+	converts("<:anatolian tá>", "\u{1441E}");
+	converts("<:anatolian ta2>", "\u{1441E}");
+	converts("<:anatolian word divider>", "\u{145B5}");
+	converts("<:anatolian> pi ha mi sa <:/anatolian>", " \u{14448} \u{144F7} \u{145BB} \u{145D4} ");
+	assert_eq!(to_uniscript("\u{14409}"), "<:anatolian 10>");
+}
+
+#[test]
 fn the_marker_is_escaped_by_single_character_entities() {
 	converts("<:<> <::> <<::>", "< : <:");
 	converts("<:less>:", "<:");
