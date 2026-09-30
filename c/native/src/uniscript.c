@@ -11,6 +11,7 @@
 
 #define HEADER_OPEN "<:uniscript"
 #define VERSION_ATTRIBUTE "version=\""
+#define VERSION_PREFIX "https://uniscript.org/v"
 #define ESCAPED_COLON "<::>"
 #define FONT_KEY "font"
 #define LANG_KEY "lang"
@@ -547,13 +548,22 @@ int uniscript_header(const char *source, const char **version, size_t *version_l
 	return 1;
 }
 
-/* Bytes of the header to skip; a version other than UNISCRIPT_VERSION warns */
+/* Every uniscript.org version is read (backwards compatible): empty, or VERSION_PREFIX and ASCII digits */
+static bool reads_version(str version) {
+	if (!version.n) return true;
+	if (!str_starts(version, VERSION_PREFIX) || version.n == strlen(VERSION_PREFIX)) return false;
+	for (size_t i = strlen(VERSION_PREFIX); i < version.n; i++)
+		if (version.p[i] < '0' || version.p[i] > '9') return false;
+	return true;
+}
+
+/* Bytes of the header to skip; a version that is no uniscript.org version warns */
 static size_t header_length(converter *self, const char *source) {
 	const char *version;
 	size_t version_length, length;
 	if (!uniscript_header(source, &version, &version_length, &length)) return 0;
 	str found = { version, version_length };
-	if (found.n && !str_eq(found, UNISCRIPT_VERSION)) warn(self, 0, "unsupported uniscript version %.*s", S(found));
+	if (!reads_version(found)) warn(self, 0, "unsupported uniscript version %.*s", S(found));
 	return length;
 }
 
