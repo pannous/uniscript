@@ -6,6 +6,7 @@ here=$(cd "$(dirname "$0")/.." && pwd)
 root=$(cd "$here/../.." && pwd)
 export CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-/opt/cargo}
 cargo build -q --manifest-path "$root/Cargo.toml" || exit 1
+make -s -C "$here" build/uniscript || exit 1
 reference="$CARGO_TARGET_DIR/debug/uniscript"
 native="$here/build/uniscript"
 python3 "$here/tests/fuzz_corpus.py" > "$here/build/fuzz.txt" || exit 1

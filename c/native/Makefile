@@ -9,7 +9,7 @@ INDEX := $(ROOT)/data/entities.idx
 BUILD := build
 CC ?= cc
 CFLAGS ?= -O2
-WARNINGS := -std=c11 -Wall -Wextra -Wpedantic -Wno-overlength-strings -Wno-missing-field-initializers -Werror
+WARNINGS := -std=c11 -Wall -Wextra -Wpedantic -Wno-overlength-strings -Werror
 INCLUDES := -I.. -Isrc
 DEFINES := -DUNISCRIPT_INDEX_PATH='"$(INDEX)"'
 SANITIZE := -fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=all -g -O1
@@ -50,9 +50,9 @@ $(BUILD)/test_%: tests/test_%.c $(OBJECTS) $(HEADERS)
 $(BUILD)/test_%: ../tests/test_%.c ../tests/cases.h $(OBJECTS) $(HEADERS)
 	$(CC) $(WARNINGS) $(INCLUDES) $< $(OBJECTS) -o $@
 $(BUILD)/test_%_cpp: ../tests/test_%.cpp ../tests/cases.h ../uniscript.hpp $(OBJECTS) $(HEADERS)
-	$(CXX) -std=c++17 -Wall -Wextra -Wno-missing-field-initializers -Werror -I.. $< $(OBJECTS) -o $@
+	$(CXX) -std=c++17 -Wall -Wextra -Werror -I.. $< $(OBJECTS) -o $@
 $(BUILD)/sanitized/test_%_cpp: ../tests/test_%.cpp ../tests/cases.h ../uniscript.hpp $(SANITIZED_OBJECTS) $(HEADERS)
-	$(CXX) -std=c++17 -Wall -Wextra -Wno-missing-field-initializers -Werror $(SANITIZE) -I.. $< $(SANITIZED_OBJECTS) -o $@
+	$(CXX) -std=c++17 -Wall -Wextra -Werror $(SANITIZE) -I.. $< $(SANITIZED_OBJECTS) -o $@
 $(BUILD)/sanitized/test_%: tests/test_%.c $(SANITIZED_OBJECTS) $(HEADERS)
 	$(CC) $(WARNINGS) $(SANITIZE) $(INCLUDES) $< $(SANITIZED_OBJECTS) -o $@
 $(BUILD)/sanitized/test_%: ../tests/test_%.c ../tests/cases.h $(SANITIZED_OBJECTS) $(HEADERS)
