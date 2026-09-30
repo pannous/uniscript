@@ -95,6 +95,8 @@ Download them from the [releases](https://github.com/pannous/uniscript/releases)
 Libraries for UniScript are provided for all major programming languages in this repository:
 Swift, Rust, Python, JavaScript, and C++. The Rust crate is the reference implementation, and the Swift package is a direct port of it. The Python and C++ libraries are wrappers around the Rust crate. The JavaScript library is a direct port of the Rust crate to TypeScript. For faster web use, we recommend using the compiled WebAssembly, as shown in the demo.html 
 
+- **C / C++** (Rust-backed, `c/ffi`): header `c/uniscript.h`, header-only C++17 wrapper `c/uniscript.hpp`; `make -C c/ffi test`, usage in [c/ffi/README.md](c/ffi/README.md).
+
 Programming languages supporting Uniscript natively are wasp and warp. 
 
 An example native app with built-in support on the Mac: you can use it with Markdown via [MarkdownPreview](https://github.com/pannous/MarkdownPreview)
