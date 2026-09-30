@@ -1,0 +1,1 @@
+- TODO: `<:greek> athos <:/greek>` gives αθοσ; Greek orthography wants final sigma ς at word end (αθος). Decide whether `greek` should apply it (the spec example in docs/uniscript.md shows αθοσ).
