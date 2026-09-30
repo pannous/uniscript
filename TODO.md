@@ -12,3 +12,11 @@
 - TODO: README "Support" lists Python, JavaScript and C++ libraries, but the repository only has Rust, Swift and Kotlin.
 - TODO: combinations Unicode lacks (`<:double bold A>`, `<:bold italic 7>`) stay in the inner style with a warning; the Uniscript fonts could render them with a style control instead.
 - TODO: greek transliteration writes σ at the end of a word (kosmos → κοσμοσ); Greek uses final sigma ς there (κοσμος). Now that words keep their spaces, word ends are known.
+- C ffi/native: NULL or invalid UTF-8 input fails with UNISCRIPT_INVALID_INPUT even in lenient mode (should warn and continue, see AGENTS.md)
+- wasm: 3.8 MB .wasm, 3.65 MB of it the compiled-in entities.idx; loading the index at runtime needs a reference API for it
+- ports (wasm, C, Python) do not cover index building from data/entities/*.wasp (index::build, Entities::parse); only TypeScript rebuilds the idx
+- macOS 27 beta: rustc's release strip misaligns the LINKEDIT string pool when the indirect symbol count is odd, dyld refuses the dylib; python/ffi uses strip = "none", c/ffi only loads by luck (even count)
+- python/ffi wheel is cp314/arm64 only: no abi3, no CI build matrix
+- C: no CMake, untested on Linux; native .incbin not MSVC-compatible
+- every reference change needs a manual re-port: run the differential tests (js, python/native, c/native) after src/ changes
+- deploy docs/demo.html (needs fonts/ and built wasm/pkg next to docs/); publish js to npm and python packages to PyPI
