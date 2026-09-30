@@ -1,8 +1,10 @@
 # Uniscript
   
-**Uniscript** is a human readable and editable [unicode](https://en.wikipedia.org/wiki/Unicode) encoding format which only uses ASCII characters to describe code points.  
+**Uniscript** is a **human readable and editable** [unicode](https://en.wikipedia.org/wiki/Unicode) encoding format which only uses ASCII characters to describe code points.  
   
-The constituents of uniscript are entities and block types.    
+The constituents of uniscript are entities (like `\:alpha` for α) and block types.    
+
+## Block types
   
 Block types influencing the character stream would be    
     
