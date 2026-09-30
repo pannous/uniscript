@@ -1,13 +1,25 @@
 // What the WebAssembly build adds to the shared cases (cases.test.js): loading, the error type, result shapes
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import init, { UNISCRIPT_VERSION, UniscriptError, convert, font, metaRuns, toUnicode } from "../uniscript.js";
+import { readFile } from "node:fs/promises";
+import init, { UNISCRIPT_VERSION, UniscriptError, convert, font, metaRuns, toUnicode, toUniscript } from "../uniscript.js";
 
 test("init loads the wasm next to the module (in Node from the file system)", async () => {
 	assert.equal(UNISCRIPT_VERSION, undefined);
+	assert.throws(() => toUnicode("<:alpha>"));
 	await init();
 	assert.equal(UNISCRIPT_VERSION, "https://uniscript.org/v1");
 	assert.equal(toUnicode("<:alpha>"), "α");
+});
+
+test("init takes the index as bytes, a path or a URL, and rejects what is no index", async () => {
+	const indexFile = new URL("../../data/entities.idx", import.meta.url);
+	await init(await readFile(indexFile));
+	assert.equal(toUnicode("<:alpha>"), "α");
+	await init(indexFile.pathname);
+	assert.equal(toUniscript("𝔄"), "<:fracture A>");
+	await assert.rejects(init(new TextEncoder().encode("no index")), /magic USX1/);
+	assert.equal(toUnicode("<:beta>"), "β", "a rejected index keeps the loaded one");
 });
 
 test("errors are UniscriptErrors with the reference message, kind and detail", () => {
