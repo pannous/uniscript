@@ -20,9 +20,22 @@ The converter is a Kotlin port of `src/lib.rs` (`src/main/kotlin/com/pannous/uni
 
 ```sh
 cd intellij
-gradle test          # converter tests (tests/uniscript_test.rs) and the plugin in a headless IDE
-gradle buildPlugin   # build/distributions/uniscript-intellij-0.1.0.zip
+./gradlew test            # converter tests (tests/uniscript_test.rs) and the plugin in a headless IDE
+./gradlew buildPlugin     # build/distributions/uniscript-intellij-0.1.0.zip
+./gradlew verifyPlugin    # JetBrains' plugin verifier against IDEA 2024.3 (since-build 243) and the local IDE
 ```
+
+## Publish (JetBrains Marketplace)
+
+`../scripts/publish_editor_plugins.sh` tests, builds and verifies both editor plugins. The plugin id, name, vendor,
+version, change notes and since-build are set in `build.gradle.kts` (patched into `plugin.xml`).
+
+1. The **first** upload is manual: sign in at https://plugins.jetbrains.com (vendor pannous), *Upload plugin*, choose
+   `build/distributions/uniscript-intellij-0.1.0.zip`, license and category; JetBrains reviews it (a few days).
+2. Later versions: raise `version` and `changeNotes` in `build.gradle.kts`, create a token under *My Tokens*, then
+   `PUBLISH_TOKEN=perm:… ./gradlew publishPlugin` (or `PUBLISH_TOKEN=… ../scripts/publish_editor_plugins.sh --publish`).
+3. Signing (optional, recommended): `CERTIFICATE_CHAIN`, `PRIVATE_KEY` (PEM contents) and `PRIVATE_KEY_PASSWORD` in the
+   environment make `signPlugin` sign the zip before `publishPlugin`; without them it is skipped.
 
 Install the zip with *Settings | Plugins | ⚙ | Install Plugin from Disk…*. The build compiles against the local
 `/Applications/IntelliJ IDEA.app` (`platformLocalPath` in `gradle.properties`) and downloads an IDE only when that is

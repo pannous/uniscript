@@ -1,7 +1,5 @@
 <idea-plugin>
-	<id>com.pannous.uniscript</id>
-	<name>Uniscript</name>
-	<vendor url="https://github.com/pannous/uniscript">pannous</vendor>
+	<!-- id, name, vendor, version, change notes and since-build: build.gradle.kts -->
 	<description><![CDATA[
 	<p><a href="https://github.com/pannous/uniscript">Uniscript</a>: type any Unicode character in plain ASCII and style it.
 	<code>&lt;:alpha&gt; &lt;:fracture A&gt; \:infinity</code> → α 𝔄 ∞</p>
