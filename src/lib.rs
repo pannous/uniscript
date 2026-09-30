@@ -383,7 +383,13 @@ impl<'a> Uniscript<'a> {
 		out
 	}
 
-	/// The space separated operands, spaces dropped, or one operand of several words (egyptian seated man);
+	/// An operand that is one letter of the block: one character, its own entry (greek th, greek eta) or an entity name
+	fn is_letter(&self, block: &str, token: &str) -> bool {
+		token.chars().count() == 1 || self.name(&format!("{block} {token}")).is_some() || self.name(token).is_some()
+	}
+
+	/// The space separated operands, or one operand of several words (egyptian seated man); spaces between letters
+	/// only separate them, spaces next to a word stay (`<:greek> filosofia kosmos<:/greek>` → φιλοσοφια κοσμοσ);
 	/// a group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script
 	/// of the first part has
 	fn operands(&self, block: &str, content: &str, effects: &[&str], at: usize) -> String {
@@ -394,7 +400,17 @@ impl<'a> Uniscript<'a> {
 		let group = self.name(&format!("{block} *group")).is_some();
 		let mut out = String::new();
 		let mut script = "";
-		for (position, token) in content.split(' ').filter(|token| !token.is_empty()).enumerate() {
+		let (mut position, mut spaces, mut previous_is_letter) = (0, 0, true);
+		for token in content.split(' ') {
+			spaces += 1;
+			if token.is_empty() {
+				continue;
+			}
+			let is_letter = self.is_letter(block, token);
+			if !group && position > 0 && !(previous_is_letter && is_letter) {
+				out += &" ".repeat(spaces);
+			}
+			(spaces, previous_is_letter) = (0, is_letter);
 			let part = match self.name(token) {
 				_ if !group => self.operand(block, token, effects, at),
 				Some(named) if token.len() > 1 => named.to_string(),
@@ -411,6 +427,7 @@ impl<'a> Uniscript<'a> {
 				out += self.name(&format!("{block} *infix {script}")).unwrap_or("");
 			}
 			out += &part;
+			position += 1;
 		}
 		out
 	}
