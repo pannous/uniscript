@@ -26,7 +26,7 @@
   `[pypi]` `username = __token__` `password = pypi-…` (a token from pypi.org/manage/account/token/; the first upload
   needs an account-wide token, a project-scoped one afterwards).
 
-## Release checklist (every package at the version in Cargo.toml, 0.2.0; git tag v0.1.0 is stale and stays)
+## Release checklist (every package at the version in Cargo.toml, 0.2.0, also the `version` line of uniscript.wasp; git tag v0.1.0 is stale and stays)
 
 1. Credentials once: `npm login`, `cargo login <token>`, `~/.pypirc` with `[pypi]` `username = __token__` `password = pypi-…`.
 2. `scripts/publish.sh --publish` (crates.io, PyPI ×2, npm ×2; refuses a dirty tree).
