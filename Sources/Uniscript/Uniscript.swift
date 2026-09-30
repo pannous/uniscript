@@ -19,6 +19,7 @@ private let valuePlaceholder = "{}"
 public let uniscriptVersion = "https://uniscript.org/v1"
 private let headerOpen = "<:uniscript"
 private let versionAttribute = "version=\""
+private let suffixKey = "*suffix"
 
 public enum UniscriptError: Error, Equatable, CustomStringConvertible {
 	/// `<:name>` or `\:name` that is no entity, block or block operand
@@ -258,8 +259,8 @@ private final class Conversion {
 	/// to that script
 	private func suffix(of block: String, after character: Unicode.Scalar) -> String? {
 		let script = scriptOf(character)
-		let scripted = script.isEmpty ? nil : name("\(block) *suffix \(script)")
-		return scripted ?? name("\(block) *suffix")
+		let scripted = script.isEmpty ? nil : name("\(block) \(suffixKey) \(script)")
+		return scripted ?? name("\(block) \(suffixKey)")
 	}
 
 	/// The control of an effect after one character, "" with a warning when it has none for it
@@ -287,6 +288,64 @@ private final class Conversion {
 			styled = "\(character)\(effectSuffix(block, character, at))"
 		}
 		return styled + effectSuffixes(effects, character, at)
+	}
+
+	/// A block with a suffix control (mirror, red), which stacks as an effect instead of restyling
+	private func isEffect(_ block: String) -> Bool {
+		name("\(block) \(suffixKey)") != nil
+	}
+
+	private func form(_ block: String, _ operand: String) -> String? {
+		name("\(block) \(operand)")
+	}
+
+	/// The block and plain operand a character spells back as: 𝐚 → (bold, a), α → ("", alpha)
+	private func spelling(_ character: Unicode.Scalar) -> (own: String, operand: String)? {
+		guard let form = index.get(.chars, String(character)), form.hasPrefix("<:"), form.hasSuffix(">") else { return nil }
+		let content = String(form.dropFirst(2).dropLast())
+		if let (block, operand) = splitOnce(content, " "), isBlock(block) {
+			return (block, operand)
+		}
+		return ("", content)
+	}
+
+	/// The block that combines styles in any order: bold + sans + italic → sans-bold-italic
+	private func combined(_ styles: [String]) -> String? {
+		let parts = Array(Set(styles.flatMap { $0.split(separator: "-").map(String.init) })).sorted()
+		return permutations(parts).map { $0.joined(separator: "-") }.first(where: isBlock)
+	}
+
+	/// A character in further styles: in the block combining them with its own style (bold on 𝛼 → bold-italic α),
+	/// else one style after the other, each commuting with the character's own style where they do not combine
+	/// (greek on 𝐚 → bold of greek a → 𝛂). A style that cannot apply keeps the character, with a warning.
+	private func restyled(_ styles: [String], _ character: Unicode.Scalar, _ at: Int) -> String {
+		if let (own, operand) = spelling(character) {
+			let all = own.isEmpty ? styles : styles + [own]
+			let base = (!own.isEmpty && operand.unicodeScalars.count > 1 ? name(operand) : nil) ?? operand
+			if let block = combined(all), let form = form(block, base) {
+				return form
+			}
+		}
+		return styles.reversed().reduce(String(character)) { text, style in
+			guard text.unicodeScalars.count == 1, let single = text.unicodeScalars.first else { return text }
+			if let form = restyled(by: style, single) { return form }
+			warn("no \(style) form of \(single)", at)
+			return text
+		}
+	}
+
+	private func restyled(by style: String, _ character: Unicode.Scalar) -> String? {
+		if let form = form(style, String(character)) {
+			return form
+		}
+		guard let (own, operand) = spelling(character) else { return nil }
+		if own.isEmpty {
+			return form(style, operand) // greek alpha → α
+		}
+		let base = (operand.unicodeScalars.count > 1 ? name(operand) : nil) ?? operand
+		guard base.unicodeScalars.count == 1, let plain = base.unicodeScalars.first,
+		      let restyled = restyled(by: style, plain) else { return nil }
+		return restyled == base ? String(character) : form(own, restyled)
 	}
 
 	/// One operand: its own entry (red circle → 🔴, greek eta → η), else each character or pair (greek th → θ)
@@ -390,7 +449,15 @@ private final class Conversion {
 				rest = after
 			}
 			let block = words.removeLast()
-			return operands(block, rest, words, at)
+			let effects = words.filter(isEffect)
+			let styles = words.filter { !isEffect($0) }
+			if styles.isEmpty {
+				return operands(block, rest, effects, at)
+			}
+			// <:bold italic A>: the other style words restyle the operands of the last
+			return operands(block, rest, [], at).unicodeScalars.map {
+				restyled(styles, $0, at) + effectSuffixes(effects, $0, at)
+			}.joined()
 		}
 		throw UniscriptError.unknownEntity(content)
 	}
@@ -474,6 +541,16 @@ private func splitOnSpaces(_ text: String) -> [String] {
 }
 
 /// Rust's `split_once`: the text before and after the first separator
+/// Every order of the parts
+private func permutations(_ parts: [String]) -> [[String]] {
+	guard parts.count > 1 else { return [parts] }
+	return parts.indices.flatMap { position -> [[String]] in
+		var rest = parts
+		let first = rest.remove(at: position)
+		return permutations(rest).map { [first] + $0 }
+	}
+}
+
 func splitOnce(_ text: String, _ separator: Unicode.Scalar) -> (String, String)? {
 	let scalars = text.unicodeScalars
 	guard let at = scalars.firstIndex(of: separator) else { return nil }
