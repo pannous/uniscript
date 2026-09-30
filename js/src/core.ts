@@ -18,8 +18,13 @@ const SUFFIX_KEY = "*suffix";
 const FONT_KEY = "font";
 const LANG_KEY = "lang";
 const VALUE_PLACEHOLDER = "{}";
-/** The uniscript version this implementation reads, declared by the header `<:uniscript version="…">` */
+/** The current uniscript version, declared by the header `<:uniscript version="…">`; every later uniscript.org version is read too */
 export const UNISCRIPT_VERSION = "https://uniscript.org/v1";
+/** Every `https://uniscript.org/vN` is read (backwards compatible, a later version as well as the current tables allow) */
+const READ_VERSION = /^https:\/\/uniscript\.org\/v[0-9]+$/;
+
+/** Whether a header version is read without warning: none, or `https://uniscript.org/vN` for any number N */
+export const readsVersion = (version: string): boolean => version === "" || READ_VERSION.test(version);
 const HEADER_OPEN = "<:uniscript";
 const VERSION_ATTRIBUTE = 'version="';
 const ATTRIBUTE_QUOTE = '"';
@@ -509,11 +514,11 @@ export class Uniscript {
 		return out;
 	}
 
-	/** UTF-16 length of the header to skip; a version other than {@link UNISCRIPT_VERSION} warns */
+	/** UTF-16 length of the header to skip; a version that is no uniscript.org version ({@link readsVersion}) warns */
 	#headerEnd(source: string): number {
 		const found = headerOf(source);
 		if (!found) return 0;
-		if (found.version && found.version !== UNISCRIPT_VERSION) this.#warn(`unsupported uniscript version ${found.version}`, 0);
+		if (!readsVersion(found.version)) this.#warn(`unsupported uniscript version ${found.version}`, 0);
 		return found.end;
 	}
 
