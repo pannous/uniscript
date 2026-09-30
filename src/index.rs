@@ -1,7 +1,7 @@
 //! The binary index `entities.idx` (format in README.md): tables of 20-byte records sorted by (hash, key), then a string pool.
 
 use crate::entities::Entities;
-use std::collections::BTreeSet;
+use std::collections::{BTreeSet, HashMap};
 use std::sync::{Mutex, OnceLock};
 
 pub const MAGIC: &[u8; 4] = b"USX1";
@@ -330,15 +330,39 @@ fn build_tables(tables: &[Vec<(String, String)>]) -> Vec<u8> {
 	[header, records, pool].concat()
 }
 
+/// The first code point of each block of Unicode's Blocks.txt (`0370..03FF; Greek and Coptic`)
+pub fn unicode_block_starts(blocks_txt: &str) -> Vec<u32> {
+	let starts = blocks_txt.lines().filter(|line| !line.starts_with('#')).filter_map(|line| line.split("..").next());
+	starts.filter_map(|start| u32::from_str_radix(start.trim(), 16).ok()).collect()
+}
+
+/// What a chunk should not mix with other content when it is large: a character's Unicode block (Egyptian
+/// hieroglyphs, CJK, math alphanumerics), else the first word of the key (`fracture`, `egyptian`, `greek`)
+fn semantic_group(table: Table, key: &str, block_starts: &[u32]) -> u32 {
+	let (group, _) = chunk_order(table, key);
+	match table {
+		Table::Chars => block_starts.partition_point(|&start| start <= group) as u32,
+		_ => group,
+	}
+}
+
 /// The index cut into chunks of about `target_size` bytes: the manifest and the chunks, each a USX1 file with the
-/// entries of one range of [`chunk_order`] in one table. Entries of the same order never straddle two chunks.
-pub fn chunks(index: &Index, target_size: usize) -> (Vec<u8>, Vec<Vec<u8>>) {
+/// entries of one range of [`chunk_order`] in one table. Entries of the same order never straddle two chunks. A semantic
+/// group of a quarter chunk or more (a Unicode block, a block type's operands) starts and ends its own chunks, so a text
+/// in one script or style fetches its chunks and little else; smaller groups share chunks.
+pub fn chunks(index: &Index, target_size: usize, block_starts: &[u32]) -> (Vec<u8>, Vec<Vec<u8>>) {
 	let mut table_fields = Vec::new();
 	let mut starts = Vec::new();
 	let mut chunks = Vec::new();
 	for &table in &TABLES {
 		let mut entries: Vec<(String, String)> = index.entries(table).map(|(key, value)| (key.to_string(), value.to_string())).collect();
 		entries.sort_by(|(a, _), (b, _)| (chunk_order(table, a), a.as_bytes()).cmp(&(chunk_order(table, b), b.as_bytes())));
+		let entry_size = |(key, value): &(String, String)| RECORD_SIZE + key.len() + value.len();
+		let mut group_sizes: HashMap<u32, usize> = HashMap::new();
+		for entry in &entries {
+			*group_sizes.entry(semantic_group(table, &entry.0, block_starts)).or_default() += entry_size(entry);
+		}
+		let is_large = |group: u32| group_sizes[&group] * 4 >= target_size;
 		let first_chunk = chunks.len();
 		let mut current: Vec<(String, String)> = Vec::new();
 		let mut size = 0;
@@ -347,18 +371,22 @@ pub fn chunks(index: &Index, target_size: usize) -> (Vec<u8>, Vec<Vec<u8>>) {
 			tables[table as usize] = std::mem::take(current);
 			chunks.push(build_tables(&tables));
 		};
-		for (key, value) in entries {
-			let order = chunk_order(table, &key);
-			let same_order = current.last().is_some_and(|(last, _)| chunk_order(table, last) == order);
-			if size >= target_size && !same_order {
-				close(&mut current, &mut chunks);
-				size = 0;
+		for entry in entries {
+			let order = chunk_order(table, &entry.0);
+			let group = semantic_group(table, &entry.0, block_starts);
+			if let Some((last, _)) = current.last() {
+				let last_group = semantic_group(table, last, block_starts);
+				let group_edge = last_group != group && (is_large(last_group) || is_large(group));
+				if chunk_order(table, last) != order && (size >= target_size || group_edge) {
+					close(&mut current, &mut chunks);
+					size = 0;
+				}
 			}
 			if current.is_empty() {
 				starts.push(order);
 			}
-			size += RECORD_SIZE + key.len() + value.len();
-			current.push((key, value));
+			size += entry_size(&entry);
+			current.push(entry);
 		}
 		if !current.is_empty() {
 			close(&mut current, &mut chunks);

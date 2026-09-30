@@ -16,6 +16,11 @@ const DEMO_EXAMPLES: [&str; 9] = [
 ];
 const META_EXAMPLE: &str = "<:font cuneiform-hittite>𒀭<:/font> <:color #ff8800 angle 90 A> α 𝔄 <:unknown-name>";
 
+fn cut(index: &Index) -> (Vec<u8>, Vec<Vec<u8>>) {
+	let blocks = std::fs::read_to_string("data/sources/Blocks.txt").unwrap();
+	index::chunks(index, index::CHUNK_TARGET_SIZE, &index::unicode_block_starts(&blocks))
+}
+
 fn whole() -> Index<'static> {
 	Index::new(ENTITIES_INDEX).unwrap()
 }
@@ -23,7 +28,7 @@ fn whole() -> Index<'static> {
 #[test]
 fn every_key_of_every_table_resolves_as_in_the_whole_index() {
 	let whole = whole();
-	let (manifest, chunks) = index::chunks(&whole, index::CHUNK_TARGET_SIZE);
+	let (manifest, chunks) = cut(&whole);
 	let chunked = Index::chunked(&manifest).unwrap();
 	chunks.iter().enumerate().for_each(|(number, chunk)| chunked.add_chunk(number, chunk).unwrap());
 	for table in TABLES {
@@ -39,7 +44,7 @@ fn every_key_of_every_table_resolves_as_in_the_whole_index() {
 
 #[test]
 fn a_lookup_in_a_chunk_not_loaded_finds_nothing_and_names_the_chunk() {
-	let (manifest, chunks) = index::chunks(&whole(), index::CHUNK_TARGET_SIZE);
+	let (manifest, chunks) = cut(&whole());
 	let chunked = Index::chunked(&manifest).unwrap();
 	assert_eq!(chunked.get(index::Table::Names, "alpha"), None);
 	let missing = chunked.take_missing();
@@ -70,7 +75,7 @@ fn load_for(converter: &Uniscript, chunks: &'static [Vec<u8>], text: &str) -> us
 #[test]
 fn conversions_after_loading_the_missing_chunks_equal_those_of_the_whole_index() {
 	let whole = Uniscript::default();
-	let (manifest, chunks) = index::chunks(whole.index(), index::CHUNK_TARGET_SIZE);
+	let (manifest, chunks) = cut(whole.index());
 	let (manifest, chunks): (&'static [u8], &'static [Vec<u8>]) = (manifest.leak(), chunks.leak());
 	let converter = Uniscript::new(Index::chunked(manifest).unwrap());
 	let mut total = 0;

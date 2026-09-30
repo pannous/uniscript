@@ -15,6 +15,7 @@ const DEFAULT_ENTITIES: &str = "data/entities";
 const DEFAULT_INDEX: &str = "data/entities.idx";
 const DEFAULT_CHUNKS: &str = "data/chunks";
 const MANIFEST_FILE: &str = "manifest.usxc";
+const UNICODE_BLOCKS: &str = "data/sources/Blocks.txt";
 const REVERSE_FLAGS: [&str; 2] = ["-r", "--reverse"];
 const STRICT_FLAG: &str = "--strict";
 const HTML_FLAG: &str = "--html";
@@ -106,7 +107,8 @@ fn check(entities_path: &str, index_path: &str) -> Result<(), String> {
 
 fn chunks(index_path: &str, directory: &str) -> Result<(), String> {
 	let data = std::fs::read(index_path).map_err(|e| format!("{index_path}: {e}"))?;
-	let (manifest, chunks) = index::chunks(&Index::new(&data)?, index::CHUNK_TARGET_SIZE);
+	let blocks = std::fs::read_to_string(UNICODE_BLOCKS).map_err(|e| format!("{UNICODE_BLOCKS}: {e}"))?;
+	let (manifest, chunks) = index::chunks(&Index::new(&data)?, index::CHUNK_TARGET_SIZE, &index::unicode_block_starts(&blocks));
 	let write = |name: String, bytes: &[u8]| {
 		let path = std::path::Path::new(directory).join(name);
 		std::fs::write(&path, bytes).map_err(|e| format!("{}: {e}", path.display()))
