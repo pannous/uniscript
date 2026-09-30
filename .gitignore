@@ -9,3 +9,4 @@ intellij/.intellijPlatform
 __pycache__/
 data/chunks/
 probes/publish/swift-consumer/Package.resolved
+probes/finefreq/
