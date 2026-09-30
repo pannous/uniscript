@@ -10,6 +10,7 @@ fun main() {
 	listOf(
 		"\\:alpha" to "α", "<:greek small letter alpha>" to "α", "<:double-R>" to "ℝ", "<:bold italic alpha>" to "𝜶",
 		"<:greek>athos<:/greek>" to "αθοσ", "<:greek>athos<:>" to "αθοσ", "<<::>alpha>" to "<:alpha>",
+		"\\:U+1F60D <:0x1F60D> \\U1F60D" to "😍 😍 😍", "\\:1F60D" to "😍", "\\:bed" to "🛏",
 	).forEach { (source, unicode) -> check(converter.toUnicode(source) == unicode) }
 
 	check(converter.convert("<:fracture 7>").warnings == listOf(Warning("no fracture form of 7", 0)))

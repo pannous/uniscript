@@ -9,6 +9,7 @@ precondition(Uniscript.toUniscript("α 𝔄") == "<:alpha> <:fracture A>")
 for (source, unicode) in [
 	("\\:alpha", "α"), ("<:greek small letter alpha>", "α"), ("<:double-R>", "ℝ"), ("<:bold italic alpha>", "𝜶"),
 	("<:greek>athos<:/greek>", "αθοσ"), ("<:greek>athos<:>", "αθοσ"), ("<<::>alpha>", "<:alpha>"),
+	("\\:U+1F60D <:0x1F60D> \\U1F60D", "😍 😍 😍"), ("\\:1F60D", "😍"), ("\\:bed", "🛏"),
 ] {
 	let converted = try Uniscript.toUnicode(source)
 	precondition(converted == unicode)
