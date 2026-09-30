@@ -1,0 +1,17 @@
+[package]
+name = "uniscript-ffi"
+version = "0.1.0"
+edition = "2021"
+description = "C ABI of the uniscript crate (header c/uniscript.h, C++ wrapper c/uniscript.hpp)"
+license = "MIT"
+publish = false
+
+[lib]
+name = "uniscript_ffi"
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+uniscript = { path = "../.." }
+
+[profile.release]
+panic = "abort"
