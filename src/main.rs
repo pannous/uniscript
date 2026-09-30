@@ -4,6 +4,7 @@
 //! uniscript --html "<:font cuneiform-hittite>𒀭<:/font>"   meta information as <span lang style> instead of TAG sequences
 //! uniscript build [entities/] [entities.idx]   rebuild the index from the readable files
 //! uniscript check [entities/] [entities.idx]   verify both agree
+//! uniscript chunks [entities.idx] [chunks/]    cut the index into chunks loaded on demand (manifest.usxc, <n>.idx)
 
 use std::io::Read;
 use std::process::ExitCode;
@@ -12,6 +13,8 @@ use uniscript::index::{self, Index};
 
 const DEFAULT_ENTITIES: &str = "data/entities";
 const DEFAULT_INDEX: &str = "data/entities.idx";
+const DEFAULT_CHUNKS: &str = "data/chunks";
+const MANIFEST_FILE: &str = "manifest.usxc";
 const REVERSE_FLAGS: [&str; 2] = ["-r", "--reverse"];
 const STRICT_FLAG: &str = "--strict";
 const HTML_FLAG: &str = "--html";
@@ -23,8 +26,9 @@ fn main() -> ExitCode {
 	let result = match arguments.first().map(String::as_str) {
 		Some("build") => build(path_argument(&arguments, 1, DEFAULT_ENTITIES), path_argument(&arguments, 2, DEFAULT_INDEX)),
 		Some("check") => check(path_argument(&arguments, 1, DEFAULT_ENTITIES), path_argument(&arguments, 2, DEFAULT_INDEX)),
+		Some("chunks") => chunks(path_argument(&arguments, 1, DEFAULT_INDEX), path_argument(&arguments, 2, DEFAULT_CHUNKS)),
 		Some("-h" | "--help") => {
-			include_str!("main.rs").lines().take(5).for_each(|line| println!("{}", &line[4..]));
+			include_str!("main.rs").lines().take(6).for_each(|line| println!("{}", &line[4..]));
 			Ok(())
 		}
 		_ => convert(&arguments),
@@ -98,4 +102,24 @@ fn check(entities_path: &str, index_path: &str) -> Result<(), String> {
 	} else {
 		Err(failures.into_iter().take(20).collect::<Vec<_>>().join("\n"))
 	}
+}
+
+fn chunks(index_path: &str, directory: &str) -> Result<(), String> {
+	let data = std::fs::read(index_path).map_err(|e| format!("{index_path}: {e}"))?;
+	let (manifest, chunks) = index::chunks(&Index::new(&data)?, index::CHUNK_TARGET_SIZE);
+	let write = |name: String, bytes: &[u8]| {
+		let path = std::path::Path::new(directory).join(name);
+		std::fs::write(&path, bytes).map_err(|e| format!("{}: {e}", path.display()))
+	};
+	std::fs::create_dir_all(directory).map_err(|e| format!("{directory}: {e}"))?;
+	for entry in std::fs::read_dir(directory).map_err(|e| format!("{directory}: {e}"))?.flatten() {
+		if entry.file_name().to_string_lossy().ends_with(".idx") {
+			std::fs::remove_file(entry.path()).map_err(|e| format!("{}: {e}", entry.path().display()))?;
+		}
+	}
+	write(MANIFEST_FILE.into(), &manifest)?;
+	chunks.iter().enumerate().try_for_each(|(number, chunk)| write(format!("{number}.idx"), chunk))?;
+	let total: usize = chunks.iter().map(Vec::len).sum();
+	println!("wrote {directory}/{MANIFEST_FILE} ({} bytes) and {} chunks ({total} bytes)", manifest.len(), chunks.len());
+	Ok(())
 }

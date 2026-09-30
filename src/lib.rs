@@ -192,6 +192,21 @@ impl<'a> Uniscript<'a> {
 		Uniscript { index, warnings: RefCell::default() }
 	}
 
+	/// The index lookups go to; of a chunked index it lists the chunks a conversion missed
+	pub fn index(&self) -> &Index<'a> {
+		&self.index
+	}
+
+	/// The chunks of a chunked index that converting `text` both ways and rendering it as HTML still needs: a dry run
+	/// in lenient mode. Add them and ask again until nothing is missing, then every conversion of the text is exact.
+	pub fn missing_chunks(&self, text: &str) -> Vec<usize> {
+		let converted = self.convert(text, WarningMode::Lenient).map(|(converted, _)| converted).unwrap_or_default();
+		self.html(&self.meta_runs(&converted).0);
+		self.to_uniscript(text);
+		self.to_uniscript(&converted);
+		self.index.take_missing()
+	}
+
 	/// A converter over an index loaded at runtime (the bytes of `data/entities.idx`)
 	pub fn from_bytes(bytes: &'a [u8]) -> Result<Self, String> {
 		Ok(Uniscript::new(Index::new(bytes)?))

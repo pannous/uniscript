@@ -7,3 +7,4 @@ intellij/.gradle
 intellij/.kotlin
 intellij/.intellijPlatform
 __pycache__/
+data/chunks/

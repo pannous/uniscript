@@ -1,6 +1,8 @@
 //! The binary index `entities.idx` (format in README.md): tables of 20-byte records sorted by (hash, key), then a string pool.
 
 use crate::entities::Entities;
+use std::collections::BTreeSet;
+use std::sync::{Mutex, OnceLock};
 
 pub const MAGIC: &[u8; 4] = b"USX1";
 const HASH_MULTIPLIER: u64 = 31;
@@ -8,6 +10,12 @@ const HASH_MODULUS: u64 = 1 << 32;
 const RECORD_SIZE: usize = 20;
 const HEADER_FIXED: usize = 8;
 const TABLE_ENTRY_SIZE: usize = 8;
+pub const MANIFEST_MAGIC: &[u8; 4] = b"USXC";
+const MANIFEST_FIXED: usize = 12;
+const MANIFEST_TABLE_SIZE: usize = 12;
+const CHUNK_START_SIZE: usize = 8;
+/// Chunks close once they pass this many bytes: small enough for a lookup to fetch little, large enough for few requests
+pub const CHUNK_TARGET_SIZE: usize = 4 * 1024;
 
 /// The tables of the index, in file order
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -28,11 +36,43 @@ pub const TABLES: [Table; 5] = [Table::Names, Table::Chars, Table::Suffixes, Tab
 
 /// `h = (h * 31 + byte) mod 2^32` over the UTF-8 bytes
 pub fn text_hash(text: &str) -> u32 {
-	text.bytes().fold(0u64, |hash, byte| (hash * HASH_MULTIPLIER + byte as u64) % HASH_MODULUS) as u32
+	bytes_hash(text.as_bytes())
 }
 
+fn bytes_hash(bytes: &[u8]) -> u32 {
+	bytes.iter().fold(0u64, |hash, &byte| (hash * HASH_MULTIPLIER + byte as u64) % HASH_MODULUS) as u32
+}
+
+/// Where a key sorts among the chunks of its table: characters by code point (a script's characters share chunks),
+/// names by the hash of their first word (a block's entries `fracture A`, `fracture-B`, `fracture ` share chunks), then by hash
+pub fn chunk_order(table: Table, key: &str) -> (u32, u32) {
+	let group = match table {
+		Table::Chars => key.chars().next().map_or(0, u32::from),
+		_ => text_hash(key.split([' ', '-']).next().unwrap_or(key)),
+	};
+	(group, text_hash(key))
+}
+
+/// Lookups in an index file or in the chunks of a chunked index (format in AGENTS.md)
 pub struct Index<'a> {
+	source: Source<'a>,
+}
+
+enum Source<'a> {
+	Whole(Whole<'a>),
+	Chunked(Chunked<'a>),
+}
+
+/// A complete USX1 file; a chunk is one too
+struct Whole<'a> {
 	data: &'a [u8],
+}
+
+/// The manifest and the chunks loaded so far; a lookup in a chunk not loaded yet finds nothing and records the chunk
+struct Chunked<'a> {
+	manifest: &'a [u8],
+	chunks: Vec<OnceLock<Whole<'a>>>,
+	missing: Mutex<BTreeSet<usize>>,
 }
 
 #[derive(Debug)]
@@ -42,30 +82,29 @@ struct Record {
 	value: (usize, usize),
 }
 
-impl<'a> Index<'a> {
-	pub fn new(data: &'a [u8]) -> Result<Self, String> {
+fn u32_at(data: &[u8], offset: usize) -> u32 {
+	u32::from_le_bytes(data[offset..offset + 4].try_into().expect("4 bytes"))
+}
+
+impl<'a> Whole<'a> {
+	fn new(data: &'a [u8]) -> Result<Self, String> {
 		if data.len() < HEADER_FIXED || &data[..4] != MAGIC {
 			return Err("not a uniscript index (magic USX1 missing)".into());
 		}
-		let index = Index { data };
-		if (index.u32_at(4) as usize) < TABLES.len() {
+		if (u32_at(data, 4) as usize) < TABLES.len() {
 			return Err("uniscript index has too few tables".into());
 		}
-		Ok(index)
-	}
-
-	fn u32_at(&self, offset: usize) -> u32 {
-		u32::from_le_bytes(self.data[offset..offset + 4].try_into().expect("4 bytes"))
+		Ok(Whole { data })
 	}
 
 	fn table_bounds(&self, table: Table) -> (usize, usize) {
 		let entry = HEADER_FIXED + TABLE_ENTRY_SIZE * table as usize;
-		(self.u32_at(entry) as usize, self.u32_at(entry + 4) as usize)
+		(u32_at(self.data, entry) as usize, u32_at(self.data, entry + 4) as usize)
 	}
 
 	fn record(&self, table: Table, position: usize) -> Record {
 		let at = self.table_bounds(table).0 + position * RECORD_SIZE;
-		let field = |n: usize| self.u32_at(at + 4 * n) as usize;
+		let field = |n: usize| u32_at(self.data, at + 4 * n) as usize;
 		Record { hash: field(0) as u32, key: (field(1), field(2)), value: (field(3), field(4)) }
 	}
 
@@ -73,21 +112,12 @@ impl<'a> Index<'a> {
 		std::str::from_utf8(&self.data[offset..offset + length]).expect("index texts are UTF-8")
 	}
 
-	pub fn len(&self, table: Table) -> usize {
+	fn len(&self, table: Table) -> usize {
 		self.table_bounds(table).1
 	}
 
-	pub fn is_empty(&self, table: Table) -> bool {
-		self.len(table) == 0
-	}
-
 	/// Binary search for the first record of the key's hash, then compare keys (hashes may collide)
-	pub fn get(&self, table: Table, key: &str) -> Option<&'a str> {
-		self.entry(table, key).map(|(_, value)| value)
-	}
-
-	/// The stored key and its value
-	pub fn entry(&self, table: Table, key: &str) -> Option<(&'a str, &'a str)> {
+	fn entry(&self, table: Table, key: &str) -> Option<(&'a str, &'a str)> {
 		let wanted = text_hash(key);
 		let count = self.len(table);
 		let (mut low, mut high) = (0, count);
@@ -106,11 +136,151 @@ impl<'a> Index<'a> {
 			.map(|record| (self.text(record.key), self.text(record.value)))
 	}
 
-	pub fn entries(&self, table: Table) -> impl Iterator<Item = (&'a str, &'a str)> + '_ {
+	fn entries(&self, table: Table) -> impl Iterator<Item = (&'a str, &'a str)> + '_ {
 		(0..self.len(table)).map(move |position| {
 			let record = self.record(table, position);
 			(self.text(record.key), self.text(record.value))
 		})
+	}
+}
+
+impl<'a> Chunked<'a> {
+	fn new(manifest: &'a [u8]) -> Result<Self, String> {
+		let header_size = MANIFEST_FIXED + MANIFEST_TABLE_SIZE * TABLES.len();
+		if manifest.len() < MANIFEST_FIXED || &manifest[..4] != MANIFEST_MAGIC || manifest.len() < header_size {
+			return Err("not a uniscript chunk manifest (magic USXC missing)".into());
+		}
+		if (u32_at(manifest, 8) as usize) < TABLES.len() {
+			return Err("uniscript chunk manifest has too few tables".into());
+		}
+		let chunked = Chunked { manifest, chunks: Vec::new(), missing: Mutex::default() };
+		let count = TABLES.iter().map(|&table| chunked.table_chunks(table).end).max().unwrap_or(0);
+		if manifest.len() < chunked.chunk_starts_offset() + count * CHUNK_START_SIZE {
+			return Err("uniscript chunk manifest is truncated".into());
+		}
+		Ok(Chunked { chunks: (0..count).map(|_| OnceLock::new()).collect(), ..chunked })
+	}
+
+	fn table_field(&self, table: Table, field: usize) -> usize {
+		u32_at(self.manifest, MANIFEST_FIXED + MANIFEST_TABLE_SIZE * table as usize + 4 * field) as usize
+	}
+
+	fn table_chunks(&self, table: Table) -> std::ops::Range<usize> {
+		let first = self.table_field(table, 0);
+		first..first + self.table_field(table, 1)
+	}
+
+	fn chunk_starts_offset(&self) -> usize {
+		MANIFEST_FIXED + MANIFEST_TABLE_SIZE * u32_at(self.manifest, 8) as usize
+	}
+
+	fn chunk_start(&self, number: usize) -> (u32, u32) {
+		let at = self.chunk_starts_offset() + CHUNK_START_SIZE * number;
+		(u32_at(self.manifest, at), u32_at(self.manifest, at + 4))
+	}
+
+	/// The chunk whose range holds the key: the last one starting at or before it
+	fn chunk_of(&self, table: Table, key: &str) -> Option<usize> {
+		let chunks = self.table_chunks(table);
+		let order = chunk_order(table, key);
+		let (mut low, mut high) = (chunks.start, chunks.end);
+		while low < high {
+			let middle = (low + high) / 2;
+			if self.chunk_start(middle) <= order {
+				low = middle + 1;
+			} else {
+				high = middle;
+			}
+		}
+		(!chunks.is_empty()).then(|| low.max(chunks.start + 1) - 1)
+	}
+
+	fn entry(&self, table: Table, key: &str) -> Option<(&'a str, &'a str)> {
+		let number = self.chunk_of(table, key)?;
+		match self.chunks[number].get() {
+			Some(chunk) => chunk.entry(table, key),
+			None => {
+				self.missing.lock().expect("missing chunks").insert(number);
+				None
+			}
+		}
+	}
+}
+
+impl<'a> Index<'a> {
+	pub fn new(data: &'a [u8]) -> Result<Self, String> {
+		Ok(Index { source: Source::Whole(Whole::new(data)?) })
+	}
+
+	/// An index over chunks loaded on demand: lookups in chunks not added yet find nothing and are listed by
+	/// [`Index::take_missing`], so a caller can fetch those chunks, [`Index::add_chunk`] them and convert again
+	pub fn chunked(manifest: &'a [u8]) -> Result<Self, String> {
+		Ok(Index { source: Source::Chunked(Chunked::new(manifest)?) })
+	}
+
+	/// The version of the index a chunk manifest was cut from (a hash of its bytes), for cache busting; 0 for a whole index
+	pub fn version(&self) -> u32 {
+		match &self.source {
+			Source::Whole(_) => 0,
+			Source::Chunked(chunked) => u32_at(chunked.manifest, 4),
+		}
+	}
+
+	/// The number of chunks of a chunked index, 0 for a whole one
+	pub fn chunk_count(&self) -> usize {
+		match &self.source {
+			Source::Whole(_) => 0,
+			Source::Chunked(chunked) => chunked.chunks.len(),
+		}
+	}
+
+	/// Adds chunk `number` (the file `<number>.idx` next to the manifest); adding it again changes nothing
+	pub fn add_chunk(&self, number: usize, bytes: &'a [u8]) -> Result<(), String> {
+		let Source::Chunked(chunked) = &self.source else { return Err("not a chunked uniscript index".into()) };
+		let slot = chunked.chunks.get(number).ok_or_else(|| format!("no uniscript index chunk {number}"))?;
+		let _ = slot.set(Whole::new(bytes)?);
+		Ok(())
+	}
+
+	/// The chunks lookups needed since the last call and did not have, in ascending order
+	pub fn take_missing(&self) -> Vec<usize> {
+		match &self.source {
+			Source::Whole(_) => Vec::new(),
+			Source::Chunked(chunked) => std::mem::take(&mut *chunked.missing.lock().expect("missing chunks")).into_iter().collect(),
+		}
+	}
+
+	pub fn len(&self, table: Table) -> usize {
+		match &self.source {
+			Source::Whole(whole) => whole.len(table),
+			Source::Chunked(chunked) => chunked.table_field(table, 2),
+		}
+	}
+
+	pub fn is_empty(&self, table: Table) -> bool {
+		self.len(table) == 0
+	}
+
+	pub fn get(&self, table: Table, key: &str) -> Option<&'a str> {
+		self.entry(table, key).map(|(_, value)| value)
+	}
+
+	/// The stored key and its value
+	pub fn entry(&self, table: Table, key: &str) -> Option<(&'a str, &'a str)> {
+		match &self.source {
+			Source::Whole(whole) => whole.entry(table, key),
+			Source::Chunked(chunked) => chunked.entry(table, key),
+		}
+	}
+
+	/// The entries of a table; of a chunked index only those of the chunks loaded so far
+	pub fn entries(&self, table: Table) -> Box<dyn Iterator<Item = (&'a str, &'a str)> + '_> {
+		match &self.source {
+			Source::Whole(whole) => Box::new(whole.entries(table)),
+			Source::Chunked(chunked) => {
+				Box::new(chunked.table_chunks(table).filter_map(|number| chunked.chunks[number].get()).flat_map(move |chunk| chunk.entries(table)))
+			}
+		}
 	}
 }
 
@@ -121,7 +291,11 @@ fn tables(entities: &Entities) -> [Vec<(String, String)>; 5] {
 
 /// The index bytes of the entities, byte for byte what data/uniscript_index.py builds
 pub fn build(entities: &Entities) -> Vec<u8> {
-	let tables = tables(entities);
+	build_tables(&tables(entities))
+}
+
+/// The index bytes of key, value tables in the order of [`TABLES`]
+fn build_tables(tables: &[Vec<(String, String)>]) -> Vec<u8> {
 	let header_size = HEADER_FIXED + TABLE_ENTRY_SIZE * tables.len();
 	let record_count: usize = tables.iter().map(Vec::len).sum();
 	let pool_start = header_size + record_count * RECORD_SIZE;
@@ -140,7 +314,7 @@ pub fn build(entities: &Entities) -> Vec<u8> {
 	let mut header = MAGIC.to_vec();
 	header.extend((tables.len() as u32).to_le_bytes());
 	let mut records: Vec<u8> = Vec::new();
-	for table in &tables {
+	for table in tables {
 		header.extend(((header_size + records.len()) as u32).to_le_bytes());
 		header.extend((table.len() as u32).to_le_bytes());
 		let mut sorted: Vec<&(String, String)> = table.iter().collect();
@@ -154,6 +328,48 @@ pub fn build(entities: &Entities) -> Vec<u8> {
 		}
 	}
 	[header, records, pool].concat()
+}
+
+/// The index cut into chunks of about `target_size` bytes: the manifest and the chunks, each a USX1 file with the
+/// entries of one range of [`chunk_order`] in one table. Entries of the same order never straddle two chunks.
+pub fn chunks(index: &Index, target_size: usize) -> (Vec<u8>, Vec<Vec<u8>>) {
+	let mut table_fields = Vec::new();
+	let mut starts = Vec::new();
+	let mut chunks = Vec::new();
+	for &table in &TABLES {
+		let mut entries: Vec<(String, String)> = index.entries(table).map(|(key, value)| (key.to_string(), value.to_string())).collect();
+		entries.sort_by(|(a, _), (b, _)| (chunk_order(table, a), a.as_bytes()).cmp(&(chunk_order(table, b), b.as_bytes())));
+		let first_chunk = chunks.len();
+		let mut current: Vec<(String, String)> = Vec::new();
+		let mut size = 0;
+		let close = |current: &mut Vec<(String, String)>, chunks: &mut Vec<Vec<u8>>| {
+			let mut tables = vec![Vec::new(); TABLES.len()];
+			tables[table as usize] = std::mem::take(current);
+			chunks.push(build_tables(&tables));
+		};
+		for (key, value) in entries {
+			let order = chunk_order(table, &key);
+			let same_order = current.last().is_some_and(|(last, _)| chunk_order(table, last) == order);
+			if size >= target_size && !same_order {
+				close(&mut current, &mut chunks);
+				size = 0;
+			}
+			if current.is_empty() {
+				starts.push(order);
+			}
+			size += RECORD_SIZE + key.len() + value.len();
+			current.push((key, value));
+		}
+		if !current.is_empty() {
+			close(&mut current, &mut chunks);
+		}
+		table_fields.extend([first_chunk, chunks.len() - first_chunk, index.len(table)]);
+	}
+	let version = chunks.iter().fold(0u32, |hash, chunk| hash.wrapping_mul(HASH_MULTIPLIER as u32) ^ bytes_hash(chunk));
+	let mut manifest = MANIFEST_MAGIC.to_vec();
+	let words = [version, TABLES.len() as u32].into_iter().chain(table_fields.into_iter().map(|field| field as u32));
+	words.chain(starts.into_iter().flat_map(|(group, hash)| [group, hash])).for_each(|word| manifest.extend(word.to_le_bytes()));
+	(manifest, chunks)
 }
 
 /// Every entry of the entities resolves to the same text in the index; the failures, if any
