@@ -100,6 +100,7 @@ Download them from the [releases](https://github.com/pannous/uniscript/releases)
 Libraries for UniScript are provided for all major programming languages in this repository:
 Swift, Rust, Python, JavaScript/TypeScript, C and C++. The Rust crate is the reference implementation. Swift, TypeScript, Python and C each have a native port of it, and Python and C/C++ also have wrappers around the Rust crate (FFI), with the same API as their native port. For fast web use, we recommend the compiled WebAssembly, as shown in [docs/demo.html](docs/demo.html). All of them pass the same reference cases:
 
+- **Swift** (a direct port, SwiftPM, macOS 13+/iOS 16+): `.package(url: "https://github.com/pannous/uniscript", from: "0.2.0")`, product `Uniscript`; `xcrun swift test`, usage in [Swift](#swift).
 - **C / C++** (Rust-backed, `c/ffi`): header `c/uniscript.h`, header-only C++17 wrapper `c/uniscript.hpp`; `make -C c/ffi test`, usage in [c/ffi/README.md](c/ffi/README.md).
 - **C, native** (C11, no dependencies, `c/native`): the same `c/uniscript.h` and C++ wrapper as `c/ffi`, drop-in interchangeable, index compiled in; `make -C c/native` builds `build/libuniscript.{a,dylib}` and the CLI `build/uniscript`, `make -C c/native test` runs the shared cases under sanitizers.
 - **Rust** (the reference, crate `uniscript`): `cargo add uniscript`, then `uniscript::to_unicode("<:alpha>")`; `cargo test`.

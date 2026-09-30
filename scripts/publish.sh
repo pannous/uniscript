@@ -5,6 +5,7 @@
 #   PyPI       uniscript-rs               (python/ffi, abi3 wheels for macOS universal2, manylinux x86_64/aarch64 + sdist)
 #   npm        @pannous/uniscript         (js/, TypeScript port)
 #   npm        @pannous/uniscript-wasm    (wasm/, the Rust crate in WebAssembly)
+#   SwiftPM    Uniscript                  (Package.swift; git tag v$VERSION + swiftpackageindex.com, smoke-tested only)
 # Publishing needs: `npm login` (user pannous), `cargo login <crates.io token>`, a PyPI token in ~/.pypirc
 # ([pypi] username = __token__, password = pypi-…) or TWINE_USERNAME=__token__ TWINE_PASSWORD=pypi-….
 # Needs maturin, zig (Linux wheels), wasm-pack, rustup targets x86_64/aarch64-unknown-linux-gnu, python -m build, twine.
@@ -74,6 +75,13 @@ for package in @pannous/uniscript @pannous/uniscript-wasm; do
 		const text = lib.toUnicode(process.argv[2]);
 		console.log(text, "|", lib.toUniscript(text));' "$package" "$SMOKE_INPUT")"
 done
+
+step "SwiftPM: Uniscript from a git clone of HEAD (released by a tag, listed on swiftpackageindex.com)"
+git clone --quiet --bare --no-local "file://$ROOT" "$DIST/uniscript.git"
+CONSUMER="$ROOT/probes/publish/swift-consumer"
+rm -rf "$CONSUMER/.build" "$CONSUMER/Package.resolved"
+(cd "$CONSUMER" && xcrun swift build --quiet)
+expect_smoke swift "$("$CONSUMER/.build/debug/Consumer" "$SMOKE_INPUT")"
 
 if ! $PUBLISH; then
 	step "all packages built and smoke-tested in $DIST; run with --publish to upload them"
