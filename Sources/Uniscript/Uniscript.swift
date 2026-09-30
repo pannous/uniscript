@@ -15,8 +15,18 @@ private let escapedColon = "<::>"
 private let fontKey = "font"
 private let langKey = "lang"
 private let valuePlaceholder = "{}"
-/// The uniscript version this implementation reads, declared by the header `<:uniscript version="…">`
+/// The current uniscript version, declared by the header `<:uniscript version="…">`; every later uniscript.org version is read too
 public let uniscriptVersion = "https://uniscript.org/v1"
+/// Every `https://uniscript.org/vN` is read (backwards compatible, a later version as well as the current tables allow)
+private let versionPrefix = "https://uniscript.org/v"
+
+/// Whether a header version is read without warning: none, or `https://uniscript.org/vN` for any number N
+public func readsVersion(_ version: String) -> Bool {
+	guard !version.isEmpty else { return true }
+	guard version.hasPrefix(versionPrefix) else { return false }
+	let number = version.dropFirst(versionPrefix.count)
+	return !number.isEmpty && number.allSatisfy { $0.isASCII && $0.isNumber }
+}
 private let headerOpen = "<:uniscript"
 private let versionAttribute = "version=\""
 private let suffixKey = "*suffix"
@@ -479,10 +489,10 @@ private final class Conversion {
 		throw UniscriptError.unknownEntity(content)
 	}
 
-	/// Bytes of the header to skip; a version other than `uniscriptVersion` warns
+	/// Bytes of the header to skip; a version that is no uniscript.org version (`readsVersion`) warns
 	private func headerLength(_ source: String) -> Int {
 		guard let header = Header(of: source) else { return 0 }
-		if !header.version.isEmpty, header.version != uniscriptVersion { warn("unsupported uniscript version \(header.version)", 0) }
+		if !readsVersion(header.version) { warn("unsupported uniscript version \(header.version)", 0) }
 		return header.length
 	}
 

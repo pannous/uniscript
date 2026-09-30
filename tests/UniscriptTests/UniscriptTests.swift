@@ -121,7 +121,9 @@ final class UniscriptTests: XCTestCase {
 		converts(header + " <:alpha>", " α")
 		converts("<:uniscript><:alpha>", "α")
 		converts("<<::>uniscript version=\"https://uniscript.org/v1\">", header) // the escaped header is text
-		try warns("<:uniscript version=\"https://uniscript.org/v9\">A", "A", "unsupported uniscript version https://uniscript.org/v9", at: 0)
+		// backwards compatible: a later uniscript.org version is read without warning
+		XCTAssertEqual(try Uniscript.convert("<:uniscript version=\"https://uniscript.org/v2\">A", mode: .error).warnings, [])
+		try warns("<:uniscript version=\"https://example.com/v1\">A", "A", "unsupported uniscript version https://example.com/v1", at: 0)
 		fails("x " + header, .unknownEntity("uniscript version=\"https://uniscript.org/v1\""))
 	}
 
