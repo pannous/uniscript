@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"target": "es2023",
+		"lib": ["es2023", "dom"],
+		"types": [],
+		"module": "nodenext",
+		"rewriteRelativeImportExtensions": true,
+		"erasableSyntaxOnly": true,
+		"verbatimModuleSyntax": true,
+		"strict": true,
+		"declaration": true,
+		"rootDir": "src",
+		"outDir": "dist"
+	},
+	"include": ["src"]
+}

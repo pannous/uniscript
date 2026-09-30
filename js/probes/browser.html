@@ -1,0 +1,13 @@
+<!-- Headless browser probe: serve js/ (python3 -m http.server) and open /probes/browser.html; the title reports the result -->
+<meta charset="utf-8">
+<title>pending</title>
+<script type="module">
+import { toUnicode, toUniscript, convert, metaRuns, html } from "../dist/index.js";
+const results = [
+	toUnicode("<:alpha> <:fracture A> \\:infinity") === "α 𝔄 ∞",
+	toUniscript("α 𝔄") === "<:alpha> <:fracture A>",
+	convert("<:fracture 7>").warnings[0]?.message === "no fracture form of 7",
+	html(metaRuns(convert("<:lang ja>直").text).styled) === '<span lang="ja">直</span>',
+];
+document.title = results.every(Boolean) ? "ok" : `failed ${JSON.stringify(results)}`;
+</script>
