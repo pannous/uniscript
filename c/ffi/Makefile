@@ -8,7 +8,7 @@ BUILD := build
 STATIC := $(BUILD)/libuniscript.a
 SHARED := $(BUILD)/libuniscript.$(SHARED_EXTENSION)
 TESTS := ../tests
-FLAGS := -I.. -Wall -Wextra -Wno-missing-field-initializers -Werror -g
+FLAGS := -I.. -Wall -Wextra -Werror -g
 LINK := $(STATIC) -lm $(if $(filter Darwin,$(shell uname)),,-lpthread -ldl)
 
 .PHONY: all test clean rust

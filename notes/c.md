@@ -14,4 +14,4 @@
 - Static linking needs nothing beyond `-lm` on macOS (`--print native-static-libs`: -lSystem -lc -lm); Linux also
   `-lpthread -ldl`.
 - Tests are clean under `leaks --atExit` and `-fsanitize=address,undefined`.
-- `-Wextra` complains about the tables' omitted trailing fields: the tests build with `-Wno-missing-field-initializers`.
+- `-Wextra` complains about the tables' omitted trailing fields: cases.h silences it with a pragma.

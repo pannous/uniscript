@@ -8,6 +8,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* the tables leave out trailing fields (html_case.message) */
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+
 #define HEADER "<:uniscript version=\"https://uniscript.org/v1\">"
 #define SCOTLAND "🏴{gbsct}"
 #define COUNT(table) (sizeof(table) / sizeof(table[0]))
@@ -77,6 +80,8 @@ static const conversion_case converts[] = {
 	{"<:ligature ae>", "æ"}, {"<:reverseInPlace e>", "ɘ"}, {"<:iconic ⚠>", "⚠\uFE0F"},
 	{"<:greek> athos <:/greek>", "αθοσ"}, {"<:greek th ch ps>", "θχψ"}, {"<:greek eta Omega lambda>", "ηΩλ"},
 	{"<:greek a>", "α"},
+	{"<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμοσ"}, {"<:greek a kosmos>", "α κοσμοσ"}, /* spaces next to a word stay */
+	{"<:fracture Hello  World>", "ℌ𝔢𝔩𝔩𝔬  𝔚𝔬𝔯𝔩𝔡"},
 	{"<:red circle>", "🔴"}, {"<:brown heart>", "🤎"}, {"<:red A>", "A\U000E0072"}, {"<:mirror e>", "e\U000E004D"},
 	{"<:mirror 𓀀>", "𓀀\U00013440"},
 	{"<:mirror red A>", "A\U000E0072\U000E004D"}, {"<:red mirror A>", "A\U000E004D\U000E0072"},
