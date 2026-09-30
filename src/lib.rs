@@ -34,8 +34,10 @@ const SUFFIX_KEY: &str = "*suffix";
 const FONT_KEY: &str = "font";
 const LANG_KEY: &str = "lang";
 const VALUE_PLACEHOLDER: &str = "{}";
-/// The uniscript version this implementation reads, declared by the header `<:uniscript version="…">`
+/// The current uniscript version, declared by the header `<:uniscript version="…">`; every later uniscript.org version is read too
 pub const UNISCRIPT_VERSION: &str = "https://uniscript.org/v1";
+/// Every `https://uniscript.org/vN` is read (backwards compatible, a later version as well as the current tables allow)
+const VERSION_PREFIX: &str = "https://uniscript.org/v";
 const HEADER_OPEN: &str = "<:uniscript";
 const VERSION_ATTRIBUTE: &str = "version=\"";
 const ATTRIBUTE_QUOTE: char = '"';
@@ -116,6 +118,11 @@ pub struct Header<'a> {
 	pub version: &'a str,
 	/// bytes of the header and the line break after it
 	pub length: usize,
+}
+
+/// Whether a header version is read without warning: none, or `https://uniscript.org/vN` for any number N
+pub fn reads_version(version: &str) -> bool {
+	version.is_empty() || version.strip_prefix(VERSION_PREFIX).is_some_and(|number| !number.is_empty() && number.bytes().all(|byte| byte.is_ascii_digit()))
 }
 
 /// The header at the start of the source; it is no header anywhere else
@@ -597,10 +604,10 @@ impl<'a> Uniscript<'a> {
 		Ok(out)
 	}
 
-	/// Bytes of the header to skip; a version other than [`UNISCRIPT_VERSION`] warns
+	/// Bytes of the header to skip; a version that is no uniscript.org version ([`reads_version`]) warns
 	fn header_length(&self, source: &str) -> usize {
 		let Some(Header { version, length }) = header(source) else { return 0 };
-		if !version.is_empty() && version != UNISCRIPT_VERSION {
+		if !reads_version(version) {
 			self.warn(format!("unsupported uniscript version {version}"), 0);
 		}
 		length
