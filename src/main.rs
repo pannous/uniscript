@@ -1,6 +1,7 @@
 //! uniscript "<:alpha>"        → α
 //! uniscript -r "α"            → <:alpha>        (--strict: unsupported characters are errors; --lenient: no errors)
 //! echo "<:alpha>" | uniscript → α (stdin when no text is given)
+//! uniscript [-r] /path/file.txt → the file's content converted (arguments starting with / are files)
 //! uniscript --html "<:font cuneiform-hittite>𒀭<:/font>"   meta information as <span lang style> instead of TAG sequences
 //! uniscript build [entities/] [entities.idx]   rebuild the index from the readable files
 //! uniscript check [entities/] [entities.idx]   verify both agree
@@ -25,6 +26,7 @@ const REVERSE_FLAGS: [&str; 2] = ["-r", "--reverse"];
 const STRICT_FLAG: &str = "--strict";
 const HTML_FLAG: &str = "--html";
 const LENIENT_FLAG: &str = "--lenient";
+const FILE_PREFIX: char = '/';
 const FLAGS: [&str; 5] = ["-r", "--reverse", STRICT_FLAG, HTML_FLAG, LENIENT_FLAG];
 
 fn main() -> ExitCode {
@@ -56,7 +58,7 @@ fn convert(arguments: &[String]) -> Result<(), String> {
 	let reverse = arguments.iter().any(|argument| REVERSE_FLAGS.contains(&argument.as_str()));
 	let flag = |wanted: &str| arguments.iter().any(|argument| argument == wanted);
 	let strict = flag(STRICT_FLAG);
-	let words: Vec<&str> = arguments.iter().map(String::as_str).filter(|argument| !FLAGS.contains(argument)).collect();
+	let words: Vec<String> = arguments.iter().filter(|argument| !FLAGS.contains(&argument.as_str())).map(|word| file_content_or_word(word)).collect::<Result<_, _>>()?;
 	let text = if words.is_empty() {
 		let mut input = String::new();
 		std::io::stdin().read_to_string(&mut input).map_err(|e| e.to_string())?;
@@ -89,6 +91,14 @@ fn convert(arguments: &[String]) -> Result<(), String> {
 		println!();
 	}
 	Ok(())
+}
+
+fn file_content_or_word(word: &str) -> Result<String, String> {
+	if word.starts_with(FILE_PREFIX) {
+		std::fs::read_to_string(word).map_err(|e| format!("{word}: {e}"))
+	} else {
+		Ok(word.to_string())
+	}
 }
 
 fn build(entities_path: &str, index_path: &str) -> Result<(), String> {

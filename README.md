@@ -60,15 +60,15 @@ followed by TAG characters (U+E0020…E007E). Any font shows the plain letter. T
   the [wasp](https://github.com/pannous/warp) language, all in this repository. All three read `data/entities.idx`.
   In wasp, `use uniscript` fetches this repository as a package and loads `uniscript.wasp`.
 
-The full specification is [docs/uniscript.md](docs/uniscript.md), a hard link to the
-[uniscript page of the warp wiki](https://github.com/pannous/warp/wiki/uniscript). It covers the representation,
-escaping, the comparison with LaTeX, the Unicode extensions uniscript wishes for, and why controls follow their character.
+The full specification is [docs/uniscript.md](docs/uniscript.md)  
+<!-- , a hard link to the [uniscript page of the warp wiki](https://github.com/pannous/warp/wiki/uniscript). -->
+<!-- It covers the representation, escaping, the comparison with LaTeX, the Unicode extensions uniscript wishes for, and why controls follow their character. -->
 
 ## Try it
 
 Online, two pages:
-- **[pannous.com/uniscript](https://pannous.com/uniscript/)**: the converter with example buttons and a Unicode → uniscript
-  box, running the wasp implementation (`uniscript.wasp`) compiled to WebAssembly by warp.
+- **[pannous.com/uniscript](https://pannous.com/uniscript/)**: the converter with example buttons and a Unicode ⥊ UniScript
+  box, running [[uniscript.wasp]] compiled to WebAssembly by warp.
 - **[pannous.com/uniscript/rust](https://pannous.com/uniscript/rust/)**: [docs/demo.html](docs/demo.html), this Rust crate
   compiled to WebAssembly ([wasm/](wasm/)), with a live editor that renders meta information (fonts, colors, angles) as
   HTML. 
