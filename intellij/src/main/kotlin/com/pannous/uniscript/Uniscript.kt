@@ -15,6 +15,8 @@ private const val CLOSING_SLASH = '/'
 private const val ESCAPED_COLON = "<::>"
 private const val FONT_KEY = "font"
 private const val SUFFIX_KEY = "*suffix"
+/** The block control naming the meta a block becomes where it has no suffix control (`red *meta` → `color red`) */
+private const val META_FALLBACK_KEY = "*meta"
 /** The current uniscript version, declared by the header `<:uniscript version="…">`; every later uniscript.org version is read too */
 const val UNISCRIPT_VERSION = "https://uniscript.org/v1"
 /** Every `https://uniscript.org/vN` is read (backwards compatible, a later version as well as the current tables allow) */
@@ -147,16 +149,26 @@ private class Conversion(val index: EntityIndex, val source: String) {
 		return scripted ?: name("$block $SUFFIX_KEY")
 	}
 
-	/** The control of an effect after one character, "" with a warning when it has none for it */
-	private fun effectSuffix(block: String, character: Int, at: Int): String {
-		suffix(block, character)?.takeIf { it.isNotEmpty() }?.let { return it }
+	/** The control of an effect after one character as (suffix, meta). Without one, a block with a `*meta` fallback
+	 *  (the colors: `red *meta` → `color red`) becomes that attached meta sequence, anything else nothing; both warn. */
+	private fun effectControl(block: String, character: Int, at: Int): Pair<String, String> {
+		suffix(block, character)?.takeIf { it.isNotEmpty() }?.let { return it to "" }
+		val fallback = name("$block $META_FALLBACK_KEY")?.split(' ', limit = 2)?.takeIf { it.size == 2 }
+		if (fallback != null) {
+			val (key, value) = fallback
+			warn("$block on ${character.asText()} kept as $key meta", at)
+			return "" to Meta.Attached(key, value).tags
+		}
 		warn("$block does not apply to ${character.asText()}", at)
-		return ""
+		return "" to ""
 	}
 
-	/** The suffixes of the stacked effect words (`mirror` in `<:mirror red A>`) for one character */
-	private fun effectSuffixes(effects: List<String>, character: Int, at: Int) =
-		effects.joinToString("") { effectSuffix(it, character, at) }
+	/** The suffix controls of the stacked effect words (`mirror` in `<:mirror red A>`) for one character, then the meta
+	 *  sequences of the effects it has no control for: a meta follows the character's suffix controls */
+	private fun effectSuffixes(effects: List<String>, character: Int, at: Int): String {
+		val controls = effects.map { effectControl(it, character, at) }
+		return controls.joinToString("") { it.first } + controls.joinToString("") { it.second }
+	}
 
 	/** One character in a block: its own entry (greek a → α), else followed by the block's suffix; then the effects.
 	 *  A character the block has neither for stays plain, with a warning. */
@@ -166,7 +178,7 @@ private class Conversion(val index: EntityIndex, val source: String) {
 			warn("no $block form of $text", at)
 			text
 		} else {
-			text + effectSuffix(block, character, at)
+			return text + effectSuffixes(listOf(block) + effects, character, at)
 		}
 		return styled + effectSuffixes(effects, character, at)
 	}

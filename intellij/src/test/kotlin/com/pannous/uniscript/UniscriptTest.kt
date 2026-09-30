@@ -65,8 +65,11 @@ class UniscriptTest {
 	fun unsupportedCharactersAndCombinationsWarn() {
 		warns("<:greek c>", "c", "no greek form of c", 0)
 		warns("x <:fracture 7>", "x 7", "no fracture form of 7", 2)
-		warns("<:red 𓀀>", "𓀀", "red does not apply to 𓀀", 0)
-		warns("<:mirror red 狗>", "狗$MIRROR", "red does not apply to 狗", 0)
+		warns("<:left 𓀀>", "𓀀", "left does not apply to 𓀀", 0)
+		// a color the fonts cannot show on a character becomes its color meta, after the character's suffix controls
+		val red = Meta.Attached("color", "red").tags
+		warns("<:red 𓀀>", "𓀀$red", "red on 𓀀 kept as color meta", 0)
+		warns("<:mirror red 狗>", "狗$MIRROR$red", "red on 狗 kept as color meta", 0)
 		warns("<:beside a b>", "ab", "no beside group of a", 0)
 		warns("𓀀 <:greek c>", "𓀀 c", "no greek form of c", 5) // offsets are UTF-8 bytes
 	}
