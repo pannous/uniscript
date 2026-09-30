@@ -10,7 +10,10 @@
 - Same API as js/ (agreed with the TypeScript worker): offsets are UTF-8 byte offsets; modes "warn" | "error" | "lenient".
 - Tests: `tests/cases.test.js` runs the shared `js/test/cases.json`; `tests/api.test.js` covers loading, errors, shapes.
   Not portable: the Rust tests that build a custom index from wasp text (`index::build`, `Entities::parse`).
-- Size: 3.8 MB wasm, 1.3 MB gzipped; 3.65 MB of it is `data/entities.idx` compiled in (`include_bytes!`).
+- Size: 159 KB wasm (69 KB gzipped), code only. The index is loaded at runtime: the root crate's default feature
+  `embedded-index` is off here, `init(index?, wasmSource?)` fetches/reads `wasm/entities.idx` (symlink to
+  data/entities.idx, 3.65 MB, ~1.2 MB gzipped over HTTP) or takes bytes, and `loadIndex` leaks them to `'static`.
+  Before: 3.8 MB with `include_bytes!`. Chunked on-demand loading (uniscript-chunks) plugs into Index and init({chunks}).
 - Speed (probes/wasm_vs_ts_speed.mjs, Node 26): convert + toUniscript of 200 KB uniscript: wasm 60 ms, TypeScript 178 ms.
 - docs/demo.html imports `../wasm/uniscript.js`; it must be served over HTTP (file:// blocks module imports).
   Headless Chrome ignored `local("Uniscript Sans")` for fonts in ~/Library/Fonts, so the page falls back to
