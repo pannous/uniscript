@@ -1,0 +1,24 @@
+[package]
+name = "uniscript-wasm"
+version = "0.1.0"
+edition = "2021"
+description = "Uniscript compiled to WebAssembly: the Rust reference converter for browsers and Node"
+license = "MIT"
+repository = "https://github.com/pannous/uniscript"
+
+# its own workspace root, independent of the reference crate in ..
+[workspace]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+uniscript = { path = ".." }
+wasm-bindgen = "0.2"
+js-sys = "0.3"
+serde = { version = "1", features = ["derive"] }
+serde-wasm-bindgen = "0.6"
+
+[profile.release]
+opt-level = "s"
+lto = true

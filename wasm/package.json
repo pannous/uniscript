@@ -1,0 +1,13 @@
+{
+  "name": "uniscript-wasm",
+  "version": "0.1.0",
+  "description": "Uniscript compiled to WebAssembly: ASCII names for Unicode text (<:alpha> → α) and back",
+  "type": "module",
+  "main": "uniscript.js",
+  "license": "MIT",
+  "files": ["uniscript.js", "pkg/uniscript_wasm.js", "pkg/uniscript_wasm_bg.wasm", "pkg/*.d.ts"],
+  "scripts": {
+    "build": "CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-/opt/cargo} wasm-pack build --target web --release --no-pack",
+    "test": "npm run build && node --test tests/"
+  }
+}
