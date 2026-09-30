@@ -267,16 +267,30 @@ class Uniscript:
                 i += 1
         return "".join(out)
 
+    def _is_letter(self, block: str, token: str) -> bool:
+        """An operand that is one letter of the block: one character, its own entry (greek th, greek eta) or an
+        entity name"""
+        return len(token) == 1 or self._name(f"{block} {token}") is not None or self._name(token) is not None
+
     def _operands(self, block: str, content: str, effects, at: int) -> str:
-        """The space separated operands, spaces dropped, or one operand of several words (egyptian seated man);
-        a group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the
-        script of the first part has"""
+        """The space separated operands, or one operand of several words (egyptian seated man); spaces between
+        letters only separate them, spaces next to a word stay (`<:greek> filosofia kosmos<:/greek>` → φιλοσοφια
+        κοσμοσ); a group (above, beside) joins its parts unstyled with the prefix before or the infix between them
+        that the script of the first part has"""
         phrase = "-".join(content.split())
         if "-" in phrase and self._name(f"{block} {phrase}") is not None:
             return self._operand(block, phrase, effects, at)
         group = self._name(f"{block} *group") is not None
         out, script = [], ""
-        for position, token in enumerate(token for token in content.split(" ") if token):
+        position, spaces, previous_is_letter = 0, 0, True
+        for token in content.split(" "):
+            spaces += 1
+            if not token:
+                continue
+            is_letter = self._is_letter(block, token)
+            if not group and position > 0 and not (previous_is_letter and is_letter):
+                out.append(" " * spaces)
+            spaces, previous_is_letter = 0, is_letter
             named = self._name(token)
             if not group:
                 part = self._operand(block, token, effects, at)
@@ -293,6 +307,7 @@ class Uniscript:
             else:
                 out.append(self._name(f"{block} *infix {script}") or "")
             out.append(part)
+            position += 1
         return "".join(out)
 
     def _tag(self, content: str, at: int) -> str:
