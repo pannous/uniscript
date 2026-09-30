@@ -3,8 +3,7 @@
 # headless Chrome via agent-browser with the installed fonts (Noto Sans Cuneiform, CuneiformNAOutline, Noto Sans CJK).
 set -e
 cd "$(dirname "$0")/.."
-cargo build -q --release
-UNISCRIPT=./target/release/uniscript
+UNISCRIPT="cargo run -q --release --"  # the target dir may be shared (~/.cargo/config.toml)
 escape() { sed 's/&/\&amp;/g;s/</\&lt;/g'; }
 row() { printf '<div class="row"><code>%s</code><span class="out">%s</span></div>\n' "$(printf '%s' "$1" | escape)" "$($UNISCRIPT --html "$1")"; }
 {
