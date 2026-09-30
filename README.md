@@ -79,6 +79,7 @@ Online, two pages:
 cargo install uniscript               # or: cargo install --git https://github.com/pannous/uniscript
 uniscript "<:alpha> <:fracture A>"     # α 𝔄
 uniscript -r "α 𝔄"                     # <:alpha> <:fracture A>
+uniscript /path/notes.txt               # the file's content converted (-r: back to uniscript)
 echo "<:beside 犭 句>" | uniscript      # ⿰犭句 (狗 in the Uniscript CJK font)
 uniscript --html "<:font cuneiform-hittite>𒀭<:/font>"   # <span lang="hit-Xsux" style="font-family: 'UllikummiA', …">𒀭</span>
 uniscript --strict "<:fracture 7>"     # fails: uniscript: no fracture form of 7 at byte 0
