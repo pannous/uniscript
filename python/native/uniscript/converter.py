@@ -15,13 +15,23 @@ from .meta import Font, Meta, MetaRun, Styled, utf8_length
 UNISCRIPT_VERSION = "https://uniscript.org/v1"
 # every https://uniscript.org/vN is read (backwards compatible, a later version as well as the current tables allow)
 READ_VERSION = re.compile(r"https://uniscript\.org/v[0-9]+")
-MARKER = re.compile(r"[<\\]:")
+MARKER = re.compile(r"[<\\]:|\\(?=U[0-9A-Fa-f]{4,8}(?![A-Za-z0-9_-]))")
+# a code point token: U+1F60D, U1F60D, 0x1F60D in any case (1–8 hex digits) or bare 1F60D (4–8, so a mistyped short
+# name stays unknown)
+CODE_POINT = re.compile(r"(?:[Uu]\+?|0[xX])([0-9A-Fa-f]{1,8})|([0-9A-Fa-f]{4,8})")
+# U1F60D after a backslash: \U1F60D, the only marker without a colon, 4–8 hex digits as a whole name token
+UNICODE_ESCAPE = re.compile(r"U([0-9A-Fa-f]{4,8})(?![A-Za-z0-9_-])")
+# a name token after \:; the + of a leading U+ belongs to it
+NAME_TOKEN = re.compile(r"(?:[Uu]\+)?[A-Za-z0-9_-]*")
+MAX_CODE_POINT = 0x10FFFF
+SURROGATES = range(0xD800, 0xE000)
 MARKER_COLON = ":"
 TAG_OPEN = "<"
 SHORT_OPEN = "\\"
 TAG_CLOSE = ">"
 CLOSING_SLASH = "/"
 ESCAPED_COLON = "<::>"
+ESCAPED_UNICODE = "<:U>"
 SUFFIX_KEY = "*suffix"
 # the block control naming the meta a block becomes where it has no suffix control (`red *meta` → `color red`)
 META_FALLBACK_KEY = "*meta"
@@ -87,6 +97,18 @@ def script_of(character: str) -> str:
 
 def is_name_character(character: str) -> bool:
     return character.isascii() and (character.isalnum() or character in "-_")
+
+
+def code_point_value(token: str):
+    """The value of a code point token (`U+1F60D`, `1F60D`), else None"""
+    digits = CODE_POINT.fullmatch(token)
+    return int(digits[1] or digits[2], 16) if digits else None
+
+
+def unicode_escape_at(text: str, position: int):
+    """The hex digits of `\\U1F60D` whose backslash is at `position - 1`, else None"""
+    found = UNICODE_ESCAPE.match(text, position)
+    return found[1] if found else None
 
 
 def is_closing(content: str) -> bool:
@@ -325,6 +347,9 @@ class Uniscript:
         text = self._name(content.replace(" ", "-"))
         if text is not None:
             return text
+        text = self._code_point(content, f"<:{content}>", at)
+        if text is not None:
+            return text
         text = self._meta_tag(content, at)
         if text is not None:
             return text
@@ -394,6 +419,17 @@ class Uniscript:
         self._warn(str(error), at)
         return source
 
+    def _code_point(self, token: str, written: str, at: int):
+        """The character of a code point token (`U+1F60D`, `1F60D`); an invalid one (surrogate, above 10FFFF) warns
+        and stays `written`; None for no code point token"""
+        value = code_point_value(token)
+        if value is None:
+            return None
+        if value <= MAX_CODE_POINT and value not in SURROGATES:
+            return chr(value)
+        self._warn(f"invalid code point U+{value:04X}", at)
+        return written
+
     def _unicode_of(self, source: str, mode: WarningMode) -> str:
         out, block = [], None
         position = self._header_length(source)
@@ -413,10 +449,18 @@ class Uniscript:
             if position >= len(source):
                 break
             rest = source[position:]
+            escaped = unicode_escape_at(rest, 1)
+            if escaped is not None:
+                end = 2 + len(escaped)
+                out.append(self._code_point(escaped, rest[:end], byte_position))
+                advance(end)
+                continue
             if rest.startswith(SHORT_OPEN):
-                name_end = next((i for i in range(2, len(rest)) if not is_name_character(rest[i])), len(rest))
+                name_end = NAME_TOKEN.match(rest, 2).end()
                 name = rest[2:name_end]
                 text = self._name(name)
+                if text is None:
+                    text = self._code_point(name, rest[:name_end], byte_position)
                 out.append(text if text is not None else self._kept(UnknownEntity(name), rest[:name_end], byte_position, mode))
                 advance(name_end)
                 continue
@@ -476,6 +520,10 @@ class Uniscript:
             if character in (TAG_OPEN, SHORT_OPEN) and text.startswith(MARKER_COLON, position):
                 position += 1
                 out.append(character + ESCAPED_COLON)
+                continue
+            if character == SHORT_OPEN and unicode_escape_at(text, position) is not None:
+                position += 1
+                out.append(character + ESCAPED_UNICODE)
                 continue
             emoji_tags = meta.emoji_tags_at(text, position)
             if emoji_tags:
