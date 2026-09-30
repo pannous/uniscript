@@ -3027,5 +3027,5 @@ blocks {
 
 block-aliases {
 	gardiner: egyptian
-	hieroglyph: egyptian
+	hieroglyph: "egyptian anatolian"
 }

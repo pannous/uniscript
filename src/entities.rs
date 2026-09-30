@@ -1,7 +1,8 @@
 //! The readable entity files `data/entities/**/*.wasp`: `name {` opens a table, `}` closes it, one `key: value` per line,
 //! quoted texts with `\u{hex}` escapes. Sections: uniscript, names, latex, html, blocks, block-aliases, fonts, meta.
 //! The files are read in path order and their sections merged, the first entry of a key wins; `unicode/` has one file
-//! per Unicode block (egyptian-hieroglyphs.wasp: its names and the block types egyptian, gardiner, hieroglyph).
+//! per Unicode block (egyptian-hieroglyphs.wasp: its names, the block egyptian and its aliases); an alias naming several blocks
+//! (`hieroglyph: "egyptian anatolian"`) holds the operands of all, the first block holding one wins.
 
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
@@ -99,6 +100,15 @@ impl Ordered {
 	}
 }
 
+/// The operands of several blocks, the first block holding an operand wins: an alias like `hieroglyph: "egyptian anatolian"`
+fn merged_blocks<'a>(blocks: &Table, names: impl Iterator<Item = &'a str>) -> Table {
+	let mut merged = Table::default();
+	for name in names {
+		merged.merge(blocks.table(name).cloned().unwrap_or_default());
+	}
+	merged
+}
+
 fn is_single_character(text: &str) -> bool {
 	text.chars().count() == 1
 }
@@ -169,10 +179,9 @@ impl Entities {
 		let blocks = self.blocks();
 		let mut types: Vec<(String, Table)> = blocks.tables().map(|(name, table)| (name.to_string(), table.clone())).collect();
 		let aliases = self.section(BLOCK_ALIASES);
-		for (alias, block) in aliases.texts() {
+		for (alias, targets) in aliases.texts() {
 			if !types.iter().any(|(name, _)| name == alias) {
-				let table = blocks.table(block).cloned().unwrap_or_default();
-				types.push((alias.to_string(), table));
+				types.push((alias.to_string(), merged_blocks(&blocks, targets.split_whitespace())));
 			}
 		}
 		for (block, table) in blocks.tables() {

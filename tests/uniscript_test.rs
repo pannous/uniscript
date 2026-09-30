@@ -109,6 +109,16 @@ fn hieroglyphs_have_gardiner_numbers_and_descriptions() {
 }
 
 #[test]
+fn hieroglyph_looks_in_every_hieroglyphic_script() {
+	converts("<:anatolian 1>", "\u{14400}");
+	converts("<:luwian 10A>", "\u{1440A}");
+	converts("<:hieroglyph 1>", "\u{14400}");
+	converts("<:hieroglyph A1>", "𓀀");
+	converts("<:hieroglyph seated man>", "𓀀");
+	assert_eq!(to_uniscript("\u{14400}"), "<:anatolian 1>");
+}
+
+#[test]
 fn the_marker_is_escaped_by_single_character_entities() {
 	converts("<:<> <::> <<::>", "< : <:");
 	converts("<:less>:", "<:");

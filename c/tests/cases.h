@@ -94,6 +94,7 @@ static const conversion_case converts[] = {
 	{"<:egyptian A1>", "𓀀"}, {"<:gardiner A1>", "𓀀"}, {"<:hieroglyph A1>", "𓀀"}, {"<:egyptian seated man>", "𓀀"},
 	{"<:egyptian man sitting>", "𓀀"}, {"<:egyptian man-sitting>", "𓀀"},
 	{"<:egyptian> A1 Aa1 <:/egyptian>", " 𓀀 𓐍 "}, {"<:mirror egyptian A1>", "𓀀\U00013440"},
+	{"<:anatolian 1>", "\U00014400"}, {"<:luwian 10A>", "\U0001440A"}, {"<:hieroglyph 1>", "\U00014400"},
 	{"<:<> <::> <<::>", "< : <:"}, {"<:less>:", "<:"},
 	{HEADER "\n<:alpha>\n", "α\n"}, {HEADER " <:alpha>", " α"}, {"<:uniscript><:alpha>", "α"},
 	{"<<::>uniscript version=\"https://uniscript.org/v1\">", HEADER}, /* the escaped header is text */

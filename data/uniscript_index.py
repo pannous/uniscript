@@ -95,10 +95,17 @@ SUFFIX_KEY = "*suffix"  # follows any character without its own entry; "*suffix 
 PREFIX_KEY = "*prefix"  # "*prefix cjk": goes before the parts of a group (an IDS operator)
 GROUP_KEY = "*group"    # the block joins its operands (above, beside) instead of styling them
 INFIX_KEY = "*infix"    # "*infix egyptian": goes between the parts of a group (a hieroglyph joiner)
+META_FALLBACK_KEY = "*meta"  # "color red": the attached meta a block becomes where it has no suffix
 # block type 'egyptian': Gardiner numbers (<:egyptian A1>) and descriptions (<:egyptian seated man>) of the hieroglyphs
 EGYPTIAN_BLOCK = "egyptian"
 EGYPTIAN_HIEROGLYPHS_START = 0x13000
-EGYPTIAN_ALIASES = {"gardiner": EGYPTIAN_BLOCK, "hieroglyph": EGYPTIAN_BLOCK}
+# block type 'anatolian': Laroche numbers (<:anatolian 1>, <:anatolian 10A>) of the Anatolian (Luwian) hieroglyphs
+ANATOLIAN_BLOCK = "anatolian"
+ANATOLIAN_HIEROGLYPHS_START = 0x14400
+ANATOLIAN_NUMBER = re.compile(r"^ANATOLIAN HIEROGLYPH A0*(\d+)([A-Z]*)(?: |$)")  # A010A → 10A, A383 RA OR RI → 383
+# an alias may name several blocks, the first holding an operand wins: hieroglyph looks in every hieroglyphic script
+EGYPTIAN_ALIASES = {"gardiner": EGYPTIAN_BLOCK, "hieroglyph": f"{EGYPTIAN_BLOCK} {ANATOLIAN_BLOCK}"}
+ANATOLIAN_ALIASES = {"luwian": ANATOLIAN_BLOCK}
 GARDINER_NUMBER = re.compile(r"^EGYPTIAN HIEROGLYPH ([A-Z]+?)0*(\d+)([A-Z]*)$")  # A001 → A1, AA001 → Aa1, A014A → A14A
 # more spellings of a description: seated man → man sitting, man seated
 DESCRIPTION_SYNONYMS = [(re.compile(r"^seated-([a-z]+)$"), [r"\1-sitting", r"\1-seated"])]
@@ -317,6 +324,11 @@ def egyptian_block(named):
 	return table
 
 
+def anatolian_block(named):
+	"""Laroche number → hieroglyph"""
+	return {match.group(1) + match.group(2): c for c, n in named if (match := ANATOLIAN_NUMBER.match(n))}
+
+
 def seed_files():
 	"""file path in entities/ → its sections"""
 	named = [(chr(cp), unicodedata.name(chr(cp))) for cp in range(0x110000) if unicodedata.name(chr(cp), None)]
@@ -329,7 +341,7 @@ def seed_files():
 	styles["mirror"][f"{SUFFIX_KEY} egyptian"] = EGYPTIAN_MIRROR
 	del styles["mirror"][f"{SUFFIX_KEY} cjk"]
 	for color, letter in COLORS.items():
-		styles[color] = {SUFFIX_KEY: tag(letter), f"{SUFFIX_KEY} egyptian": "", f"{SUFFIX_KEY} cjk": "", **colored(named, color)}
+		styles[color] = {SUFFIX_KEY: tag(letter), META_FALLBACK_KEY: f"color {color}", f"{SUFFIX_KEY} egyptian": "", f"{SUFFIX_KEY} cjk": "", **colored(named, color)}
 	for block, suffix in VARIATION_SUFFIXES.items():
 		styles[block] = {SUFFIX_KEY: suffix}
 	# groups keep their parts unstyled; a script without prefix or infix cannot be grouped, uniscript warns
@@ -349,6 +361,9 @@ def seed_files():
 	egyptian = files[block_file(chr(EGYPTIAN_HIEROGLYPHS_START), blocks)]
 	egyptian["blocks"] = {EGYPTIAN_BLOCK: egyptian_block(named)}
 	egyptian["block-aliases"] = dict(EGYPTIAN_ALIASES)
+	anatolian = files[block_file(chr(ANATOLIAN_HIEROGLYPHS_START), blocks)]
+	anatolian["blocks"] = {ANATOLIAN_BLOCK: anatolian_block(named)}
+	anatolian["block-aliases"] = dict(ANATOLIAN_ALIASES)
 	return files
 
 
@@ -364,7 +379,7 @@ HEADER = """// Uniscript entities (docs/uniscript.md), the human readable source
 //   latex          unicode-math command names without backslash: <:alpha> <:infty> <:mfrakA>
 //   html           HTML5 entities, backwards compatible but discouraged: <:dopf>
 //   blocks         block types: <:fracture A>, <:greek> a b <:/greek>, <:egyptian A1> <:egyptian seated man>; control
-//                  keys: "*suffix" follows any other character, "*suffix egyptian" a hieroglyph, "*prefix cjk" / "*infix egyptian" go before / between the parts of a group
+//                  keys: "*suffix" follows any other character, "*suffix egyptian" a hieroglyph, "*prefix cjk" / "*infix egyptian" go before / between the parts of a group, "*meta" is the attached meta a block becomes where it has no suffix (colors: "color red")
 //   block-aliases  other names of block types
 //   fonts          font styles: <:font cuneiform-hittite> … <:/font>; lang (BCP 47), families (CSS), features (OpenType)
 //   meta           meta keys (<:color #ff8800 A>, <:font han-japanese> … <:/font>) → CSS declaration, {{}} is the value
@@ -404,7 +419,7 @@ def write_sections(sections, header, path):
 				lines.extend(f"\t\t{key_text(k)}: {quote(v)}" for k, v in table.items())
 				lines.append("\t}")
 		elif section == "block-aliases":
-			lines.extend(f"\t{k}: {v}" for k, v in entries.items())
+			lines.extend(f"\t{k}: {key_text(v)}" for k, v in entries.items())
 		else:
 			lines.extend(f"\t{key_text(k)}: {quote(v)}" for k, v in entries.items())
 		lines.append("}\n")
@@ -467,12 +482,21 @@ def text_hash(text):
 	return value
 
 
+def merged_blocks(blocks, names):
+	"""The operands of several blocks, the first block holding an operand wins"""
+	table = {}
+	for name in names:
+		for operand, text in blocks[name].items():
+			table.setdefault(operand, text)
+	return table
+
+
 def block_types(sections):
 	"""Blocks and their aliases, also within combined blocks: bold-fraktur is bold-fracture"""
 	blocks = dict(sections["blocks"])
 	aliases = sections.get("block-aliases", {})
-	for alias, block in aliases.items():
-		blocks.setdefault(alias, blocks[block])
+	for alias, targets in aliases.items():
+		blocks.setdefault(alias, merged_blocks(sections["blocks"], targets.split()))
 	for block, table in sections["blocks"].items():
 		parts = block.split("-")
 		for position, part in enumerate(parts):
