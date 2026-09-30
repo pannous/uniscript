@@ -2,7 +2,7 @@
   
 **Uniscript** is a **human readable and editable** [unicode](https://en.wikipedia.org/wiki/Unicode) encoding format which only uses ASCII characters to describe code points.  
   
-The constituents of uniscript are **entities** (like `\:alpha` for α) and **block types**.    
+The constituents of uniscript are **entities** (like `\:alpha` for α) and **block types** (like  <:upper A> => ᴬ).    
 
 ## Block types
   
@@ -32,7 +32,8 @@ The full specification is [[docs/uniscript.md]]
 
 ```
 <:alpha> <:fracture Hello> <:double R> \:infinity     →   α ℌ𝔢𝔩𝔩𝔬 ℝ ∞
-<:mirror red R>                                     →   a mirrored red R
+<:red ○> or <:red circle> → 🔴
+<!-- <:mirror red R>                                     →   a mirrored red R  (if renderer supports it) -->
 ```
 
 ![Uniscript examples rendered with Uniscript fonts](docs/demo.png)
@@ -85,14 +86,13 @@ uniscript -r "α 𝔄"                     # <:alpha> <:fracture A>
 uniscript /path/notes.txt               # the file's content converted (-r: back to uniscript)
 echo "<:beside 犭 句>" | uniscript      # ⿰犭句 (狗 in the Uniscript CJK font)
 uniscript --html "<:font cuneiform-hittite>𒀭<:/font>"   # <span lang="hit-Xsux" style="font-family: 'UllikummiA', …">𒀭</span>
-uniscript --strict "<:fracture 7>"     # fails: uniscript: no fracture form of 7 at byte 0
 ```
 
 ## Fonts
-Basic Unicode does **not require special fonts**, and the standard should be backwards compatible so that features not available in the renderer are simply ignored! Whenever the Unicode standard provides a built-in character for some entity or combination, it will be used immediately, so Most of the above examples work out of the box: `<:alpha> <:fracture A>` => `α 𝔄` ...
+Basic Uniscript does **not require special fonts**, and the standard should be backwards compatible so that __features__ not available in the renderer are simply ignored! Whenever the Unicode standard provides a built-in character for some entity or combination, it will be used immediately, so most of the above examples work out of the box: `<:alpha> <:fracture A>` => `α 𝔄` ...
 
 However, the goal of Uniscript is to have a **universal language** to describe any kind of modifications, and for combinations that are not part of standard Unicode, we need some special magic: 
-Some experimental fonts make special tags available directly without requiring HTML.
+Some experimental fonts make special __tags__ available directly without requiring HTML.
 
 Download them from the [releases](https://github.com/pannous/uniscript/releases). Their license is the SIL Open Font License.
 
