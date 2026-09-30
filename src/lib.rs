@@ -77,12 +77,14 @@ impl fmt::Display for Warning {
 	}
 }
 
-/// Whether unsupported characters are warnings (the output keeps them plain) or errors
+/// Whether unsupported characters are warnings (the output keeps them plain) or errors; Lenient also turns errors
+/// (unknown entities, invalid meta values, an unclosed `<:`) into warnings and keeps their uniscript as written
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum WarningMode {
 	#[default]
 	Warn,
 	Error,
+	Lenient,
 }
 
 /// Uniscript → Unicode with the built-in entities; warnings go to stderr
@@ -398,11 +400,20 @@ impl<'a> Uniscript<'a> {
 	/// warning is the error
 	pub fn convert(&self, source: &str, mode: WarningMode) -> Result<(String, Vec<Warning>), Error> {
 		self.warnings.borrow_mut().clear();
-		let text = self.unicode_of(source)?;
+		let text = self.unicode_of(source, mode)?;
 		checked(text, self.warnings.take(), mode)
 	}
 
-	fn unicode_of(&self, source: &str) -> Result<String, Error> {
+	/// The source text of an error, with a warning, in [`WarningMode::Lenient`]; else the error
+	fn kept(&self, error: Error, source: &str, at: usize, mode: WarningMode) -> Result<String, Error> {
+		if mode != WarningMode::Lenient {
+			return Err(error);
+		}
+		self.warn(error.to_string(), at);
+		Ok(source.to_string())
+	}
+
+	fn unicode_of(&self, source: &str, mode: WarningMode) -> Result<String, Error> {
 		let mut out = String::new();
 		let mut block: Option<String> = None;
 		let mut position = self.header_length(source);
@@ -425,10 +436,16 @@ impl<'a> Uniscript<'a> {
 			if rest.starts_with(SHORT_OPEN) {
 				let name_end = rest[2..].find(|c: char| !is_name_character(c)).map_or(rest.len(), |end| end + 2);
 				let name = &rest[2..name_end];
-				out += self.name(name).ok_or_else(|| Error::UnknownEntity(name.to_string()))?;
+				out += &match self.name(name) {
+					Some(text) => text.to_string(),
+					None => self.kept(Error::UnknownEntity(name.to_string()), &rest[..name_end], position, mode)?,
+				};
 				position += name_end;
 			} else {
-				let close = rest[2..].find(TAG_CLOSE).ok_or_else(|| Error::Unclosed(rest.to_string()))? + 2;
+				let Some(close) = rest[2..].find(TAG_CLOSE).map(|close| close + 2) else {
+					out += &self.kept(Error::Unclosed(rest.to_string()), rest, position, mode)?;
+					break;
+				};
 				let content = &rest[2..close];
 				if let Some(key) = content.strip_prefix(CLOSING_SLASH).filter(|key| self.meta_template(key).is_some()) {
 					out += &Meta::Close { key: key.to_string() }.tags();
@@ -437,7 +454,10 @@ impl<'a> Uniscript<'a> {
 				} else if self.is_block(content) {
 					block = Some(content.to_string());
 				} else {
-					out += &self.tag(content, position)?;
+					out += &match self.tag(content, position) {
+						Ok(text) => text,
+						Err(error) => self.kept(error, &rest[..=close], position, mode)?,
+					};
 				}
 				position += close + 1;
 			}

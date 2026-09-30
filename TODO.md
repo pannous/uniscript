@@ -3,6 +3,6 @@
 - TODO: Egyptian Hieroglyphs Extended-A (U+13460…, Unicode 16) have algorithmic names only; give them Gardiner/Unikemet numbers (Unikemet.txt kEH_UniK, kEH_JSesh) in the `egyptian` block.
 - TODO: 151 hieroglyphs have no description in Wikipedia's list (e.g. Aa28…Aa32); only their Gardiner numbers name them.
 - TODO: `swift test` with the swiftly toolchain first on PATH fails (`unknown argument: '-target-arch-variant'` against the Xcode SDK); `xcrun swift test` works.
-- TODO: the converter rejects the spec'd header `<:uniscript version="https://uniscript.org/v1">` ("unknown uniscript entity"); the Sublime plugin skips a leading header line itself, MarkdownPreview's probe fails on it. The library should accept (drop) it.
+- DONE: the converter rejects the spec'd header `<:uniscript version="https://uniscript.org/v1">` ("unknown uniscript entity"); the Sublime plugin skips a leading header line itself, MarkdownPreview's probe fails on it. The library should accept (drop) it.
 - TODO: Sublime plugin: typing the closer `<:/greek>` could convert the whole block on that line; for now blocks need the command.
 - TODO: the Swift package and wasp's lib/uniscript.wasp have no lenient mode yet (Rust: WarningMode::Lenient, `--lenient`: errors become warnings, the faulty uniscript stays as written).
