@@ -58,6 +58,18 @@ For short sequences of entities there is an inline delineation
   
 <:greek> a b g <:/greek> ⩵ α β γ    
   
+# Header
+  
+A uniscript file may declare itself with a header at its very start:    
+  
+`<:uniscript version="https://uniscript.org/v1">`    
+  
+Every implementation (Rust, Swift, Kotlin, wasp, and any future one) recognizes it only as the first bytes of the text,
+converts it and one line break after it (`\n` or `\r\n`) to nothing, and warns about a version it does not read
+(`unsupported uniscript version …`). `<:uniscript>` without a version is accepted too. Anywhere else `<:uniscript …>` is
+an unknown name; written as text it is escaped like every marker: `<<::>uniscript version="https://uniscript.org/v1">`.    
+Renderers may switch on uniscript mode when a file starts with the header or with `<:`.    
+  
 # Closing blocks
   
 blocks are closed by repeating the opening type plus a slash:    
