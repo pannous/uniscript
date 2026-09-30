@@ -47,7 +47,7 @@ followed by TAG characters (U+E0020…E007E). Any font shows the plain letter. T
 
 - **40,000 names**: Unicode 16 character names, LaTeX `unicode-math` commands, HTML5 entities, and uniscript's own names.
 - **Block types**: bold, italic, script, fracture, double-struck, sans, monospace, superscript (`upper`), subscript
-  (`lower`), small capitals, circled, fullwidth, ligatures, phonetic Greek (`<:greek> athos <:/greek>` → αθοσ).
+  (`lower`), small capitals, circled, fullwidth, ligatures, phonetic Greek (`<:greek athos>` → αθοσ, `<:greek> filosofia kosmos<:/greek>` → φιλοσοφια κοσμοσ).
 - **Styles combine** in any word order: `<:bold italic alpha>` → 𝜶, `<:sans bold A>` → 𝗔, `<:fraktur bold A>` → 𝕬.
 - **Effects**: mirror, flip, turn, left, right and 11 colors, which you can stack: `<:mirror red R>`.
 - **Groups**: Egyptian hieroglyph joiners (`<:above 𓀀 𓁐>`) and CJK composition (`<:beside 犭 句>` → 狗).
@@ -178,7 +178,8 @@ plus a walk over all index tables.
 
 - `<:name>` or `\:name`: an entity. Names are case sensitive; spaces may replace hyphens (`<:greek small letter alpha>`).
 - `<:type operands>`: a block type applied to space separated operands; `<:double-d>` works too.
-- `<:type> … <:/type>` or `<:type> … <:>`: a block; spaces inside it only separate operands and are dropped.
+- `<:type> … <:/type>` or `<:type> … <:>`: a block; its text is rendered as written, spaces included. In an inline tag
+  `<:type a b>` the spaces only separate operands and are dropped.
 - Effect words stack: `<:mirror red A>` gives A with the red and the mirror control.
 - Style words stack too: the last styles the operands and the others restyle the result. They use the block that
   combines them in any order (`<:italic bold alpha>` → bold-italic → 𝜶). If no such block exists, they commute

@@ -83,15 +83,15 @@ To support interoperability with xml/html the colon in <:/greek> must NOT be omi
 All spaces surrounding entities are only for visual appeal, are not part of the codepoint stream and will thus not be   rendered in the resulting UTF-8
 representation.    
   
-Inside a block, spaces between single letters only separate them (`<:greek> a b g d <:/greek>` ⩵ αβγδ,
-`<:greek th ch ps>` ⩵ θχψ), while spaces next to a word are text and stay as written:
-`<:greek> filosofia kosmos<:/greek>` ⩵ φιλοσοφια κοσμοσ, `<:fracture Hello World>` ⩵ ℌ𝔢𝔩𝔩𝔬 𝔚𝔬𝔯𝔩𝔡.
-A letter is one character, an operand with its own entry in the block (greek th, greek eta), or an entity name.    
+A full block renders its text as written, every space and line break included:
+`<:greek> filosofia kosmos<:/greek>` ⩵ " φιλοσοφια κοσμοσ", `<:greek> a b g <:/greek>` ⩵ " α β γ ".
+In an inline tag the spaces only separate the operands and are dropped: `<:greek phi chi>` ⩵ φχ,
+`<:greek th ch ps>` ⩵ θχψ.    
   
 # Greek
   
 `greek` transliterates phonetically: a b g d e z i k l m n x o p r s t u f ⩵ α β γ δ ε ζ ι κ λ μ ν ξ ο π ρ σ τ υ φ,  
-the digraphs th ch ps ⩵ θ χ ψ (also inside words: `<:greek> athos <:/greek>` ⩵ αθοσ), and letter names for the rest:  
+the digraphs th ch ps ⩵ θ χ ψ (also inside words: `<:greek athos>` ⩵ αθοσ), and letter names for the rest:  
 `<:greek eta>` ⩵ η, `<:greek Omega>` ⩵ Ω. Letters without a clear Greek counterpart (c h j q v w y) are not guessed:  
 they stay unchanged, with a warning.    
   
@@ -205,7 +205,7 @@ which you can copy, search and paste anywhere.
   select combinations Unicode happens to encode (♡ + brown ⇒ 🤎, but no brown ∑). This is exactly the proliferation   criticized in [[#Fonts]].  
 • **Modes**: LaTeX distinguishes text mode and math mode (`\alpha` fails outside `$…$`, text needs `\textalpha`);   uniscript has one mode.  
 • **Scoping**: LaTeX uses `{…}` groups and `\begin`/`\end` environments; uniscript uses `<:type> … <:/type>` blocks,   deliberately close to XML/HTML.  
-• **Spaces**: in LaTeX math mode spaces are also ignored, but in text mode they are significant; uniscript drops the spaces around entities and between single letters, and keeps those between words.  
+• **Spaces**: in LaTeX math mode spaces are also ignored, but in text mode they are significant; uniscript drops the spaces around entities and between the operands of an inline tag, and keeps those inside a full block.  
 • **Escaping**: LaTeX reserves ten ASCII characters; uniscript reserves only the pair `<:`, so ordinary prose and code   rarely need escaping.  
 • **Round trip**: uniscript → UTF-8 is a pure transformation and can be reversed by a name lookup; LaTeX → PDF   cannot be recovered to source.  
 • **Weight**: LaTeX needs a TeX distribution and fonts to see anything; uniscript needs only a mapping table and any   Unicode capable display.  
