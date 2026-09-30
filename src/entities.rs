@@ -187,7 +187,7 @@ impl Entities {
 		let mut suffixes = Ordered::default();
 		for (block, table) in self.blocks().tables() {
 			for (key, text) in table.texts() {
-				if key.split(' ').next() == Some(SUFFIX_KEY) {
+				if key.split(' ').next() == Some(SUFFIX_KEY) && !text.is_empty() {
 					suffixes.set_default(text, block);
 				}
 			}

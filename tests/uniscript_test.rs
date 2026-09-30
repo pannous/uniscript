@@ -1,6 +1,6 @@
 use uniscript::entities::Entities;
 use uniscript::index::{self, Index};
-use uniscript::{to_unicode, to_uniscript, Error, ENTITIES_INDEX};
+use uniscript::{convert, to_unicode, to_uniscript, Error, Warning, WarningMode, ENTITIES_INDEX};
 
 fn converts(uniscript: &str, unicode: &str) {
 	assert_eq!(to_unicode(uniscript), Ok(unicode.to_string()), "{uniscript}");
@@ -25,13 +25,37 @@ fn block_types_style_their_operands() {
 	converts("<:fracture A>", "𝔄");
 	converts("<:fracture A b c >", "𝔄𝔟𝔠");
 	converts("<:fracture> A b c <:>", "𝔄𝔟𝔠");
-	converts("<:greek> a b c <:/greek>", "αβψ"); // Greek keyboard layout: c is ψ
+	converts("<:greek> a b g d <:/greek>", "αβγδ");
 	converts("<:double d>", "𝕕");
 	converts("<:double-d>", "𝕕");
 	converts("x<:upper a>", "xᵃ");
 	converts("<:ligature ae>", "æ");
 	converts("<:reverseInPlace e>", "ɘ");
 	converts("<:iconic ⚠>", "⚠\u{FE0F}");
+}
+
+#[test]
+fn greek_is_transliterated_phonetically() {
+	converts("<:greek> athos <:/greek>", "αθοσ"); // th is one letter
+	converts("<:greek th ch ps>", "θχψ");
+	converts("<:greek eta Omega lambda>", "ηΩλ");
+}
+
+/// A character or combination without a Unicode counterpart stays plain, with a warning naming it and its position
+fn warns(uniscript: &str, unicode: &str, message: &str, at: usize) {
+	let warning = Warning { message: message.into(), at };
+	assert_eq!(convert(uniscript, WarningMode::Warn), Ok((unicode.to_string(), vec![warning.clone()])), "{uniscript}");
+	assert_eq!(convert(uniscript, WarningMode::Error), Err(Error::Unsupported(warning)), "{uniscript}");
+}
+
+#[test]
+fn unsupported_characters_and_combinations_warn() {
+	warns("<:greek c>", "c", "no greek form of c", 0);
+	warns("x <:fracture 7>", "x 7", "no fracture form of 7", 2);
+	warns("<:red 𓀀>", "𓀀", "red does not apply to 𓀀", 0);
+	warns("<:mirror red 狗>", "狗\u{E004D}", "red does not apply to 狗", 0);
+	warns("<:beside a b>", "ab", "no beside group of a", 0);
+	assert_eq!(convert("<:greek a>", WarningMode::Error), Ok(("α".into(), vec![])));
 }
 
 #[test]
@@ -47,6 +71,7 @@ fn colors_and_geometry_are_suffix_controls() {
 fn effect_words_stack_on_one_operand() {
 	converts("<:mirror red A>", "A\u{E0072}\u{E004D}");
 	converts("<:red mirror A>", "A\u{E004D}\u{E0072}");
+	converts("<:reverse red R>", "R\u{E0072}\u{E004D}"); // reverse is mirror
 	converts("<:mirror red A b>", "A\u{E0072}\u{E004D}b\u{E0072}\u{E004D}");
 	converts("<:mirror red circle>", "🔴\u{E004D}");
 	assert_eq!(to_uniscript("A\u{E0072}\u{E004D} 🔴\u{E004D}"), "<:mirror red A> <:mirror red circle>");

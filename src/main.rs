@@ -1,5 +1,5 @@
 //! uniscript "<:alpha>"        → α
-//! uniscript -r "α"            → <:alpha>
+//! uniscript -r "α"            → <:alpha>        (--strict: unsupported characters are errors, not warnings)
 //! echo "<:alpha>" | uniscript → α (stdin when no text is given)
 //! uniscript build [entities.wasp] [entities.idx]   rebuild the index from the readable file
 //! uniscript check [entities.wasp] [entities.idx]   verify both agree
@@ -12,6 +12,8 @@ use uniscript::index::{self, Index};
 const DEFAULT_ENTITIES: &str = "data/entities.wasp";
 const DEFAULT_INDEX: &str = "data/entities.idx";
 const REVERSE_FLAGS: [&str; 2] = ["-r", "--reverse"];
+const STRICT_FLAG: &str = "--strict";
+const FLAGS: [&str; 3] = ["-r", "--reverse", STRICT_FLAG];
 
 fn main() -> ExitCode {
 	let arguments: Vec<String> = std::env::args().skip(1).collect();
@@ -39,7 +41,8 @@ fn path_argument<'a>(arguments: &'a [String], position: usize, default: &'a str)
 
 fn convert(arguments: &[String]) -> Result<(), String> {
 	let reverse = arguments.iter().any(|argument| REVERSE_FLAGS.contains(&argument.as_str()));
-	let words: Vec<&str> = arguments.iter().map(String::as_str).filter(|argument| !REVERSE_FLAGS.contains(argument)).collect();
+	let strict = arguments.iter().any(|argument| argument == STRICT_FLAG);
+	let words: Vec<&str> = arguments.iter().map(String::as_str).filter(|argument| !FLAGS.contains(argument)).collect();
 	let text = if words.is_empty() {
 		let mut input = String::new();
 		std::io::stdin().read_to_string(&mut input).map_err(|e| e.to_string())?;
@@ -47,7 +50,14 @@ fn convert(arguments: &[String]) -> Result<(), String> {
 	} else {
 		words.join(" ")
 	};
-	let converted = if reverse { uniscript::to_uniscript(&text) } else { uniscript::to_unicode(&text).map_err(|e| e.to_string())? };
+	let converted = if reverse {
+		uniscript::to_uniscript(&text)
+	} else {
+		let mode = if strict { uniscript::WarningMode::Error } else { uniscript::WarningMode::Warn };
+		let (converted, warnings) = uniscript::convert(&text, mode).map_err(|e| e.to_string())?;
+		warnings.iter().for_each(|warning| eprintln!("warning: {warning}"));
+		converted
+	};
 	print!("{converted}");
 	if !converted.ends_with('\n') {
 		println!();
