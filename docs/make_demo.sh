@@ -17,7 +17,7 @@ if [ "${1:-}" = "deploy" ]; then
 	grep -q '"./wasm/uniscript.js"' <<<"$page" || { echo "docs/demo.html no longer imports ../wasm/uniscript.js" >&2; exit 1; }
 	ssh "$SERVER" "mkdir -p $SERVER_DIR/wasm/pkg"
 	ssh "$SERVER" "cat > $SERVER_DIR/index.html" <<<"$page"
-	rsync -aL wasm/uniscript.js wasm/entities.idx "$SERVER:$SERVER_DIR/wasm/"
+	rsync -aL wasm/uniscript.js wasm/chunkFetcher.js wasm/entities.idx "$SERVER:$SERVER_DIR/wasm/"
 	rsync -a --include '*.js' --include '*.wasm' --exclude '*' wasm/pkg/ "$SERVER:$SERVER_DIR/wasm/pkg/"
 	rsync -a --delete data/chunks/ "$SERVER:$SERVER_DIR/chunks/"
 	echo "deployed https://pannous.com/uniscript/rust/"
