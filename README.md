@@ -2,21 +2,21 @@
   
 **Uniscript** is a **human readable and editable** [unicode](https://en.wikipedia.org/wiki/Unicode) encoding format which only uses ASCII characters to describe code points.  
   
-The constituents of uniscript are entities (like `\:alpha` for α) and block types.    
+The constituents of uniscript are **entities** (like `\:alpha` for α) and **block types**.    
 
 ## Block types
   
 Block types influencing the character stream would be    
     
-• languages          (greek a => α)    
-• modifiers          (upper A => ᴬ , italic A => 𝐴 , bold A => 𝝖 bold+italic A => 𝘼 … )    
-• calligraphic hands (fracture A => 𝔄 , double-struck A => 𝔸 … )    
-• ligature           (ligature ae => æ )    
-• colors             (red circle ○ => 🔴, brown heart ♡ => 🤎)    
-• mirroring          (reverseInPlace e => ɘ )    
-• text direction     (phonician a b c => 𐤂 𐤁 𐤀 )    
-• icons              (iconic warning ⚠ => ⚠️ emoji-style U+FE0F )    
-• plain              (undo all styles to ⚠️ => ⚠ 𝐴 => A text-style 0xFE0E )    
+• **languages**       (greek a => α)    
+• **modifiers**     (upper A => ᴬ , italic A => 𝐴 , bold A => 𝝖 bold+italic A => 𝘼 … )    
+• **calligraphic** hands (fracture A => 𝔄 , double-struck A => 𝔸 … )    
+• **ligature**   (ligature ae => æ )    
+• **colors**   (red circle ○ => 🔴, brown heart ♡ => 🤎)    
+• **mirroring**     (reverseInPlace e => ɘ )    
+• **text direction**     (phonician a b c => 𐤂 𐤁 𐤀 )    
+• **icons**   (iconic warning ⚠ => ⚠️ emoji-style U+FE0F )    
+• **plain**  (undo all styles to ⚠️ => ⚠ 𝐴 => A text-style 0xFE0E )    
   
 Uniscript entities are case sensitive    
   
@@ -35,7 +35,7 @@ The full specification is [[docs/uniscript.md]]
 <:mirror red R>                                     →   a mirrored red R
 ```
 
-![Uniscript examples rendered with the Uniscript fonts](docs/demo.png)
+![Uniscript examples rendered with Uniscript fonts](docs/demo.png)
 
 Uniscript is a human-readable spelling of Unicode that uses only ASCII: every character has a name (`<:alpha>`,
 `<:greek small letter alpha>`, `<:dopf>`), every style is a block type (`<:bold …>`, `<:fracture …>`, `<:upper 2>` → ²),
@@ -76,6 +76,10 @@ uniscript --strict "<:fracture 7>"     # fails: uniscript: no fracture form of 7
 ```
 
 ## Fonts
+Basic Unicode does **not require special fonts**, and the standard should be backwards compatible so that features not available in the renderer are simply ignored! Whenever the Unicode standard provides a built-in character for some entity or combination, it will be used immediately, so Most of the above examples work out of the box: `<:alpha> <:fracture A>` => `α 𝔄` ...
+
+However, the goal of Uniscript is to have a **universal language** to describe any kind of modifications, and for combinations that are not part of standard Unicode, we need some special magic: 
+Some experimental fonts make special tags available directly without requiring HTML.
 
 Download them from the [releases](https://github.com/pannous/uniscript/releases). Their license is the SIL Open Font License.
 
@@ -85,9 +89,19 @@ Download them from the [releases](https://github.com/pannous/uniscript/releases)
 | **Uniscript CJK** (from Noto Sans CJK) | IDS composition (⿰犭句 → 狗, 27,688 sequences) and mirror for radicals and the 3,755 most common hanzi |
 | **NewGardinerOmni** (M.-J. Nederhof) | hieroglyph groups with the Unicode 15 joiners and the mirror control U+13440 |
 
-The fonts are built by [`fonts/uniscript_fonts.py`](https://github.com/pannous/warp/tree/main/fonts) in warp. Text
-engines must shape with HarfBuzz or CoreText for the controls to take effect: Chrome, Firefox, Safari, Sublime Text,
-VS Code, and iTerm with ligatures on.
+## Support
+
+Libraries for UniScript are provided for all major programming languages in this repository.   
+Programming languages supporting Uniscript natively are wasp and warp. 
+
+An example native app with built-in support on the Mac: you can use it with Markdown via [MarkdownPreview](https://github.com/pannous/MarkdownPreview)
+
+Future: hopefully this will develop into its very own standard. 
+
+# Header
+Renderers might choose to switch on Uniscript mode when encountering 
+`<:uniscript version="https://uniscript.org/v1">` or `<:` at the start of a file.
+[Warp](https://github.com/pannous/warp/) has built-in support for Uniscript, so all code should be rendered with it. 
 
 ## Use
 
@@ -166,31 +180,6 @@ plus a walk over all index tables.
 | `data/entities.idx` | the binary index built from it, compiled into the library |
 | `data/uniscript_index.py` | seeds `entities.wasp` from the sources (needs Python's `unicodedata` and TeX Live's `unicode-math-table.tex`) |
 
-After editing `entities.wasp`, run `cargo run -- build`; `cargo run -- check` and the tests verify that the index matches.
-The Rust builder and the Python one produce the same bytes.
-
-### Index format
-
-All integers are u32 little endian, offsets from the start of the file.
-
-```
-0    "USX1"                      magic
-4    T                           number of tables (5)
-8    T × (records offset, count)
-…    records                     20 bytes: hash, key offset, key length, value offset, value length
-…    string pool                 UTF-8, deduplicated
-```
-
-Records are sorted by (hash, key bytes), with `hash = (hash * 31 + byte) mod 2^32` over the key's UTF-8 bytes: a lookup is
-a binary search on the hash followed by a byte comparison. Tables: 0 names (`alpha`, `fracture A`, `red *suffix`, a block
-itself as `red `), 1 characters → preferred uniscript, 2 suffix controls → block type, 3 font styles (`han-japanese ` → "",
-`han-japanese lang` → `ja`), 4 meta keys → CSS declaration (`color` → `color: {}`). Readers need at least the tables they
-use: older readers ignore the later tables.
-
-# Header
-Renderers might choose to switch on Uniscript mode when encountering 
-`<:uniscript version="https://uniscript.org/v1">` or `<:` at the start of a file.
-[Warp](https://github.com/pannous/warp/) has built-in support for Uniscript, so all code should be rendered with it. 
 
 ### Block control keys
 
