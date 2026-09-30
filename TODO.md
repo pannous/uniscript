@@ -28,3 +28,7 @@ DONE - C ffi/native: NULL or invalid UTF-8 input fails with UNISCRIPT_INVALID_IN
 - uniscript-py and uniscript-rs both install the module `uniscript`: installing both makes pip overwrite one with the other silently
 - @pannous/uniscript-wasm has no types for its entry uniscript.js (only pkg/uniscript_wasm.d.ts); add a uniscript.d.ts and "types"
 - js/ and wasm/ copy entities.idx over their symlink in prepack: an interrupted npm pack leaves a 3.6 MB regular file that git sees as a type change (restore with `ln -sf ../data/entities.idx entities.idx`)
+- Swift: tag v0.1.0 (9cd9659) is stale (no Meta/styles); release `git tag v0.2.0 && git push origin v0.2.0` (keep Cargo.toml version in step), then submit https://github.com/pannous/uniscript to the Swift Package Index (SwiftPackageIndex/PackageList)
+- Swift: Linux build unverified (podman machine fails: vfkit exited with code 1); Bundle.module + Data(.alwaysMapped) should work on Linux Foundation, SPI will show it
+- Swift: `swift` in PATH is swiftly 6.0.3 and cannot build against the current macOS SDK (Foundation module error); use `xcrun swift`
+- Swift: README Swift section still shows `branch: "main"`; switch to `from: "0.2.0"` once the tag is pushed
