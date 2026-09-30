@@ -84,6 +84,10 @@ impl Ordered {
 		}
 	}
 
+	fn get(&self, key: &str) -> Option<&str> {
+		self.positions.get(key).map(|&position| self.entries[position].1.as_str())
+	}
+
 	fn set(&mut self, key: &str, value: &str) {
 		match self.positions.get(key) {
 			Some(&position) => self.entries[position].1 = value.to_string(),
@@ -215,15 +219,22 @@ impl Entities {
 		for (text, name) in &agreed.entries {
 			chosen.set_default(text, &format!("<:{name}>"));
 		}
+		let mut block_forms = Ordered::default();
 		for (block, table) in self.blocks().tables() {
 			for (operand, text) in table.texts() {
-				if !operand.starts_with(CONTROL_PREFIX) && is_single_character(text) {
-					chosen.set_default(text, &format!("<:{block} {operand}>"));
+				if !operand.starts_with(CONTROL_PREFIX) && is_single_character(text) && chosen.get(text).is_none() {
+					block_forms.set_default(text, &format!("{block} {operand}"));
+					chosen.set_default(text, "");
 				}
 			}
 		}
 		for (name, text) in names.texts() {
 			chosen.set_default(text, &format!("<:{name}>"));
+		}
+		for (text, form) in &block_forms.entries {
+			let (block, operand) = form.split_once(' ').expect("block operand");
+			let spelled = format!("<:{block} {}>", ascii_operand(operand, &chosen));
+			chosen.set(text, &spelled);
 		}
 		chosen.entries.into_iter().filter(|(text, _)| !text.is_ascii()).collect()
 	}
@@ -257,6 +268,15 @@ impl Entities {
 	pub fn meta_entries(&self) -> Vec<(String, String)> {
 		self.section(META).texts().map(|(key, template)| (key.to_string(), template.to_string())).collect()
 	}
+}
+
+/// A block operand spelled in ASCII by its own name: `<:bold alpha>`, not `<:bold α>`
+fn ascii_operand<'a>(operand: &'a str, chosen: &'a Ordered) -> &'a str {
+	let name = match operand.is_ascii() {
+		true => None,
+		false => chosen.get(operand).and_then(|form| form.strip_prefix("<:")?.strip_suffix('>')),
+	};
+	name.filter(|name| !name.is_empty() && !name.contains(' ')).unwrap_or(operand)
 }
 
 /// `key: value` where either side may be quoted

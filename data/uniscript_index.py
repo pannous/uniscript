@@ -64,6 +64,10 @@ NAME_BLOCKS = [
 	("reversed", [r"(.+ )REVERSED (.+)"]),
 	("turned", [r"(.+ )TURNED (.+)"]),
 ]
+# the Unicode decomposition tag of a block's characters: its single code point is the plain character, while names
+# guess wrong (MATHEMATICAL BOLD SMALL ALPHA is Latin ɑ, not α); blocks without one (reversed, turned) go by name
+FONT_VARIANT = "<font>"
+DECOMPOSITION_TAGS = {"upper": "<super>", "lower": "<sub>", "circled": "<circle>", "fullwidth": "<wide>", "squared": "<square>"}
 # Unicode leaves holes in Mathematical Alphanumeric Symbols where a Letterlike Symbol already existed
 LETTERLIKE_HOLES = {("italic", "h"): "PLANCK CONSTANT"}
 # the standard Greek keyboard layout (ELOT 1000 / Windows Greek) as block type 'greek'
@@ -176,19 +180,39 @@ def is_plain(character):
 	return len(character) == 1 and unicodedata.category(character)[0] in PLAIN_CATEGORIES
 
 
+def decomposed_base(character, block):
+	"""The plain character of a compatibility variant, from its Unicode decomposition: 𝛂 is <font> α, ² is <super> 2"""
+	parts = unicodedata.decomposition(character).split()
+	if len(parts) == 2 and parts[0] == DECOMPOSITION_TAGS.get(block, FONT_VARIANT):
+		return chr(int(parts[1], 16))
+	return None
+
+
+def is_font_variant(character):
+	return unicodedata.decomposition(character).startswith(FONT_VARIANT)
+
+
 def styled_blocks(named):
-	blocks = {name: {} for name, _ in NAME_BLOCKS}
+	"""A font variant belongs to the block whose pattern matches its name most specifically (the shortest rest):
+	MATHEMATICAL SANS-SERIF BOLD CAPITAL ALPHA is sans-bold, not sans; other characters to every block that matches"""
+	matches = []
 	for block, patterns in NAME_BLOCKS:
 		for pattern in patterns:
 			compiled = re.compile(pattern + "$")
 			for character, name in named:
 				match = compiled.match(name)
-				if not match:
-					continue
-				rest = "".join(match.groups()).strip()
-				base = plain_character(rest)
-				if base and base != character and is_plain(base) and is_plain(character) and base not in blocks[block]:
-					blocks[block][base] = character
+				if match:
+					matches.append((character, block, "".join(match.groups()).strip()))
+	shortest = {}
+	for character, _, rest in matches:
+		shortest[character] = min(shortest.get(character, len(rest)), len(rest))
+	blocks = {name: {} for name, _ in NAME_BLOCKS}
+	for character, block, rest in matches:
+		if is_font_variant(character) and len(rest) > shortest[character]:
+			continue
+		base = decomposed_base(character, block) or plain_character(rest)
+		if base and base != character and is_plain(base) and is_plain(character) and base not in blocks[block]:
+			blocks[block][base] = character
 	for (block, base), name in LETTERLIKE_HOLES.items():
 		blocks[block].setdefault(base, unicodedata.lookup(name))
 	return blocks
@@ -476,13 +500,23 @@ def reverse_entries(sections):
 		chosen.setdefault(text, f"<:{name}>")
 	for text, name in agreed.items():
 		chosen.setdefault(text, f"<:{name}>")
+	block_forms = {}
 	for block, table in sections["blocks"].items():
 		for operand, text in table.items():
-			if not is_control_key(operand) and len(text) == 1:
-				chosen.setdefault(text, f"<:{block} {operand}>")
+			if not is_control_key(operand) and len(text) == 1 and text not in chosen:
+				block_forms.setdefault(text, (block, operand))
+				chosen.setdefault(text, "")
 	for name, text in sections.get("names", {}).items():
 		chosen.setdefault(text, f"<:{name}>")
+	for text, (block, operand) in block_forms.items():
+		chosen[text] = f"<:{block} {ascii_operand(operand, chosen)}>"
 	return {text: form for text, form in chosen.items() if not text.isascii()}
+
+
+def ascii_operand(operand, chosen):
+	"""A block operand spelled in ASCII by its own name: <:bold alpha>, not <:bold α>"""
+	name = "" if operand.isascii() else chosen.get(operand, "")[2:-1]
+	return name if name and " " not in name else operand
 
 
 def font_entries(sections):
