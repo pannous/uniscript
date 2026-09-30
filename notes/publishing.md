@@ -25,3 +25,19 @@
 - Credentials the user sets up once: `npm login`; `cargo login <token from crates.io/settings/tokens>`; `~/.pypirc`:
   `[pypi]` `username = __token__` `password = pypi-…` (a token from pypi.org/manage/account/token/; the first upload
   needs an account-wide token, a project-scoped one afterwards).
+
+## Release checklist (every package at the version in Cargo.toml, 0.2.0; git tag v0.1.0 is stale and stays)
+
+1. Credentials once: `npm login`, `cargo login <token>`, `~/.pypirc` with `[pypi]` `username = __token__` `password = pypi-…`.
+2. `scripts/publish.sh --publish` (crates.io, PyPI ×2, npm ×2; refuses a dirty tree).
+3. `git tag v0.2.0 && git push origin v0.2.0` (the Swift package is its git tags), then submit the repo at
+   https://github.com/SwiftPackageIndex/PackageList/issues/new/choose.
+4. C: `make -C c/native dist`, `gh release create v0.2.0 c/native/build/uniscript-c-0.2.0.tar.gz`, put its sha256 into
+   `packaging/homebrew/Formula/libuniscript.rb` and `packaging/conan/conandata.yml`; the crate's sha256
+   (`curl -sL https://static.crates.io/crates/uniscript/uniscript-0.2.0.crate | shasum -a 256`) into
+   `packaging/homebrew/Formula/uniscript.rb`; `gh repo create pannous/homebrew-tap --public` and push the Formula/ dir.
+   Details in notes/c-packaging.md.
+5. Editors (notes/intellij.md, notes/sublime.md): first IntelliJ upload by hand on plugins.jetbrains.com
+   (`intellij/build/distributions/uniscript-intellij-0.2.0.zip`), later `PUBLISH_TOKEN=perm:… scripts/publish_editor_plugins.sh --publish`;
+   Sublime: `git tag sublime-0.2.0 && git push origin sublime-0.2.0`,
+   `gh release create sublime-0.2.0 probes/publish/dist/Uniscript.sublime-package`, then a PR to wbond/package_control_channel.

@@ -1,6 +1,6 @@
 [package]
 name = "uniscript-wasm"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "Uniscript compiled to WebAssembly: the Rust reference converter for browsers and Node"
 license = "MIT"

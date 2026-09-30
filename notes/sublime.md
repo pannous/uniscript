@@ -18,12 +18,12 @@
   Package Control 4 (schema 4.0.0) a release can instead be a **GitHub release asset** (`"asset": "Uniscript.sublime-package"`)
   selected by tag prefix (`"tags": "sublime-"`, version = tag minus prefix). So the package ships from this repo:
   `sublime/repository.json` describes it, `scripts/publish_editor_plugins.sh` zips sublime/Uniscript into
-  probes/publish/dist/Uniscript.sublime-package, and a release `sublime-0.1.0` carries it as asset.
+  probes/publish/dist/Uniscript.sublime-package, and a release `sublime-0.2.0` carries it as asset.
 - Users can install at once via *Package Control: Add Repository* with the raw URL of sublime/repository.json. For the
   default channel, add the same package entry (without `$schema`/`schema_version`) to wbond/package_control_channel
   `repository/u.json` (alphabetical) in a PR; reviewers run their checks against the existing release.
 - Alternative if reviewers object to an asset from a multi-purpose repo: a separate repo pannous/sublime-uniscript
-  from `git subtree split --prefix sublime/Uniscript -b sublime-uniscript`, pushed as its main, tagged `0.1.0`, with
+  from `git subtree split --prefix sublime/Uniscript -b sublime-uniscript`, pushed as its main, tagged `0.2.0`, with
   `"details": "https://github.com/pannous/sublime-uniscript"` and `"tags": true`.
 - The package needs no entities.idx: it runs the `uniscript` CLI (index compiled in). The zip is 7 files, 8 KB; it imports
   fine from the zip (`from . import uniscript_cli`), tested by probes/test_sublime_package.py (sublime modules stubbed).

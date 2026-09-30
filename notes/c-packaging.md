@@ -41,10 +41,10 @@ c/ffi (Rust-backed) has no install target on purpose: it exports the same API, a
   and an MSVC path for the index (a generated C array or `#embed`).
 
 ## At a release (user commands)
-1. Tag and GitHub release: `git tag v0.1.0 && git push origin v0.1.0`,
-   `make -C c/native dist` (prints the sha256), `gh release create v0.1.0 c/native/build/uniscript-c-0.1.0.tar.gz`.
+1. Tag and GitHub release: `git tag v0.2.0 && git push origin v0.2.0` (v0.1.0 exists and is stale),
+   `make -C c/native dist` (prints the sha256), `gh release create v0.2.0 c/native/build/uniscript-c-0.2.0.tar.gz`.
 2. Fill the sha256: libuniscript.rb and packaging/conan/conandata.yml get the `make dist` sha (the attached asset is
    that exact file); uniscript.rb gets the crate's after `cargo publish`:
-   `curl -sL https://static.crates.io/crates/uniscript/uniscript-0.1.0.crate | shasum -a 256`.
+   `curl -sL https://static.crates.io/crates/uniscript/uniscript-0.2.0.crate | shasum -a 256`.
 3. Tap: `gh repo create pannous/homebrew-tap --public`, copy packaging/homebrew/Formula into it, push; users run
    `brew install pannous/tap/uniscript pannous/tap/libuniscript`.

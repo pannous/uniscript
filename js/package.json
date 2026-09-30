@@ -1,6 +1,6 @@
 {
 	"name": "@pannous/uniscript",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "Uniscript ⇄ Unicode: type any Unicode character in plain ASCII and style it. A TypeScript port of the Rust reference.",
 	"type": "module",
 	"license": "MIT",

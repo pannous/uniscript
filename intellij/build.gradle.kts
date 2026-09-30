@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.pannous"
-version = "0.1.0"
+version = "0.2.0"
 
 val entitiesIndex = rootDir.resolve("../data/entities.idx")
 val platformLocalPath = providers.gradleProperty("platformLocalPath").get()
@@ -45,7 +45,7 @@ intellijPlatform {
 			url = "https://github.com/pannous/uniscript"
 		}
 		changeNotes = """
-			<p>0.1.0: first release. Uniscript → Unicode and Unicode → Uniscript actions, highlighting of uniscript tags in
+			<p>0.2.0: first release. Uniscript → Unicode and Unicode → Uniscript actions, highlighting of uniscript tags in
 			every file type, folding of each tag to its Unicode.</p>
 		""".trimIndent()
 		ideaVersion {
