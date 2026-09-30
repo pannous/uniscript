@@ -1,10 +1,27 @@
 #!/bin/bash
 # Renders docs/demo.png from docs/demo.html, which converts its examples with the WebAssembly build (wasm/), shown with
 # the Uniscript fonts in headless Chrome via agent-browser. Needs wasm-pack and the fonts in ~/Library/Fonts (Fonts in README.md).
+# Usage: docs/make_demo.sh [deploy]   (deploy: publish the page with the wasm build to https://pannous.com/uniscript/rust/)
+# The deployed page takes its fonts from ../fonts/ as woff2, which warp's web/uniscript/build.sh deploys to /uniscript/.
 set -e
 PORT=8765
+SERVER="pannous.com"
+SERVER_DIR="/var/www/pannous/uniscript/rust"
 cd "$(dirname "$0")/.."
 (cd wasm && npm run -s build >/dev/null)
+
+if [ "${1:-}" = "deploy" ]; then
+	# on the server wasm/ lies next to the page, not in the parent directory as in the repository
+	page="$(sed 's|"\.\./wasm/|"./wasm/|' docs/demo.html)"
+	grep -q '"./wasm/uniscript.js"' <<<"$page" || { echo "docs/demo.html no longer imports ../wasm/uniscript.js" >&2; exit 1; }
+	ssh "$SERVER" "mkdir -p $SERVER_DIR/wasm/pkg"
+	ssh "$SERVER" "cat > $SERVER_DIR/index.html" <<<"$page"
+	rsync -aL wasm/uniscript.js wasm/entities.idx "$SERVER:$SERVER_DIR/wasm/"
+	rsync -a --include '*.js' --include '*.wasm' --exclude '*' wasm/pkg/ "$SERVER:$SERVER_DIR/wasm/pkg/"
+	echo "deployed https://pannous.com/uniscript/rust/"
+	exit
+fi
+
 # the repository, and the installed fonts as /fonts/
 python3 - "$PORT" >/dev/null 2>&1 <<'PYTHON' &
 import http.server, os, sys

@@ -18,3 +18,9 @@
 - docs/demo.html imports `../wasm/uniscript.js`; it must be served over HTTP (file:// blocks module imports).
   Headless Chrome ignored `local("Uniscript Sans")` for fonts in ~/Library/Fonts, so the page falls back to
   `url("../fonts/…")` and docs/make_demo.sh's server maps `/fonts/` to ~/Library/Fonts.
+- Live: https://pannous.com/uniscript/rust/ is docs/demo.html, deployed by `docs/make_demo.sh deploy` (builds wasm/, rewrites
+  the import `../wasm/` to `./wasm/` — a bare `wasm/…` is no valid module specifier — and copies `wasm/uniscript.js`,
+  `entities.idx` (rsync -L, it is a link) and pkg/*.js, *.wasm). Its fonts are the woff2 in /uniscript/fonts/ of the warp
+  page (web/uniscript/build.sh deploy in warp); locally they fall back to the .ttf of ~/Library/Fonts.
+- No deploy script into /var/www/pannous may use `rsync --delete`: on 2026-09-30 the site's ~/dev/webpage/up.sh wiped all of
+  /uniscript/. Stale files on the server have to be removed by hand.

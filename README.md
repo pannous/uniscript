@@ -65,7 +65,12 @@ escaping, the comparison with LaTeX, the Unicode extensions uniscript wishes for
 
 ## Try it
 
-**Online: [pannous.com/uniscript](https://pannous.com/uniscript/)**. The converter there is the wasp implementation compiled to WebAssembly.
+Online, two pages:
+- **[pannous.com/uniscript](https://pannous.com/uniscript/)**: the converter with example buttons and a Unicode → uniscript
+  box, running the wasp implementation (`lib/uniscript.wasp`) compiled to WebAssembly by warp.
+- **[pannous.com/uniscript/rust](https://pannous.com/uniscript/rust/)**: [docs/demo.html](docs/demo.html), this Rust crate
+  compiled to WebAssembly ([wasm/](wasm/)), with a live editor that renders meta information (fonts, colors, angles) as
+  HTML. Redeploy with `docs/make_demo.sh deploy`.
 
 ```sh
 cargo install --git https://github.com/pannous/uniscript
