@@ -9,7 +9,7 @@ const RECORD_SIZE: usize = 20;
 const HEADER_FIXED: usize = 8;
 const TABLE_ENTRY_SIZE: usize = 8;
 
-/// The three tables of the index, in file order
+/// The tables of the index, in file order
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Table {
 	/// name → text; a block entry is `block operand` (`fracture A`, `red *suffix`), a block itself `block ` → ""
@@ -18,9 +18,13 @@ pub enum Table {
 	Chars = 1,
 	/// a suffix control → its block type
 	Suffixes = 2,
+	/// a font style → "", `style field` → value (`cuneiform-hittite lang` → hit-Xsux)
+	Fonts = 3,
+	/// a meta key → its CSS declaration, `{}` the value (`color` → `color: {}`)
+	Meta = 4,
 }
 
-pub const TABLES: [Table; 3] = [Table::Names, Table::Chars, Table::Suffixes];
+pub const TABLES: [Table; 5] = [Table::Names, Table::Chars, Table::Suffixes, Table::Fonts, Table::Meta];
 
 /// `h = (h * 31 + byte) mod 2^32` over the UTF-8 bytes
 pub fn text_hash(text: &str) -> u32 {
@@ -79,6 +83,11 @@ impl<'a> Index<'a> {
 
 	/// Binary search for the first record of the key's hash, then compare keys (hashes may collide)
 	pub fn get(&self, table: Table, key: &str) -> Option<&'a str> {
+		self.entry(table, key).map(|(_, value)| value)
+	}
+
+	/// The stored key and its value
+	pub fn entry(&self, table: Table, key: &str) -> Option<(&'a str, &'a str)> {
 		let wanted = text_hash(key);
 		let count = self.len(table);
 		let (mut low, mut high) = (0, count);
@@ -94,7 +103,7 @@ impl<'a> Index<'a> {
 			.map(|position| self.record(table, position))
 			.take_while(|record| record.hash == wanted)
 			.find(|record| self.text(record.key) == key)
-			.map(|record| self.text(record.value))
+			.map(|record| (self.text(record.key), self.text(record.value)))
 	}
 
 	pub fn entries(&self, table: Table) -> impl Iterator<Item = (&'a str, &'a str)> + '_ {
@@ -105,9 +114,14 @@ impl<'a> Index<'a> {
 	}
 }
 
+/// The entries of each table, in the order of [`TABLES`]
+fn tables(entities: &Entities) -> [Vec<(String, String)>; 5] {
+	[entities.forward_entries(), entities.reverse_entries(), entities.suffix_entries(), entities.font_entries(), entities.meta_entries()]
+}
+
 /// The index bytes of the entities, byte for byte what data/uniscript_index.py builds
 pub fn build(entities: &Entities) -> Vec<u8> {
-	let tables = [entities.forward_entries(), entities.reverse_entries(), entities.suffix_entries()];
+	let tables = tables(entities);
 	let header_size = HEADER_FIXED + TABLE_ENTRY_SIZE * tables.len();
 	let record_count: usize = tables.iter().map(Vec::len).sum();
 	let pool_start = header_size + record_count * RECORD_SIZE;
@@ -144,7 +158,7 @@ pub fn build(entities: &Entities) -> Vec<u8> {
 
 /// Every entry of the entities resolves to the same text in the index; the failures, if any
 pub fn check(entities: &Entities, index: &Index) -> Vec<String> {
-	let expected = [entities.forward_entries(), entities.reverse_entries(), entities.suffix_entries()];
+	let expected = tables(entities);
 	let mut failures = Vec::new();
 	for (table, entries) in TABLES.iter().zip(expected.iter()) {
 		if index.len(*table) != entries.len() {

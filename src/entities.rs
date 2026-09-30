@@ -1,5 +1,5 @@
 //! The readable entity file `entities.wasp`: `name {` opens a table, `}` closes it, one `key: value` per line,
-//! quoted texts with `\u{hex}` escapes. Sections: uniscript, names, latex, html, blocks, block-aliases.
+//! quoted texts with `\u{hex}` escapes. Sections: uniscript, names, latex, html, blocks, block-aliases, fonts, meta.
 
 use std::collections::HashMap;
 
@@ -7,6 +7,8 @@ use std::collections::HashMap;
 const ENTITY_SECTIONS: [&str; 4] = ["uniscript", "names", "latex", "html"];
 const BLOCKS: &str = "blocks";
 const BLOCK_ALIASES: &str = "block-aliases";
+const FONTS: &str = "fonts";
+const META: &str = "meta";
 const CONTROL_PREFIX: char = '*';
 const SUFFIX_KEY: &str = "*suffix";
 
@@ -193,6 +195,23 @@ impl Entities {
 			}
 		}
 		suffixes.entries
+	}
+
+	/// font style → "", `style field` → value
+	pub fn font_entries(&self) -> Vec<(String, String)> {
+		let mut entries = Ordered::default();
+		for (name, table) in self.section(FONTS).tables() {
+			entries.set(&format!("{name} "), "");
+			for (field, value) in table.texts() {
+				entries.set(&format!("{name} {field}"), value);
+			}
+		}
+		entries.entries
+	}
+
+	/// meta key → CSS declaration template
+	pub fn meta_entries(&self) -> Vec<(String, String)> {
+		self.section(META).texts().map(|(key, template)| (key.to_string(), template.to_string())).collect()
 	}
 }
 

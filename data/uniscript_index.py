@@ -23,7 +23,7 @@ MAGIC = b"USX1"
 HASH_MULTIPLIER = 31
 HASH_MODULUS = 1 << 32
 RECORD_FIELDS = 5  # hash, key offset, key length, value offset, value length: all u32 little endian
-TABLE_NAMES = ("names", "chars", "suffixes")  # forward lookup, reverse lookup, suffix control → block type
+TABLE_NAMES = ("names", "chars", "suffixes", "fonts", "meta")  # forward, reverse, suffix control → block type, font styles, meta keys
 
 # sections holding plain entities, earlier ones win when a name occurs twice
 ENTITY_SECTIONS = ("uniscript", "names", "latex", "html")
@@ -87,6 +87,37 @@ GROUP_KEY = "*group"    # the block joins its operands (above, beside) instead o
 INFIX_KEY = "*infix"    # "*infix egyptian": goes between the parts of a group (a hieroglyph joiner)
 PLAIN_CATEGORIES = "LNPS"  # letters, numbers, punctuation, symbols: no marks, controls or separators in block tables
 LETTER_LIGATURES = "AE|DZ|LJ|NJ"  # Unicode calls these LETTER, not LIGATURE
+# font styles for scripts whose glyph form carries meaning but which Unicode unified (wiki/uniscript.md "Font styles"):
+# lang is BCP 47 (a private -x- subtag where no registered one exists), families a CSS font-family fallback list,
+# features OpenType feature tags (CSS font-feature-settings)
+CUNEIFORM_FALLBACK = "Noto Sans Cuneiform"
+FONTS = {
+	"cuneiform-ur3": {"lang": "sux-Xsux-x-ur3", "families": f"CuneiformComposite, {CUNEIFORM_FALLBACK}"},
+	"cuneiform-old-babylonian": {"lang": "akk-Xsux-x-oldbab", "families": f"Santakku, CuneiformOB, {CUNEIFORM_FALLBACK}"},
+	"cuneiform-old-babylonian-monumental": {"lang": "akk-Xsux-x-oldbabm", "families": f"SantakkuM, Santakku, {CUNEIFORM_FALLBACK}"},
+	"cuneiform-neo-assyrian": {"lang": "akk-Xsux-x-neoassyr", "families": f"Assurbanipal, CuneiformNAOutline, Assyrian, {CUNEIFORM_FALLBACK}"},
+	"cuneiform-hittite": {"lang": "hit-Xsux", "families": f"UllikummiA, UllikummiB, UllikummiC, {CUNEIFORM_FALLBACK}"},
+	"cuneiform-archaic": {"lang": "sux-Xsux-x-archaic", "families": f"Akkadian, {CUNEIFORM_FALLBACK}"},
+	"han-japanese": {"lang": "ja", "families": "Noto Sans CJK JP, Hiragino Sans"},
+	"han-simplified": {"lang": "zh-Hans", "families": "Noto Sans CJK SC, PingFang SC"},
+	"han-traditional": {"lang": "zh-Hant", "families": "Noto Sans CJK TC, PingFang TC"},
+	"han-hong-kong": {"lang": "zh-HK", "families": "Noto Sans CJK HK, PingFang HK"},
+	"han-korean": {"lang": "ko", "families": "Noto Sans CJK KR, Apple SD Gothic Neo"},
+	"han-jis78": {"lang": "ja", "families": "Noto Sans CJK JP, Hiragino Sans", "features": "jp78"},
+}
+# meta keys, carried in plain text as TAG sequences (wiki/uniscript.md "Meta information"): key → CSS declaration, {} the value.
+# font also names a font style of FONTS; lang is the HTML lang attribute
+META = {
+	"font": "font-family: {}",
+	"lang": "",
+	"color": "color: {}",
+	"background": "background-color: {}",
+	"angle": "display: inline-block; transform: rotate({}deg)",
+	"size": "font-size: {}",
+	"weight": "font-weight: {}",
+	"style": "font-style: {}",
+	"features": "font-feature-settings: '{}'",
+}
 
 
 def name_key(unicode_name):
@@ -217,6 +248,8 @@ def seed_sections():
 		"html": html_names(),
 		"blocks": blocks,
 		"block-aliases": dict(BLOCK_ALIASES),
+		"fonts": FONTS,
+		"meta": META,
 	}
 
 
@@ -233,6 +266,8 @@ HEADER = """// Uniscript entities (wiki/uniscript.md), the human readable source
 //   blocks         block types: <:fracture A>, <:greek> a b <:/greek>; control keys: "*suffix" follows any other character,
 //                  "*suffix egyptian" a hieroglyph, "*prefix cjk" / "*infix egyptian" go before / between the parts of a group
 //   block-aliases  other names of block types
+//   fonts          font styles: <:font cuneiform-hittite> … <:/font>; lang (BCP 47), families (CSS), features (OpenType)
+//   meta           meta keys (<:color #ff8800 A>, <:font han-japanese> … <:/font>) → CSS declaration, {} is the value
 // Values are quoted text; invisible and combining characters are written \\u{{hex}}.
 """
 
@@ -255,7 +290,7 @@ def write_entities(sections, path):
 	lines = [HEADER.format(unicode=unicodedata.unidata_version)]
 	for section, entries in sections.items():
 		lines.append(f"{section} {{")
-		if section == "blocks":
+		if section in ("blocks", "fonts"):
 			for block, table in entries.items():
 				lines.append(f"\t{block} {{")
 				lines.extend(f"\t\t{key_text(k)}: {quote(v)}" for k, v in table.items())
@@ -350,6 +385,16 @@ def reverse_entries(sections):
 	return {text: form for text, form in chosen.items() if not text.isascii()}
 
 
+def font_entries(sections):
+	"""font style → "", 'style field' → value"""
+	entries = {}
+	for name, table in sections.get("fonts", {}).items():
+		entries[name + " "] = ""
+		for field, value in table.items():
+			entries[f"{name} {field}"] = value
+	return entries
+
+
 def suffix_entries(sections):
 	suffixes = {}
 	for block, table in sections["blocks"].items():
@@ -363,8 +408,12 @@ def is_control_key(key):
 	return key.startswith("*")
 
 
+def index_tables(sections):
+	return [forward_entries(sections), reverse_entries(sections), suffix_entries(sections), font_entries(sections), dict(sections.get("meta", {}))]
+
+
 def build_index(sections):
-	tables = [forward_entries(sections), reverse_entries(sections), suffix_entries(sections)]
+	tables = index_tables(sections)
 	pool, offsets = bytearray(), {}
 
 	def intern(text):
@@ -427,7 +476,7 @@ class Index:
 
 def check(sections, data):
 	index = Index(data)
-	expected = [forward_entries(sections), reverse_entries(sections), suffix_entries(sections)]
+	expected = index_tables(sections)
 	failures = 0
 	for table, entries in enumerate(expected):
 		stored = dict(index.entries(table))

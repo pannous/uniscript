@@ -8,6 +8,8 @@
 //   blocks         block types: <:fracture A>, <:greek> a b <:/greek>; control keys: "*suffix" follows any other character,
 //                  "*suffix egyptian" a hieroglyph, "*prefix cjk" / "*infix egyptian" go before / between the parts of a group
 //   block-aliases  other names of block types
+//   fonts          font styles: <:font cuneiform-hittite> … <:/font>; lang (BCP 47), families (CSS), features (OpenType)
+//   meta           meta keys (<:color #ff8800 A>, <:font han-japanese> … <:/font>) → CSS declaration, {} is the value
 // Values are quoted text; invisible and combining characters are written \u{hex}.
 
 uniscript {
@@ -40199,4 +40201,68 @@ block-aliases {
 	grey: gray
 	emoji: iconic
 	text: plain
+}
+
+fonts {
+	cuneiform-ur3 {
+		lang: "sux-Xsux-x-ur3"
+		families: "CuneiformComposite, Noto Sans Cuneiform"
+	}
+	cuneiform-old-babylonian {
+		lang: "akk-Xsux-x-oldbab"
+		families: "Santakku, CuneiformOB, Noto Sans Cuneiform"
+	}
+	cuneiform-old-babylonian-monumental {
+		lang: "akk-Xsux-x-oldbabm"
+		families: "SantakkuM, Santakku, Noto Sans Cuneiform"
+	}
+	cuneiform-neo-assyrian {
+		lang: "akk-Xsux-x-neoassyr"
+		families: "Assurbanipal, CuneiformNAOutline, Assyrian, Noto Sans Cuneiform"
+	}
+	cuneiform-hittite {
+		lang: "hit-Xsux"
+		families: "UllikummiA, UllikummiB, UllikummiC, Noto Sans Cuneiform"
+	}
+	cuneiform-archaic {
+		lang: "sux-Xsux-x-archaic"
+		families: "Akkadian, Noto Sans Cuneiform"
+	}
+	han-japanese {
+		lang: "ja"
+		families: "Noto Sans CJK JP, Hiragino Sans"
+	}
+	han-simplified {
+		lang: "zh-Hans"
+		families: "Noto Sans CJK SC, PingFang SC"
+	}
+	han-traditional {
+		lang: "zh-Hant"
+		families: "Noto Sans CJK TC, PingFang TC"
+	}
+	han-hong-kong {
+		lang: "zh-HK"
+		families: "Noto Sans CJK HK, PingFang HK"
+	}
+	han-korean {
+		lang: "ko"
+		families: "Noto Sans CJK KR, Apple SD Gothic Neo"
+	}
+	han-jis78 {
+		lang: "ja"
+		families: "Noto Sans CJK JP, Hiragino Sans"
+		features: "jp78"
+	}
+}
+
+meta {
+	font: "font-family: {}"
+	lang: ""
+	color: "color: {}"
+	background: "background-color: {}"
+	angle: "display: inline-block; transform: rotate({}deg)"
+	size: "font-size: {}"
+	weight: "font-weight: {}"
+	style: "font-style: {}"
+	features: "font-feature-settings: '{}'"
 }

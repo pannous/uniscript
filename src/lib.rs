@@ -7,12 +7,16 @@
 //!
 //! Entities (`<:alpha>`, `\:infinity`), block types (`<:fracture A>`, `<:greek> a b <:/greek>`), color and geometry
 //! suffix controls (`<:mirror red A>` → A + TAG r + TAG M), hieroglyph and CJK groups (`<:beside 犭 句>` → ⿰犭句).
-//! All names and block types come from `data/entities.wasp` through its binary index `data/entities.idx`.
+//! Meta information (`<:font cuneiform-hittite> … <:/font>`, `<:color #ff8800 A>`) becomes invisible TAG sequences
+//! ([`meta`]), rendered by the application, e.g. as HTML spans with CSS ([`Uniscript::html`]).
+//! All names, block types, font styles and meta keys come from `data/entities.wasp` through its binary index `data/entities.idx`.
 
 pub mod entities;
 pub mod index;
+pub mod meta;
 
 use index::{Index, Table};
+pub use meta::{Font, Meta, MetaRun, Styled};
 use std::cell::RefCell;
 use std::fmt;
 
@@ -25,6 +29,9 @@ const SHORT_OPEN: char = '\\';
 const TAG_CLOSE: char = '>';
 const CLOSING_SLASH: char = '/';
 const ESCAPED_COLON: &str = "<::>";
+const FONT_KEY: &str = "font";
+const LANG_KEY: &str = "lang";
+const VALUE_PLACEHOLDER: &str = "{}";
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Error {
@@ -34,6 +41,8 @@ pub enum Error {
 	Unclosed(String),
 	/// A warning in [`WarningMode::Error`]
 	Unsupported(Warning),
+	/// `<:key value>` whose value has characters a meta value cannot have (spaces, quotes, `;`, brackets)
+	InvalidMeta(String),
 }
 
 impl fmt::Display for Error {
@@ -42,6 +51,7 @@ impl fmt::Display for Error {
 			Error::UnknownEntity(name) => write!(f, "unknown uniscript entity: {name}"),
 			Error::Unclosed(rest) => write!(f, "unclosed <: at {rest}"),
 			Error::Unsupported(warning) => write!(f, "{warning}"),
+			Error::InvalidMeta(content) => write!(f, "invalid meta value in <:{content}>"),
 		}
 	}
 }
@@ -85,6 +95,13 @@ pub fn convert(source: &str, mode: WarningMode) -> Result<(String, Vec<Warning>)
 /// Unicode → uniscript with the built-in entities; `to_unicode` gives the text back
 pub fn to_uniscript(text: &str) -> String {
 	Uniscript::default().to_uniscript(text)
+}
+
+fn checked<T>(value: T, warnings: Vec<Warning>, mode: WarningMode) -> Result<(T, Vec<Warning>), Error> {
+	match (mode, warnings.first()) {
+		(WarningMode::Error, Some(first)) => Err(Error::Unsupported(first.clone())),
+		_ => Ok((value, warnings)),
+	}
 }
 
 /// A converter over one entity index
@@ -132,6 +149,55 @@ impl<'a> Uniscript<'a> {
 
 	fn is_block(&self, name: &str) -> bool {
 		self.name(&format!("{name} ")).is_some()
+	}
+
+	/// A font style of the entities: `cuneiform-hittite`, `han-japanese`
+	pub fn font(&self, name: &str) -> Option<Font<'a>> {
+		let (key, _) = self.index.entry(Table::Fonts, &format!("{name} "))?;
+		let field = |field: &str| self.index.get(Table::Fonts, &format!("{name} {field}")).unwrap_or("");
+		Some(Font { name: key.trim_end(), lang: field("lang"), families: meta::list(field("families")), features: meta::list(field("features")) })
+	}
+
+	/// The CSS declaration template of a meta key (`color` → `color: {}`)
+	pub fn meta_template(&self, key: &str) -> Option<&'a str> {
+		self.index.get(Table::Meta, key)
+	}
+
+	/// Tagged text → plain text and meta runs; unknown keys and unmatched closes warn
+	pub fn meta_runs(&self, tagged: &str) -> (Styled, Vec<Warning>) {
+		let (styled, mut warnings) = Styled::parse(tagged);
+		let unknown = styled.runs.iter().filter(|run| self.meta_template(&run.key).is_none());
+		warnings.extend(unknown.map(|run| Warning { message: format!("unknown meta key {}", run.key), at: run.at }));
+		warnings.sort_by_key(|warning| warning.at);
+		(styled, warnings)
+	}
+
+	/// HTML of tagged text: each meta run a `<span>` with its lang and CSS; an unknown key becomes a `data-` attribute
+	pub fn html(&self, styled: &Styled) -> String {
+		styled.interleaved(|run| self.span(run), "</span>", meta::escape_html)
+	}
+
+	fn span(&self, run: &MetaRun) -> String {
+		let attribute = |name: &str, value: &str| format!(" {name}=\"{}\"", meta::escape_html(value));
+		let quoted = |items: &[&str]| items.iter().map(|item| format!("'{item}'")).collect::<Vec<_>>().join(", ");
+		let (mut attributes, mut style) = (String::new(), Vec::new());
+		match (run.key.as_str(), self.font(&run.value), self.meta_template(&run.key)) {
+			(FONT_KEY, Some(font), _) => {
+				attributes += &attribute(LANG_KEY, font.lang);
+				style.push(format!("font-family: {}", quoted(&font.families)));
+				if !font.features.is_empty() {
+					style.push(format!("font-feature-settings: {}", quoted(&font.features)));
+				}
+			}
+			(FONT_KEY, None, Some(template)) => style.push(template.replace(VALUE_PLACEHOLDER, &quoted(&[&run.value]))),
+			(LANG_KEY, _, _) => attributes += &attribute(LANG_KEY, &run.value),
+			(_, _, Some(template)) => style.push(template.replace(VALUE_PLACEHOLDER, &run.value)),
+			(key, _, None) => attributes += &attribute(&format!("data-{key}"), &run.value),
+		}
+		if !style.is_empty() {
+			attributes += &attribute("style", &style.join("; "));
+		}
+		format!("<span{attributes}>")
 	}
 
 	fn warn(&self, message: String, at: usize) {
@@ -242,6 +308,9 @@ impl<'a> Uniscript<'a> {
 		if let Some(text) = self.name(&content.replace(' ', "-")) {
 			return Ok(text.to_string());
 		}
+		if let Some(text) = self.meta_tag(content, at)? {
+			return Ok(text);
+		}
 		let split = content.find(' ').or_else(|| content.find('-'));
 		if let Some((first, rest)) = split.map(|position| (&content[..position], &content[position + 1..])) {
 			if self.is_block(first) {
@@ -259,15 +328,49 @@ impl<'a> Uniscript<'a> {
 		Err(Error::UnknownEntity(content.to_string()))
 	}
 
-	/// Uniscript → Unicode and the warnings; in [`WarningMode::Error`] the first warning is the error
+	/// `<:key value …>` with meta keys: `<:font han-japanese>` opens spans, `<:color #ff8800 mirror A>` attaches to each
+	/// character of the rest; None when the content starts with no meta key and value
+	fn meta_tag(&self, content: &str, at: usize) -> Result<Option<String>, Error> {
+		let mut sequences = Vec::new();
+		let mut rest = content.trim_start();
+		while let Some((key, after)) = rest.split_once(' ').filter(|(key, _)| self.meta_template(key).is_some()) {
+			let after = after.trim_start();
+			let (value, after) = after.split_once(' ').unwrap_or((after, ""));
+			if !meta::is_value(value) {
+				return Err(Error::InvalidMeta(content.to_string()));
+			}
+			if key == FONT_KEY && self.font(value).is_none() {
+				self.warn(format!("{value} is no font style of the entities, used as a font family"), at);
+			}
+			sequences.push((key.to_string(), value.to_string()));
+			rest = after.trim_start();
+		}
+		if sequences.is_empty() {
+			return Ok(None);
+		}
+		if rest.is_empty() {
+			return Ok(Some(sequences.into_iter().map(|(key, value)| Meta::Open { key, value }.tags()).collect()));
+		}
+		let attached: String = sequences.into_iter().map(|(key, value)| Meta::Attached { key, value }.tags()).collect();
+		Ok(Some(meta::attach(&self.meta_operands(rest, at)?, &attached)))
+	}
+
+	/// The characters a meta attaches to: a tag content (`mirror A`, `alpha`), else space separated names and texts
+	fn meta_operands(&self, rest: &str, at: usize) -> Result<String, Error> {
+		if let Ok(text) = self.tag(rest, at) {
+			return Ok(text);
+		}
+		let is_name = |token: &str| token.len() > 1 && token.chars().all(is_name_character);
+		let token = |token: &str| if is_name(token) { self.tag(token, at) } else { Ok(token.to_string()) };
+		rest.split(' ').filter(|token| !token.is_empty()).map(token).collect()
+	}
+
+	/// Uniscript → Unicode (meta information as TAG sequences) and the warnings; in [`WarningMode::Error`] the first
+	/// warning is the error
 	pub fn convert(&self, source: &str, mode: WarningMode) -> Result<(String, Vec<Warning>), Error> {
 		self.warnings.borrow_mut().clear();
 		let text = self.unicode_of(source)?;
-		let warnings = self.warnings.take();
-		match (mode, warnings.first()) {
-			(WarningMode::Error, Some(first)) => Err(Error::Unsupported(first.clone())),
-			_ => Ok((text, warnings)),
-		}
+		checked(text, self.warnings.take(), mode)
 	}
 
 	fn unicode_of(&self, source: &str) -> Result<String, Error> {
@@ -298,7 +401,9 @@ impl<'a> Uniscript<'a> {
 			} else {
 				let close = rest[2..].find(TAG_CLOSE).ok_or_else(|| Error::Unclosed(rest.to_string()))? + 2;
 				let content = &rest[2..close];
-				if is_closing(content) {
+				if let Some(key) = content.strip_prefix(CLOSING_SLASH).filter(|key| self.meta_template(key).is_some()) {
+					out += &Meta::Close { key: key.to_string() }.tags();
+				} else if is_closing(content) {
 					block = None;
 				} else if self.is_block(content) {
 					block = Some(content.to_string());
@@ -322,30 +427,56 @@ impl<'a> Uniscript<'a> {
 		format!("<:{} {inner}>", blocks.join(" "))
 	}
 
+	/// Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A>`
 	pub fn to_uniscript(&self, text: &str) -> String {
 		let mut out = String::new();
-		let mut characters = text.chars().peekable();
-		while let Some(character) = characters.next() {
-			if matches!(character, TAG_OPEN | SHORT_OPEN) && characters.peek() == Some(&MARKER_COLON) {
-				characters.next();
+		let mut rest = text;
+		let known = |(meta, length): (Meta, usize)| self.meta_template(meta.key()).is_some().then_some((meta, length));
+		while let Some(character) = rest.chars().next() {
+			if let Some((meta, length)) = meta::meta_at(rest).and_then(known).filter(|(meta, _)| !matches!(meta, Meta::Attached { .. })) {
+				out += &meta.uniscript();
+				rest = &rest[length..];
+				continue;
+			}
+			rest = &rest[character.len_utf8()..];
+			if matches!(character, TAG_OPEN | SHORT_OPEN) && rest.starts_with(MARKER_COLON) {
+				rest = &rest[1..];
 				out.push(character);
 				out += ESCAPED_COLON;
 				continue;
 			}
+			if let Some(length) = meta::emoji_tags_at(rest) {
+				out += &self.spelled(character, &[]);
+				out += &rest[..length]; // emoji tag sequences (subdivision flags) stay as they are
+				rest = &rest[length..];
+				continue;
+			}
 			// suffixes s1 s2 … are spelled "s2 … s1": the last word styles first, the others follow in order
 			let mut suffixes: Vec<&str> = Vec::new();
-			while let Some(block) = characters.peek().and_then(|next| {
+			while let Some((next, block)) = rest.chars().next().and_then(|next| {
 				let mut buffer = [0; 4];
-				self.index.get(Table::Suffixes, next.encode_utf8(&mut buffer))
+				self.index.get(Table::Suffixes, next.encode_utf8(&mut buffer)).map(|block| (next, block))
 			}) {
 				suffixes.push(block);
-				characters.next();
+				rest = &rest[next.len_utf8()..];
 			}
 			if !suffixes.is_empty() {
 				let first = suffixes.remove(0);
 				suffixes.push(first);
 			}
-			out += &self.spelled(character, &suffixes);
+			let mut attached = Vec::new();
+			while let Some((meta, length)) = meta::meta_at(rest).and_then(known).filter(|(meta, _)| matches!(meta, Meta::Attached { .. })) {
+				attached.push(meta.uniscript());
+				rest = &rest[length..];
+			}
+			let spelled = self.spelled(character, &suffixes);
+			out += &match attached.join(" ") {
+				metas if metas.is_empty() => spelled,
+				metas => match spelled.strip_prefix("<:").and_then(|form| form.strip_suffix(TAG_CLOSE)) {
+					Some(form) => format!("<:{metas} {form}>"),
+					None => format!("<:{metas} {spelled}>"),
+				},
+			};
 		}
 		out
 	}
