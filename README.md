@@ -22,6 +22,9 @@ followed by TAG characters (U+E0020…E007E). Any font shows the plain letter. T
   (`lower`), small capitals, circled, fullwidth, ligatures, phonetic Greek (`<:greek> athos <:/greek>` → αθοσ).
 - **Effects**: mirror, flip, turn, left, right and 11 colors, which you can stack: `<:mirror red R>`.
 - **Groups**: Egyptian hieroglyph joiners (`<:above 𓀀 𓁐>`) and CJK composition (`<:beside 犭 句>` → 狗).
+- **Meta information**: font styles for scripts Unicode unified (`<:font cuneiform-old-babylonian> … <:/font>`,
+  `<:font han-japanese>`), languages, colors and angles (`<:color #ff8800 angle 90 A>`), carried in plain text as
+  invisible TAG sequences and rendered by `--html` as spans with CSS.
 - **Honest**: an unknown name is an error. A character without a counterpart (`<:fracture 7>`) stays plain with a
   warning that can be made an error (`--strict`).
 - **Three implementations, one data file**: this Rust crate, a Swift package in the same repository, and the
@@ -40,6 +43,7 @@ cargo install --git https://github.com/pannous/uniscript
 uniscript "<:alpha> <:fracture A>"     # α 𝔄
 uniscript -r "α 𝔄"                     # <:alpha> <:fracture A>
 echo "<:beside 犭 句>" | uniscript      # ⿰犭句 (狗 in the Uniscript CJK font)
+uniscript --html "<:font cuneiform-hittite>𒀭<:/font>"   # <span lang="hit-Xsux" style="font-family: 'UllikummiA', …">𒀭</span>
 uniscript --strict "<:fracture 7>"     # fails: uniscript: no fracture form of 7 at byte 0
 ```
 
@@ -70,6 +74,31 @@ assert!(uniscript::convert("<:fracture 7>", uniscript::WarningMode::Error).is_er
 
 `to_uniscript` followed by `to_unicode` gives the original text back.
 
+## Meta information
+
+Unicode encodes characters, not glyphs, so a font normally belongs to markup. Where Unicode unified forms that carry
+meaning (Cuneiform of different periods, Han characters of different regions), uniscript names a font style anyway,
+and so any other meta information: one general grammar of invisible TAG sequences (TAG characters spelling ASCII, ended
+by CANCEL TAG U+E007F, like the emoji subdivision flags). The design and its reasons:
+[docs/uniscript.md, "Meta information"](docs/uniscript.md#meta-information-fonts-languages-colors).
+
+| uniscript | plain text | HTML (`--html`) |
+|---|---|---|
+| `<:font han-japanese>直<:/font>` | TAG `<font han-japanese`, 直, TAG `</font` | `<span lang="ja" style="font-family: 'Noto Sans CJK JP', 'Hiragino Sans'">直</span>` |
+| `<:color #ff8800 mirror A>` | A, TAG M, TAG `:color #ff8800` | `<span style="color: #ff8800">A…</span>` |
+
+```rust
+let converter = uniscript::Uniscript::default();
+let (tagged, _) = converter.convert("<:font cuneiform-hittite>𒀭<:/font>", uniscript::WarningMode::Warn)?;
+let (styled, warnings) = converter.meta_runs(&tagged);   // plain text + nested MetaRun { key, value, start, end }
+let html = converter.html(&styled);
+```
+
+![Meta information rendered in headless Chrome](probes/meta_demo.png)
+
+`probes/render_meta.sh` renders this sample; the font styles and meta keys are the sections `fonts` and `meta` of
+`data/entities.wasp`.
+
 ### Swift
 
 The same converter as a Swift package (`Package.swift`, `Sources/Uniscript`), reading the same `data/entities.idx`
@@ -82,9 +111,12 @@ try Uniscript.toUnicode("<:alpha> <:fracture A>")   // "α 𝔄", throws Uniscri
 try Uniscript.convert("<:greek c>")                 // ("c", [Warning(message: "no greek form of c", at: 0)])
 try Uniscript.convert("<:greek c>", mode: .error)   // throws UniscriptError.unsupported(warning)
 Uniscript.toUniscript("α 𝔄")                       // "<:alpha> <:fracture A>"
+let (styled, warnings) = Uniscript.standard.metaRuns(tagged)   // meta information, as in Rust
+Uniscript.standard.html(styled)
 ```
 
-`swift test` (in `tests/UniscriptTests`) runs the cases of `tests/uniscript_test.rs` plus a walk over all three index tables.
+`xcrun swift test` (in `tests/UniscriptTests`) runs the cases of `tests/uniscript_test.rs` and `tests/meta_test.rs`
+plus a walk over all index tables.
 
 ## Syntax
 
@@ -93,13 +125,15 @@ Uniscript.toUniscript("α 𝔄")                       // "<:alpha> <:fracture A
 - `<:type> … <:/type>` or `<:type> … <:>`: a block; spaces inside it only separate operands and are dropped.
 - Effect words stack: `<:mirror red A>` gives A with the red and the mirror control.
 - `<:` is the only special sequence. Escape it as `<<::>`, `<:less>:` or `<:<>:`; a lone `<` or `>` needs no escape.
+- `<:key value>` … `<:/key>` and `<:key value operands>` with a meta key (`font`, `lang`, `color`, `background`,
+  `angle`, `size`, `weight`, `style`, `features`): meta information. Entity names win: `<:angle>` is ∠.
 - An unknown name is an error (`Error::UnknownEntity`, Swift `UniscriptError.unknownEntity`), never passed through silently.
 
 ## Data
 
 | file | what |
 |---|---|
-| `data/entities.wasp` | the readable source of truth (wasp data syntax): Unicode 16 names, LaTeX (unicode-math) and HTML5 names, block types |
+| `data/entities.wasp` | the readable source of truth (wasp data syntax): Unicode 16 names, LaTeX (unicode-math) and HTML5 names, block types, font styles, meta keys |
 | `data/entities.idx` | the binary index built from it, compiled into the library |
 | `data/uniscript_index.py` | seeds `entities.wasp` from the sources (needs Python's `unicodedata` and TeX Live's `unicode-math-table.tex`) |
 
@@ -112,7 +146,7 @@ All integers are u32 little endian, offsets from the start of the file.
 
 ```
 0    "USX1"                      magic
-4    T                           number of tables (3)
+4    T                           number of tables (5)
 8    T × (records offset, count)
 …    records                     20 bytes: hash, key offset, key length, value offset, value length
 …    string pool                 UTF-8, deduplicated
@@ -120,7 +154,9 @@ All integers are u32 little endian, offsets from the start of the file.
 
 Records are sorted by (hash, key bytes), with `hash = (hash * 31 + byte) mod 2^32` over the key's UTF-8 bytes: a lookup is
 a binary search on the hash followed by a byte comparison. Tables: 0 names (`alpha`, `fracture A`, `red *suffix`, a block
-itself as `red `), 1 characters → preferred uniscript, 2 suffix controls → block type.
+itself as `red `), 1 characters → preferred uniscript, 2 suffix controls → block type, 3 font styles (`han-japanese ` → "",
+`han-japanese lang` → `ja`), 4 meta keys → CSS declaration (`color` → `color: {}`). Readers need at least the tables they
+use: older readers ignore the later tables.
 
 ### Block control keys
 

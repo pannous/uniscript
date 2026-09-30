@@ -24,7 +24,7 @@ upper A => ᴬ
 # Why?
 Unicode is a great standard, seriously!
 However, some features are missing, and some feature creep made the standard a bit ugly:
-
+• 
 
 # Representation
   
@@ -218,6 +218,72 @@ So `<:red A>` encodes as A followed by TAG r. Hieroglyph groups use Unicode's ow
   
 Contrary to the wish above, the controls come *after* the character. Text engines split lines into runs by script, and  
 script-neutral characters such as TAG join the preceding run, so a prefix is cut off from its character at every script   change (`α ⟨red⟩R`).  
+  
+# Meta information: fonts, languages, colors
+  
+`<:font cuneiform-old-babylonian> … <:/font>`, `<:lang ja>`, `<:color #ff8800 A>`, `<:angle 90 B>`    
+  
+## Why fonts are normally not part of an encoding
+  
+Unicode encodes characters, not glyphs: 𒀭 is the sign AN whether it is pressed into Ur III clay or carved in  
+Neo-Assyrian stone, 直 is the same character in Beijing, Tokyo and Seoul. How a character looks is left to fonts, and  
+which font to use to markup (HTML, CSS, rich text) and to the renderer. That separation is right for almost all text:  
+plain text stays searchable and comparable, and a reader may pick any font that has the characters.    
+  
+## Why unified regions still need it
+  
+Where Unicode *unified* forms that scholars keep apart, the font carries meaning:  
+  
+• Cuneiform: one block for three thousand years of script. The Unicode standard decided that Old Babylonian, Ur III,  
+Hittite and Neo-Assyrian sign forms do not deserve their own characters, so only the font (Santakku / SantakkuM for  
+Old Babylonian, Ullikummi for Hittite, Assurbanipal or CuneiformNAOutline for Neo-Assyrian, CuneiformComposite for  
+Ur III, Noto Sans Cuneiform as the fallback) tells the periods apart.    
+• Han unification: 直 骨 誤 differ between Japanese, Simplified and Traditional Chinese, Hong Kong and Korean  
+typography (JP / SC / TC / HK / KR); the same code point needs the regional font.    
+• Egyptian: many sign variants have no code point of their own; the font or a variation selector picks the form.    
+  
+## What Unicode offers
+  
+• Variation selectors U+FE00–FE0F and U+E0100–E01EF with the Ideographic Variation Database (IVD): one registered glyph  
+variant per character, e.g. 葛 U+845B U+E0100. Precise, but only for registered variants, one character at a time.    
+• LANGUAGE TAG U+E0001 followed by a BCP 47 tag in TAG characters, ended by CANCEL TAG U+E007F. Deprecated since  
+Unicode 5.1: the language belongs in markup.    
+• In markup: HTML `lang` (`<span lang="ja">`) and CSS `font-family`; OpenType fonts then select glyphs with `locl`  
+(localized forms by language) and stylistic sets `ss01`–`ss20` or `jp78`/`jp90` (CSS `font-feature-settings`).    
+  
+## The meta mechanism of uniscript
+  
+Uniscript keeps fonts out of the character stream proper, but it has one general place for meta information, a  
+default ignorable **TAG sequence**: TAG characters U+E0020–E007E spell ASCII text, CANCEL TAG U+E007F ends it. This is  
+how the emoji subdivision flags work (🏴 + TAG g b s c t + CANCEL TAG ⩵ 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland), so it survives copy and paste and  
+is invisible where it is not understood. The first character of the spelled text says what the sequence does; it  
+reads like markup whose `>` is the CANCEL TAG:  
+  
+| uniscript | TAG sequence spells | meaning |
+|---|---|---|
+| `<:font han-japanese>` | `<font han-japanese` | opens a span |
+| `<:/font>` | `</font` | closes the innermost open font span |
+| `<:color #ff8800 A>` | A `:color #ff8800` | attaches to the character before it |
+  
+Keys are lower case words; a value is one word of letters, digits and `# . % + - _ , ( ) /` (no spaces, quotes or `;`,  
+so it stays safe in CSS). The keys and how they render live in `entities.wasp` (section `meta`: `font`, `lang`,  
+`color`, `background`, `angle`, `size`, `weight`, `style`, `features`); the font styles in section `fonts` give each  
+name a BCP 47 language, a CSS font family list and OpenType features.    
+  
+Placement: a sequence attached to one character follows it, after the single letter suffix controls (`A` TAG r TAG M  
+`:color …`), for the reason given in [Fonts implementing the extensions](#fonts-implementing-the-extensions): text  
+engines split script runs so that a prefix would be cut off from its character, and the Uniscript fonts need their  
+suffix letters right after the base. A font or language applies to a run of text, so it needs a start and an end, like  
+the deprecated LANGUAGE TAG … CANCEL TAG pair; closing an outer span closes the inner ones and reopens them, so spans  
+always nest. The single letter suffixes (`<:red A>` ⩵ A TAG r) stay the short form of the effects the fonts render.    
+  
+Emoji tag sequences start with a letter or digit and pass unchanged; a sequence with an unknown key is spelled out  
+character by character by `to_uniscript`, and rendering warns about it.    
+  
+Rendering belongs to the application: `uniscript --html` turns the sequences into  
+`<span lang="hit-Xsux" style="font-family: 'UllikummiA', …, 'Noto Sans Cuneiform'">𒀭</span>` and  
+`<span style="color: #ff8800">A</span>`; the Rust API gives the tagged text (`convert`) and the structured runs  
+(`meta_runs`) for other renderers.    
   
 # Css
 Some of these operations could also be achieved with CSS extensions  
