@@ -39,6 +39,28 @@ export function textHash(text: string | Uint8Array): number {
 	return bytes.reduce((hash, byte) => (Math.imul(hash, HASH_MULTIPLIER) + byte) >>> 0, 0);
 }
 
+/** The bytes of a file path (Node) or URL (fetch in browsers and Node) */
+export async function readBytes(source: string | URL): Promise<Uint8Array> {
+	const url = source instanceof URL ? source : undefined;
+	if (isNode() && (!url || url.protocol === "file:")) {
+		const { readFile }: FileSystem = await import(NODE_FILE_SYSTEM); // a variable, so bundlers for browsers skip it
+		return readFile(source);
+	}
+	const response = await fetch(source);
+	if (!response.ok) throw new Error(`uniscript index ${source}: HTTP ${response.status}`);
+	return new Uint8Array(await response.arrayBuffer());
+}
+
+/** Lookups in an entity index: a whole one, or chunks loaded on demand, which report the chunks lookups missed */
+export interface Lookup {
+	get(table: Table, key: string): string | undefined;
+	entry(table: Table, key: string): [string, string] | undefined;
+	/** The chunks lookups needed since the last call and did not have */
+	takeMissing?(): number[];
+	/** Fetches and adds chunks */
+	loadChunks?(numbers: number[]): Promise<void>;
+}
+
 interface IndexRecord {
 	hash: number;
 	keyOffset: number;
@@ -48,7 +70,7 @@ interface IndexRecord {
 }
 
 /** A read-only view of an entity index; lookups read the bytes in place, nothing is parsed up front */
-export class EntityIndex {
+export class EntityIndex implements Lookup {
 	readonly #bytes: Uint8Array;
 	readonly #view: DataView;
 
@@ -63,14 +85,7 @@ export class EntityIndex {
 
 	/** The index at a file path (Node) or URL (fetch in browsers and Node) */
 	static async load(source: string | URL): Promise<EntityIndex> {
-		const url = source instanceof URL ? source : undefined;
-		if (isNode() && (!url || url.protocol === "file:")) {
-			const { readFile }: FileSystem = await import(NODE_FILE_SYSTEM); // a variable, so bundlers for browsers skip it
-			return new EntityIndex(await readFile(source));
-		}
-		const response = await fetch(source);
-		if (!response.ok) throw new Error(`uniscript index ${source}: HTTP ${response.status}`);
-		return new EntityIndex(await response.arrayBuffer());
+		return new EntityIndex(await readBytes(source));
 	}
 
 	#u32(offset: number): number {

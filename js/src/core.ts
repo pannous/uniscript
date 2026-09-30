@@ -4,6 +4,7 @@
 // meta information as invisible TAG sequences. All offsets are UTF-8 byte offsets, as in Rust and Swift.
 
 import { EntityIndex, Table } from "./entityIndex.ts";
+import type { Lookup } from "./entityIndex.ts";
 import { Meta, Styled, attach, emojiTagsAt, escapeHTML, isMetaValue, list, metaAt, utf8Length } from "./meta.ts";
 import type { Font, MetaRun, Warning } from "./meta.ts";
 
@@ -121,11 +122,35 @@ const firstCharacter = (text: string) => [...text][0] ?? "";
 
 /** A converter over one entity index */
 export class Uniscript {
-	readonly index: EntityIndex;
+	readonly index: Lookup;
 	#warnings: Warning[] = [];
 
-	constructor(index: EntityIndex) {
+	constructor(index: Lookup) {
 		this.index = index;
+	}
+
+	/**
+	 * The chunks of a chunked index that converting `text` both ways and rendering it as HTML still needs: a dry run in
+	 * lenient mode. Empty for a whole index.
+	 */
+	missingChunks(text: string): number[] {
+		let converted = "";
+		try {
+			converted = this.convert(text, "lenient").text;
+		} catch {
+			// a miss can make a name unknown; the chunks it needs are recorded all the same
+		}
+		this.html(this.metaRuns(converted).styled);
+		this.toUniscript(text);
+		this.toUniscript(converted);
+		return this.index.takeMissing?.() ?? [];
+	}
+
+	/** Fetches the chunks converting `text` needs, until no lookup misses; then every function gives the whole index's results */
+	async ensure(text: string): Promise<void> {
+		for (let missing = this.missingChunks(text); missing.length > 0; missing = this.missingChunks(text)) {
+			await this.index.loadChunks?.(missing);
+		}
 	}
 
 	#name(key: string): string | undefined {
@@ -556,6 +581,8 @@ export class Uniscript {
 	}
 }
 
-export { EntityIndex, Table, buildIndex, textHash, TABLES } from "./entityIndex.ts";
+export { EntityIndex, Table, buildIndex, readBytes, textHash, TABLES } from "./entityIndex.ts";
+export type { Lookup } from "./entityIndex.ts";
+export { ChunkedIndex, chunkOrder } from "./chunkedIndex.ts";
 export { Meta, Styled, escapeHTML, isMetaValue, utf8Length, CANCEL_TAG } from "./meta.ts";
 export type { Font, MetaRun, MetaKind, Warning } from "./meta.ts";
