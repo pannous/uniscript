@@ -15,3 +15,21 @@
   whenever src/lib.rs changes; the Rust binary must be rebuilt first (`CARGO_TARGET_DIR=/opt/cargo cargo build --release`).
 - tests/test_shared_cases.py runs js/test/cases.json (shared by every library).
 - The bundled uniscript/entities.idx is a symlink to data/entities.idx; setuptools copies the target into the wheel.
+
+# Python (FFI, python/ffi, package uniscript-rs)
+
+- PyO3 0.29 + maturin 1.15 (brew). Crate `uniscript-python-ffi` depends on the root crate by path; extension module
+  `uniscript._uniscript` returns plain tuples, `uniscript/__init__.py` wraps them in the same dataclasses, exceptions,
+  `Index`/`Table`/`standard()` as python/native; `__main__.py` is a symlink to the native CLI (maturin packs the file).
+- No virtualenv: `maturin develop` refuses without one, so `build.sh` does `maturin build` + `pip install --user
+  --break-system-packages --force-reinstall` of the wheel (wheels in /opt/cargo/wheels, no local target dir).
+- macOS 27 beta: rustc's post-link `strip` (release default strip=debuginfo) rewrites the dylib with the LINKEDIT string
+  table at a 4-aligned offset (right after an odd number of 4-byte indirect symbols) and dyld refuses it: "mis-aligned
+  LINKEDIT string pool". The linker output itself is fine. Fix: `[profile.release] strip = "none"`. Any other cdylib
+  (c/ffi) can hit this as soon as its indirect-symbol count turns odd.
+- `Uniscript<'a>` holds a RefCell → not Sync; the pyclass keeps it in a Mutex. An index from bytes lives in an Arc next
+  to the converter that borrows it ('static by an unsafe slice; the converter field drops first).
+- Run tests from python/ffi/tests (`./test.sh`): `python -m pytest` in python/ffi would import the source
+  ./uniscript without the extension. test.sh runs the FFI tests plus all of python/native/tests (201 pass).
+- Benchmark (tests/benchmark.py, M-series): convert 37 kB 1.68 ms native vs 0.29 ms ffi (5.9×), to_uniscript 25.5 vs
+  4.7 ms (5.4×), a short string 11 vs 4 µs (2.6×), start + import 46 vs 36 ms.

@@ -100,6 +100,7 @@ Swift, Rust, Python, JavaScript, and C++. The Rust crate is the reference implem
 - **WebAssembly** (the Rust crate, `wasm/`): `import init, { convert, toUniscript } from "./wasm/uniscript.js"; await init();` then the API of the TypeScript port; `cd wasm && npm test`, live in [docs/demo.html](docs/demo.html).
 - **TypeScript / JavaScript** (a direct port, `js/`, npm package `uniscript`, ESM for Node and browsers): `import { toUnicode, convert, toUniscript } from "uniscript"` loads the bundled `entities.idx`; `uniscript/core` takes your own bytes (`new Uniscript(new EntityIndex(bytes))`); `cd js && npm test`.
 - **Python, pure** (no dependencies, `python/native`): `import uniscript; uniscript.to_unicode("<:alpha>")`, reads `entities.idx` in place via mmap, same API as the FFI package; `cd python/native && PYTHONPATH=. python3 -m pytest tests`, usage in [python/native/README.md](python/native/README.md).
+- **Python, Rust-backed** (PyO3, `python/ffi`, package `uniscript-rs`): the same `import uniscript` API as the pure package, about 6× faster on documents; `python/ffi/build.sh` (maturin, installs into the system python), `python/ffi/test.sh`.
 
 Programming languages supporting Uniscript natively are wasp and warp. 
 
