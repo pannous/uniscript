@@ -6,7 +6,7 @@ LINES = 3000
 FRAGMENTS = [
     "<:alpha>", "\\:infinity", "\\:", "\\:nosuch", "<:nosuchthing>", "<:", "<:>", "<:/greek>", "<:greek>", "<:fracture>",
     "<:egyptian>", "<:/egyptian>", "<:<>", "<::>", "<<::>", "<:less>:", "<:fracture A b c >", "<:greek athos>", "<:greek c>",
-    "<:mirror red A>", "<:red mirror 狗>", "<:red 𓀀>", "<:beside 犭 句>", "<:above 𓀀 𓁐>", "<:beside a b>",
+    "<:mirror red A>", "<:red mirror 狗>", "<:mirror red 狗>", "<:red 𓀀>", "<:left 𓀀>", "<:color blue green 𓀀>", "<:beside 犭 句>", "<:above 𓀀 𓁐>", "<:beside a b>",
     "<:egyptian seated man>", "<:egyptian man-sitting>", "<:bold italic alpha>", "<:greek bold a>", "<:double bold A>",
     "<:bold fraktur A>", "<:sans bold italic Omega>", "<:mirror bold italic A>", "<:font cuneiform-hittite>",
     "<:/font>", "<:font Santakku>", "<:color #ff8800 A b>", "<:color red;x A>", "<:color #ff8800 angle 90 alpha>",

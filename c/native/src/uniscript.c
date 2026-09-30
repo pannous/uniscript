@@ -18,6 +18,8 @@
 #define VALUE_PLACEHOLDER "{}"
 #define CLOSE_SPAN "</span>"
 #define SUFFIX_KEY "*suffix"
+/* the block control naming the meta a block becomes where it has no suffix control (red *meta → color red) */
+#define META_FALLBACK_KEY "*meta"
 #define REPLACEMENT_CHARACTER 0xFFFDu
 
 typedef struct { str *items; size_t n, cap; } strs;
@@ -120,21 +122,31 @@ static bool suffix_of(str block, uint32_t character, str *suffix) {
 	       index_getf(TABLE_NAMES, suffix, "%.*s " SUFFIX_KEY, S(block));
 }
 
-/* The control of an effect after one character, nothing with a warning when it has none for it */
-static void effect_suffix(converter *self, buf *out, str block, uint32_t character, size_t at) {
-	str suffix;
+/* The control of an effect after one character into suffixes; without one, a block with a *meta fallback (the colors:
+ * red *meta → color red) puts that attached meta sequence into metas, anything else nothing; both warn */
+static void effect_control(converter *self, buf *suffixes, buf *metas, str block, uint32_t character, size_t at) {
+	str suffix, fallback, key, value;
 	if (suffix_of(block, character, &suffix) && suffix.n) {
-		buf_adds(out, suffix);
+		buf_adds(suffixes, suffix);
 		return;
 	}
 	char spelled[5];
 	utf8_encode(character, spelled);
+	if (index_getf(TABLE_NAMES, &fallback, "%.*s " META_FALLBACK_KEY, S(block)) && split_once(fallback, ' ', &key, &value)) {
+		warn(self, at, "%.*s on %s kept as %.*s meta", S(block), spelled, S(key));
+		meta_tags(metas, META_ATTACHED, key, value);
+		return;
+	}
 	warn(self, at, "%.*s does not apply to %s", S(block), spelled);
 }
 
-/* The suffixes of the stacked effect words (mirror in <:mirror red A>) for one character */
+/* The suffix controls of the stacked effect words (mirror in <:mirror red A>) for one character, then the meta
+ * sequences of the effects it has no control for: a meta follows the character's suffix controls */
 static void effect_suffixes(converter *self, buf *out, strs effects, uint32_t character, size_t at) {
-	for (size_t i = 0; i < effects.n; i++) effect_suffix(self, out, effects.items[i], character, at);
+	buf metas = { 0 };
+	for (size_t i = 0; i < effects.n; i++) effect_control(self, out, &metas, effects.items[i], character, at);
+	buf_adds(out, buf_str(&metas));
+	buf_free(&metas);
 }
 
 /* One character in a block: its own entry (greek a → α), else followed by the block's suffix; then the effects.
@@ -149,8 +161,13 @@ static void styled(converter *self, buf *out, str block, uint32_t character, str
 		warn(self, at, "no %.*s form of %s", S(block), spelled);
 		buf_addz(out, spelled);
 	} else {
+		strs blocks = { 0 };
+		strs_push(&blocks, block);
+		for (size_t i = 0; i < effects.n; i++) strs_push(&blocks, effects.items[i]);
 		buf_addz(out, spelled);
-		effect_suffix(self, out, block, character, at);
+		effect_suffixes(self, out, blocks, character, at);
+		free(blocks.items);
+		return;
 	}
 	effect_suffixes(self, out, effects, character, at);
 }

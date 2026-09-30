@@ -27,3 +27,4 @@
   text (later offsets refer to it). NULL → "" with "input is NULL". WARN and ERROR keep UNISCRIPT_INVALID_INPUT. The Rust
   CLI rejects invalid stdin, so differential.sh cannot cover this; tests/test_native.c does.
 - Header versions: every `https://uniscript.org/v<digits>` (and an empty version) is read without warning, as Rust `reads_version`; anything else warns "unsupported uniscript version …".
+- Color fallback (707e858): an effect without a suffix control for a character (red on 𓀀) becomes the attached meta of its `block *meta` entry (`color red`), after all suffix controls of the character, with the warning "red on 𓀀 kept as color meta".
