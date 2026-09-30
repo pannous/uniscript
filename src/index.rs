@@ -11,11 +11,14 @@ const RECORD_SIZE: usize = 20;
 const HEADER_FIXED: usize = 8;
 const TABLE_ENTRY_SIZE: usize = 8;
 pub const MANIFEST_MAGIC: &[u8; 4] = b"USXC";
-const MANIFEST_FIXED: usize = 12;
+const MANIFEST_FIXED: usize = 16;
+const NO_COMMON_CHUNK: u32 = u32::MAX;
 const MANIFEST_TABLE_SIZE: usize = 12;
 const CHUNK_START_SIZE: usize = 8;
 /// Chunks close once they pass this many bytes: small enough for a lookup to fetch little, large enough for few requests
 pub const CHUNK_TARGET_SIZE: usize = 4 * 1024;
+/// The common chunk, loaded with the manifest, holds the most used entries up to this many bytes
+pub const COMMON_TARGET_SIZE: usize = 32 * 1024;
 
 /// The tables of the index, in file order
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -154,11 +157,27 @@ impl<'a> Chunked<'a> {
 			return Err("uniscript chunk manifest has too few tables".into());
 		}
 		let chunked = Chunked { manifest, chunks: Vec::new(), missing: Mutex::default() };
-		let count = TABLES.iter().map(|&table| chunked.table_chunks(table).end).max().unwrap_or(0);
-		if manifest.len() < chunked.chunk_starts_offset() + count * CHUNK_START_SIZE {
+		let ranged = TABLES.iter().map(|&table| chunked.table_chunks(table).end).max().unwrap_or(0);
+		if manifest.len() < chunked.chunk_starts_offset() + ranged * CHUNK_START_SIZE {
 			return Err("uniscript chunk manifest is truncated".into());
 		}
+		let count = chunked.common().map_or(ranged, |common| ranged.max(common + 1));
 		Ok(Chunked { chunks: (0..count).map(|_| OnceLock::new()).collect(), ..chunked })
+	}
+
+	/// The chunk of the most used entries, searched before the others
+	fn common(&self) -> Option<usize> {
+		let number = u32_at(self.manifest, 12);
+		(number != NO_COMMON_CHUNK).then_some(number as usize)
+	}
+
+	/// The chunk if it is loaded, else None and the chunk is recorded as missing
+	fn loaded(&self, number: usize) -> Option<&Whole<'a>> {
+		let chunk = self.chunks[number].get();
+		if chunk.is_none() {
+			self.missing.lock().expect("missing chunks").insert(number);
+		}
+		chunk
 	}
 
 	fn table_field(&self, table: Table, field: usize) -> usize {
@@ -179,10 +198,13 @@ impl<'a> Chunked<'a> {
 		(u32_at(self.manifest, at), u32_at(self.manifest, at + 4))
 	}
 
-	/// The chunk whose range holds the key: the last one starting at or before it
+	/// The chunk whose range holds the key: the last one starting at or before it; none before the first
 	fn chunk_of(&self, table: Table, key: &str) -> Option<usize> {
 		let chunks = self.table_chunks(table);
 		let order = chunk_order(table, key);
+		if chunks.is_empty() || order < self.chunk_start(chunks.start) {
+			return None;
+		}
 		let (mut low, mut high) = (chunks.start, chunks.end);
 		while low < high {
 			let middle = (low + high) / 2;
@@ -192,18 +214,19 @@ impl<'a> Chunked<'a> {
 				high = middle;
 			}
 		}
-		(!chunks.is_empty()).then(|| low.max(chunks.start + 1) - 1)
+		Some(low - 1)
 	}
 
 	fn entry(&self, table: Table, key: &str) -> Option<(&'a str, &'a str)> {
-		let number = self.chunk_of(table, key)?;
-		match self.chunks[number].get() {
-			Some(chunk) => chunk.entry(table, key),
-			None => {
-				self.missing.lock().expect("missing chunks").insert(number);
-				None
+		if let Some(common) = self.common() {
+			if let Some(found) = self.loaded(common)?.entry(table, key) {
+				return Some(found);
+			}
+			if table == Table::Names && is_block_type_key(key) {
+				return None; // the common chunk holds all of them
 			}
 		}
+		self.loaded(self.chunk_of(table, key)?)?.entry(table, key)
 	}
 }
 
@@ -223,6 +246,14 @@ impl<'a> Index<'a> {
 		match &self.source {
 			Source::Whole(_) => 0,
 			Source::Chunked(chunked) => u32_at(chunked.manifest, 4),
+		}
+	}
+
+	/// The chunk of the most used entries, which every lookup needs first: load it with the manifest
+	pub fn common_chunk(&self) -> Option<usize> {
+		match &self.source {
+			Source::Whole(_) => None,
+			Source::Chunked(chunked) => chunked.common(),
 		}
 	}
 
@@ -278,7 +309,8 @@ impl<'a> Index<'a> {
 		match &self.source {
 			Source::Whole(whole) => Box::new(whole.entries(table)),
 			Source::Chunked(chunked) => {
-				Box::new(chunked.table_chunks(table).filter_map(|number| chunked.chunks[number].get()).flat_map(move |chunk| chunk.entries(table)))
+				let numbers = chunked.common().into_iter().chain(chunked.table_chunks(table));
+				Box::new(numbers.filter_map(|number| chunked.chunks[number].get()).flat_map(move |chunk| chunk.entries(table)))
 			}
 		}
 	}
@@ -346,36 +378,99 @@ fn semantic_group(table: Table, key: &str, block_starts: &[u32]) -> u32 {
 	}
 }
 
-/// The index cut into chunks of about `target_size` bytes: the manifest and the chunks, each a USX1 file with the
-/// entries of one range of [`chunk_order`] in one table. Entries of the same order never straddle two chunks. A semantic
-/// group of a quarter chunk or more (a Unicode block, a block type's operands) starts and ends its own chunks, so a text
-/// in one script or style fetches its chunks and little else; smaller groups share chunks.
-pub fn chunks(index: &Index, target_size: usize, block_starts: &[u32]) -> (Vec<u8>, Vec<Vec<u8>>) {
+/// How to cut an index into chunks
+pub struct ChunkPlan<'a> {
+	/// chunks close once they pass this many bytes
+	pub target_size: usize,
+	/// the first code point of each Unicode block ([`unicode_block_starts`])
+	pub block_starts: &'a [u32],
+	/// the most used characters, most used first (data/sources/common.txt): their reverse spelling and every name that
+	/// spells them go into the common chunk, after the small tables and the block types, until it holds `common_size` bytes
+	pub common: &'a [char],
+	pub common_size: usize,
+}
+
+/// The characters of data/sources/common.txt, in its order: the code point (`U+2019`) that starts each line
+pub fn common_characters(common_txt: &str) -> Vec<char> {
+	let code_points = common_txt.lines().filter_map(|line| line.split('\t').next()?.strip_prefix("U+"));
+	code_points.filter_map(|hex| char::from_u32(u32::from_str_radix(hex, 16).ok()?)).collect()
+}
+
+type Entries = Vec<(String, String)>;
+
+fn entry_size((key, value): &(String, String)) -> usize {
+	RECORD_SIZE + key.len() + value.len()
+}
+
+/// A block type itself (`red `) or one of its controls (`red *suffix`): every tag with a block type looks them up
+fn is_block_type_key(key: &str) -> bool {
+	key.ends_with(' ') || key.contains('*')
+}
+
+/// The entries of the common chunk, per table: the small tables whole, the block types, then the common characters
+fn common_entries(tables: &[Entries], plan: &ChunkPlan) -> Vec<Entries> {
+	let mut common: Vec<Entries> = vec![Vec::new(); TABLES.len()];
+	for table in [Table::Suffixes, Table::Fonts, Table::Meta] {
+		common[table as usize] = tables[table as usize].clone();
+	}
+	let names = &tables[Table::Names as usize];
+	common[Table::Names as usize] = names.iter().filter(|(key, _)| is_block_type_key(key)).cloned().collect();
+	let mut names_by_text: HashMap<&str, Vec<&(String, String)>> = HashMap::new();
+	names.iter().filter(|(key, _)| !is_block_type_key(key)).for_each(|entry| names_by_text.entry(entry.1.as_str()).or_default().push(entry));
+	let chars: HashMap<&str, &(String, String)> = tables[Table::Chars as usize].iter().map(|entry| (entry.0.as_str(), entry)).collect();
+	let mut size: usize = common.iter().flatten().map(entry_size).sum();
+	let mut buffer = [0u8; 4];
+	for character in plan.common {
+		let text: &str = character.encode_utf8(&mut buffer);
+		let spellings = chars.get(text).map(|&entry| (Table::Chars, entry)).into_iter();
+		let named = spellings.chain(names_by_text.get(text).into_iter().flatten().map(|&entry| (Table::Names, entry)));
+		for (table, entry) in named {
+			if size >= plan.common_size {
+				return common;
+			}
+			size += entry_size(entry);
+			common[table as usize].push(entry.clone());
+		}
+	}
+	common
+}
+
+/// The index cut into chunks by `plan`: the manifest and the chunks, each a USX1 file. The common chunk (the last one)
+/// holds the most used entries of all tables; every other chunk the rest of one range of [`chunk_order`] in one table.
+/// Entries of the same order never straddle two chunks. A semantic group of a quarter chunk or more (a Unicode block, a
+/// block type's operands) starts and ends its own chunks, so a text in one script or style fetches its chunks and little
+/// else; smaller groups share chunks.
+pub fn chunks(index: &Index, plan: &ChunkPlan) -> (Vec<u8>, Vec<Vec<u8>>) {
+	let target_size = plan.target_size;
+	let tables: Vec<Entries> =
+		TABLES.iter().map(|&table| index.entries(table).map(|(key, value)| (key.to_string(), value.to_string())).collect()).collect();
+	let common = common_entries(&tables, plan);
 	let mut table_fields = Vec::new();
 	let mut starts = Vec::new();
 	let mut chunks = Vec::new();
-	for &table in &TABLES {
-		let mut entries: Vec<(String, String)> = index.entries(table).map(|(key, value)| (key.to_string(), value.to_string())).collect();
+	for (&table, (entries, in_common)) in TABLES.iter().zip(tables.into_iter().zip(&common)) {
+		let in_common: std::collections::HashSet<&str> = in_common.iter().map(|(key, _)| key.as_str()).collect();
+		let mut entries: Entries = entries.into_iter().filter(|(key, _)| !in_common.contains(key.as_str())).collect();
 		entries.sort_by(|(a, _), (b, _)| (chunk_order(table, a), a.as_bytes()).cmp(&(chunk_order(table, b), b.as_bytes())));
-		let entry_size = |(key, value): &(String, String)| RECORD_SIZE + key.len() + value.len();
+		let group_of = |key: &str| semantic_group(table, key, plan.block_starts);
 		let mut group_sizes: HashMap<u32, usize> = HashMap::new();
 		for entry in &entries {
-			*group_sizes.entry(semantic_group(table, &entry.0, block_starts)).or_default() += entry_size(entry);
+			*group_sizes.entry(group_of(&entry.0)).or_default() += entry_size(entry);
 		}
 		let is_large = |group: u32| group_sizes[&group] * 4 >= target_size;
 		let first_chunk = chunks.len();
-		let mut current: Vec<(String, String)> = Vec::new();
+		let mut current: Entries = Vec::new();
 		let mut size = 0;
-		let close = |current: &mut Vec<(String, String)>, chunks: &mut Vec<Vec<u8>>| {
+		let close = |current: &mut Entries, chunks: &mut Vec<Vec<u8>>| {
 			let mut tables = vec![Vec::new(); TABLES.len()];
 			tables[table as usize] = std::mem::take(current);
 			chunks.push(build_tables(&tables));
 		};
 		for entry in entries {
 			let order = chunk_order(table, &entry.0);
-			let group = semantic_group(table, &entry.0, block_starts);
+			let group = group_of(&entry.0);
 			if let Some((last, _)) = current.last() {
-				let last_group = semantic_group(table, last, block_starts);
+				let last_group = group_of(last);
 				let group_edge = last_group != group && (is_large(last_group) || is_large(group));
 				if chunk_order(table, last) != order && (size >= target_size || group_edge) {
 					close(&mut current, &mut chunks);
@@ -393,9 +488,11 @@ pub fn chunks(index: &Index, target_size: usize, block_starts: &[u32]) -> (Vec<u
 		}
 		table_fields.extend([first_chunk, chunks.len() - first_chunk, index.len(table)]);
 	}
+	let common_number = chunks.len() as u32;
+	chunks.push(build_tables(&common));
 	let version = chunks.iter().fold(0u32, |hash, chunk| hash.wrapping_mul(HASH_MULTIPLIER as u32) ^ bytes_hash(chunk));
 	let mut manifest = MANIFEST_MAGIC.to_vec();
-	let words = [version, TABLES.len() as u32].into_iter().chain(table_fields.into_iter().map(|field| field as u32));
+	let words = [version, TABLES.len() as u32, common_number].into_iter().chain(table_fields.into_iter().map(|field| field as u32));
 	words.chain(starts.into_iter().flat_map(|(group, hash)| [group, hash])).for_each(|word| manifest.extend(word.to_le_bytes()));
 	(manifest, chunks)
 }

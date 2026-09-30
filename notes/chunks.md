@@ -42,3 +42,29 @@ keeps the file count (~1350) and request overhead reasonable.
 Live (https://pannous.com/uniscript/rust/, examples + editor): 70 requests, 240 KB transferred. The server sends `.idx`
 as text/plain without gzip; enabling gzip for them would cut that to about 100 KB.
 - pannous.com is Apache, not nginx: /etc/apache2/conf-available/uniscript-index.conf types .idx/.usxc as application/octet-stream and gzips them (manifest 10.9 → 7.1 KB)
+
+## Common chunk (most used entities)
+- Sources, in `data/common_entities.py` → `data/sources/common.txt` (1536 characters in priority order):
+  - FineFreq (https://github.com/Bin-2/FineFreq, CC BY 4.0): character frequencies of FineWeb's English web text,
+    81 trillion characters. Letters and marks of scripts other than Latin/Greek are dropped: their block chunks serve
+    them. The CSV (10 MB) is cached in probes/finefreq/ (not committed).
+  - Writefull, "The 100 most frequent LaTeX commands" (300,000 arXiv papers). Only the 33 symbols are kept; document
+    commands are dropped, because in uniscript `\label` is 🏷 and `\it` is INVISIBLE TIMES. After them come the rest
+    of the Greek alphabet and the common operators, arrows and relations of LaTeX's symbol lists (curated).
+  - Order: web 1–50, LaTeX top symbols, web 51–150, the other LaTeX symbols, the rest of the web list.
+- Size: the web's non-ASCII coverage plateaus near 94 % (the rest is other scripts and characters without an entry).
+  | budget | characters | web coverage | LaTeX top symbols |
+  |---|---|---|---|
+  | 16 KB | 64 | 92.1 % | 14/33 |
+  | 32 KB | 178 | 93.5 % | 33/33 |
+  | 64 KB | 422 | 94.1 % | 33/33 |
+  | 96 KB | 723 | 94.3 % | 33/33 |
+
+  At 32 KB (the chosen size) the chunk holds 960 entries (735 names, 160 chars, the 65 entries of the small tables),
+  31 KB (14 KB gzipped). Most of it is names: each character brings 3–5 of them (Unicode name, HTML, LaTeX, block form).
+  10,000 entries would be about 400 KB, more than the demo fetches in total.
+- Absent keys still cost fetches: the converter tries `alpha ` (is it a block type?) and whole tag contents
+  (`mirror R `). Because the common chunk holds every block type key, those misses need no fetch.
+  Without that rule, `<:alpha> <:beta> <:leq> <:infty>` fetched 4 extra chunks. Now it needs nothing but the common chunk.
+- Demo examples: 185 KB including the common chunk (was 213 KB), 80 KB gzipped. Prose with ’ “ — é € ° © and LaTeX
+  names need no chunk after the common one (tests/chunks_test.rs, js/test/chunks.test.ts).

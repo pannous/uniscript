@@ -16,6 +16,7 @@ const DEFAULT_INDEX: &str = "data/entities.idx";
 const DEFAULT_CHUNKS: &str = "data/chunks";
 const MANIFEST_FILE: &str = "manifest.usxc";
 const UNICODE_BLOCKS: &str = "data/sources/Blocks.txt";
+const COMMON_CHARACTERS: &str = "data/sources/common.txt";
 const REVERSE_FLAGS: [&str; 2] = ["-r", "--reverse"];
 const STRICT_FLAG: &str = "--strict";
 const HTML_FLAG: &str = "--html";
@@ -107,8 +108,10 @@ fn check(entities_path: &str, index_path: &str) -> Result<(), String> {
 
 fn chunks(index_path: &str, directory: &str) -> Result<(), String> {
 	let data = std::fs::read(index_path).map_err(|e| format!("{index_path}: {e}"))?;
-	let blocks = std::fs::read_to_string(UNICODE_BLOCKS).map_err(|e| format!("{UNICODE_BLOCKS}: {e}"))?;
-	let (manifest, chunks) = index::chunks(&Index::new(&data)?, index::CHUNK_TARGET_SIZE, &index::unicode_block_starts(&blocks));
+	let read = |path: &str| std::fs::read_to_string(path).map_err(|e| format!("{path}: {e}"));
+	let (block_starts, common) = (index::unicode_block_starts(&read(UNICODE_BLOCKS)?), index::common_characters(&read(COMMON_CHARACTERS)?));
+	let plan = index::ChunkPlan { target_size: index::CHUNK_TARGET_SIZE, block_starts: &block_starts, common: &common, common_size: index::COMMON_TARGET_SIZE };
+	let (manifest, chunks) = index::chunks(&Index::new(&data)?, &plan);
 	let write = |name: String, bytes: &[u8]| {
 		let path = std::path::Path::new(directory).join(name);
 		std::fs::write(&path, bytes).map_err(|e| format!("{}: {e}", path.display()))
@@ -122,6 +125,7 @@ fn chunks(index_path: &str, directory: &str) -> Result<(), String> {
 	write(MANIFEST_FILE.into(), &manifest)?;
 	chunks.iter().enumerate().try_for_each(|(number, chunk)| write(format!("{number}.idx"), chunk))?;
 	let total: usize = chunks.iter().map(Vec::len).sum();
-	println!("wrote {directory}/{MANIFEST_FILE} ({} bytes) and {} chunks ({total} bytes)", manifest.len(), chunks.len());
+	let common = chunks.last().map_or(0, Vec::len);
+	println!("wrote {directory}/{MANIFEST_FILE} ({} bytes) and {} chunks ({total} bytes, the common chunk {} {common} bytes)", manifest.len(), chunks.len(), chunks.len() - 1);
 	Ok(())
 }

@@ -1,6 +1,6 @@
 //! A chunked index (manifest + chunks loaded on demand) answers every lookup exactly like the whole index
 
-use uniscript::index::{self, Index, TABLES};
+use uniscript::index::{self, Index, Table, TABLES};
 use uniscript::{Uniscript, WarningMode, ENTITIES_INDEX};
 
 const DEMO_EXAMPLES: [&str; 9] = [
@@ -16,9 +16,14 @@ const DEMO_EXAMPLES: [&str; 9] = [
 ];
 const META_EXAMPLE: &str = "<:font cuneiform-hittite>𒀭<:/font> <:color #ff8800 angle 90 A> α 𝔄 <:unknown-name>";
 
+fn cut_with(index: &Index, common_size: usize) -> (Vec<u8>, Vec<Vec<u8>>) {
+	let block_starts = index::unicode_block_starts(&std::fs::read_to_string("data/sources/Blocks.txt").unwrap());
+	let common = index::common_characters(&std::fs::read_to_string("data/sources/common.txt").unwrap());
+	index::chunks(index, &index::ChunkPlan { target_size: index::CHUNK_TARGET_SIZE, block_starts: &block_starts, common: &common, common_size })
+}
+
 fn cut(index: &Index) -> (Vec<u8>, Vec<Vec<u8>>) {
-	let blocks = std::fs::read_to_string("data/sources/Blocks.txt").unwrap();
-	index::chunks(index, index::CHUNK_TARGET_SIZE, &index::unicode_block_starts(&blocks))
+	cut_with(index, index::COMMON_TARGET_SIZE)
 }
 
 fn whole() -> Index<'static> {
@@ -45,16 +50,38 @@ fn every_key_of_every_table_resolves_as_in_the_whole_index() {
 #[test]
 fn a_lookup_in_a_chunk_not_loaded_finds_nothing_and_names_the_chunk() {
 	let (manifest, chunks) = cut(&whole());
+	let common = chunks.len() - 1;
 	let chunked = Index::chunked(&manifest).unwrap();
-	assert_eq!(chunked.get(index::Table::Names, "alpha"), None);
+	assert_eq!(chunked.get(Table::Names, "alpha"), None);
+	assert_eq!(chunked.take_missing(), [common], "every lookup needs the common chunk first");
+	assert!(chunked.take_missing().is_empty());
+	chunked.add_chunk(common, &chunks[common]).unwrap();
+	assert_eq!(chunked.get(Table::Names, "alpha"), Some("α"));
+	assert_eq!(chunked.get(Table::Names, "fracture A"), None);
 	let missing = chunked.take_missing();
 	assert_eq!(missing.len(), 1);
-	assert!(chunked.take_missing().is_empty());
 	chunked.add_chunk(missing[0], &chunks[missing[0]]).unwrap();
-	assert_eq!(chunked.get(index::Table::Names, "alpha"), Some("α"));
+	assert_eq!(chunked.get(Table::Names, "fracture A"), Some("𝔄"));
+	assert_eq!(chunked.get(Table::Chars, "R"), None, "nothing sorts before the first chunk");
+	assert!(chunked.take_missing().is_empty());
 	assert!(chunked.add_chunk(chunks.len(), &chunks[0]).is_err());
 	assert!(Index::chunked(ENTITIES_INDEX).is_err());
 	assert!(Index::new(&manifest).is_err());
+}
+
+#[test]
+fn the_common_chunk_holds_block_types_small_tables_latex_and_frequent_characters() {
+	let (_, chunks) = cut(&whole());
+	let common = Index::new(chunks.last().unwrap()).unwrap();
+	for (table, key) in [(Table::Names, "alpha"), (Table::Names, "infty"), (Table::Names, "eacute"), (Table::Names, "rsquo"), (Table::Names, "red ")] {
+		assert!(common.get(table, key).is_some(), "{key}");
+	}
+	assert!(common.get(Table::Chars, "’").is_some());
+	assert_eq!(common.len(Table::Meta), whole().len(Table::Meta));
+	assert!(common.get(Table::Names, "fracture A").is_none());
+	assert_eq!(Index::chunked(&cut(&whole()).0).unwrap().common_chunk(), Some(chunks.len() - 1));
+	let size = chunks.last().unwrap().len();
+	assert!(size < index::COMMON_TARGET_SIZE + 1024, "{size} bytes");
 }
 
 /// Loads what `missing_chunks` asks for until nothing is missing; the bytes fetched
@@ -75,6 +102,13 @@ fn load_for(converter: &Uniscript, chunks: &'static [Vec<u8>], text: &str) -> us
 #[test]
 fn conversions_after_loading_the_missing_chunks_equal_those_of_the_whole_index() {
 	let whole = Uniscript::default();
+	for common_size in [0, 8 * 1024, 16 * 1024, 64 * 1024] {
+		let (manifest, chunks) = cut_with(whole.index(), common_size);
+		let (manifest, chunks): (&'static [u8], &'static [Vec<u8>]) = (manifest.leak(), chunks.leak());
+		let converter = Uniscript::new(Index::chunked(manifest).unwrap());
+		let total: usize = DEMO_EXAMPLES.iter().map(|text| load_for(&converter, chunks, text)).sum();
+		println!("{total:>7} bytes for the demo examples with a common chunk of {common_size} bytes");
+	}
 	let (manifest, chunks) = cut(whole.index());
 	let (manifest, chunks): (&'static [u8], &'static [Vec<u8>]) = (manifest.leak(), chunks.leak());
 	let converter = Uniscript::new(Index::chunked(manifest).unwrap());
@@ -91,4 +125,18 @@ fn conversions_after_loading_the_missing_chunks_equal_those_of_the_whole_index()
 		assert!(converter.index().take_missing().is_empty(), "{text}");
 	}
 	println!("{total:>7} bytes for all, of {} bytes in {} chunks", chunks.iter().map(Vec::len).sum::<usize>(), chunks.len());
+}
+
+#[test]
+fn latex_names_and_common_prose_need_no_chunk_but_the_common_one() {
+	let whole = Uniscript::default();
+	let (manifest, chunks) = cut(whole.index());
+	let (manifest, chunks): (&'static [u8], &'static [Vec<u8>]) = (manifest.leak(), chunks.leak());
+	let converter = Uniscript::new(Index::chunked(manifest).unwrap());
+	let common = converter.index().common_chunk().unwrap();
+	converter.index().add_chunk(common, &chunks[common]).unwrap();
+	for text in ["<:alpha> + <:beta> <:leq> <:infty>, <:sum> <:partial> <:rightarrow> <:times>", "Café “quoted” — it’s 20 °C, 5 € · © ®"] {
+		assert_eq!(load_for(&converter, chunks, text), 0, "{text}");
+		assert_eq!(converter.to_uniscript(text), whole.to_uniscript(text));
+	}
 }
