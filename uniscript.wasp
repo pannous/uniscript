@@ -16,6 +16,12 @@ const hash_modulus = 4294967296
 const uniscript_version = "https://uniscript.org/v1"  // the version this reads, declared by the header <:uniscript version="…">
 const header_open = "<:uniscript"
 const version_attribute = "version="
+const max_hex_digits = 8
+const min_bare_hex_digits = 4     // bare hex (\:1F60D) and \U1F60D need 4 digits, so a mistyped short name stays unknown
+const max_code_point = 1114111    // 10FFFF
+const first_surrogate = 55296     // D800
+const last_surrogate = 57343      // DFFF
+const hex_digits = "0123456789ABCDEF"
 
 // ---- the index -------------------------------------------------------------------------------------------------
 
@@ -238,6 +244,8 @@ tag(content:text, at) := {
 	if content.bytes == 1 { return content }
 	record = find(names_table, hyphenated(content))
 	if record >= 0 { return value_of(record) }
+	value = code_point_value(content)
+	if value >= 0 { return code_point_text(value, "<:" + content + ">", at) }
 	if is_block(content) { return "<" + content + ">" }
 	space = offset_of(content, 32, 0)
 	if space == content.bytes { space = offset_of(content, 45, 0) }
@@ -260,12 +268,87 @@ tag(content:text, at) := {
 	error("unknown uniscript entity: " + content)
 }
 
-// offset of the next "<:" or "\:" at or after start, else source.bytes
+// ---- code points: \:1F60D \:U+1F60D \:0x1F60D <:U+1F60D> \U1F60D -------------------------------------------------
+
+// the value of a hex digit byte, else -1
+hex_digit(b) := {
+	if b >= 48 and b <= 57 { return b - 48 }
+	if b >= 65 and b <= 70 { return b - 55 }
+	if b >= 97 and b <= 102 { return b - 87 }
+	0 - 1
+}
+
+// the value of the hex digits source[start..end] with minimum–8 digits, else -1
+hex_value(source:text, start, end, minimum) := {
+	if end - start < minimum or end - start > max_hex_digits { return (-1) }
+	value = 0
+	i = start
+	while i < end {
+		digit = hex_digit(byte_at(source, i))
+		if digit < 0 { return (-1) }
+		value = value * 16 + digit
+		i++
+	}
+	value
+}
+
+is_u(b) := b == 85 or b == 117
+
+// bytes of the prefix U+ u+ 0x 0X U u of a code point token, else 0
+code_point_prefix(token:text) := {
+	if token.bytes >= 2 and is_u(byte_at(token, 0)) and byte_at(token, 1) == 43 { return 2 }
+	if token.bytes >= 2 and byte_at(token, 0) == 48 and (byte_at(token, 1) == 120 or byte_at(token, 1) == 88) { return 2 }
+	if token.bytes >= 1 and is_u(byte_at(token, 0)) { return 1 }
+	0
+}
+
+// the value of a code point token: U+1F60D U1F60D 0x1F60D (1–8 hex digits) or bare 1F60D (4–8), else -1
+code_point_value(token:text) := {
+	prefix = code_point_prefix(token)
+	if prefix > 0 { return hex_value(token, prefix, token.bytes, 1) }
+	hex_value(token, 0, token.bytes, min_bare_hex_digits)
+}
+
+// U+ and at least 4 upper case hex digits
+code_point_name(value) := {
+	out = ""
+	while value > 0 or out.bytes < 4 {
+		digit = value % 16
+		out = byte_slice(hex_digits, digit, digit + 1) + out
+		value = (value - digit) / 16  // exact: / of integers that do not divide gives a float
+	}
+	"U+" + out
+}
+
+// the character of a code point; an invalid one (surrogate, above 10FFFF) warns and stays written
+code_point_text(value, written:text, at) := {
+	if value > max_code_point or (value >= first_surrogate and value <= last_surrogate) { return unsupported("invalid code point " + code_point_name(value), at) + written }
+	"" + (value as char)
+}
+
+// the end of the name token from start; the + of a leading U+ belongs to it
+token_end(source:text, start) := {
+	end = start
+	if end + 1 < source.bytes and is_u(byte_at(source, end)) and byte_at(source, end + 1) == 43 { end += 2 }
+	while end < source.bytes and is_name_byte(byte_at(source, end)) { end++ }
+	end
+}
+
+// the end of \U1F60D whose backslash is at i (4–8 hex digits as a whole token), the only marker without a colon; else -1
+unicode_escape_end(source:text, i) := {
+	if i + 1 >= source.bytes or byte_at(source, i + 1) != 85 { return (-1) }
+	end = token_end(source, i + 2)
+	if hex_value(source, i + 2, end, min_bare_hex_digits) < 0 { return (-1) }
+	end
+}
+
+// offset of the next "<:", "\:" or "\U1F60D" at or after start, else source.bytes
 next_marker(source:text, start) := {
 	i = start
 	while i + 1 < source.bytes {
 		b = byte_at(source, i)
 		if (b == 60 or b == 92) and byte_at(source, i + 1) == 58 { return i }
+		if b == 92 and unicode_escape_end(source, i) >= 0 { return i }
 		i++
 	}
 	source.bytes
@@ -304,13 +387,19 @@ uniscript(source:text) := {
 			if block.bytes > 0 { out += block_text(block, run, i) } else { out += run }
 			i = next
 		} else {
-			if byte_at(source, i) == 92 {
-				end = i + 2
-				while end < source.bytes and is_name_byte(byte_at(source, end)) { end++ }
+			escape = unicode_escape_end(source, i)
+			if escape >= 0 {
+				out += code_point_text(hex_value(source, i + 2, escape, min_bare_hex_digits), byte_slice(source, i, escape), i)
+				i = escape
+			} else { if byte_at(source, i) == 92 {
+				end = token_end(source, i + 2)
 				name = byte_slice(source, i + 2, end)
 				record = find(names_table, name)
-				if record < 0 { return error("unknown uniscript entity: " + name) }
-				out += value_of(record)
+				if record >= 0 { out += value_of(record) } else {
+					value = code_point_value(name)
+					if value < 0 { return error("unknown uniscript entity: " + name) }
+					out += code_point_text(value, byte_slice(source, i, end), i)
+				}
 				i = end
 			} else {
 				close = offset_of(source, 62, i + 2)
@@ -321,7 +410,7 @@ uniscript(source:text) := {
 					if is_block(content) { block = content } else { out += text }
 				}
 				i = close + 1
-			}
+			} }
 		}
 	}
 	out
@@ -352,6 +441,9 @@ unicode_to_uniscript(text:text) := {
 		if (b == 60 or b == 92) and i + 1 < text.bytes and byte_at(text, i + 1) == 58 {
 			out += byte_slice(text, i, i + 1) + "<::>"
 			i += 2
+		} else { if b == 92 and unicode_escape_end(text, i) >= 0 {
+			out += "\\<:U>"  // a literal \U1F60D is escaped
+			i += 2
 		} else {
 			width = utf8_width(b)
 			character = byte_slice(text, i, i + width)
@@ -369,7 +461,7 @@ unicode_to_uniscript(text:text) := {
 				}
 			}
 			out += spelled(character, others + first)
-		}
+		} }
 	}
 	out
 }

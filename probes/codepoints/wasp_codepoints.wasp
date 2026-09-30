@@ -1,0 +1,8 @@
+use uniscript
+ok = uniscript("\\:1F60D \\:U1F60D \\:0x1F60D \\U1F60D \\:U+1F60D \\:u+1f60d <:U+1F60D> <:0x1F60D> <:1F60D> \\U0001F60D") == "😍 😍 😍 😍 😍 😍 😍 😍 😍 😍"
+ok = ok and uniscript("\\:U+41 \\:1F60D. <:1F60D>x \\:bed \\:BbbA \\:U+BBBA") == "A 😍. 😍x 🛏 𝔸 뮺"
+ok = ok and uniscript("C:\\Users\\U1F60Dx \\UABC \\u00e9") == "C:\\Users\\U1F60Dx \\UABC \\u00e9"
+ok = ok and uniscript("\\:D800 <:U+110000>") == "\\:D800 <:U+110000>"
+ok = ok and unicode_to_uniscript("print(\"\\U0001F60D\")") == "print(\"\\<:U>0001F60D\")"
+ok = ok and uniscript("\\<:U>1F60D") == "\\U1F60D"
+ok
