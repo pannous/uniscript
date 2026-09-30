@@ -14,6 +14,7 @@ private const val TAG_CLOSE = '>'
 private const val CLOSING_SLASH = '/'
 private const val ESCAPED_COLON = "<::>"
 private const val FONT_KEY = "font"
+private const val SUFFIX_KEY = "*suffix"
 /** The uniscript version this implementation reads, declared by the header `<:uniscript version="…">` */
 const val UNISCRIPT_VERSION = "https://uniscript.org/v1"
 private const val HEADER_OPEN = "<:uniscript"
@@ -137,8 +138,8 @@ private class Conversion(val index: EntityIndex, val source: String) {
 	/** The control a block puts after a character of its script, or after any character; "": the effect cannot apply */
 	private fun suffix(block: String, character: Int): String? {
 		val script = scriptOf(character)
-		val scripted = if (script.isEmpty()) null else name("$block *suffix $script")
-		return scripted ?: name("$block *suffix")
+		val scripted = if (script.isEmpty()) null else name("$block $SUFFIX_KEY $script")
+		return scripted ?: name("$block $SUFFIX_KEY")
 	}
 
 	/** The control of an effect after one character, "" with a warning when it has none for it */
@@ -163,6 +164,51 @@ private class Conversion(val index: EntityIndex, val source: String) {
 			text + effectSuffix(block, character, at)
 		}
 		return styled + effectSuffixes(effects, character, at)
+	}
+
+	/** A block with a suffix control (mirror, red), which stacks as an effect instead of restyling */
+	private fun isEffect(block: String) = name("$block $SUFFIX_KEY") != null
+
+	private fun form(block: String, operand: String) = name("$block $operand")
+
+	/** The block and plain operand a character spells back as: 𝐚 → (bold, a), α → ("", alpha) */
+	private fun spelling(character: Int): Pair<String, String>? {
+		val form = index[Table.CHARS, character.asText()] ?: return null
+		val content = form.removePrefix("<:").removeSuffix(">").takeIf { it.length == form.length - 3 } ?: return null
+		return splitOnce(content, ' ')?.takeIf { isBlock(it.first) } ?: Pair("", content)
+	}
+
+	/** The block that combines styles in any order: bold + sans + italic → sans-bold-italic */
+	private fun combined(styles: List<String>): String? {
+		val parts = styles.flatMap { it.split('-') }.filter { it.isNotEmpty() }.distinct().sorted()
+		return permutations(parts).map { it.joinToString("-") }.firstOrNull(::isBlock)
+	}
+
+	private fun plainOf(operand: String) = (if (operand.codePointCount(0, operand.length) > 1) name(operand) else null) ?: operand
+
+	/** A character in further styles: in the block combining them with its own style (bold on 𝛼 → bold-italic α),
+	 *  else one style after the other, each commuting with the character's own style where they do not combine
+	 *  (greek on 𝐚 → bold of greek a → 𝛂). A style that cannot apply keeps the character, with a warning. */
+	private fun restyled(styles: List<String>, character: Int, at: Int): String {
+		spelling(character)?.let { (own, operand) ->
+			val all = if (own.isEmpty()) styles else styles + own
+			val base = if (own.isEmpty()) operand else plainOf(operand)
+			combined(all)?.let { block -> form(block, base) }?.let { return it }
+		}
+		return styles.reversed().fold(character.asText()) { text, style ->
+			val single = text.codePoints().toArray().singleOrNull() ?: return@fold text
+			restyledBy(style, single) ?: text.also { warn("no $style form of $text", at) }
+		}
+	}
+
+	private fun restyledBy(style: String, character: Int): String? {
+		form(style, character.asText())?.let { return it }
+		val (own, operand) = spelling(character) ?: return null
+		if (own.isEmpty()) return form(style, operand) // greek alpha → α
+		val base = plainOf(operand)
+		val plain = base.codePoints().toArray().singleOrNull() ?: return null
+		val restyled = restyledBy(style, plain) ?: return null
+		return if (restyled == base) character.asText() else form(own, restyled)
 	}
 
 	/** One operand: its own entry (red circle → 🔴, greek eta → η), else each character or pair (greek th → θ)
@@ -260,7 +306,12 @@ private class Conversion(val index: EntityIndex, val source: String) {
 			rest = after
 		}
 		val block = words.removeAt(words.lastIndex)
-		return operands(block, rest, words, at)
+		val (effects, styles) = words.partition(::isEffect)
+		if (styles.isEmpty()) return operands(block, rest, effects, at)
+		// <:bold italic A>: the other style words restyle the operands of the last
+		return operands(block, rest, emptyList(), at).codePoints().toArray().joinToString("") {
+			restyled(styles, it, at) + effectSuffixes(effects, it, at)
+		}
 	}
 
 	private fun isMarkerColon(at: Int) = source[at] == MARKER_COLON && (source[at - 1] == TAG_OPEN || source[at - 1] == SHORT_OPEN)
@@ -327,6 +378,11 @@ private fun isClosing(content: String) = content.isEmpty() || content.startsWith
 private fun splitOnSpaces(text: String) = text.split(' ').filter { it.isNotEmpty() }
 
 /** Rust's `split_once`: the text before and after the first separator */
+/** Every order of the parts */
+private fun permutations(parts: List<String>): List<List<String>> =
+	if (parts.size <= 1) listOf(parts)
+	else parts.indices.flatMap { position -> permutations(parts - parts[position]).map { listOf(parts[position]) + it } }
+
 fun splitOnce(text: String, separator: Char): Pair<String, String>? {
 	val at = text.indexOf(separator)
 	return if (at < 0) null else text.substring(0, at) to text.substring(at + 1)
