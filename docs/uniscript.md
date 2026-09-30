@@ -203,8 +203,11 @@ which you can copy, search and paste anywhere.
 ## Where they differ
 • **Output**: LaTeX yields glyphs positioned on a page; uniscript yields codepoints. Uniscript therefore can only express   what Unicode has a codepoint for:  
   `<:upper a>` ⩵ ᵃ works, but there is no superscript `S`, so general `x^{n+1}`, fractions `\frac{a}{b}`, roots, matrices and   any 2D layout are out of scope.  
-• **Colors, mirroring, emoji**: in LaTeX these are rendering instructions applicable to *any* glyph. In uniscript they only   succeed for the  
-  select combinations Unicode happens to encode (♡ + brown ⇒ 🤎, but no brown ∑). This is exactly the proliferation   criticized in [[#Fonts]].  
+• **Colors, mirroring, emoji**: in LaTeX these are rendering instructions applicable to *any* glyph. In uniscript they
+  become a Unicode character where one exists (♡ + brown ⇒ 🤎, but no brown ∑), else a suffix control the Uniscript fonts
+  render. A color the fonts cannot show on a character (`<:red 𓀀>`) falls back to its color meta, 𓀀 + TAG `:color red`,
+  which HTML renders as a red span, with the warning `red on 𓀀 kept as color meta`; a geometry without a control stays
+  plain (`left does not apply to 𓀀`). The fixed combinations are exactly the proliferation criticized in [[#Fonts]].  
 • **Modes**: LaTeX distinguishes text mode and math mode (`\alpha` fails outside `$…$`, text needs `\textalpha`);   uniscript has one mode.  
 • **Scoping**: LaTeX uses `{…}` groups and `\begin`/`\end` environments; uniscript uses `<:type> … <:/type>` blocks,   deliberately close to XML/HTML.  
 • **Spaces**: in LaTeX math mode spaces are also ignored, but in text mode they are significant; uniscript drops the spaces around entities and between the operands of an inline tag, and keeps those inside a full block.  

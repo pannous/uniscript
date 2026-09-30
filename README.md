@@ -220,6 +220,7 @@ plus a walk over all index tables.
 | `*suffix egyptian` | the same, only after hieroglyphs (`mirror`: U+13440) |
 | `*prefix cjk` | goes before the parts of a CJK group (IDS operators ⿰ ⿱) |
 | `*infix egyptian` | goes between the parts of a hieroglyph group (joiners U+13430, U+13431) |
+| `*meta` | the attached meta a block becomes where it has no suffix control (colors: `color red`, so `<:red 𓀀>` → 𓀀 + TAG `:color red`) |
 
 ## Licenses
 
