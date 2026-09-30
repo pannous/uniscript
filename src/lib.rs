@@ -34,6 +34,8 @@ const SUFFIX_KEY: &str = "*suffix";
 const FONT_KEY: &str = "font";
 const LANG_KEY: &str = "lang";
 const VALUE_PLACEHOLDER: &str = "{}";
+/// The block control naming the meta a block becomes where it has no suffix control (`red *meta` → `color red`)
+const META_FALLBACK_KEY: &str = "*meta";
 /// The current uniscript version, declared by the header `<:uniscript version="…">`; every later uniscript.org version is read too
 pub const UNISCRIPT_VERSION: &str = "https://uniscript.org/v1";
 /// Every `https://uniscript.org/vN` is read (backwards compatible, a later version as well as the current tables allow)
@@ -140,6 +142,13 @@ fn checked<T>(value: T, warnings: Vec<Warning>, mode: WarningMode) -> Result<(T,
 		(WarningMode::Error, Some(first)) => Err(Error::Unsupported(first.clone())),
 		_ => Ok((value, warnings)),
 	}
+}
+
+/// What an effect puts after a character
+enum Control<'a> {
+	Suffix(&'a str),
+	Meta(String),
+	Nothing,
 }
 
 /// A converter over one entity index
@@ -288,20 +297,36 @@ impl<'a> Uniscript<'a> {
 		scripted.or_else(|| self.name(&format!("{block} {SUFFIX_KEY}")))
 	}
 
-	/// The control of an effect after one character, "" with a warning when it has none for it
-	fn effect_suffix(&self, block: &str, character: char, at: usize) -> &'a str {
-		match self.suffix_of(block, character) {
-			Some(suffix) if !suffix.is_empty() => suffix,
-			_ => {
+	/// The control of an effect after one character. Without one, a block with a `*meta` fallback (the colors:
+	/// `red *meta` → `color red`) becomes that attached meta sequence, anything else nothing; both warn.
+	fn effect_control(&self, block: &str, character: char, at: usize) -> Control<'a> {
+		if let Some(suffix) = self.suffix_of(block, character).filter(|suffix| !suffix.is_empty()) {
+			return Control::Suffix(suffix);
+		}
+		match self.name(&format!("{block} {META_FALLBACK_KEY}")).and_then(|meta| meta.split_once(' ')) {
+			Some((key, value)) => {
+				self.warn(format!("{block} on {character} kept as {key} meta"), at);
+				Control::Meta(Meta::Attached { key: key.to_string(), value: value.to_string() }.tags())
+			}
+			None => {
 				self.warn(format!("{block} does not apply to {character}"), at);
-				""
+				Control::Nothing
 			}
 		}
 	}
 
-	/// The suffixes of the stacked effect words (`mirror` in `<:mirror red A>`) for one character
+	/// The suffix controls of the stacked effect words (`mirror` in `<:mirror red A>`) for one character, then the meta
+	/// sequences of the effects it has no control for: a meta follows the character's suffix controls
 	fn effect_suffixes(&self, effects: &[&str], character: char, at: usize) -> String {
-		effects.iter().map(|effect| self.effect_suffix(effect, character, at)).collect()
+		let (mut suffixes, mut metas) = (String::new(), String::new());
+		for effect in effects {
+			match self.effect_control(effect, character, at) {
+				Control::Suffix(suffix) => suffixes += suffix,
+				Control::Meta(meta) => metas += &meta,
+				Control::Nothing => {}
+			}
+		}
+		suffixes + &metas
 	}
 
 	/// One character in a block: its own entry (greek a → α), else followed by the block's suffix; then the effects.
@@ -314,7 +339,10 @@ impl<'a> Uniscript<'a> {
 				self.warn(format!("no {block} form of {character}"), at);
 				character.to_string()
 			}
-			None => format!("{character}{}", self.effect_suffix(block, character, at)),
+			None => {
+				let blocks: Vec<&str> = std::iter::once(block).chain(effects.iter().copied()).collect();
+				return format!("{character}{}", self.effect_suffixes(&blocks, character, at));
+			}
 		};
 		styled + &self.effect_suffixes(effects, character, at)
 	}

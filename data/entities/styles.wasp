@@ -1971,6 +1971,7 @@ blocks {
 	}
 	red {
 		"*suffix": "\u{E0072}"
+		"*meta": "color red"
 		"*suffix egyptian": ""
 		"*suffix cjk": ""
 		mahjong-tile-dragon: "🀄"
@@ -1994,6 +1995,7 @@ blocks {
 	}
 	green {
 		"*suffix": "\u{E0067}"
+		"*meta": "color green"
 		"*suffix egyptian": ""
 		"*suffix cjk": ""
 		mahjong-tile-dragon: "🀅"
@@ -2007,6 +2009,7 @@ blocks {
 	}
 	blue {
 		"*suffix": "\u{E0062}"
+		"*meta": "color blue"
 		"*suffix egyptian": ""
 		"*suffix cjk": ""
 		heart: "💙"
@@ -2019,6 +2022,7 @@ blocks {
 	}
 	brown {
 		"*suffix": "\u{E006E}"
+		"*meta": "color brown"
 		"*suffix egyptian": ""
 		"*suffix cjk": ""
 		circle: "🟤"
@@ -2027,12 +2031,14 @@ blocks {
 	}
 	pink {
 		"*suffix": "\u{E0070}"
+		"*meta": "color pink"
 		"*suffix egyptian": ""
 		"*suffix cjk": ""
 		heart: "🩷"
 	}
 	purple {
 		"*suffix": "\u{E0076}"
+		"*meta": "color purple"
 		"*suffix egyptian": ""
 		"*suffix cjk": ""
 		heart: "💜"
@@ -2041,6 +2047,7 @@ blocks {
 	}
 	orange {
 		"*suffix": "\u{E006F}"
+		"*meta": "color orange"
 		"*suffix egyptian": ""
 		"*suffix cjk": ""
 		book: "📙"
@@ -2052,6 +2059,7 @@ blocks {
 	}
 	yellow {
 		"*suffix": "\u{E0079}"
+		"*meta": "color yellow"
 		"*suffix egyptian": ""
 		"*suffix cjk": ""
 		heart: "💛"
@@ -2060,6 +2068,7 @@ blocks {
 	}
 	black {
 		"*suffix": "\u{E006B}"
+		"*meta": "color black"
 		"*suffix egyptian": ""
 		"*suffix cjk": ""
 		playing-card-joker: "🃏"
@@ -2166,6 +2175,7 @@ blocks {
 	}
 	white {
 		"*suffix": "\u{E0077}"
+		"*meta": "color white"
 		"*suffix egyptian": ""
 		"*suffix cjk": ""
 		mahjong-tile-dragon: "🀆"
@@ -2270,6 +2280,7 @@ blocks {
 	}
 	gray {
 		"*suffix": "\u{E0061}"
+		"*meta": "color gray"
 		"*suffix egyptian": ""
 		"*suffix cjk": ""
 	}

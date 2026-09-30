@@ -1,6 +1,6 @@
 use uniscript::entities::Entities;
 use uniscript::index::{self, Index};
-use uniscript::{convert, header, to_unicode, to_uniscript, Error, Header, Warning, WarningMode, ENTITIES_INDEX, UNISCRIPT_VERSION};
+use uniscript::{convert, header, Meta, to_unicode, to_uniscript, Error, Header, Warning, WarningMode, ENTITIES_INDEX, UNISCRIPT_VERSION};
 
 fn converts(uniscript: &str, unicode: &str) {
 	assert_eq!(to_unicode(uniscript), Ok(unicode.to_string()), "{uniscript}");
@@ -61,8 +61,11 @@ fn warns(uniscript: &str, unicode: &str, message: &str, at: usize) {
 fn unsupported_characters_and_combinations_warn() {
 	warns("<:greek c>", "c", "no greek form of c", 0);
 	warns("x <:fracture 7>", "x 7", "no fracture form of 7", 2);
-	warns("<:red 𓀀>", "𓀀", "red does not apply to 𓀀", 0);
-	warns("<:mirror red 狗>", "狗\u{E004D}", "red does not apply to 狗", 0);
+	warns("<:left 𓀀>", "𓀀", "left does not apply to 𓀀", 0);
+	// a color the fonts cannot show on a character becomes its color meta, after the character's suffix controls
+	let red = Meta::Attached { key: "color".into(), value: "red".into() }.tags();
+	warns("<:red 𓀀>", &format!("𓀀{red}"), "red on 𓀀 kept as color meta", 0);
+	warns("<:mirror red 狗>", &format!("狗\u{E004D}{red}"), "red on 狗 kept as color meta", 0);
 	warns("<:beside a b>", "ab", "no beside group of a", 0);
 	assert_eq!(convert("<:greek a>", WarningMode::Error), Ok(("α".into(), vec![])));
 }
