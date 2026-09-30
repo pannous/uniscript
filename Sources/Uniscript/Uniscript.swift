@@ -12,6 +12,16 @@ private let shortOpen = UInt8(ascii: "\\")
 private let tagClose = UInt8(ascii: ">")
 private let closingSlash: Unicode.Scalar = "/"
 private let escapedColon = "<::>"
+/// `\U1F60D`: the only marker without a colon, a code point in the notation of Python and C
+private let unicodeEscape = UInt8(ascii: "U")
+private let escapedUnicode = "<:U>"
+/// `U+1F60D`, `U1F60D`, `0x1F60D` in any case; `U+` before `U`
+private let codePointPrefixes = ["U+", "u+", "0x", "0X", "U", "u"]
+private let maxHexDigits = 8
+/// Bare hex (`\:1F60D`) and `\U` need at least 4 digits, so a mistyped short name stays unknown
+private let minBareHexDigits = 4
+/// The scalars after a backslash that decide `\U1F60D`: U, 8 digits and the one that ends the token
+private let unicodeEscapeWindow = 10
 private let fontKey = "font"
 private let langKey = "lang"
 private let valuePlaceholder = "{}"
@@ -213,6 +223,13 @@ public struct Uniscript: Sendable {
 				out += escapedColon
 				continue
 			}
+			let window = String(String.UnicodeScalarView(characters[position..<min(position + unicodeEscapeWindow, characters.count)]))
+			if character == "\\" && unicodeEscapeLength(Array(window.utf8), after: -1) != nil {
+				position += 1
+				out.unicodeScalars.append(character)
+				out += escapedUnicode
+				continue
+			}
 			if let length = emojiTags(characters, at: position) {
 				out += spelled(character, [])
 				characters[position..<position + length].forEach { out.unicodeScalars.append($0) } // subdivision flags stay
@@ -261,6 +278,15 @@ private final class Conversion {
 
 	private func isBlock(_ name: String) -> Bool {
 		self.name(name + " ") != nil
+	}
+
+	/// The character of a code point token (`U+1F60D`, `1F60D`); an invalid one (surrogate, above 10FFFF) warns and stays
+	/// `written`; nil for no code point token
+	private func codePoint(_ token: String, written: String, _ at: Int) -> String? {
+		guard let value = codePointValue(token) else { return nil }
+		if let scalar = Unicode.Scalar(value) { return String(scalar) }
+		warn("invalid code point U+\(String(format: "%04X", value))", at)
+		return written
 	}
 
 	private func warn(_ message: String, _ at: Int) {
@@ -474,6 +500,9 @@ private final class Conversion {
 		if let text = name(content.replacingOccurrences(of: " ", with: "-")) {
 			return text
 		}
+		if let text = codePoint(content, written: "<:\(content)>", at) {
+			return text
+		}
 		if let text = try metaTag(content, at) {
 			return text
 		}
@@ -512,22 +541,29 @@ private final class Conversion {
 		func firstIndex(from start: Int, where matches: (Int) -> Bool) -> Int? {
 			(min(start, bytes.count)..<bytes.count).first(where: matches)
 		}
-		func isMarkerColon(_ at: Int) -> Bool {
-			bytes[at] == markerColon && (bytes[at - 1] == tagOpen || bytes[at - 1] == shortOpen)
+		func isMarker(_ at: Int) -> Bool {
+			let colon = at + 1 < bytes.count && bytes[at + 1] == markerColon && (bytes[at] == tagOpen || bytes[at] == shortOpen)
+			return colon || (bytes[at] == shortOpen && unicodeEscapeLength(bytes, after: at) != nil)
 		}
 		var out = ""
 		var block: String?
 		var position = headerLength(source)
 		while position < bytes.count {
-			let marker = firstIndex(from: position + 1, where: isMarkerColon).map { $0 - 1 } ?? bytes.count
+			let marker = firstIndex(from: position, where: isMarker) ?? bytes.count
 			let run = text(position..<marker)
 			if let block { out += blockText(block, run, position) } else { out += run }
 			position = marker
 			if position == bytes.count { break }
-			if bytes[position] == shortOpen {
-				let nameEnd = firstIndex(from: position + 2) { !isNameByte(bytes[$0]) } ?? bytes.count
+			if let length = unicodeEscapeLength(bytes, after: position) {
+				let end = position + 1 + length
+				out += codePoint(text(position + 2..<end), written: text(position..<end), position)!
+				position = end
+			} else if bytes[position] == shortOpen {
+				let nameEnd = position + 2 + tokenLength(bytes, from: position + 2)
 				let entity = text(position + 2..<nameEnd)
-				guard let found = name(entity) else { throw UniscriptError.unknownEntity(entity) }
+				guard let found = name(entity) ?? codePoint(entity, written: text(position..<nameEnd), position) else {
+					throw UniscriptError.unknownEntity(entity)
+				}
 				out += found
 				position = nameEnd
 			} else {
@@ -565,6 +601,43 @@ private func isNameByte(_ byte: UInt8) -> Bool {
 	case "a"..."z", "A"..."Z", "0"..."9", "-", "_": return true
 	default: return false
 	}
+}
+
+private func isHexByte(_ byte: UInt8) -> Bool {
+	switch Unicode.Scalar(byte) {
+	case "a"..."f", "A"..."F", "0"..."9": return true
+	default: return false
+	}
+}
+
+/// Bytes of the name token from `start`; the `+` of a leading `U+` belongs to it
+private func tokenLength(_ bytes: [UInt8], from start: Int) -> Int {
+	var end = start
+	if end + 1 < bytes.count, bytes[end] | 0x20 == UInt8(ascii: "u"), bytes[end + 1] == UInt8(ascii: "+") { end += 2 }
+	while end < bytes.count, isNameByte(bytes[end]) { end += 1 }
+	return end - start
+}
+
+/// The value of hex digits with `minimum`–8 digits
+private func hexValue<Digits: StringProtocol>(_ digits: Digits, minimum: Int) -> UInt32? {
+	guard (minimum...maxHexDigits).contains(digits.utf8.count), digits.utf8.allSatisfy(isHexByte) else { return nil }
+	return UInt32(digits, radix: 16)
+}
+
+/// The value of a code point token: `U+1F60D`, `U1F60D`, `0x1F60D` (1–8 hex digits) or bare `1F60D` (4–8)
+public func codePointValue(_ token: String) -> UInt32? {
+	if let prefix = codePointPrefixes.first(where: token.hasPrefix) {
+		return hexValue(token.dropFirst(prefix.count), minimum: 1)
+	}
+	return hexValue(token, minimum: minBareHexDigits)
+}
+
+/// `U1F60D` after the backslash at `backslash` (`\U1F60D`, 4–8 hex digits as a whole token): the bytes after the backslash
+private func unicodeEscapeLength(_ bytes: [UInt8], after backslash: Int) -> Int? {
+	let start = backslash + 1
+	guard start < bytes.count, bytes[start] == unicodeEscape else { return nil }
+	let length = tokenLength(bytes, from: start + 1)
+	return hexValue(String(decoding: bytes[start + 1..<start + 1 + length], as: UTF8.self), minimum: minBareHexDigits).map { _ in 1 + length }
 }
 
 /// A tag's content is a closing tag: `<:>` or `<:/greek>`
