@@ -13,10 +13,12 @@ categories = ["text-processing", "encoding"]
 include = ["/src/**/*.rs", "/data/entities.idx", "/data/entities/**", "/tests/*.rs", "/README.md", "/LICENSE", "/docs/uniscript.md"]
 
 [features]
-default = ["embedded-index"]
+default = ["embedded-index", "pack"]
 # compiles data/entities.idx into the library: Uniscript::default() and the free functions; without it, load the index
 # at runtime with Uniscript::from_bytes (the WebAssembly build does)
 embedded-index = []
+# `uniscript chunks` also writes chunks.pack, the chunks deflated for one multi-range request per round on the web
+pack = ["dep:miniz_oxide"]
 
 [[bin]]
 name = "uniscript"
@@ -24,3 +26,4 @@ path = "src/main.rs"
 required-features = ["embedded-index"]
 
 [dependencies]
+miniz_oxide = { version = "0.9", optional = true }

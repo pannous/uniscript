@@ -15,6 +15,10 @@ const DEFAULT_ENTITIES: &str = "data/entities";
 const DEFAULT_INDEX: &str = "data/entities.idx";
 const DEFAULT_CHUNKS: &str = "data/chunks";
 const MANIFEST_FILE: &str = "manifest.usxc";
+#[cfg(feature = "pack")]
+const PACK_FILE: &str = "chunks.pack";
+#[cfg(feature = "pack")]
+const PACK_COMPRESSION_LEVEL: u8 = 9;
 const UNICODE_BLOCKS: &str = "data/sources/Blocks.txt";
 const COMMON_CHARACTERS: &str = "data/sources/common.txt";
 const REVERSE_FLAGS: [&str; 2] = ["-r", "--reverse"];
@@ -122,10 +126,29 @@ fn chunks(index_path: &str, directory: &str) -> Result<(), String> {
 			std::fs::remove_file(entry.path()).map_err(|e| format!("{}: {e}", entry.path().display()))?;
 		}
 	}
-	write(MANIFEST_FILE.into(), &manifest)?;
 	chunks.iter().enumerate().try_for_each(|(number, chunk)| write(format!("{number}.idx"), chunk))?;
+	#[cfg(feature = "pack")]
+	let manifest = {
+		let (pack, offsets) = pack(&chunks);
+		write(PACK_FILE.into(), &pack)?;
+		[manifest, offsets].concat()
+	};
+	write(MANIFEST_FILE.into(), &manifest)?;
 	let total: usize = chunks.iter().map(Vec::len).sum();
 	let common = chunks.last().map_or(0, Vec::len);
-	println!("wrote {directory}/{MANIFEST_FILE} ({} bytes) and {} chunks ({total} bytes, the common chunk {} {common} bytes)", manifest.len(), chunks.len(), chunks.len() - 1);
+	println!("wrote {directory}/{MANIFEST_FILE} ({} bytes) and {} chunks ({total} bytes, the common chunk {} {common} bytes; packed in {directory}/chunks.pack)", manifest.len(), chunks.len(), chunks.len() - 1);
 	Ok(())
+}
+
+/// chunks.pack, the chunks deflated one after another, and the manifest's last section: where each starts, then the end
+#[cfg(feature = "pack")]
+fn pack(chunks: &[Vec<u8>]) -> (Vec<u8>, Vec<u8>) {
+	let mut pack = Vec::new();
+	let mut offsets = Vec::new();
+	for chunk in chunks {
+		offsets.extend((pack.len() as u32).to_le_bytes());
+		pack.extend(miniz_oxide::deflate::compress_to_vec(chunk, PACK_COMPRESSION_LEVEL));
+	}
+	offsets.extend((pack.len() as u32).to_le_bytes());
+	(pack, offsets)
 }

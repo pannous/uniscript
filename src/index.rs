@@ -200,11 +200,23 @@ impl<'a> Chunked<'a> {
 		chunk
 	}
 
+	fn filter_offset(&self) -> Option<usize> {
+		Some(self.chunk_starts_offset() + CHUNK_START_SIZE * self.common()?)
+	}
+
 	/// The filter of absent names: its bit count and hash count, then the bits; after the chunk starts
 	fn filter(&self) -> Option<(u32, u32, &'a [u8])> {
-		let at = self.chunk_starts_offset() + CHUNK_START_SIZE * self.common()?;
+		let at = self.filter_offset()?;
 		let (bits, hashes) = (u32_at(self.manifest, at), u32_at(self.manifest, at + 4));
 		(bits > 0).then(|| (bits, hashes, &self.manifest[at + 8..at + 8 + (bits as usize).div_ceil(8)]))
+	}
+
+	/// Where each chunk's deflated copy starts in chunks.pack, then the end: the optional last section, after the filter
+	fn pack_offsets(&self) -> Option<Vec<u32>> {
+		let filter = self.filter_offset()?;
+		let at = filter + 8 + (u32_at(self.manifest, filter) as usize).div_ceil(8).next_multiple_of(4);
+		let words = self.manifest.get(at..at + 4 * (self.chunks.len() + 1))?;
+		Some(words.chunks_exact(4).map(|word| u32::from_le_bytes(word.try_into().expect("4 bytes"))).collect())
 	}
 
 	/// A name the filter does not know is in no chunk: operand words and whole tags the converter tries (`Hello`,
@@ -293,6 +305,14 @@ impl<'a> Index<'a> {
 		match &self.source {
 			Source::Whole(_) => None,
 			Source::Chunked(chunked) => chunked.common(),
+		}
+	}
+
+	/// Where each chunk's deflated copy starts in chunks.pack (`uniscript chunks`), then the end of the last
+	pub fn pack_offsets(&self) -> Option<Vec<u32>> {
+		match &self.source {
+			Source::Whole(_) => None,
+			Source::Chunked(chunked) => chunked.pack_offsets(),
 		}
 	}
 
