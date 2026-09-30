@@ -9,7 +9,7 @@ The constituents of uniscript are **entities** (like `\:alpha` for α) and **blo
 Block types influencing the character stream would be    
     
 • **languages**       (greek a => α)    
-• **modifiers**     (upper A => ᴬ , italic A => 𝐴 , bold A => 𝝖 bold+italic A => 𝘼 … )    
+• **modifiers**     (upper A => ᴬ , italic A => 𝐴 , bold A => 𝐀 , bold italic A => 𝑨 , bold alpha => 𝛂 … )    
 • **calligraphic** hands (fracture A => 𝔄 , double-struck A => 𝔸 … )    
 • **ligature**   (ligature ae => æ )    
 • **colors**   (red circle ○ => 🔴, brown heart ♡ => 🤎)    
@@ -48,6 +48,7 @@ followed by TAG characters (U+E0020…E007E). Any font shows the plain letter. T
 - **40,000 names**: Unicode 16 character names, LaTeX `unicode-math` commands, HTML5 entities, and uniscript's own names.
 - **Block types**: bold, italic, script, fracture, double-struck, sans, monospace, superscript (`upper`), subscript
   (`lower`), small capitals, circled, fullwidth, ligatures, phonetic Greek (`<:greek> athos <:/greek>` → αθοσ).
+- **Styles combine** in any word order: `<:bold italic alpha>` → 𝜶, `<:sans bold A>` → 𝗔, `<:fraktur bold A>` → 𝕬.
 - **Effects**: mirror, flip, turn, left, right and 11 colors, which you can stack: `<:mirror red R>`.
 - **Groups**: Egyptian hieroglyph joiners (`<:above 𓀀 𓁐>`) and CJK composition (`<:beside 犭 句>` → 狗).
 - **Meta information**: font styles for scripts Unicode unified (`<:font cuneiform-old-babylonian> … <:/font>`,
@@ -163,7 +164,7 @@ let (styled, warnings) = Uniscript.standard.metaRuns(tagged)   // meta informati
 Uniscript.standard.html(styled)
 ```
 
-`xcrun swift test` (in `tests/UniscriptTests`) runs the cases of `tests/uniscript_test.rs` and `tests/meta_test.rs`
+`xcrun swift test` (in `tests/UniscriptTests`) runs the cases of `tests/uniscript_test.rs`, `tests/styles_test.rs` and `tests/meta_test.rs`
 plus a walk over all index tables.
 
 ## Syntax
@@ -172,6 +173,10 @@ plus a walk over all index tables.
 - `<:type operands>`: a block type applied to space separated operands; `<:double-d>` works too.
 - `<:type> … <:/type>` or `<:type> … <:>`: a block; spaces inside it only separate operands and are dropped.
 - Effect words stack: `<:mirror red A>` gives A with the red and the mirror control.
+- Style words stack too: the last styles the operands and the others restyle the result. They use the block that
+  combines them in any order (`<:italic bold alpha>` → bold-italic → 𝜶). If no such block exists, they commute
+  (`<:greek bold a>` → bold of greek a → 𝛂). A style Unicode has no combination for keeps the character with a warning:
+  `<:double bold A>` → 𝐀.
 - `<:` is the only special sequence. Escape it as `<<::>`, `<:less>:` or `<:<>:`; a lone `<` or `>` needs no escape.
 - `<:key value>` … `<:/key>` and `<:key value operands>` with a meta key (`font`, `lang`, `color`, `background`,
   `angle`, `size`, `weight`, `style`, `features`): meta information. Entity names win: `<:angle>` is ∠.

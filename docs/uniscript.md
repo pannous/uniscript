@@ -7,7 +7,7 @@ The constituents of uniscript are entities and block types.
 Block types influencing the character stream would be    
     
 • languages          (greek a => α)    
-• modifiers          (upper A => ᴬ , italic A => 𝐴 , bold A => 𝝖 bold+italic A => 𝘼 … )    
+• modifiers          (upper A => ᴬ , italic A => 𝐴 , bold A => 𝐀 , bold italic A => 𝑨 , bold alpha => 𝛂 … )    
 • calligraphic hands (fracture A => 𝔄 , double-struck A => 𝔸 … )    
 • ligature           (ligature ae => æ )    
 • colors             (red circle ○ => 🔴, brown heart ♡ => 🤎)    
@@ -89,6 +89,15 @@ representation.
 the digraphs th ch ps ⩵ θ χ ψ (also inside words: `<:greek> athos <:/greek>` ⩵ αθοσ), and letter names for the rest:  
 `<:greek eta>` ⩵ η, `<:greek Omega>` ⩵ Ω. Letters without a clear Greek counterpart (c h j q v w y) are not guessed:  
 they stay unchanged, with a warning.    
+  
+# Stacked styles
+  
+Style words stack like effect words. `<:bold italic alpha>` ⩵ 𝜶: the last word styles the operand (italic α ⩵ 𝛼), and
+the others restyle it through the block that combines all styles in any order (bold + italic ⩵ bold-italic, so
+`<:italic bold alpha>` and `<:sans bold italic Alpha>` ⩵ 𝞐 work too; aliases combine: `<:fraktur bold A>` ⩵ 𝕬).
+Styles without a combined block commute: `<:greek bold a>` ⩵ bold(greek a) ⩵ 𝛂, and a style that has already been
+applied is kept: `<:greek bold alpha>` ⩵ 𝛂. The Mathematical Alphanumeric Symbols come from their Unicode
+decomposition (𝛂 is `<font>` α), not from their names, so the Greek alphabets have all their styles.
   
 # Warnings
   

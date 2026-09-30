@@ -8,3 +8,6 @@
 - TODO: the Swift package and wasp's lib/uniscript.wasp have no lenient mode yet (Rust: WarningMode::Lenient, `--lenient`: errors become warnings, the faulty uniscript stays as written).
 - TODO: the Kotlin port in intellij/ (fourth implementation) must follow src/lib.rs changes; a shared test vector file for Rust, Swift, wasp and Kotlin would keep them in step.
 - TODO: intellij/ plugin: no Settings page (colors, folding on/off); unknown `\:name` is an error in every file, also LaTeX's `\:` spacing command in .tex files.
+- TODO: wasp's lib/uniscript.wasp (warp) needs the stacked-style resolution of src/lib.rs `restyled` (combined block over permutations, else commute): `<:bold italic alpha>` → 𝜶, `<:greek bold a>` → 𝛂.
+- TODO: README "Support" lists Python, JavaScript and C++ libraries, but the repository only has Rust, Swift and Kotlin.
+- TODO: combinations Unicode lacks (`<:double bold A>`, `<:bold italic 7>`) stay in the inner style with a warning; the Uniscript fonts could render them with a style control instead.
