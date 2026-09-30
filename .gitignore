@@ -1,7 +1,6 @@
 target
 .build
 .swiftpm
-docs/demo.html
 probes/meta_demo.html
 intellij/build
 intellij/.gradle
