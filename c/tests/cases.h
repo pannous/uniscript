@@ -75,13 +75,13 @@ static const conversion_case converts[] = {
 	{"<:greek bold a>", "𝛂"}, {"<:bold greek a>", "𝛂"}, {"<:greek bold alpha>", "𝛂"},
 	{"<:alpha>", "α"}, {"\\:infinity", "∞"}, {"<:greek small letter alpha>", "α"}, {"<:dopf>", "𝕕"},
 	{"<:alpha> > <:beta>", "α > β"}, {"<:forall> x <:in> <:double R>", "∀ x ∈ ℝ"},
-	{"<:fracture A>", "𝔄"}, {"<:fracture A b c >", "𝔄𝔟𝔠"}, {"<:fracture> A b c <:>", "𝔄𝔟𝔠"},
-	{"<:greek> a b g d <:/greek>", "αβγδ"}, {"<:double d>", "𝕕"}, {"<:double-d>", "𝕕"}, {"x<:upper a>", "xᵃ"},
+	{"<:fracture A>", "𝔄"}, {"<:fracture A b c >", "𝔄𝔟𝔠"}, {"<:fracture> A b c <:>", " 𝔄 𝔟 𝔠 "},
+	{"<:greek> a b g d <:/greek>", " α β γ δ "}, {"<:double d>", "𝕕"}, {"<:double-d>", "𝕕"}, {"x<:upper a>", "xᵃ"},
 	{"<:ligature ae>", "æ"}, {"<:reverseInPlace e>", "ɘ"}, {"<:iconic ⚠>", "⚠\uFE0F"},
-	{"<:greek> athos <:/greek>", "αθοσ"}, {"<:greek th ch ps>", "θχψ"}, {"<:greek eta Omega lambda>", "ηΩλ"},
+	{"<:greek> athos <:/greek>", " αθοσ "}, {"<:greek th ch ps>", "θχψ"}, {"<:greek eta Omega lambda>", "ηΩλ"},
 	{"<:greek a>", "α"},
-	{"<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμοσ"}, {"<:greek a kosmos>", "α κοσμοσ"}, /* spaces next to a word stay */
-	{"<:fracture Hello  World>", "ℌ𝔢𝔩𝔩𝔬  𝔚𝔬𝔯𝔩𝔡"},
+	{"<:greek> filosofia kosmos<:/greek>", " φιλοσοφια κοσμοσ"}, {"<:greek a kosmos>", "ακοσμοσ"}, /* spaces next to a word stay */
+	{"<:greek phi chi>", "φχ"},
 	{"<:red circle>", "🔴"}, {"<:brown heart>", "🤎"}, {"<:red A>", "A\U000E0072"}, {"<:mirror e>", "e\U000E004D"},
 	{"<:mirror 𓀀>", "𓀀\U00013440"},
 	{"<:mirror red A>", "A\U000E0072\U000E004D"}, {"<:red mirror A>", "A\U000E004D\U000E0072"},
@@ -90,7 +90,7 @@ static const conversion_case converts[] = {
 	{"<:above 𓀀 𓁐>", "𓀀\U00013430𓁐"}, {"<:beside 犭 句>", "⿰犭句"},
 	{"<:egyptian A1>", "𓀀"}, {"<:gardiner A1>", "𓀀"}, {"<:hieroglyph A1>", "𓀀"}, {"<:egyptian seated man>", "𓀀"},
 	{"<:egyptian man sitting>", "𓀀"}, {"<:egyptian man-sitting>", "𓀀"},
-	{"<:egyptian> A1 Aa1 <:/egyptian>", "𓀀𓐍"}, {"<:mirror egyptian A1>", "𓀀\U00013440"},
+	{"<:egyptian> A1 Aa1 <:/egyptian>", " 𓀀 𓐍 "}, {"<:mirror egyptian A1>", "𓀀\U00013440"},
 	{"<:<> <::> <<::>", "< : <:"}, {"<:less>:", "<:"},
 	{HEADER "\n<:alpha>\n", "α\n"}, {HEADER " <:alpha>", " α"}, {"<:uniscript><:alpha>", "α"},
 	{"<<::>uniscript version=\"https://uniscript.org/v1\">", HEADER}, /* the escaped header is text */

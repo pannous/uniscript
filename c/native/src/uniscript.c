@@ -217,13 +217,7 @@ static void hyphenated_words(buf *out, str text) {
 	}
 }
 
-/* An operand that is one letter of the block: one character, its own entry (greek th, greek eta) or an entity name */
-static bool is_letter(str block, str token) {
-	return character_count(token) == 1 || index_getf(TABLE_NAMES, NULL, "%.*s %.*s", S(block), S(token)) || name(token, NULL);
-}
-
-/* The space separated operands, or one operand of several words (egyptian seated man); spaces between letters only
- * separate them, spaces next to a word stay (<:greek> filosofia kosmos<:/greek> → φιλοσοφια κοσμοσ); a group
+/* The space separated operands, spaces dropped, or one operand of several words (egyptian seated man); a group
  * (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script of the
  * first part has */
 static void operands(converter *self, buf *out, str block, str content, strs effects, size_t at) {
@@ -237,18 +231,7 @@ static void operands(converter *self, buf *out, str block, str content, strs eff
 	const char *script = "";
 	str rest = content, token, named, affix;
 	buf part = { 0 };
-	size_t position = 0, spaces = 0;
-	bool previous_is_letter = true, more = true;
-	while (more) {
-		more = split_once(rest, ' ', &token, &rest);
-		if (!more) token = rest;
-		spaces++;
-		if (!token.n) continue;
-		bool letter = is_letter(block, token);
-		if (!group && position > 0 && !(previous_is_letter && letter))
-			for (size_t i = 0; i < spaces; i++) buf_addz(out, " ");
-		spaces = 0;
-		previous_is_letter = letter;
+	for (size_t position = 0; next_token(&rest, ' ', &token); position++) {
 		part.n = 0;
 		if (!group)
 			operand(self, &part, block, token, effects, at);
@@ -265,7 +248,6 @@ static void operands(converter *self, buf *out, str block, str content, strs eff
 			buf_adds(out, affix);
 		}
 		buf_adds(out, buf_str(&part));
-		position++;
 	}
 	buf_free(&part);
 }
@@ -393,6 +375,23 @@ static void restyled(converter *self, buf *out, strs styles, uint32_t character,
 	buf_adds(out, buf_str(&text));
 	buf_free(&text);
 	buf_free(&next);
+}
+
+/* The text of a full block (<:greek> … <:/greek>) as written: each word an operand, the whitespace after it kept */
+static void block_text(converter *self, buf *out, str block, str text, size_t at) {
+	if (index_getf(TABLE_NAMES, NULL, "%.*s *group", S(block))) {
+		operands(self, out, block, text, (strs){ 0 }, at);
+		return;
+	}
+	uint32_t character;
+	size_t word_end = 0, length;
+	for (size_t position = 0; (length = utf8_decode(str_from(text, position), &character)); position += length) {
+		if (!is_whitespace(character)) continue;
+		operand(self, out, block, str_slice(text, word_end, position), (strs){ 0 }, at);
+		buf_add(out, text.p + position, length);
+		word_end = position + length;
+	}
+	if (word_end < text.n) operand(self, out, block, str_from(text, word_end), (strs){ 0 }, at);
 }
 
 static bool is_font(str name_of_font) { return index_getf(TABLE_FONTS, NULL, "%.*s ", S(name_of_font)); }
@@ -570,7 +569,7 @@ static bool unicode_of(converter *self, buf *out, const char *text, uniscript_mo
 		str rest = str_from(source, position);
 		size_t marker = marker_in(rest);
 		if (block.p)
-			operands(self, out, block, str_slice(rest, 0, marker), (strs){ 0 }, position);
+			block_text(self, out, block, str_slice(rest, 0, marker), position);
 		else
 			buf_adds(out, str_slice(rest, 0, marker));
 		position += marker;

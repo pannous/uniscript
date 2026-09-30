@@ -10,7 +10,7 @@
   so ld ignores them): the Makefile archives with `libtool -static` on macOS.
 - Each call gets its own `converter` (warnings, error), so there is no shared state and the library is thread-safe.
 - Porting pitfalls: Rust `split_whitespace`/`trim` use Unicode White_Space (U+3000, U+00A0 …), not ASCII; `split(' ')`
-  keeps empty pieces (the space counting in `operands` needs them); the style permutations in `combined` come in
+  keeps empty pieces; full blocks (`block_text`) keep their whitespace verbatim, one piece per whitespace character like `split_inclusive`, and an empty word looks up `block ` (the block entry, ""); the style permutations in `combined` come in
   lexicographic order of the sorted parts, which `next_permutation` reproduces; `sort_by_key` is stable (insertion sorts).
 - A macro that evaluates its argument twice (`ADVANCE(enclosing[--depth]->end)`) popped two runs; UBSan caught it as a
   pointer overflow.
@@ -20,4 +20,4 @@
   `make -C c/native differential` compares the native CLI with the Rust CLI in every mode (warn, strict, lenient, html,
   reverse, reverse of the converted) on the repo's markdown and a random corpus (`tests/fuzz_corpus.py`); line by line
   for the first 400 corpus lines, because an error stops a whole file. Run it after reference changes: it caught the
-  spaces rule of 822678c before the shared cases had it.
+  spaces rule of 822678c before the shared cases had it (since replaced by 48026c8: blocks keep text as written, inline tags drop spaces).
