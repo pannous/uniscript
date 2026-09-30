@@ -96,6 +96,7 @@ Libraries for UniScript are provided for all major programming languages in this
 Swift, Rust, Python, JavaScript, and C++. The Rust crate is the reference implementation, and the Swift package is a direct port of it. The Python and C++ libraries are wrappers around the Rust crate. The JavaScript library is a direct port of the Rust crate to TypeScript. For faster web use, we recommend using the compiled WebAssembly, as shown in the demo.html 
 
 - **C / C++** (Rust-backed, `c/ffi`): header `c/uniscript.h`, header-only C++17 wrapper `c/uniscript.hpp`; `make -C c/ffi test`, usage in [c/ffi/README.md](c/ffi/README.md).
+- **C, native** (C11, no dependencies, `c/native`): the same `c/uniscript.h` and C++ wrapper as `c/ffi`, drop-in interchangeable, index compiled in; `make -C c/native` builds `build/libuniscript.{a,dylib}` and the CLI `build/uniscript`, `make -C c/native test` runs the shared cases under sanitizers.
 - **WebAssembly** (the Rust crate, `wasm/`): `import init, { convert, toUniscript } from "./wasm/uniscript.js"; await init();` then the API of the TypeScript port; `cd wasm && npm test`, live in [docs/demo.html](docs/demo.html).
 - **Python, pure** (no dependencies, `python/native`): `import uniscript; uniscript.to_unicode("<:alpha>")`, reads `entities.idx` in place via mmap, same API as the FFI package; `cd python/native && PYTHONPATH=. python3 -m pytest tests`, usage in [python/native/README.md](python/native/README.md).
 
