@@ -107,16 +107,6 @@ Download them from the [releases](https://github.com/pannous/uniscript/releases)
 Libraries for UniScript are provided for all major programming languages in this repository:
 Swift, Rust, Python, JavaScript/TypeScript, C and C++. The Rust crate is the reference implementation. Swift, TypeScript, Python and C each have a native port of it, and Python and C/C++ also have wrappers around the Rust crate (FFI), with the same API as their native port. For fast web use, we recommend the compiled WebAssembly, as shown in [docs/demo.html](docs/demo.html). All of them pass the same reference cases:
 
-- **Swift** (a direct port, SwiftPM, macOS 13+/iOS 16+): `.package(url: "https://github.com/pannous/uniscript", from: "1.0.0")`, product `Uniscript`; `xcrun swift test`, usage in [Swift](#swift).
-- **C / C++** (Rust-backed, `c/ffi`): header `c/uniscript.h`, header-only C++17 wrapper `c/uniscript.hpp`; `make -C c/ffi` builds `c/ffi/build/libuniscript.{a,dylib}` to link directly (no install target: the native library installs the same API), `make -C c/ffi test`, usage in [c/ffi/README.md](c/ffi/README.md).
-- **C, native** (C11, no dependencies, `c/native`): the same `c/uniscript.h` and C++ wrapper as `c/ffi`, drop-in interchangeable, index compiled in; install with `brew install pannous/tap/libuniscript` (the Rust CLI: `brew install pannous/tap/uniscript`), with Conan (`packaging/conan`), or from the release tarball `uniscript-c-VERSION.tar.gz` or a checkout: `make -C c/native install PREFIX=/usr/local` (libraries, `uniscript.h`, `uniscript.hpp`, the CLI and `uniscript.pc`, so `cc app.c $(pkg-config --cflags --libs uniscript)`); `make -C c/native test` runs the shared cases under sanitizers.
-- **Rust** (the reference, crate `uniscript`): `cargo add uniscript`, then `uniscript::to_unicode("<:alpha>")`; `cargo test`.
-- **WebAssembly** (the Rust crate, `wasm/`, npm package `@pannous/uniscript-wasm`): `npm install @pannous/uniscript-wasm`, `import init, { convert, toUniscript } from "@pannous/uniscript-wasm"; await init();` then the API of the TypeScript port; `cd wasm && npm test`, live in [docs/demo.html](docs/demo.html).
-- **TypeScript / JavaScript** (a direct port, `js/`, npm package `@pannous/uniscript`, ESM for Node and browsers): `npm install @pannous/uniscript`, `import { toUnicode, convert, toUniscript } from "@pannous/uniscript"` loads the bundled `entities.idx`; `@pannous/uniscript/core` takes your own bytes (`new Uniscript(new EntityIndex(bytes))`); `cd js && npm test`.
-- **Python, pure** (no dependencies, `python/native`, package `uniscript-py`): `pip install uniscript-py`, `import uniscript; uniscript.to_unicode("<:alpha>")`, reads `entities.idx` in place via mmap, same API as the FFI package; `cd python/native && PYTHONPATH=. python3 -m pytest tests`, usage in [python/native/README.md](python/native/README.md).
-- **Python, Rust-backed** (PyO3, `python/ffi`, package `uniscript-rs`, abi3 wheels for macOS and Linux): `pip install uniscript-rs`, the same `import uniscript` API as the pure package, about 6× faster on documents; `python/ffi/build.sh` (maturin, installs into the system python), `python/ffi/test.sh`.
-- **IntelliJ IDEs** (`intellij/`, Kotlin port): *Settings | Plugins | Marketplace* → `Uniscript`, or *Install Plugin from Disk…* with the zip of `cd intellij && ./gradlew buildPlugin`; see [intellij/README.md](intellij/README.md).
-- **Sublime Text** (`sublime/Uniscript`, runs the `uniscript` CLI): Package Control *Add Repository* `https://raw.githubusercontent.com/pannous/uniscript/main/sublime/repository.json`, then *Install Package* `Uniscript`; see [sublime/Uniscript/README.md](sublime/Uniscript/README.md).
 
 Programming languages supporting Uniscript natively are wasp and warp. 
 
@@ -138,9 +128,10 @@ Renderers might choose to switch on Uniscript mode when encountering the header 
 assert_eq!(uniscript::to_unicode("<:alpha> <:fracture A>")?, "α 𝔄");
 assert_eq!(uniscript::to_uniscript("α 𝔄"), "<:alpha> <:fracture A>");
 
-// warnings instead of stderr, or as errors
-let (text, warnings) = uniscript::convert("<:fracture 7>", uniscript::WarningMode::Warn)?;   // "7", 1 warning
-assert!(uniscript::convert("<:fracture 7>", uniscript::WarningMode::Error).is_err());
+```python
+import uniscript
+assert uniscript.to_unicode("<:alpha> <:fracture A>") == "α 𝔄"
+assert uniscript.to_uniscript("α 𝔄") == "<:alpha> <:fracture A>"
 ```
 
 `to_uniscript` followed by `to_unicode` gives the original text back.
