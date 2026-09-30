@@ -10,7 +10,7 @@
 		"unicodeRoundTrips: [unicode]: toUnicode(toUniscript(unicode)) == unicode",
 		"warns: [uniscript, unicode, message, at]: mode warn gives unicode and exactly this warning; mode error throws Unsupported with it",
 		"errors: [uniscript, kind, detail]: mode warn throws kind (UnknownEntity, Unclosed, InvalidMeta) carrying detail",
-		"lenient: [uniscript, text, [messages]]: mode lenient never throws",
+		"lenient: [uniscript, text, [messages]]: mode lenient never throws; [] means no warning (a later uniscript.org/vN header is read without one)",
 		"header: [source, version or null for no header, length in UTF-8 bytes]",
 		"html: [uniscript, html, [[message, at]]]: convert (warn), metaRuns, html; the warnings of metaRuns",
 		"metaRuns: [tagged, plain text, run count, [[message, at]]]",
@@ -132,7 +132,7 @@
 		["<:red 𓀀>", "𓀀", "red does not apply to 𓀀", 0],
 		["<:mirror red 狗>", "狗{U+E004D}", "red does not apply to 狗", 0],
 		["<:beside a b>", "ab", "no beside group of a", 0],
-		["<:uniscript version=\"https://uniscript.org/v9\">A", "A", "unsupported uniscript version https://uniscript.org/v9", 0],
+		["<:uniscript version=\"https://example.com/v1\">A", "A", "unsupported uniscript version https://example.com/v1", 0],
 		["<:font Santakku>", "{open font Santakku}", "Santakku is no font style of the entities, used as a font family", 0]
 	],
 	"errors": [
@@ -145,7 +145,8 @@
 		["<:alpha> <:nosuchthing> \\:nosuch <:beta>", "α <:nosuchthing> \\:nosuch β", ["unknown uniscript entity: nosuchthing", "unknown uniscript entity: nosuch"]],
 		["<:color red;x A> <:alpha>", "<:color red;x A> α", ["invalid meta value in <:color red;x A>"]],
 		["<:alpha> a <: b", "α a <: b", ["unclosed <: at <: b"]],
-		["<:fracture 7>", "7", ["no fracture form of 7"]]
+		["<:fracture 7>", "7", ["no fracture form of 7"]],
+		["<:uniscript version=\"https://uniscript.org/v2\">A", "A", []]
 	],
 	"header": [
 		["<:uniscript version=\"https://uniscript.org/v1\">", "https://uniscript.org/v1", 47],

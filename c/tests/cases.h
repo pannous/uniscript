@@ -127,7 +127,7 @@ static const warning_case warns[] = {
 	{"<:mirror red 狗>", "狗\U000E004D", "red does not apply to 狗", 0},
 	{"<:beside a b>", "ab", "no beside group of a", 0},
 	{"<:double bold A>", "𝐀", "no double form of 𝐀", 0}, /* a style without a combination keeps the inner style */
-	{"<:uniscript version=\"https://uniscript.org/v9\">A", "A", "unsupported uniscript version https://uniscript.org/v9", 0},
+	{"<:uniscript version=\"https://example.com/v1\">A", "A", "unsupported uniscript version https://example.com/v1", 0}, /* no uniscript.org/vN */
 	{"<:font Santakku>", "{<font Santakku}", "Santakku is no font style of the entities, used as a font family", 0},
 };
 
@@ -145,6 +145,7 @@ static const lenient_case lenients[] = {
 	{"<:color red;x A> <:alpha>", "<:color red;x A> α", {"invalid meta value in <:color red;x A>"}},
 	{"<:alpha> a <: b", "α a <: b", {"unclosed <: at <: b"}},
 	{"<:fracture 7>", "7", {"no fracture form of 7"}},
+	{"<:uniscript version=\"https://uniscript.org/v2\">A", "A", {NULL}}, /* backwards compatible: any uniscript.org/vN */
 };
 
 static const repair_case repairs[] = {
