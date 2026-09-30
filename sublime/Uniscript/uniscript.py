@@ -2,7 +2,9 @@
 import sublime
 import sublime_plugin
 
-from .uniscript_cli import UniscriptError, convert, is_uniscript_file, tag_before_cursor
+# helpers are looked up at call time: Sublime reloads a changed uniscript_cli.py in place, names imported from it would
+# keep the old functions and classes
+from . import uniscript_cli as cli
 
 SETTINGS_FILE = "Uniscript.sublime-settings"
 LIVE_SETTING = "convert_while_typing"  # true, false, or "header": only in files starting with <:
@@ -34,11 +36,11 @@ class UniscriptConvertCommand(sublime_plugin.TextCommand):
         warnings = []
         try:
             for region in sorted(targets, key=lambda region: region.begin(), reverse=True):
-                converted, region_warnings = convert(self.view.substr(region), reverse, settings().get("binary", ""))
+                converted, region_warnings = cli.convert(self.view.substr(region), reverse, settings().get("binary", ""))
                 if converted or not live:
                     self.view.replace(edit, region, converted)
                 warnings += region_warnings
-        except UniscriptError as error:
+        except cli.UniscriptError as error:
             if live:
                 return self.view.window().status_message("uniscript: {}".format(error))
             return sublime.error_message("uniscript: {}".format(error))
@@ -51,7 +53,7 @@ class UniscriptWhileTypingListener(sublime_plugin.ViewEventListener):
     def is_live(self):
         live = settings().get(LIVE_SETTING, LIVE_IN_UNISCRIPT_FILES)
         if live == LIVE_IN_UNISCRIPT_FILES:
-            return is_uniscript_file(self.view.substr(sublime.Region(0, 2)))
+            return cli.is_uniscript_file(self.view.substr(sublime.Region(0, 2)))
         return bool(live)
 
     def on_post_text_command(self, command_name, args):
@@ -61,7 +63,7 @@ class UniscriptWhileTypingListener(sublime_plugin.ViewEventListener):
         regions = []
         for cursor in (region.b for region in self.view.sel() if region.empty()):
             line_start = self.view.line(cursor).begin()
-            offset = tag_before_cursor(self.view.substr(sublime.Region(line_start, cursor)))
+            offset = cli.tag_before_cursor(self.view.substr(sublime.Region(line_start, cursor)))
             if offset is not None:
                 regions.append((line_start + offset, cursor))
         if regions:
