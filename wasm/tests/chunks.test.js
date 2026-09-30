@@ -54,7 +54,9 @@ test("the demo examples fetch a fraction of the index", async () => {
 	await init(INDEX_FILE);
 	const expected = DEMO_EXAMPLES.map(results);
 	await init({ chunks: MANIFEST.pathname });
-	assert.throws(() => convert("<:alpha>").text === "α" || assert.fail(), "nothing is loaded before ensure");
+	assert.equal(convert("<:alpha>").text, "α", "init loads the common chunk");
+	assert.equal(fetched.chunks.length, 1);
+	assert.throws(() => convert("<:Doteq>"), "the other chunks come with ensure");
 	const gzipped = numbers => numbers.reduce((sum, number) => sum + gzipSync(readFileSync(new URL(`${number}.idx`, CHUNKS_DIR))).length, 0);
 	for (const [position, text] of DEMO_EXAMPLES.entries()) {
 		const [chunksBefore, bytesBefore] = [fetched.chunks.length, fetched.bytes];

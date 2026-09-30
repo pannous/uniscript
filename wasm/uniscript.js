@@ -66,7 +66,7 @@ async function bytesOf(source) {
 /** Where a relative path or URL points: from the working directory in Node, from the page in browsers */
 const absolute = source => source instanceof URL ? source : new URL(source, isNode ? `file://${process.cwd()}/` : document.baseURI);
 
-/** Loads a chunk manifest; chunk n is `<n>.idx` next to it, with `?v=<version>` over HTTP so caches never mix builds */
+/** Loads a chunk manifest and its common chunk; chunk n is `<n>.idx` next to it, with `?v=<version>` over HTTP so caches never mix builds */
 async function loadChunks(manifest) {
 	const manifestUrl = absolute(manifest);
 	const version = wasm.loadChunkManifest(await bytesOf(manifestUrl));
@@ -78,6 +78,8 @@ async function loadChunks(manifest) {
 	pendingChunks.clear();
 	fetched.chunks = [];
 	fetched.bytes = 0;
+	const common = wasm.commonChunk();
+	if (common !== undefined) await loadChunk(common); // every lookup needs it first
 }
 
 function loadChunk(number) {

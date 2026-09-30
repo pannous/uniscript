@@ -45,6 +45,12 @@ pub fn load_chunk_manifest(bytes: Vec<u8>) -> Result<u32, JsValue> {
 	with_converter(|converter| converter.index().version())
 }
 
+/// The chunk of the most used entries, which every lookup needs first (none for a whole index)
+#[wasm_bindgen(js_name = commonChunk)]
+pub fn common_chunk() -> Result<Option<u32>, JsValue> {
+	with_converter(|converter| converter.index().common_chunk().map(|number| number as u32))
+}
+
 /// Adds chunk `number` (`<number>.idx` next to the manifest)
 #[wasm_bindgen(js_name = addChunk)]
 pub fn add_chunk(number: usize, bytes: Vec<u8>) -> Result<(), JsValue> {
