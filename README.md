@@ -127,6 +127,7 @@ Renderers might choose to switch on Uniscript mode when encountering the header 
 ```rust
 assert_eq!(uniscript::to_unicode("<:alpha> <:fracture A>")?, "α 𝔄");
 assert_eq!(uniscript::to_uniscript("α 𝔄"), "<:alpha> <:fracture A>");
+```
 
 ```python
 import uniscript
