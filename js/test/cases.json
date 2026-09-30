@@ -129,8 +129,9 @@
 	"warns": [
 		["<:greek c>", "c", "no greek form of c", 0],
 		["x <:fracture 7>", "x 7", "no fracture form of 7", 2],
-		["<:red 𓀀>", "𓀀", "red does not apply to 𓀀", 0],
-		["<:mirror red 狗>", "狗{U+E004D}", "red does not apply to 狗", 0],
+		["<:left 𓀀>", "𓀀", "left does not apply to 𓀀", 0],
+		["<:red 𓀀>", "𓀀{attached color red}", "red on 𓀀 kept as color meta", 0],
+		["<:mirror red 狗>", "狗{U+E004D}{attached color red}", "red on 狗 kept as color meta", 0],
 		["<:beside a b>", "ab", "no beside group of a", 0],
 		["<:uniscript version=\"https://example.com/v1\">A", "A", "unsupported uniscript version https://example.com/v1", 0],
 		["<:font Santakku>", "{open font Santakku}", "Santakku is no font style of the entities, used as a font family", 0]

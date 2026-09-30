@@ -123,8 +123,10 @@ static const char *const restores[] = {
 static const warning_case warns[] = {
 	{"<:greek c>", "c", "no greek form of c", 0},
 	{"x <:fracture 7>", "x 7", "no fracture form of 7", 2},
-	{"<:red 𓀀>", "𓀀", "red does not apply to 𓀀", 0},
-	{"<:mirror red 狗>", "狗\U000E004D", "red does not apply to 狗", 0},
+	{"<:left 𓀀>", "𓀀", "left does not apply to 𓀀", 0},
+	/* a color the fonts cannot show falls back to its color meta, after the suffix controls */
+	{"<:red 𓀀>", "𓀀{:color red}", "red on 𓀀 kept as color meta", 0},
+	{"<:mirror red 狗>", "狗\U000E004D{:color red}", "red on 狗 kept as color meta", 0},
 	{"<:beside a b>", "ab", "no beside group of a", 0},
 	{"<:double bold A>", "𝐀", "no double form of 𝐀", 0}, /* a style without a combination keeps the inner style */
 	{"<:uniscript version=\"https://example.com/v1\">A", "A", "unsupported uniscript version https://example.com/v1", 0}, /* no uniscript.org/vN */
