@@ -51,6 +51,10 @@ const examples = document.getElementById("examples");
 const hero = examples.querySelector(".hero");
 const element = (tag, className, text) => Object.assign(document.createElement(tag), { className, textContent: text });
 const unicode = source => convert(source, "lenient").text;
+const output = document.getElementById("output");
+// the sliced fonts keep IDS, hieroglyph groups and TAG effects in one face; missing when served from the repository.
+// Watching before the first output keeps the page from loading plain slices for those sequences.
+const sequenceFonts = import("../sequence_fonts.js").then(fonts => fonts.watchSequences(examples, output), () => {});
 
 // the index in chunks fetched on demand: ensure(text) loads what a text needs, then the conversions are synchronous
 await init({ chunks: new URL(CHUNK_MANIFEST, import.meta.url) });
@@ -62,7 +66,7 @@ for (const source of EXAMPLES) {
 	examples.append(row);
 }
 
-const [source, output, warningList] = ["source", "output", "warnings"].map(id => document.getElementById(id));
+const [source, warningList] = ["source", "warnings"].map(id => document.getElementById(id));
 async function render() {
 	const text = source.value;
 	await ensure(text);
@@ -79,7 +83,6 @@ document.getElementById("reverse").addEventListener("click", () => {
 	render();
 });
 await render();
-// the sliced fonts keep IDS, hieroglyph groups and TAG effects in one face; missing when served from the repository
-await import("../sequence_fonts.js").then(fonts => fonts.watchSequences(examples, output), () => {});
+await sequenceFonts;
 document.body.dataset.ready = "true";
 </script>

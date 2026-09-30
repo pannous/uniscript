@@ -2,7 +2,8 @@
 # Renders docs/demo.png from docs/demo.html, which converts its examples with the WebAssembly build (wasm/), shown with
 # the Uniscript fonts in headless Chrome via agent-browser. Needs wasm-pack and the fonts in ~/Library/Fonts (Fonts in README.md).
 # Usage: docs/make_demo.sh [deploy]   (deploy: publish the page with the wasm build to https://pannous.com/uniscript/rust/)
-# The deployed page takes its fonts from ../fonts/ as woff2, which warp's web/uniscript/build.sh deploys to /uniscript/.
+# The deployed page takes its fonts from ../fonts/fonts.css and ../sequence_fonts.js (sliced fonts), which warp's
+# web/uniscript/build.sh deploys to /uniscript/. No rsync --delete: files removed from a build stay until removed by hand.
 set -e
 PORT=8765
 SERVER="pannous.com"
@@ -19,7 +20,7 @@ if [ "${1:-}" = "deploy" ]; then
 	ssh "$SERVER" "cat > $SERVER_DIR/index.html" <<<"$page"
 	rsync -aL wasm/uniscript.js wasm/chunkFetcher.js wasm/entities.idx "$SERVER:$SERVER_DIR/wasm/"
 	rsync -a --include '*.js' --include '*.wasm' --exclude '*' wasm/pkg/ "$SERVER:$SERVER_DIR/wasm/pkg/"
-	rsync -a --delete data/chunks/ "$SERVER:$SERVER_DIR/chunks/"
+	rsync -a data/chunks/ "$SERVER:$SERVER_DIR/chunks/"
 	echo "deployed https://pannous.com/uniscript/rust/"
 	exit
 fi

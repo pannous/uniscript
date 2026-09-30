@@ -126,7 +126,11 @@ fn the_header_declares_uniscript_and_its_version() {
 	converts(&format!("{HEADER} <:alpha>"), " α");
 	converts("<:uniscript><:alpha>", "α");
 	converts("<<::>uniscript version=\"https://uniscript.org/v1\">", HEADER); // the escaped header is text
-	warns("<:uniscript version=\"https://uniscript.org/v9\">A", "A", "unsupported uniscript version https://uniscript.org/v9", 0);
+	// backwards compatible: a later uniscript.org version is read as well as the current tables allow, without warning
+	assert_eq!(convert("<:uniscript version=\"https://uniscript.org/v2\">A", WarningMode::Error), Ok(("A".into(), vec![])));
+	assert_eq!(convert("<:uniscript version=\"https://uniscript.org/v42\">A", WarningMode::Error), Ok(("A".into(), vec![])));
+	warns("<:uniscript version=\"https://example.com/v1\">A", "A", "unsupported uniscript version https://example.com/v1", 0);
+	warns("<:uniscript version=\"https://uniscript.org/vX\">A", "A", "unsupported uniscript version https://uniscript.org/vX", 0);
 	assert_eq!(to_unicode(&format!("x {HEADER}")), Err(Error::UnknownEntity("uniscript version=\"https://uniscript.org/v1\"".into())));
 }
 
