@@ -29,6 +29,7 @@ const SHORT_OPEN: char = '\\';
 const TAG_CLOSE: char = '>';
 const CLOSING_SLASH: char = '/';
 const ESCAPED_COLON: &str = "<::>";
+const SUFFIX_KEY: &str = "*suffix";
 const FONT_KEY: &str = "font";
 const LANG_KEY: &str = "lang";
 const VALUE_PLACEHOLDER: &str = "{}";
@@ -159,6 +160,23 @@ fn is_name_character(character: char) -> bool {
 	character.is_ascii_alphanumeric() || character == '-' || character == '_'
 }
 
+/// Every order of the parts
+fn permutations<'a>(parts: &[&'a str]) -> Vec<Vec<&'a str>> {
+	if parts.len() <= 1 {
+		return vec![parts.to_vec()];
+	}
+	let mut orders = Vec::new();
+	for (position, first) in parts.iter().enumerate() {
+		let mut rest = parts.to_vec();
+		rest.remove(position);
+		for mut order in permutations(&rest) {
+			order.insert(0, first);
+			orders.push(order);
+		}
+	}
+	orders
+}
+
 /// A tag's content is a closing tag: `<:>` or `<:/greek>`
 fn is_closing(content: &str) -> bool {
 	content.is_empty() || content.starts_with(CLOSING_SLASH)
@@ -234,8 +252,8 @@ impl<'a> Uniscript<'a> {
 	/// cannot apply to that script
 	fn suffix_of(&self, block: &str, character: char) -> Option<&'a str> {
 		let script = script_of(character);
-		let scripted = (!script.is_empty()).then(|| self.name(&format!("{block} *suffix {script}"))).flatten();
-		scripted.or_else(|| self.name(&format!("{block} *suffix")))
+		let scripted = (!script.is_empty()).then(|| self.name(&format!("{block} {SUFFIX_KEY} {script}"))).flatten();
+		scripted.or_else(|| self.name(&format!("{block} {SUFFIX_KEY}")))
 	}
 
 	/// The control of an effect after one character, "" with a warning when it has none for it
@@ -267,6 +285,72 @@ impl<'a> Uniscript<'a> {
 			None => format!("{character}{}", self.effect_suffix(block, character, at)),
 		};
 		styled + &self.effect_suffixes(effects, character, at)
+	}
+
+	/// A block with a suffix control (mirror, red), which stacks as an effect instead of restyling
+	fn is_effect(&self, block: &str) -> bool {
+		self.name(&format!("{block} {SUFFIX_KEY}")).is_some()
+	}
+
+	fn form(&self, block: &str, operand: &str) -> Option<&'a str> {
+		self.name(&format!("{block} {operand}"))
+	}
+
+	/// The block and plain operand a character spells back as: 𝐚 → (bold, a), α → ("", alpha)
+	fn spelling(&self, character: char) -> Option<(&'a str, &'a str)> {
+		let mut buffer = [0; 4];
+		let form = self.index.get(Table::Chars, character.encode_utf8(&mut buffer))?;
+		let content = form.strip_prefix("<:")?.strip_suffix(TAG_CLOSE)?;
+		Some(content.split_once(' ').filter(|(block, _)| self.is_block(block)).unwrap_or(("", content)))
+	}
+
+	/// The block that combines styles in any order: bold + sans + italic → sans-bold-italic
+	fn combined(&self, styles: &[&str]) -> Option<String> {
+		let mut parts: Vec<&str> = styles.iter().flat_map(|style| style.split('-')).filter(|part| !part.is_empty()).collect();
+		parts.sort();
+		parts.dedup();
+		permutations(&parts).into_iter().map(|order| order.join("-")).find(|name| self.is_block(name))
+	}
+
+	/// A character in further styles: in the block combining them with its own style (bold on 𝛼 → bold-italic α),
+	/// else one style after the other, each commuting with the character's own style where they do not combine
+	/// (greek on 𝐚 → bold of greek a → 𝛂). A style that cannot apply keeps the character, with a warning.
+	fn restyled(&self, styles: &[&str], character: char, at: usize) -> String {
+		if let Some((own, operand)) = self.spelling(character) {
+			let all: Vec<&str> = styles.iter().copied().chain([own].into_iter().filter(|own| !own.is_empty())).collect();
+			let base = self.name(operand).filter(|_| !own.is_empty() && operand.chars().count() > 1).unwrap_or(operand);
+			if let Some(form) = self.combined(&all).and_then(|block| self.form(&block, base)) {
+				return form.to_string();
+			}
+		}
+		styles.iter().rev().fold(character.to_string(), |text, style| {
+			let mut characters = text.chars();
+			match (characters.next(), characters.next()) {
+				(Some(single), None) => self.restyled_by(style, single).unwrap_or_else(|| {
+					self.warn(format!("no {style} form of {single}"), at);
+					text
+				}),
+				_ => text,
+			}
+		})
+	}
+
+	fn restyled_by(&self, style: &str, character: char) -> Option<String> {
+		let mut buffer = [0; 4];
+		if let Some(form) = self.form(style, character.encode_utf8(&mut buffer)) {
+			return Some(form.to_string());
+		}
+		let (own, operand) = self.spelling(character)?;
+		if own.is_empty() {
+			return self.form(style, operand).map(str::to_string); // greek alpha → α
+		}
+		let base = self.name(operand).filter(|_| operand.chars().count() > 1).unwrap_or(operand);
+		let base = base.chars().next().filter(|_| base.chars().count() == 1)?;
+		let restyled = self.restyled_by(style, base)?;
+		if restyled == base.to_string() {
+			return Some(character.to_string());
+		}
+		self.form(own, &restyled).map(str::to_string)
 	}
 
 	/// One operand: its own entry (red circle → 🔴, greek eta → η), else each character or pair (greek th → θ)
@@ -353,7 +437,16 @@ impl<'a> Uniscript<'a> {
 					rest = after;
 				}
 				let block = words.pop().expect("one block");
-				return Ok(self.operands(block, rest, &words, at));
+				let (effects, styles): (Vec<&str>, Vec<&str>) = words.into_iter().partition(|word| self.is_effect(word));
+				if styles.is_empty() {
+					return Ok(self.operands(block, rest, &effects, at));
+				}
+				// <:bold italic A>: the other style words restyle the operands of the last
+				let operands = self.operands(block, rest, &[], at);
+				let restyled = operands.chars().map(|character| {
+					self.restyled(&styles, character, at) + &self.effect_suffixes(&effects, character, at)
+				});
+				return Ok(restyled.collect());
 			}
 		}
 		Err(Error::UnknownEntity(content.to_string()))
