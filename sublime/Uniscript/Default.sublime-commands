@@ -1,0 +1,9 @@
+[
+	{ "caption": "Uniscript: Convert to Unicode", "command": "uniscript_convert" },
+	{ "caption": "Uniscript: Convert Unicode to Uniscript", "command": "uniscript_convert", "args": { "reverse": true } },
+	{
+		"caption": "Preferences: Uniscript Settings",
+		"command": "edit_settings",
+		"args": { "base_file": "${packages}/Uniscript/Uniscript.sublime-settings", "default": "{\n\t$0\n}\n" }
+	}
+]

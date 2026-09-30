@@ -1,0 +1,4 @@
+[
+	{ "caption": "Uniscript → Unicode", "command": "uniscript_convert" },
+	{ "caption": "Unicode → Uniscript", "command": "uniscript_convert", "args": { "reverse": true } }
+]

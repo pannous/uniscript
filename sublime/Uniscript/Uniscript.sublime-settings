@@ -1,0 +1,9 @@
+{
+	// path of the uniscript converter; empty: search PATH and ~/.cargo/bin
+	// (cargo install --git https://github.com/pannous/uniscript)
+	"binary": "",
+
+	// replace a <:tag> with its Unicode as soon as its > is typed:
+	// true, false, or "header" for files starting with <: (the uniscript header <:uniscript version="…">)
+	"convert_while_typing": "header"
+}
