@@ -1,0 +1,2 @@
+use uniscript
+uniscript("<:alpha> <:fracture A>") == "α 𝔄" and unicode_to_uniscript("α 𝔄") == "<:alpha> <:fracture A>"

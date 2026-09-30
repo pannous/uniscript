@@ -10,3 +10,6 @@ __pycache__/
 data/chunks/
 probes/publish/swift-consumer/Package.resolved
 probes/finefreq/
+probes/usage/build/
+probes/usage/node_modules/
+probes/usage/rust/Cargo.lock
