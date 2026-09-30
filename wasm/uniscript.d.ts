@@ -78,8 +78,8 @@ export function metaRuns(tagged: string): { styled: Styled; warnings: Warning[] 
 /** HTML of styled text: each meta run a `<span>` with its lang and CSS */
 export function html(styled: Styled): string;
 
-/** The numbers of the chunks ensure() fetched so far in chunked mode, and their bytes */
-export const fetched: { chunks: number[]; bytes: number };
+/** The chunks ensure() fetched so far in chunked mode: their numbers, their bytes as stored (deflated in chunks.pack) and the requests */
+export let fetched: { chunks: number[]; bytes: number; requests: number };
 
 /** Fetches the chunks converting `text` needs, so the synchronous functions give the results of the whole index;
  * a no-op without chunks */

@@ -82,3 +82,11 @@ test("load fetches the common chunk: LaTeX names and common prose convert withou
 		assert.deepEqual(results(converter, text), results(reference, text));
 	}
 });
+
+test("ensures running at the same time share one multi-range request per round on chunks.pack", { skip: !chunksBuilt && "no cargo" }, async () => {
+	const index = await ChunkedIndex.load(MANIFEST);
+	const converter = new Uniscript(index);
+	await Promise.all(DEMO_EXAMPLES.map((text) => converter.ensure(text)));
+	for (const text of DEMO_EXAMPLES) assert.deepEqual(results(converter, text), results(reference, text), text);
+	assert.ok(index.fetched.requests <= 4, `${index.fetched.requests} requests for ${index.fetched.chunks.length} chunks`);
+});

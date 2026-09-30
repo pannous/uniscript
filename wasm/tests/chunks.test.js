@@ -57,15 +57,14 @@ test("the demo examples fetch a fraction of the index", async () => {
 	assert.equal(convert("<:alpha>").text, "α", "init loads the common chunk");
 	assert.equal(fetched.chunks.length, 1);
 	assert.throws(() => convert("<:Doteq>"), "the other chunks come with ensure");
-	const gzipped = numbers => numbers.reduce((sum, number) => sum + gzipSync(readFileSync(new URL(`${number}.idx`, CHUNKS_DIR))).length, 0);
 	for (const [position, text] of DEMO_EXAMPLES.entries()) {
-		const [chunksBefore, bytesBefore] = [fetched.chunks.length, fetched.bytes];
+		const [chunksBefore, bytesBefore, requestsBefore] = [fetched.chunks.length, fetched.bytes, fetched.requests];
 		await ensure(text);
 		assert.deepEqual(results(text), expected[position], text);
 		const numbers = fetched.chunks.slice(chunksBefore);
-		console.log(`${String(numbers.length).padStart(3)} chunks ${String(fetched.bytes - bytesBefore).padStart(6)} B (gzip ${String(gzipped(numbers)).padStart(6)} B): ${text}`);
+		console.log(`${String(fetched.requests - requestsBefore).padStart(2)} requests ${String(numbers.length).padStart(3)} chunks ${String(fetched.bytes - bytesBefore).padStart(6)} B deflated: ${text}`);
 	}
 	const whole = readFileSync(INDEX_FILE);
-	console.log(`all: ${fetched.chunks.length} chunks, ${fetched.bytes} B (gzip ${gzipped(fetched.chunks)} B); whole index ${whole.length} B (gzip ${gzipSync(whole).length} B)`);
+	console.log(`all, with the common chunk: ${fetched.requests} requests, ${fetched.chunks.length} chunks, ${fetched.bytes} B deflated; whole index ${whole.length} B (gzip ${gzipSync(whole).length} B)`);
 	assert.ok(fetched.bytes < whole.length / 10);
 });

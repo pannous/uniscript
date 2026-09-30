@@ -1,39 +1,14 @@
 // Uniscript in WebAssembly, the same API as the TypeScript port in js/: `await init()` once, then every function is synchronous.
 // The .wasm holds only code; init() loads the entity index (entities.idx, a link to data/entities.idx) at runtime.
 import initWasm, * as wasm from "./pkg/uniscript_wasm.js";
+import { ChunkFetcher } from "./chunkFetcher.js";
 
 const WASM_FILE = new URL("./pkg/uniscript_wasm_bg.wasm", import.meta.url);
 const INDEX_FILE = new URL("./entities.idx", import.meta.url);
 
-/** The numbers of the chunks ensure() fetched so far in chunked mode, and their bytes */
-export const fetched = { chunks: [], bytes: 0 };
-
-const MAX_PARALLEL_FETCHES = 6; // what browsers open per host over HTTP/1.1; a burst of 60 failed against small servers
-const FETCH_ATTEMPTS = 3; // Python's http.server still drops a connection now and then
-const RETRY_DELAY_MS = 100;
-let chunkUrl;
-const pendingChunks = new Map();
-let activeFetches = 0;
-const waitingFetches = [];
-
-/** Runs `task` once fewer than MAX_PARALLEL_FETCHES others run, again after a failure up to FETCH_ATTEMPTS times */
-async function throttled(task) {
-	while (activeFetches >= MAX_PARALLEL_FETCHES) await new Promise(resolve => waitingFetches.push(resolve));
-	activeFetches++;
-	try {
-		for (let attempt = 1; ; attempt++) {
-			try {
-				return await task();
-			} catch (error) {
-				if (attempt >= FETCH_ATTEMPTS) throw error;
-				await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS * attempt));
-			}
-		}
-	} finally {
-		activeFetches--;
-		waitingFetches.shift()?.();
-	}
-}
+/** The chunks ensure() fetched so far in chunked mode: their numbers, their bytes as stored and the requests */
+export let fetched = { chunks: [], bytes: 0, requests: 0 };
+let chunkFetcher;
 
 export const { convert, toUnicode, toUniscript, header, font, metaTemplate, metaRuns, html } = wasm;
 
@@ -66,34 +41,15 @@ async function bytesOf(source) {
 /** Where a relative path or URL points: from the working directory in Node, from the page in browsers */
 const absolute = source => source instanceof URL ? source : new URL(source, isNode ? `file://${process.cwd()}/` : document.baseURI);
 
-/** Loads a chunk manifest and its common chunk; chunk n is `<n>.idx` next to it, with `?v=<version>` over HTTP so caches never mix builds */
+/** Loads a chunk manifest and its common chunk; the other chunks come from chunks.pack or `<n>.idx` next to it */
 async function loadChunks(manifest) {
 	const manifestUrl = absolute(manifest);
 	const version = wasm.loadChunkManifest(await bytesOf(manifestUrl));
-	chunkUrl = number => {
-		const url = new URL(`${number}.idx`, manifestUrl);
-		if (url.protocol !== "file:") url.search = `v=${version}`;
-		return url;
-	};
-	pendingChunks.clear();
-	fetched.chunks = [];
-	fetched.bytes = 0;
+	const offsets = wasm.packOffsets();
+	chunkFetcher = new ChunkFetcher(manifestUrl, version, offsets && Uint32Array.from(offsets), (number, bytes) => wasm.addChunk(number, bytes));
+	fetched = chunkFetcher.fetched;
 	const common = wasm.commonChunk();
-	if (common !== undefined) await loadChunk(common); // every lookup needs it first
-}
-
-function loadChunk(number) {
-	if (!pendingChunks.has(number)) {
-		pendingChunks.set(number, throttled(() => bytesOf(chunkUrl(number))).then(bytes => {
-			wasm.addChunk(number, bytes);
-			fetched.chunks.push(number);
-			fetched.bytes += bytes.length;
-		}, error => {
-			pendingChunks.delete(number); // the next ensure tries again
-			throw error;
-		}));
-	}
-	return pendingChunks.get(number);
+	if (common !== undefined) await chunkFetcher.load([common]); // every lookup needs it first
 }
 
 /**
@@ -102,7 +58,7 @@ function loadChunk(number) {
  */
 export async function ensure(text) {
 	for (let missing = wasm.missingChunks(text); missing.length; missing = wasm.missingChunks(text)) {
-		await Promise.all([...missing].map(loadChunk));
+		await chunkFetcher.load([...missing]);
 	}
 }
 

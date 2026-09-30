@@ -3,6 +3,7 @@
 
 import { EntityIndex, Table, TABLES, readBytes, textHash } from "./entityIndex.ts";
 import type { Lookup } from "./entityIndex.ts";
+import { ChunkFetcher } from "./chunkFetcher.js";
 
 const MANIFEST_MAGIC = "USXC";
 const MANIFEST_FIXED = 16;
@@ -11,13 +12,6 @@ const FILTER_SECOND_MULTIPLIER = 131;
 const MANIFEST_TABLE_SIZE = 12;
 const CHUNK_START_SIZE = 8;
 const FIRST_WORD_END = /[ -]/;
-/** What browsers open per host over HTTP/1.1; a burst of 60 fetches failed against small servers */
-const MAX_PARALLEL_FETCHES = 6;
-/** Python's http.server still drops a connection now and then */
-const FETCH_ATTEMPTS = 3;
-const RETRY_DELAY_MS = 100;
-
-const sleep = (milliseconds: number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 /** Where a key sorts among the chunks of its table: characters by code point, the rest by the hash of their first word, then by hash */
 export function chunkOrder(table: Table, key: string): [number, number] {
@@ -48,14 +42,9 @@ function absolute(source: string | URL): URL {
 export class ChunkedIndex implements Lookup {
 	readonly #manifest: DataView;
 	readonly #chunks: (EntityIndex | undefined)[];
-	readonly #pending = new Map<number, Promise<void>>();
-	#activeFetches = 0;
-	readonly #waitingFetches: (() => void)[] = [];
 	readonly #missing = new Set<number>();
-	/** Where chunk n lives: `<n>.idx` next to the manifest */
-	readonly #chunkUrl: (number: number) => URL | undefined;
-	/** The numbers of the chunks fetched so far, and their bytes */
-	readonly fetched = { chunks: [] as number[], bytes: 0 };
+	/** Fetches chunks next to the manifest: from chunks.pack with one request per tick, else `<n>.idx` */
+	readonly #fetcher: ChunkFetcher | undefined;
 
 	/** Over the bytes of manifest.usxc; chunks come from `baseUrl` (the manifest's URL) or through addChunk */
 	constructor(manifest: Uint8Array, baseUrl?: URL) {
@@ -69,12 +58,25 @@ export class ChunkedIndex implements Lookup {
 		if (manifest.length < this.#chunkStartsOffset() + ranged * CHUNK_START_SIZE) throw new Error("uniscript chunk manifest is truncated");
 		const common = this.commonChunk;
 		this.#chunks = new Array(common === undefined ? ranged : Math.max(ranged, common + 1)).fill(undefined);
-		this.#chunkUrl = (number) => {
-			if (!baseUrl) return undefined;
-			const url = new URL(`${number}.idx`, baseUrl);
-			if (url.protocol !== "file:") url.search = `v=${this.version}`;
-			return url;
-		};
+		this.#fetcher = baseUrl && new ChunkFetcher(baseUrl, this.version, this.#packOffsets(), (number, bytes) => this.addChunk(number, bytes));
+	}
+
+	/** The chunks fetched so far: their numbers, their bytes as stored (deflated in chunks.pack) and the requests */
+	get fetched() {
+		return this.#fetcher?.fetched ?? { chunks: [], bytes: 0, requests: 0 };
+	}
+
+	#filterOffset(): number {
+		return this.#chunkStartsOffset() + CHUNK_START_SIZE * (this.commonChunk ?? 0);
+	}
+
+	/** Where each chunk's deflated copy starts in chunks.pack, then the end: the optional last section, after the filter */
+	#packOffsets(): Uint32Array | undefined {
+		const filter = this.#filterOffset();
+		const at = filter + 8 + Math.ceil(Math.ceil(this.#u32(filter) / 8) / 4) * 4;
+		const count = this.#chunks.length + 1;
+		if (this.#manifest.byteLength < at + 4 * count) return undefined;
+		return Uint32Array.from({ length: count }, (_, i) => this.#u32(at + 4 * i));
 	}
 
 	/** The manifest at a file path (Node) or URL and its common chunk, the other chunks next to it on demand */
@@ -151,7 +153,7 @@ export class ChunkedIndex implements Lookup {
 	 * tags the converter tries (`Hello`, `mirror-R`) need no fetch. It covers names of one word or starting with a block type.
 	 */
 	#surelyAbsent(key: string, common: EntityIndex): boolean {
-		const at = this.#chunkStartsOffset() + CHUNK_START_SIZE * (this.commonChunk ?? 0);
+		const at = this.#filterOffset();
 		const [bits, hashes] = [this.#u32(at), this.#u32(at + 4)];
 		const firstWord = key.split(FIRST_WORD_END)[0];
 		if (bits === 0 || (firstWord.length !== key.length && common.get(Table.names, `${firstWord} `) === undefined)) return false;
@@ -188,44 +190,9 @@ export class ChunkedIndex implements Lookup {
 		return missing;
 	}
 
-	/** Fetches chunks next to the manifest, each once */
+	/** Fetches chunks next to the manifest, each once; the chunks asked for in one tick share a request */
 	async loadChunks(numbers: number[]): Promise<void> {
-		await Promise.all(numbers.map((number) => {
-			if (!this.#pending.has(number)) {
-				this.#pending.set(number, this.#throttled(() => this.#fetchChunk(number)).catch((error) => {
-					this.#pending.delete(number); // the next ensure tries again
-					throw error;
-				}));
-			}
-			return this.#pending.get(number);
-		}));
-	}
-
-	/** Runs `task` once fewer than MAX_PARALLEL_FETCHES others run, again after a failure up to FETCH_ATTEMPTS times */
-	async #throttled<T>(task: () => Promise<T>): Promise<T> {
-		while (this.#activeFetches >= MAX_PARALLEL_FETCHES) await new Promise<void>((resolve) => this.#waitingFetches.push(resolve));
-		this.#activeFetches++;
-		try {
-			for (let attempt = 1; ; attempt++) {
-				try {
-					return await task();
-				} catch (error) {
-					if (attempt >= FETCH_ATTEMPTS) throw error;
-					await sleep(RETRY_DELAY_MS * attempt);
-				}
-			}
-		} finally {
-			this.#activeFetches--;
-			this.#waitingFetches.shift()?.();
-		}
-	}
-
-	async #fetchChunk(number: number): Promise<void> {
-		const url = this.#chunkUrl(number);
-		if (!url) throw new Error(`uniscript index chunk ${number} is not loaded and the manifest has no URL`);
-		const bytes = await readBytes(url);
-		this.addChunk(number, bytes);
-		this.fetched.chunks.push(number);
-		this.fetched.bytes += bytes.length;
+		if (!this.#fetcher) throw new Error(`uniscript index chunks ${numbers} are not loaded and the manifest has no URL`);
+		await this.#fetcher.load(numbers);
 	}
 }

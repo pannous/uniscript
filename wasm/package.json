@@ -10,12 +10,12 @@
   "homepage": "https://pannous.com/uniscript/",
   "bugs": "https://github.com/pannous/uniscript/issues",
   "keywords": ["unicode", "uniscript", "entities", "text", "ascii", "webassembly", "wasm"],
-  "files": ["uniscript.js", "uniscript.d.ts", "entities.idx", "pkg/uniscript_wasm.js", "pkg/uniscript_wasm_bg.wasm", "pkg/uniscript_wasm.d.ts", "pkg/uniscript_wasm_bg.wasm.d.ts"],
+  "files": ["uniscript.js", "uniscript.d.ts", "chunkFetcher.js", "entities.idx", "pkg/uniscript_wasm.js", "pkg/uniscript_wasm_bg.wasm", "pkg/uniscript_wasm.d.ts", "pkg/uniscript_wasm_bg.wasm.d.ts"],
   "publishConfig": { "access": "public" },
   "scripts": {
     "build": "CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-/opt/cargo} wasm-pack build --target web --release --no-pack",
     "test": "npm run build && node --test tests/",
-    "prepack": "npm run build && rm -f entities.idx && cp ../data/entities.idx entities.idx",
-    "postpack": "ln -sf ../data/entities.idx entities.idx"
+    "prepack": "npm run build && rm -f entities.idx chunkFetcher.js && cp ../data/entities.idx entities.idx && cp ../js/src/chunkFetcher.js chunkFetcher.js",
+    "postpack": "ln -sf ../data/entities.idx entities.idx && ln -sf ../js/src/chunkFetcher.js chunkFetcher.js"
   }
 }

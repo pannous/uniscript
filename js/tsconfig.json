@@ -8,6 +8,8 @@
 		"erasableSyntaxOnly": true,
 		"verbatimModuleSyntax": true,
 		"strict": true,
+		"allowJs": true,
+		"checkJs": true,
 		"declaration": true,
 		"rootDir": "src",
 		"outDir": "dist"

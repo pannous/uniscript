@@ -51,6 +51,12 @@ pub fn common_chunk() -> Result<Option<u32>, JsValue> {
 	with_converter(|converter| converter.index().common_chunk().map(|number| number as u32))
 }
 
+/// Where each chunk's deflated copy starts in chunks.pack, then the end (none without a pack)
+#[wasm_bindgen(js_name = packOffsets)]
+pub fn pack_offsets() -> Result<Option<Vec<u32>>, JsValue> {
+	with_converter(|converter| converter.index().pack_offsets())
+}
+
 /// Adds chunk `number` (`<number>.idx` next to the manifest)
 #[wasm_bindgen(js_name = addChunk)]
 pub fn add_chunk(number: usize, bytes: Vec<u8>) -> Result<(), JsValue> {
