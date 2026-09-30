@@ -32,6 +32,11 @@ const ESCAPED_COLON: &str = "<::>";
 const FONT_KEY: &str = "font";
 const LANG_KEY: &str = "lang";
 const VALUE_PLACEHOLDER: &str = "{}";
+/// The uniscript version this implementation reads, declared by the header `<:uniscript version="…">`
+pub const UNISCRIPT_VERSION: &str = "https://uniscript.org/v1";
+const HEADER_OPEN: &str = "<:uniscript";
+const VERSION_ATTRIBUTE: &str = "version=\"";
+const ATTRIBUTE_QUOTE: char = '"';
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Error {
@@ -95,6 +100,25 @@ pub fn convert(source: &str, mode: WarningMode) -> Result<(String, Vec<Warning>)
 /// Unicode → uniscript with the built-in entities; `to_unicode` gives the text back
 pub fn to_uniscript(text: &str) -> String {
 	Uniscript::default().to_uniscript(text)
+}
+
+/// The header `<:uniscript version="https://uniscript.org/v1">` that starts a uniscript file
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Header<'a> {
+	/// "" when the header names no version
+	pub version: &'a str,
+	/// bytes of the header and the line break after it
+	pub length: usize,
+}
+
+/// The header at the start of the source; it is no header anywhere else
+pub fn header(source: &str) -> Option<Header<'_>> {
+	let rest = source.strip_prefix(HEADER_OPEN).filter(|rest| rest.starts_with([' ', TAG_CLOSE]))?;
+	let close = rest.find(TAG_CLOSE)?;
+	let version = rest[..close].split_once(VERSION_ATTRIBUTE).and_then(|(_, value)| value.split(ATTRIBUTE_QUOTE).next()).unwrap_or("");
+	let end = HEADER_OPEN.len() + close + 1;
+	let line_break = ["\r\n", "\n"].into_iter().find(|line_break| source[end..].starts_with(line_break)).map_or(0, str::len);
+	Some(Header { version, length: end + line_break })
 }
 
 fn checked<T>(value: T, warnings: Vec<Warning>, mode: WarningMode) -> Result<(T, Vec<Warning>), Error> {
@@ -381,7 +405,7 @@ impl<'a> Uniscript<'a> {
 	fn unicode_of(&self, source: &str) -> Result<String, Error> {
 		let mut out = String::new();
 		let mut block: Option<String> = None;
-		let mut position = 0;
+		let mut position = self.header_length(source);
 		while position < source.len() {
 			let rest = &source[position..];
 			let marker = rest.match_indices(MARKER_COLON)
@@ -419,6 +443,15 @@ impl<'a> Uniscript<'a> {
 			}
 		}
 		Ok(out)
+	}
+
+	/// Bytes of the header to skip; a version other than [`UNISCRIPT_VERSION`] warns
+	fn header_length(&self, source: &str) -> usize {
+		let Some(Header { version, length }) = header(source) else { return 0 };
+		if !version.is_empty() && version != UNISCRIPT_VERSION {
+			self.warn(format!("unsupported uniscript version {version}"), 0);
+		}
+		length
 	}
 
 	/// One character and the block types of the suffix controls after it: `<:mirror red A>`, `<:mirror red circle>`

@@ -7,3 +7,5 @@
 - The CLI always appends a newline: strip it when the input had none.
 - Live conversion hooks `on_post_text_command("insert")`, not `on_modified`, so undo doesn't reconvert.
 - `sublime_plugin` glue is not probed headlessly; `uniscript_cli.py` is (probes/test_sublime_plugin.py).
+- Conversion never stops on errors: the plugin runs `uniscript --lenient` (unknown entities stay, warnings in the status bar).
+- The header `<:uniscript version=…>` is handled by the library now (session uniscript-04), not by the plugin.

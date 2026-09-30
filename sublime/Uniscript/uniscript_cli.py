@@ -9,10 +9,9 @@ BINARY_NAME = "uniscript"
 FALLBACK_DIRECTORIES = ("~/.cargo/bin", "/opt/homebrew/bin", "/usr/local/bin")
 INSTALL_HINT = "cargo install --git https://github.com/pannous/uniscript"
 REVERSE_FLAG = "--reverse"
+LENIENT_FLAG = "--lenient"  # unknown entities stay as written, with a warning, instead of failing the conversion
 WARNING_PREFIX = "warning: "
 MARKER = "<:"
-# `<:uniscript version="https://uniscript.org/v1">` marks a uniscript file; the converter doesn't know it (TODO.md)
-HEADER = re.compile(r"<:uniscript\b[^>\n]*>[ \t]*\n?")
 # a complete `<:…>` tag just before the cursor, the last one on its line
 TAG_BEFORE_CURSOR = re.compile(r"<:[^<>\n]+>$")
 
@@ -33,7 +32,7 @@ def find_binary(configured=""):
 
 def convert(text, reverse=False, binary=""):
     """Uniscript → Unicode (reverse: Unicode → uniscript); returns the text and the converter's warnings"""
-    command = [find_binary(binary)] + ([REVERSE_FLAG] if reverse else [])
+    command = [find_binary(binary), REVERSE_FLAG if reverse else LENIENT_FLAG]
     process = subprocess.run(command, input=text.encode("utf-8"), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     messages = process.stderr.decode("utf-8").strip()
     if process.returncode:
@@ -43,12 +42,6 @@ def convert(text, reverse=False, binary=""):
         output = output[:-1]  # the converter always ends its output with a newline
     warnings = [line[len(WARNING_PREFIX):] if line.startswith(WARNING_PREFIX) else line for line in messages.splitlines()]
     return output, warnings
-
-
-def header_length(text):
-    """Length of the uniscript header line at the start of the text, 0 without one"""
-    match = HEADER.match(text)
-    return match.end() if match else 0
 
 
 def is_uniscript_file(text):

@@ -1,5 +1,5 @@
 //! uniscript "<:alpha>"        → α
-//! uniscript -r "α"            → <:alpha>        (--strict: unsupported characters are errors, not warnings)
+//! uniscript -r "α"            → <:alpha>        (--strict: unsupported characters are errors; --lenient: no errors)
 //! echo "<:alpha>" | uniscript → α (stdin when no text is given)
 //! uniscript --html "<:font cuneiform-hittite>𒀭<:/font>"   meta information as <span lang style> instead of TAG sequences
 //! uniscript build [entities/] [entities.idx]   rebuild the index from the readable files
@@ -15,7 +15,8 @@ const DEFAULT_INDEX: &str = "data/entities.idx";
 const REVERSE_FLAGS: [&str; 2] = ["-r", "--reverse"];
 const STRICT_FLAG: &str = "--strict";
 const HTML_FLAG: &str = "--html";
-const FLAGS: [&str; 4] = ["-r", "--reverse", STRICT_FLAG, HTML_FLAG];
+const LENIENT_FLAG: &str = "--lenient";
+const FLAGS: [&str; 5] = ["-r", "--reverse", STRICT_FLAG, HTML_FLAG, LENIENT_FLAG];
 
 fn main() -> ExitCode {
 	let arguments: Vec<String> = std::env::args().skip(1).collect();
@@ -56,7 +57,11 @@ fn convert(arguments: &[String]) -> Result<(), String> {
 	let converted = if reverse {
 		uniscript::to_uniscript(&text)
 	} else {
-		let mode = if strict { uniscript::WarningMode::Error } else { uniscript::WarningMode::Warn };
+		let mode = match (strict, flag(LENIENT_FLAG)) {
+			(true, _) => uniscript::WarningMode::Error,
+			(_, true) => uniscript::WarningMode::Lenient,
+			_ => uniscript::WarningMode::Warn,
+		};
 		let converter = uniscript::Uniscript::default();
 		let (mut converted, mut warnings) = converter.convert(&text, mode).map_err(|e| e.to_string())?;
 		if flag(HTML_FLAG) {

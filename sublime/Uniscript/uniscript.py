@@ -2,7 +2,7 @@
 import sublime
 import sublime_plugin
 
-from .uniscript_cli import UniscriptError, convert, header_length, is_uniscript_file, tag_before_cursor
+from .uniscript_cli import UniscriptError, convert, is_uniscript_file, tag_before_cursor
 
 SETTINGS_FILE = "Uniscript.sublime-settings"
 LIVE_SETTING = "convert_while_typing"  # true, false, or "header": only in files starting with <:
@@ -16,12 +16,8 @@ def settings():
 
 
 def selected_or_whole(view):
-    """The non-empty selections, else the whole buffer after its uniscript header"""
-    selected = [region for region in view.sel() if not region.empty()]
-    if selected:
-        return selected
-    start = header_length(view.substr(sublime.Region(0, min(view.size(), 1000))))
-    return [sublime.Region(start, view.size())]
+    """The non-empty selections, else the whole buffer"""
+    return [region for region in view.sel() if not region.empty()] or [sublime.Region(0, view.size())]
 
 
 def report(view, warnings):
@@ -66,7 +62,7 @@ class UniscriptWhileTypingListener(sublime_plugin.ViewEventListener):
         for cursor in (region.b for region in self.view.sel() if region.empty()):
             line_start = self.view.line(cursor).begin()
             offset = tag_before_cursor(self.view.substr(sublime.Region(line_start, cursor)))
-            if offset is not None and header_length(self.view.substr(self.view.line(cursor))) == 0:
+            if offset is not None:
                 regions.append((line_start + offset, cursor))
         if regions:
             self.view.run_command("uniscript_convert", {"regions": regions, "live": True})
