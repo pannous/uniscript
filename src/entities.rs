@@ -164,14 +164,28 @@ impl Entities {
 		self.section(BLOCKS)
 	}
 
-	/// Blocks plus their aliases, each alias with the table of its block
+	/// Blocks plus their aliases, also within combined blocks (bold-fraktur is bold-fracture), each with its block's table
 	fn block_types(&self) -> Vec<(String, Table)> {
 		let blocks = self.blocks();
 		let mut types: Vec<(String, Table)> = blocks.tables().map(|(name, table)| (name.to_string(), table.clone())).collect();
-		for (alias, block) in self.section(BLOCK_ALIASES).texts() {
+		let aliases = self.section(BLOCK_ALIASES);
+		for (alias, block) in aliases.texts() {
 			if !types.iter().any(|(name, _)| name == alias) {
 				let table = blocks.table(block).cloned().unwrap_or_default();
 				types.push((alias.to_string(), table));
+			}
+		}
+		for (block, table) in blocks.tables() {
+			let parts: Vec<&str> = block.split('-').collect();
+			for (position, part) in parts.iter().enumerate().filter(|_| parts.len() > 1) {
+				for (alias, _) in aliases.texts().filter(|(_, target)| target == part) {
+					let mut renamed = parts.clone();
+					renamed[position] = alias;
+					let name = renamed.join("-");
+					if !types.iter().any(|(known, _)| *known == name) {
+						types.push((name, table.clone()));
+					}
+				}
 			}
 		}
 		types

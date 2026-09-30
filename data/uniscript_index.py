@@ -468,9 +468,16 @@ def text_hash(text):
 
 
 def block_types(sections):
+	"""Blocks and their aliases, also within combined blocks: bold-fraktur is bold-fracture"""
 	blocks = dict(sections["blocks"])
-	for alias, block in sections.get("block-aliases", {}).items():
+	aliases = sections.get("block-aliases", {})
+	for alias, block in aliases.items():
 		blocks.setdefault(alias, blocks[block])
+	for block, table in sections["blocks"].items():
+		parts = block.split("-")
+		for position, part in enumerate(parts):
+			for alias in (alias for alias, target in aliases.items() if target == part and len(parts) > 1):
+				blocks.setdefault("-".join(parts[:position] + [alias] + parts[position + 1:]), table)
 	return blocks
 
 

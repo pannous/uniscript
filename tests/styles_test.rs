@@ -43,6 +43,7 @@ fn stacked_styles_compose_to_their_combined_style() {
 	converts_quietly("<:sans bold italic alpha>", "𝞪");
 	converts_quietly("<:bold sans italic Alpha>", "𝞐");
 	converts_quietly("<:bold fracture A>", "𝕬");
+	converts_quietly("<:fraktur bold A>", "𝕬"); // aliases combine too
 	converts_quietly("<:bold script B>", "𝓑");
 	converts_quietly("<:mirror bold italic A>", "𝑨\u{E004D}");
 }
