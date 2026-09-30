@@ -9,6 +9,13 @@ const MANIFEST_FIXED = 12;
 const MANIFEST_TABLE_SIZE = 12;
 const CHUNK_START_SIZE = 8;
 const FIRST_WORD_END = /[ -]/;
+/** What browsers open per host over HTTP/1.1; a burst of 60 fetches failed against small servers */
+const MAX_PARALLEL_FETCHES = 6;
+/** Python's http.server still drops a connection now and then */
+const FETCH_ATTEMPTS = 3;
+const RETRY_DELAY_MS = 100;
+
+const sleep = (milliseconds: number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 /** Where a key sorts among the chunks of its table: characters by code point, the rest by the hash of their first word, then by hash */
 export function chunkOrder(table: Table, key: string): [number, number] {
@@ -31,6 +38,8 @@ export class ChunkedIndex implements Lookup {
 	readonly #manifest: DataView;
 	readonly #chunks: (EntityIndex | undefined)[];
 	readonly #pending = new Map<number, Promise<void>>();
+	#activeFetches = 0;
+	readonly #waitingFetches: (() => void)[] = [];
 	readonly #missing = new Set<number>();
 	/** Where chunk n lives: `<n>.idx` next to the manifest */
 	readonly #chunkUrl: (number: number) => URL | undefined;
@@ -138,9 +147,33 @@ export class ChunkedIndex implements Lookup {
 	/** Fetches chunks next to the manifest, each once */
 	async loadChunks(numbers: number[]): Promise<void> {
 		await Promise.all(numbers.map((number) => {
-			if (!this.#pending.has(number)) this.#pending.set(number, this.#fetchChunk(number));
+			if (!this.#pending.has(number)) {
+				this.#pending.set(number, this.#throttled(() => this.#fetchChunk(number)).catch((error) => {
+					this.#pending.delete(number); // the next ensure tries again
+					throw error;
+				}));
+			}
 			return this.#pending.get(number);
 		}));
+	}
+
+	/** Runs `task` once fewer than MAX_PARALLEL_FETCHES others run, again after a failure up to FETCH_ATTEMPTS times */
+	async #throttled<T>(task: () => Promise<T>): Promise<T> {
+		while (this.#activeFetches >= MAX_PARALLEL_FETCHES) await new Promise<void>((resolve) => this.#waitingFetches.push(resolve));
+		this.#activeFetches++;
+		try {
+			for (let attempt = 1; ; attempt++) {
+				try {
+					return await task();
+				} catch (error) {
+					if (attempt >= FETCH_ATTEMPTS) throw error;
+					await sleep(RETRY_DELAY_MS * attempt);
+				}
+			}
+		} finally {
+			this.#activeFetches--;
+			this.#waitingFetches.shift()?.();
+		}
 	}
 
 	async #fetchChunk(number: number): Promise<void> {

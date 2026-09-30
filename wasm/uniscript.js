@@ -8,8 +8,32 @@ const INDEX_FILE = new URL("./entities.idx", import.meta.url);
 /** The numbers of the chunks ensure() fetched so far in chunked mode, and their bytes */
 export const fetched = { chunks: [], bytes: 0 };
 
+const MAX_PARALLEL_FETCHES = 6; // what browsers open per host over HTTP/1.1; a burst of 60 failed against small servers
+const FETCH_ATTEMPTS = 3; // Python's http.server still drops a connection now and then
+const RETRY_DELAY_MS = 100;
 let chunkUrl;
 const pendingChunks = new Map();
+let activeFetches = 0;
+const waitingFetches = [];
+
+/** Runs `task` once fewer than MAX_PARALLEL_FETCHES others run, again after a failure up to FETCH_ATTEMPTS times */
+async function throttled(task) {
+	while (activeFetches >= MAX_PARALLEL_FETCHES) await new Promise(resolve => waitingFetches.push(resolve));
+	activeFetches++;
+	try {
+		for (let attempt = 1; ; attempt++) {
+			try {
+				return await task();
+			} catch (error) {
+				if (attempt >= FETCH_ATTEMPTS) throw error;
+				await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS * attempt));
+			}
+		}
+	} finally {
+		activeFetches--;
+		waitingFetches.shift()?.();
+	}
+}
 
 export const { convert, toUnicode, toUniscript, header, font, metaTemplate, metaRuns, html } = wasm;
 
@@ -58,10 +82,13 @@ async function loadChunks(manifest) {
 
 function loadChunk(number) {
 	if (!pendingChunks.has(number)) {
-		pendingChunks.set(number, bytesOf(chunkUrl(number)).then(bytes => {
+		pendingChunks.set(number, throttled(() => bytesOf(chunkUrl(number))).then(bytes => {
 			wasm.addChunk(number, bytes);
 			fetched.chunks.push(number);
 			fetched.bytes += bytes.length;
+		}, error => {
+			pendingChunks.delete(number); // the next ensure tries again
+			throw error;
 		}));
 	}
 	return pendingChunks.get(number);
