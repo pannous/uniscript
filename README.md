@@ -1,33 +1,69 @@
 # uniscript
 
-A human readable, ASCII-only spelling of Unicode text, and back.
+**Type any Unicode character in plain ASCII, and style it: mirrored, rotated, colored.**
 
 ```
-<:alpha> <:fracture A> \:infinity        →  α 𝔄 ∞
-<:greek> a b c <:/greek>                 →  αβψ
-<:forall> x <:in> <:double R>            →  ∀ x ∈ ℝ
-x<:upper a>   <:ligature ae>   <:dopf>   →  xᵃ   æ   𝕕
-<:red circle>   <:brown heart>           →  🔴   🤎
-<:mirror red A>                          →  A + TAG r + TAG M   (a mirrored red A in the uniscript fonts)
-<:above 𓀀 𓁐>   <:beside 犭 句>          →  𓀀𓐰𓁐   ⿰犭句
+<:alpha> <:fracture Hello> <:double R> \:infinity     →   α ℌ𝔢𝔩𝔩𝔬 ℝ ∞
+<:mirror red R>                                     →   a mirrored red R
 ```
 
-Uniscript is specified in the [warp wiki](https://github.com/pannous/warp/wiki/uniscript). This crate is the Rust
-implementation; [warp](https://github.com/pannous/warp) has the same converter written in wasp (`lib/uniscript.wasp`),
-over the same data files.
+![Uniscript examples rendered with the Uniscript fonts](docs/demo.png)
+
+Uniscript is a human-readable spelling of Unicode that uses only ASCII: every character has a name (`<:alpha>`,
+`<:greek small letter alpha>`, `<:dopf>`), every style is a block type (`<:bold …>`, `<:fracture …>`, `<:upper 2>` → ²),
+and it converts back: `to_uniscript("α 𝔄")` gives `<:alpha> <:fracture A>`.
+
+Unicode has no characters for a mirrored R or a red A, so uniscript adds them as invisible **suffix controls**: the letter
+followed by TAG characters (U+E0020…E007E). Any font shows the plain letter. The **Uniscript fonts** show the effect:
+`<:mirror red R>` is `R` + TAG r + TAG M.
+
+- **40,000 names**: Unicode 16 character names, LaTeX `unicode-math` commands, HTML5 entities, and uniscript's own names.
+- **Block types**: bold, italic, script, fracture, double-struck, sans, monospace, superscript (`upper`), subscript
+  (`lower`), small capitals, circled, fullwidth, ligatures, phonetic Greek (`<:greek> athos <:/greek>` → αθοσ).
+- **Effects**: mirror, flip, turn, left, right and 11 colors, which you can stack: `<:mirror red R>`.
+- **Groups**: Egyptian hieroglyph joiners (`<:above 𓀀 𓁐>`) and CJK composition (`<:beside 犭 句>` → 狗).
+- **Honest**: an unknown name is an error. A character without a counterpart (`<:fracture 7>`) stays plain with a
+  warning that can be made an error (`--strict`).
+- **Three implementations, one data file**: this Rust crate, a Swift package in the same repository, and the
+  [wasp](https://github.com/pannous/warp) language's `lib/uniscript.wasp`. All three read `data/entities.idx`.
+
+The full specification is [docs/uniscript.md](docs/uniscript.md), a hard link to the
+[uniscript page of the warp wiki](https://github.com/pannous/warp/wiki/uniscript). It covers the representation,
+escaping, the comparison with LaTeX, the Unicode extensions uniscript wishes for, and why controls follow their character.
+
+## Try it
+
+```sh
+cargo install --git https://github.com/pannous/uniscript
+uniscript "<:alpha> <:fracture A>"     # α 𝔄
+uniscript -r "α 𝔄"                     # <:alpha> <:fracture A>
+echo "<:beside 犭 句>" | uniscript      # ⿰犭句 (狗 in the Uniscript CJK font)
+uniscript --strict "<:fracture 7>"     # fails: uniscript: no fracture form of 7 at byte 0
+```
+
+## Fonts
+
+Download them from the [releases](https://github.com/pannous/uniscript/releases). Their license is the SIL Open Font License.
+
+| font | shows |
+|---|---|
+| **Uniscript Sans** (from Noto Sans + Noto Sans Math) | every geometry and color on ASCII and Greek, and one effect at a time on Latin-1/Ext-A, Greek, symbols, arrows and operators; mirror and turn on the rest |
+| **Uniscript CJK** (from Noto Sans CJK) | IDS composition (⿰犭句 → 狗, 27,688 sequences) and mirror for radicals and the 3,755 most common hanzi |
+| **NewGardinerOmni** (M.-J. Nederhof) | hieroglyph groups with the Unicode 15 joiners and the mirror control U+13440 |
+
+The fonts are built by [`fonts/uniscript_fonts.py`](https://github.com/pannous/warp/tree/main/fonts) in warp. Text
+engines must shape with HarfBuzz or CoreText for the controls to take effect: Chrome, Firefox, Safari, Sublime Text,
+VS Code, and iTerm with ligatures on.
 
 ## Use
 
 ```rust
 assert_eq!(uniscript::to_unicode("<:alpha> <:fracture A>")?, "α 𝔄");
 assert_eq!(uniscript::to_uniscript("α 𝔄"), "<:alpha> <:fracture A>");
-```
 
-```sh
-cargo install --git https://github.com/pannous/uniscript
-uniscript "<:alpha> <:fracture A>"     # α 𝔄
-uniscript -r "α 𝔄"                     # <:alpha> <:fracture A>
-echo "<:beside 犭 句>" | uniscript      # ⿰犭句
+// warnings instead of stderr, or as errors
+let (text, warnings) = uniscript::convert("<:fracture 7>", uniscript::WarningMode::Warn)?;   // "7", 1 warning
+assert!(uniscript::convert("<:fracture 7>", uniscript::WarningMode::Error).is_err());
 ```
 
 `to_uniscript` followed by `to_unicode` gives the original text back.
@@ -95,5 +131,5 @@ itself as `red `), 1 characters → preferred uniscript, 2 suffix controls → b
 
 ## Licenses
 
-Code: MIT. The seeded names come from the Unicode Character Database (Unicode License v3), the HTML5 entity list
-(W3C) and unicode-math-table.tex (LPPL 1.3c).
+Code: MIT. The seeded names come from the Unicode Character Database (Unicode License v3), the HTML5 entity list (W3C)
+and unicode-math-table.tex (LPPL 1.3c). Fonts: SIL Open Font License 1.1.
