@@ -3,6 +3,11 @@ Read @README.md
 # do NOT stop on errors
 All libraries should handle uniscript gently by default and only emit warnings. 
 
+# stay backwards compatible
+A header `<:uniscript version="https://uniscript.org/vN">` with any N is read without warning (best effort with the
+current tables); only a version that is no uniscript.org/vN URL warns. Every implementation has `reads_version` (or its
+language's spelling) for this rule, and the shared cases (js/test/cases.json, c/tests/cases.h) check it.
+
 ### Index format
 
 All integers are u32 little endian, offsets from the start of the file.

@@ -123,8 +123,8 @@ Future: hopefully this will develop into its very own standard.
 
 # Header
 A uniscript file may start with the header `<:uniscript version="https://uniscript.org/v1">`. Every implementation
-(Rust, Swift, wasp) recognizes it only at the very start, converts it and one line break after it to nothing, and warns
-about a version it does not read (`unsupported uniscript version …`). Anywhere else `<:uniscript …>` is an unknown
+(Rust, Swift, wasp) recognizes it only at the very start, converts it and one line break after it to nothing, reads every
+`https://uniscript.org/vN` without warning (backwards compatible) and warns only about a foreign version (`unsupported uniscript version …`). Anywhere else `<:uniscript …>` is an unknown
 entity; the escaped `<<::>uniscript version="https://uniscript.org/v1">` is the header as text.
 Renderers might choose to switch on Uniscript mode when encountering the header or `<:` at the start of a file.
 [Warp](https://github.com/pannous/warp/) has built-in support for Uniscript, so all code should be rendered with it. 
