@@ -5,6 +5,12 @@ import initWasm, * as wasm from "./pkg/uniscript_wasm.js";
 const WASM_FILE = new URL("./pkg/uniscript_wasm_bg.wasm", import.meta.url);
 const INDEX_FILE = new URL("./entities.idx", import.meta.url);
 
+/** The numbers of the chunks ensure() fetched so far in chunked mode, and their bytes */
+export const fetched = { chunks: [], bytes: 0 };
+
+let chunkUrl;
+const pendingChunks = new Map();
+
 export const { convert, toUnicode, toUniscript, header, font, metaTemplate, metaRuns, html } = wasm;
 
 /** The uniscript version this implementation reads; set by init() */
@@ -33,13 +39,54 @@ async function bytesOf(source) {
 	return new Uint8Array(await response.arrayBuffer());
 }
 
+/** Where a relative path or URL points: from the working directory in Node, from the page in browsers */
+const absolute = source => source instanceof URL ? source : new URL(source, isNode ? `file://${process.cwd()}/` : document.baseURI);
+
+/** Loads a chunk manifest; chunk n is `<n>.idx` next to it, with `?v=<version>` over HTTP so caches never mix builds */
+async function loadChunks(manifest) {
+	const manifestUrl = absolute(manifest);
+	const version = wasm.loadChunkManifest(await bytesOf(manifestUrl));
+	chunkUrl = number => {
+		const url = new URL(`${number}.idx`, manifestUrl);
+		if (url.protocol !== "file:") url.search = `v=${version}`;
+		return url;
+	};
+	pendingChunks.clear();
+	fetched.chunks = [];
+	fetched.bytes = 0;
+}
+
+function loadChunk(number) {
+	if (!pendingChunks.has(number)) {
+		pendingChunks.set(number, bytesOf(chunkUrl(number)).then(bytes => {
+			wasm.addChunk(number, bytes);
+			fetched.chunks.push(number);
+			fetched.bytes += bytes.length;
+		}));
+	}
+	return pendingChunks.get(number);
+}
+
+/**
+ * Fetches the chunks converting `text` needs (a dry run of convert, metaRuns, html and toUniscript, repeated until no
+ * lookup misses), so that the synchronous functions then give exactly the results of the whole index. A no-op without chunks.
+ */
+export async function ensure(text) {
+	for (let missing = wasm.missingChunks(text); missing.length; missing = wasm.missingChunks(text)) {
+		await Promise.all([...missing].map(loadChunk));
+	}
+}
+
 /**
  * Loads the WebAssembly and the entity index. `index` and `wasmSource`: a URL, a path (Node), a Response or the bytes;
- * by default the files in pkg/ next to this module. Calling it again replaces the index.
+ * by default the files in pkg/ next to this module. `index` may also be `{ chunks: <manifest.usxc URL or path> }`:
+ * the chunks from `uniscript chunks`, fetched on demand by ensure(text). Calling it again replaces the index.
  */
 export default async function init(index = INDEX_FILE, wasmSource = WASM_FILE) {
-	const [indexBytes, wasmBytes] = await Promise.all([bytesOf(index), bytesOf(wasmSource)]);
+	const chunked = index?.chunks !== undefined;
+	const [indexBytes, wasmBytes] = await Promise.all([chunked ? undefined : bytesOf(index), bytesOf(wasmSource)]);
 	await initWasm({ module_or_path: wasmBytes });
-	wasm.loadIndex(indexBytes);
+	if (chunked) await loadChunks(index.chunks);
+	else wasm.loadIndex(indexBytes);
 	UNISCRIPT_VERSION = wasm.uniscriptVersion();
 }

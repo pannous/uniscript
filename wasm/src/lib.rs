@@ -5,6 +5,7 @@
 //! `InvalidMeta`) and `detail` (the name, rest or content; for `Unsupported` the warning).
 
 use serde::{Deserialize, Serialize};
+use uniscript::index::Index;
 use uniscript::{Error, MetaRun, Styled, Uniscript, Warning, WarningMode};
 use std::cell::RefCell;
 use wasm_bindgen::prelude::*;
@@ -16,17 +17,48 @@ thread_local! {
 	static CONVERTER: RefCell<Option<Uniscript<'static>>> = const { RefCell::new(None) };
 }
 
-/// Loads the index (the bytes of data/entities.idx): they live as long as the page, a second load replaces the converter
-/// and keeps the old bytes
-#[wasm_bindgen(js_name = loadIndex)]
-pub fn load_index(bytes: Vec<u8>) -> Result<(), JsValue> {
-	let converter = Uniscript::from_bytes(Box::leak(bytes.into_boxed_slice())).map_err(|error| JsValue::from(js_sys::Error::new(&error)))?;
+fn js_error(message: &str) -> JsValue {
+	js_sys::Error::new(message).into()
+}
+
+fn install(index: Result<Index<'static>, String>) -> Result<(), JsValue> {
+	let converter = Uniscript::new(index.map_err(|error| js_error(&error))?);
 	CONVERTER.with(|loaded| loaded.replace(Some(converter)));
 	Ok(())
 }
 
+fn leaked(bytes: Vec<u8>) -> &'static [u8] {
+	Box::leak(bytes.into_boxed_slice())
+}
+
+/// Loads the index (the bytes of data/entities.idx): they live as long as the page, a second load replaces the converter
+/// and keeps the old bytes
+#[wasm_bindgen(js_name = loadIndex)]
+pub fn load_index(bytes: Vec<u8>) -> Result<(), JsValue> {
+	install(Index::new(leaked(bytes)))
+}
+
+/// Loads a chunk manifest (manifest.usxc from `uniscript chunks`) instead of a whole index; its version for cache busting
+#[wasm_bindgen(js_name = loadChunkManifest)]
+pub fn load_chunk_manifest(bytes: Vec<u8>) -> Result<u32, JsValue> {
+	install(Index::chunked(leaked(bytes)))?;
+	with_converter(|converter| converter.index().version())
+}
+
+/// Adds chunk `number` (`<number>.idx` next to the manifest)
+#[wasm_bindgen(js_name = addChunk)]
+pub fn add_chunk(number: usize, bytes: Vec<u8>) -> Result<(), JsValue> {
+	with_converter(|converter| converter.index().add_chunk(number, leaked(bytes)))?.map_err(|error| js_error(&error))
+}
+
+/// The chunks converting `text` still needs (empty for a whole index): add them and ask again until none are missing
+#[wasm_bindgen(js_name = missingChunks)]
+pub fn missing_chunks(text: &str) -> Result<Vec<u32>, JsValue> {
+	with_converter(|converter| converter.missing_chunks(text).into_iter().map(|number| number as u32).collect())
+}
+
 fn with_converter<T>(action: impl FnOnce(&Uniscript<'static>) -> T) -> Result<T, JsValue> {
-	CONVERTER.with(|loaded| loaded.borrow().as_ref().map(action)).ok_or_else(|| js_sys::Error::new(NOT_LOADED).into())
+	CONVERTER.with(|loaded| loaded.borrow().as_ref().map(action)).ok_or_else(|| js_error(NOT_LOADED))
 }
 
 #[derive(Serialize, Deserialize)]
