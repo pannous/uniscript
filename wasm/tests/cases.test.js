@@ -40,6 +40,10 @@ test("converts", () => {
 	for (const [uniscript, unicode] of section("converts")) assert.equal(convert(uniscript).text, unicode, uniscript);
 });
 
+test("quiet", () => {
+	for (const [uniscript, unicode] of section("quiet")) assert.deepEqual(convert(uniscript), { text: unicode, warnings: [] }, uniscript);
+});
+
 test("roundTrips", () => {
 	for (const [uniscript, unicode] of section("roundTrips")) {
 		assert.equal(toUnicode(uniscript), unicode, uniscript);
