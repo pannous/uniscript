@@ -369,7 +369,13 @@ private final class Conversion {
 		return out
 	}
 
-	/// The space separated operands, spaces dropped, or one operand of several words (egyptian seated man);
+	/// An operand that is one letter of the block: one character, its own entry (greek th, greek eta) or an entity name
+	private func isLetter(_ block: String, _ token: String) -> Bool {
+		token.unicodeScalars.count == 1 || name("\(block) \(token)") != nil || name(token) != nil
+	}
+
+	/// The space separated operands, or one operand of several words (egyptian seated man); spaces between letters
+	/// only separate them, spaces next to a word stay (`<:greek> filosofia kosmos<:/greek>` → φιλοσοφια κοσμοσ);
 	/// a group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script
 	/// of the first part has
 	private func operands(_ block: String, _ content: String, _ effects: [String], _ at: Int) -> String {
@@ -380,7 +386,13 @@ private final class Conversion {
 		let group = name("\(block) *group") != nil
 		var out = ""
 		var script = ""
-		for (position, token) in splitOnSpaces(content).enumerated() {
+		var (position, spaces, previousIsLetter) = (0, 0, true)
+		for token in content.split(separator: " ", omittingEmptySubsequences: false).map(String.init) {
+			spaces += 1
+			if token.isEmpty { continue }
+			let isLetter = self.isLetter(block, token)
+			if !group && position > 0 && !(previousIsLetter && isLetter) { out += String(repeating: " ", count: spaces) }
+			(spaces, previousIsLetter) = (0, isLetter)
 			let part = group ? (token.utf8.count > 1 ? name(token) : nil) ?? token : operand(block, token, effects, at)
 			if position == 0 {
 				script = part.unicodeScalars.first.map(scriptOf) ?? ""
@@ -393,6 +405,7 @@ private final class Conversion {
 				out += name("\(block) *infix \(script)") ?? ""
 			}
 			out += part
+			position += 1
 		}
 		return out
 	}

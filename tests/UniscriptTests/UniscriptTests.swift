@@ -102,6 +102,12 @@ final class UniscriptTests: XCTestCase {
 		converts("<:less>:", "<:")
 	}
 
+	func testSpacesBetweenWordsAreKept() {
+		converts("<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμοσ")
+		converts("<:greek a kosmos>", "α κοσμοσ")
+		converts("<:fracture Hello  World>", "ℌ𝔢𝔩𝔩𝔬  𝔚𝔬𝔯𝔩𝔡")
+	}
+
 	func testTheHeaderDeclaresUniscriptAndItsVersion() throws {
 		let header = "<:uniscript version=\"https://uniscript.org/v1\">"
 		XCTAssertEqual(uniscriptVersion, "https://uniscript.org/v1")
