@@ -32,3 +32,8 @@ DONE - C ffi/native: NULL or invalid UTF-8 input fails with UNISCRIPT_INVALID_IN
 - Swift: Linux build unverified (podman machine fails: vfkit exited with code 1); Bundle.module + Data(.alwaysMapped) should work on Linux Foundation, SPI will show it
 - Swift: `swift` in PATH is swiftly 6.0.3 and cannot build against the current macOS SDK (Foundation module error); use `xcrun swift`
 - Swift: README Swift section still shows `branch: "main"`; switch to `from: "0.2.0"` once the tag is pushed
+- C packaging: release v0.1.0 needs a git tag, a GitHub release with uniscript-c-0.1.0.tar.gz (make -C c/native dist), the sha256 filled into packaging/homebrew/Formula/*.rb and packaging/conan/conandata.yml, and the repo pannous/homebrew-tap (notes/c-packaging.md)
+- C packaging: no vcpkg port (needs CMake config files and MSVC, which .incbin blocks); no CMakeLists.txt, so CMake users rely on pkg-config
+- C packaging: the Linux shared library has no soname/versioned name (libuniscript.so only), and the install is untested on Linux
+- C packaging: c/native builds with -Werror, so a downstream compiler with new warnings breaks release builds (Homebrew, Conan); consider dropping -Werror outside `make test`
+- C packaging: c/native `make install` and c/ffi both name the library libuniscript: installing both would collide (c/ffi has no install target)
