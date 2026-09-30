@@ -8,6 +8,14 @@
   `cargo run -- build`. Multi-word operands are stored hyphenated (`seated-man`); `<:egyptian seated man>` finds them.
 - Gardiner numbers come from the Unicode names (A001 → A1, AA001 → Aa1, A014A → A14A); descriptions from Wikipedia's
   Template:List_of_hieroglyphs (`data/sources/list_of_hieroglyphs.wiki`). Unikemet's kEH_Desc is too long for names.
+- Anatolian: Laroche numbers from the Unicode names (A010A → 10A); logogram names and syllabic values from the aliases
+  of Unicode's NamesList.txt (`data/sources/anatolian_names_list.txt`, the block's section of NamesList-16.0.0):
+  logograms in capitals (CAPUT, (DEUS)VIA+TERRA), syllables lower case with the ASCII index (tá = ta2, tà = ta3),
+  alternatives spelled out (wa/i5 → wa5 wi5, i(a) → i ia); readings with `?` or `-x` are skipped; first sign wins.
+- A block alias may name several blocks: `hieroglyph: "egyptian anatolian"` holds the operands of all, first wins.
+- `*rare` (egyptian, anatolian, inherited by their aliases) keeps a block's names out of the chunked index's Bloom
+  filter: web manifest 36.5 KB → 28.2 KB even with Anatolian added. Block keys must stay in the common chunk: readers
+  treat a missing `X ` or `X *…` there as absent without a fetch.
 - The reverse table prefers block forms over Unicode names, so 𓀀 now spells back as `<:egyptian A1>`.
 - Seeding reproduces the old single entities.wasp exactly (index diff: only the new egyptian entries and the 1071
   hieroglyph reverse spellings changed).
