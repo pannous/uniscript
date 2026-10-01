@@ -11,3 +11,5 @@
 - The fonts from Google have post format 3 (no glyph names). Switch to format 2 so hb-shape output is readable.
 - A LigatureSet keyed on one IDS operator overflows 64 KB offsets, so chunk the ligatures into several subtables of one lookup; HarfBuzz tries the next subtable when one does not apply.
 - Egyptian grouping already exists: NewGardinerOmni (Nederhof) implements the Unicode 15 format controls as a GSUB/GPOS state machine.
+- HarfBuzz's sanitizer charges a SinglePos format 1 for the population of its coverage, and a range covers 60,000 glyphs in 6 bytes: 300 such lookups exceeded the op budget and the **whole GPOS was silently dropped** (`hb-shape -V` shows "fallback mark", no GPOS stage). Keep single-positioning coverages small (Uniscript Hanzi: one class per size).
+- Firefox puts a Common-script character (IDC ⿰, TAG) into the preceding Latin run; Chrome and WebKit keep a leading IDC with the Han text after it.

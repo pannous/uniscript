@@ -56,12 +56,13 @@ HANZI_STEM = 80  # stroke width of Noto Sans CJK Regular
 HANZI_KEEP_STROKE = 0.7  # share of the stroke width lost to scaling that a part gets back
 HANZI_GAP = 0.05  # space between neighbouring parts, as a share of the split box
 HANZI_MAX_DISTORTION = 2.6  # largest ratio between a part's horizontal and vertical scale
-HANZI_SIZE_STEP = 1.15  # part boxes are rounded to powers of this
+HANZI_SIZE_STEP = 1.2  # part boxes are rounded to powers of this
 HANZI_SHARES = (1 / 3, 0.42, 0.5, 0.58, 2 / 3)  # first part's share of a ⿰ or ⿱ split
 HANZI_BUCKET = 0.25  # parts are classed by their learned strength in steps of this many logits
 HANZI_BUCKETS = range(-4, 5)
 HANZI_NESTED_STRENGTH = 0.6  # a nested sequence holds its own like a dense part
-HANZI_TIERS = (400, 6000)  # most frequent parts get every size, the next ones only those of unnested sequences
+HANZI_TIERS = (50, 6000)  # the most frequent parts also nest, the others only form simple (unnested) sequences
+HANZI_OFTEN_USED = 40  # parts used this often in IDS rank with the common hanzi
 HANZI_RASTER = 96  # pixels per em when measuring how real characters split
 HANZI_GRID = 32  # characters and parts are compared at this many pixels square
 HANZI_STRENGTHS = os.path.join(SOURCES, "hanzi-strengths.json")
@@ -716,14 +717,15 @@ def draw_parts(job):
 
 
 def ranked_components(cmap):
-    """Characters by how often IDS use them as parts, then the common hanzi no IDS uses."""
+    """Parts by how often IDS use them, the often used ones and the common hanzi (what people combine) first."""
     counts = defaultdict(int)
     for _, sequence in ids_sequences(cmap):
         for character in sequence[1:]:
             if ord(character) not in IDS_OPERATORS:
                 counts[character] += 1
-    ranked = sorted(counts, key=lambda c: (-counts[c], c))
-    return ranked + [chr(code) for code in sorted(cmap) if is_common_hanzi(code) and chr(code) not in counts]
+    common = {chr(code) for code in cmap if is_common_hanzi(code)}
+    first = lambda c: c in common or counts[c] >= HANZI_OFTEN_USED
+    return sorted(set(counts) | common, key=lambda c: (not first(c), -counts[c], c))
 
 
 def glyph_name(character):
@@ -955,7 +957,7 @@ def hanzi_font(programs, metrics, characters):
                      {name: T2CharString(program=program) for name, program in programs.items()}, {})
     builder.setupHorizontalMetrics(metrics)
     builder.setupHorizontalHeader(ascent=HANZI_FACE[3] + 40, descent=HANZI_FACE[1] - 40)
-    builder.setupNameTable({"familyName": "Uniscript Hanzi", "styleName": "Regular"})
+    builder.setupNameTable({"familyName": "Uniscript Hanzi", "styleName": "Regular", "psName": "UniscriptHanzi-Regular"})
     builder.setupOS2(sTypoAscender=880, sTypoDescender=-120, usWinAscent=1160, usWinDescent=288, fsType=0)
     builder.setupPost()
     return builder.font
