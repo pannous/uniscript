@@ -4,11 +4,11 @@ must leave those code points to the built Aegyptus, and still shape groups like 
 Run: python3 fonts/uniscript_fonts.py egyptian && python3 probes/egyptian_private_use_test.py"""
 import os, subprocess, unittest
 from fontTools.ttLib import TTFont
-from egyptian_baseline_test import DIST, OMNI, A1, A40, VERTICAL_JOINER
+from egyptian_baseline_test import DIST, OMNI, OMNI_URL, A1, A40, VERTICAL_JOINER
 
 ROOT = os.path.dirname(os.path.dirname(DIST))
 SIGN_LIST = os.path.join(ROOT, "data", "sources", "gardiner.full.csv")
-OMNI_SOURCE = os.path.join(ROOT, "fonts", "sources", "NewGardinerOmni2d4.ttf")
+OMNI_SOURCE = os.path.join(ROOT, "fonts", "sources", os.path.basename(OMNI_URL))
 AEGYPTUS = os.path.join(DIST, "Aegyptus.otf")
 Q4A = 0xF446E
 

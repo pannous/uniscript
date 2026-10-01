@@ -2,11 +2,13 @@
 system fallback) sit their signs on the descender like Aegyptus does its extended ones, instead of on the baseline.
 Measures the shaped ink with hb-shape in the built fonts.
 Run: python3 fonts/uniscript_fonts.py egyptian && python3 probes/egyptian_baseline_test.py"""
-import json, os, subprocess, unittest
+import json, os, subprocess, sys, unittest
 from fontTools.ttLib import TTFont
 
 DIST = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "fonts", "dist")
-OMNI = os.path.join(DIST, "NewGardinerOmni2d4.ttf")
+sys.path.insert(0, os.path.dirname(DIST))
+from uniscript_fonts import OMNI_URL
+OMNI = os.path.join(DIST, os.path.basename(OMNI_URL))
 NOTO = os.path.join(DIST, "NotoSansEgyptianHieroglyphs-Regular.ttf")
 A1, A40, VERTICAL_JOINER = "\U00013000", "\U00013050", "\U00013430"
 AEGYPTUS_BOTTOM = -0.17  # em, where Aegyptus puts the foot of its signs

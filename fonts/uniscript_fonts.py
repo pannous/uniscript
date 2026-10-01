@@ -50,7 +50,9 @@ IDS_DATA = os.path.join(SOURCES, "cjkvi-ids.txt")
 IDS_URL = "https://raw.githubusercontent.com/cjkvi/cjkvi-ids/master/ids.txt"
 UNIHAN_DATA = os.path.join(SOURCES, "Unihan.zip")
 UNIHAN_URL = "https://www.unicode.org/Public/UCD/latest/ucd/Unihan.zip"
-OMNI_URL = "https://github.com/nederhof/newgardiner/raw/refs/heads/main/fonts/NewGardinerOmni2d4.ttf"
+# Omni4: 5 scaled copies per sign, finer positioning than Omni2d4 (4 copies), so stacked signs leave less gap; switch
+# back by naming NewGardinerOmni2d4.ttf here
+OMNI_URL = "https://github.com/nederhof/newgardiner/raw/refs/heads/main/fonts/NewGardinerOmni4.ttf"
 NOTO_EGYPTIAN = os.path.join(USER_FONTS, "NotoSansEgyptianHieroglyphs-Regular.ttf")  # the system's fallback for the block
 # George Douros' Aegyptus ("free for any use"): the extended signs Unicode lacks at U+F3000… (<:gardiner Q4A>), where Omni
 # has unrelated zero-width group fragments, so the built Omni leaves the private use planes to Aegyptus
