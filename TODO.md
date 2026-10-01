@@ -93,3 +93,8 @@ I briefly ran git stash and restored it straight away while testing the wasp por
 - C/C++: no private Conan remote to upload to (only conancenter is configured); `conan upload` needs an Artifactory/conan_server the user hosts, else ConanCenter by PR.
 - C/C++: Linux aarch64 and MinGW builds of c/CMakeLists.txt untested (Linux x86_64 gcc 13 passes on pannous.com).
 - TODO: open the microsoft/vcpkg PR for the uniscript port once the project is 6 months old (2027-03-30); branch uniscript-port in probes/uniscript-cpp/vcpkg, notes/c-packaging.md.
+- Debian: the apt signing key (EF86F972…, GNUPGHOME /root/.gnupg-uniscript-apt on pannous.com, no passphrase, no expiry) exists only on the server: back it up somewhere offline (notes/packaging-debian.md).
+- Debian: publish.sh builds the .debs from HEAD (packaged crate, `make dist`); for 1.0.0 they came from the released crate and C tarball with HEAD's c/cmake via `probes/uniscript-packages/run_deb_step.sh --release --publish`. At the next version both are the same thing.
+- Debian: lintian info tags left: .comment sections, no _FORTIFY_SOURCE (zig), no symbols file for libuniscript1 (shlibs only). The packages are tested on Ubuntu 24.04 (amd64 on pannous.com, arm64 in Apple's container); older glibc targets (2.17 claimed) untested.
+- Homebrew: no man page in the formula: packaging/debian/uniscript.1 is not in the crate (Cargo.toml include) nor the C tarball; add it at the next release and `man1.install`.
+- Homebrew: machines that installed the one-day-old pannous/tap/libuniscript must `brew uninstall libuniscript` before uniscript 1.0.0_1 links (same lib/ files); no automatic migration.

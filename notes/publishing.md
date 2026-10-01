@@ -8,6 +8,7 @@
 | npm | `@pannous/uniscript` | `js/` | `@pannous/uniscript`, `@pannous/uniscript/core` |
 | npm | `@pannous/uniscript-wasm` | `wasm/` | `@pannous/uniscript-wasm` (`await init()`) |
 | Maven Central | `com.pannous:uniscript-kotlin` | `kotlin/` | `com.pannous.uniscript.Uniscript` (notes/kotlin.md) |
+| apt (pannous.com/uniscript/apt) | `uniscript`, `libuniscript1`, `libuniscript-dev` | crate + C tarball | notes/packaging-debian.md |
 | Maven Central | `com.pannous:uniscript` | `java/` | `com.pannous.uniscript.ffi.Uniscript`, Java 22+ (notes/java.md) |
 
 - Taken names (2026-09-30): npm `uniscript` (unrelated, errisy), PyPI `uniscript` (subscript converter). The npm user
@@ -35,7 +36,7 @@
 3. `git tag v1.0.0 && git push origin v1.0.0` (the Swift package is its git tags), then submit the repo at
    https://github.com/SwiftPackageIndex/PackageList/issues/new/choose.
 4. C: `make -C c/native dist`, `gh release create v1.0.0 c/native/build/uniscript-c-1.0.0.tar.gz`, put its sha256 into
-   `packaging/homebrew/Formula/libuniscript.rb` and `packaging/conan/conandata.yml`; the crate's sha256
+   the resource of `packaging/homebrew/Formula/uniscript.rb` and `packaging/conan/conandata.yml`; the crate's sha256
    (`curl -sL https://static.crates.io/crates/uniscript/uniscript-1.0.0.crate | shasum -a 256`) into
    `packaging/homebrew/Formula/uniscript.rb`; `gh repo create pannous/homebrew-tap --public` and push the Formula/ dir.
    Details in notes/c-packaging.md.

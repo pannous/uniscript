@@ -1,5 +1,5 @@
-# Homebrew formula for the tap pannous/homebrew-tap (brew install pannous/tap/uniscript; the alias libuniscript names it
-# too): the Rust command line `uniscript` from the crates.io crate, plus the native C11 library (c/native) with
+# Homebrew formula for the tap pannous/homebrew-tap (brew install pannous/tap/uniscript, which replaced the formula
+# libuniscript): the Rust command line `uniscript` from the crates.io crate, plus the native C11 library (c/native) with
 # uniscript.h, the C++17 wrapper uniscript.hpp, the CMake package uniscript::uniscript and uniscript.pc, from the C tarball
 # `make -C c/native dist` attached to the GitHub release. One formula, because Homebrew 7 refuses dependencies from
 # untrusted taps. At a release: both sha256, see notes/packaging-homebrew.md

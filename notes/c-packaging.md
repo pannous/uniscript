@@ -16,16 +16,12 @@ vcpkg port, all built by c/CMakeLists.txt except Homebrew (Makefile). c/ffi (Rus
   with `pkg-config --cflags --libs uniscript` and run (to_unicode "<:alpha> <:fracture A>" = "α 𝔄" and back).
   `make dist-test`: unpacks the tarball into probes/publish/dist and runs `all test consumer-test` there.
 
-## Homebrew (packaging/homebrew/Formula → the repo github.com/pannous/homebrew-tap)
-- `uniscript.rb`: the Rust CLI from the crates.io .crate (cargo install, std_cargo_args, Cargo.lock is in the crate).
-  `libuniscript.rb`: the C library from the release tarball, `install-lib`, test compiles C and C++ via pkgconf.
-- Homebrew 7 refuses formula paths outside a tap. Tested with a local tap: `brew tap-new pannous/local --no-git`,
-  copies of the formulas with `file://` urls to probes/publish/dist/homebrew and real sha256, `brew install
-  --build-from-source`, `brew test`, `brew audit --strict --formula`, `brew style` (all clean), then uninstall + untap.
-- The Rust formula pulls brew's rust (400 MB) + libgit2 as build deps. Careful when cleaning up: `brew uninstall rust`
-  autoremoves unrelated unneeded formulae (it removed openjdk@25; reinstalled and re-marked with
-  `brew tab --no-installed-on-request`). Use HOMEBREW_NO_AUTOREMOVE=1.
-- Brew 7 warns about untrusted taps (`brew trust pannous/tap`) but installs anyway.
+## Homebrew and Debian
+- notes/packaging-homebrew.md: one formula `uniscript` (CLI + this library built with CMake). libuniscript.rb is gone.
+- notes/packaging-debian.md: libuniscript1 / libuniscript-dev .debs and the apt repository.
+- Homebrew 7 refuses formula paths outside a tap; the Rust formula pulls brew's rust (400 MB) as a build dep. Careful
+  when cleaning up: `brew uninstall rust` autoremoves unrelated unneeded formulae (it removed openjdk@25). Use
+  HOMEBREW_NO_AUTOREMOVE=1.
 
 ## CMake (c/CMakeLists.txt, c/cmake/)
 - `cmake -S c -B build`: target `uniscript::uniscript`, `UNISCRIPT_BACKEND=native` (default, c/native) or `rust` (c/ffi via
@@ -64,18 +60,18 @@ vcpkg port, all built by c/CMakeLists.txt except Homebrew (Makefile). c/ffi (Rus
 ## At a release (user commands)
 1. Tag and GitHub release: `git tag v1.0.0 && git push origin v1.0.0` (v0.1.0 exists and is stale),
    `make -C c/native dist` (prints the sha256), `gh release create v1.0.0 c/native/build/uniscript-c-1.0.0.tar.gz`.
-2. Fill the sha256: libuniscript.rb and packaging/conan/recipes/uniscript/all/conandata.yml get the `make dist` sha
+2. Fill the sha256: the resource in packaging/homebrew/Formula/uniscript.rb and packaging/conan/recipes/uniscript/all/conandata.yml get the `make dist` sha
    (the attached asset is that exact file), packaging/vcpkg/ports/uniscript/portfile.cmake its sha512
    (`shasum -a 512`), a new version also goes into config.yml and vcpkg.json; uniscript.rb gets the crate's after `cargo publish`:
    `curl -sL https://static.crates.io/crates/uniscript/uniscript-1.0.0.crate | shasum -a 256`.
 3. Tap: `gh repo create pannous/homebrew-tap --public`, copy packaging/homebrew/Formula into it, push; users run
-   `brew install pannous/tap/uniscript pannous/tap/libuniscript`.
+   `brew install pannous/tap/uniscript`.
 4. Upstream PRs (need the go of whoever owns the release): conan-io/conan-center-index (recipes/uniscript) and
    microsoft/vcpkg (branch uniscript-port, after `vcpkg x-add-version uniscript --overwrite-version`).
 
 ## Upstream status (2026-10-01)
 - v1.0.0 C tarball re-cut from main (now with c/CMakeLists.txt); the tag v1.0.0 stays on 8a07951, because moving it would
-  break SwiftPM pins. sha256 516c9da0…, in conandata.yml and both libuniscript.rb copies; sha512 in the vcpkg portfile.
+  break SwiftPM pins. sha256 516c9da0…, in conandata.yml and the formula (then libuniscript.rb, now the resource of uniscript.rb); sha512 in the vcpkg portfile.
   Checked from the real URL: conan create + test_package, vcpkg overlay install, brew reinstall + test.
 - conan-center-index PR https://github.com/conan-io/conan-center-index/pull/31084 (fork pannous/conan-center-index,
   branch uniscript-1.0.0). Needs the CLA signed at cla-assistant.io by pannous.

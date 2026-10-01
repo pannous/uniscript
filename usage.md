@@ -36,15 +36,15 @@ them from this file and runs them all (`probes/usage/run_all.sh rust python` run
 | language | package | install | from a registry |
 |---|---|---|---|
 | [Rust](#rust) (reference) | crate `uniscript` | `cargo add uniscript` | yes |
-| [CLI](#command-line) | crate `uniscript` | `cargo install uniscript` or `brew install pannous/tap/uniscript` | yes |
+| [CLI](#command-line) | crate `uniscript` | `cargo install uniscript`, `brew install pannous/tap/uniscript` or `apt install uniscript` ([apt repository](README.md#debian-and-ubuntu)) | yes |
 | [Swift](#swift) | SwiftPM product `Uniscript` | `.package(url: "https://github.com/pannous/uniscript", from: "1.0.0")` | yes (git) |
 | [TypeScript / JavaScript](#typescript--javascript) | npm `@pannous/uniscript` | `npm install @pannous/uniscript` | yes |
 | [WebAssembly](#webassembly) | npm `@pannous/uniscript-wasm` | `npm install @pannous/uniscript-wasm` | yes |
 | [Python](#python) pure | PyPI `uniscript-py` | `pip install uniscript-py` | yes |
 | [Python](#python) Rust-backed | PyPI `uniscript-rs` | `pip install uniscript-rs` | yes |
-| [C](#c) native | `libuniscript` | `brew install pannous/tap/libuniscript` | yes (tap) |
+| [C](#c) native | `libuniscript` | `brew install pannous/tap/uniscript` (with the CLI) or `apt install libuniscript-dev` | yes (tap, apt repository) |
 | [C](#c) Rust-backed | `c/ffi` | `make -C c/ffi` | no |
-| [C++](#c-1) | `c/uniscript.hpp`, CMake `uniscript::uniscript` | with either C library; Conan and vcpkg recipes in `packaging/` | Homebrew tap; Conan Center pending, vcpkg later |
+| [C++](#c-1) | `c/uniscript.hpp`, CMake `uniscript::uniscript` | with either C library; Conan and vcpkg recipes in `packaging/` | Homebrew tap, apt repository; Conan Center pending, vcpkg later |
 | [Kotlin](#kotlin--intellij) (JVM) | Maven `com.pannous:uniscript-kotlin` | `cd kotlin && ./gradlew publishToMavenLocal`, then `implementation("com.pannous:uniscript-kotlin:1.0.0")` | not yet (Maven Central) |
 | [Java](README.md#java) | Maven `com.pannous:uniscript` | `make -C c/ffi natives && cd java && ./gradlew publishToMavenLocal`, then `implementation("com.pannous:uniscript:1.0.0")` | not yet (Maven Central) |
 | [C# / .NET](README.md#c--net) | NuGet `Uniscript` | `make -C c/ffi natives`, then reference `csharp/src/Uniscript.csproj` | not yet (NuGet) |
@@ -384,7 +384,7 @@ Build and test, pure: `cd python/native && PYTHONPATH=. python3 -m pytest tests`
 
 One header, `c/uniscript.h`, for two drop-in interchangeable libraries, both with the index compiled in:
 
-- **native** (`c/native`, C11, no dependencies): `brew install pannous/tap/libuniscript`, Conan (`packaging/conan`), the
+- **native** (`c/native`, C11, no dependencies): `brew install pannous/tap/uniscript`, `apt install libuniscript-dev`, Conan (`packaging/conan`), the
   release tarball `uniscript-c-VERSION.tar.gz`, or from a checkout `make -C c/native install PREFIX=/usr/local`
   (libraries, `uniscript.h`, `uniscript.hpp`, the CLI and `uniscript.pc`)
 - **Rust-backed** (`c/ffi`): `make -C c/ffi` builds `c/ffi/build/libuniscript.{a,dylib}` to link directly

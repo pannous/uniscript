@@ -81,6 +81,19 @@ Online, two pages:
   HTML. 
   <!-- Redeploy with `docs/make_demo.sh deploy`. -->
 
+### Homebrew
+```sh
+brew install pannous/tap/uniscript     # the command line and the C/C++ library (uniscript.h, uniscript.hpp, CMake, pkg-config)
+```
+
+### Debian and Ubuntu
+amd64 and arm64 packages in a signed apt repository (also attached to the [GitHub release](https://github.com/pannous/uniscript/releases/tag/v1.0.0)):
+```sh
+sudo curl -fsSLo /etc/apt/keyrings/uniscript.gpg https://pannous.com/uniscript/apt/uniscript.gpg
+echo "deb [signed-by=/etc/apt/keyrings/uniscript.gpg] https://pannous.com/uniscript/apt ./" | sudo tee /etc/apt/sources.list.d/uniscript.list
+sudo apt update && sudo apt install uniscript   # the command line; libuniscript-dev: the C/C++ library, CMake, pkg-config
+```
+
 ### Rust
 ```sh
 cargo install uniscript               # or: cargo install --git https://github.com/pannous/uniscript
@@ -113,9 +126,10 @@ Rust, Swift, Python, JavaScript/TypeScript, WebAssembly, Java, Kotlin, C#, C and
 implementation. [Warp](https://github.com/pannous/warp) is supporting UniScript natively.
 
 **Package managers are limited for now.** Available today: crates.io, PyPI, npm, Swift Package Manager (from this
-repository) and the Homebrew tap `pannous/tap` (the CLI and the C library), plus release downloads on
+repository), the Homebrew tap `pannous/tap` and an apt repository for Debian and Ubuntu (both: the CLI and the C/C++
+library), plus release downloads on
 [GitHub](https://github.com/pannous/uniscript/releases). Not yet: Maven Central (Java, Kotlin), NuGet (C#), Conan Center
-(pending review), vcpkg, apt and the JetBrains Marketplace. Until then, build those libraries from a checkout as each
+(pending review), vcpkg and the JetBrains Marketplace. Until then, build those libraries from a checkout as each
 section below shows. The full table is in [usage.md](usage.md); more in [[Support]].
 
 
@@ -264,7 +278,8 @@ crate behind the same C ABI ([c/ffi](c/ffi)), plus the header-only C++17 wrapper
 ```sh
 vcpkg install uniscript --overlay-ports=<checkout>/packaging/vcpkg/ports   # until the port is in microsoft/vcpkg
 conan remote add uniscript <checkout>/packaging/conan --type local-recipes-index && conan install --requires uniscript/1.0.0 --build=missing   # Conan Center: pending review
-brew install pannous/tap/libuniscript                                       # pkg-config uniscript
+brew install pannous/tap/uniscript                                          # with the CLI; CMake package and pkg-config uniscript
+apt install libuniscript-dev                                                 # Debian, Ubuntu: see "Debian and Ubuntu" above
 cmake -S c -B build && cmake --build build && cmake --install build          # from source; -DUNISCRIPT_BACKEND=rust: c/ffi
 ```
 
