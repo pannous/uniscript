@@ -376,14 +376,21 @@ private class Conversion(val index: EntityIndex, val source: String, val lenient
 	 *  of the first part has; the parts are operands of the naming block (`<:egyptian above A1 A2>`), else names or text */
 	private fun group(group: String, naming: String?, content: String, at: Int): String {
 		val tokens = if (naming != null) operandTokens(naming, content) else splitOnWhitespace(content)
-		val parts = tokens.map { token ->
+		// <:above 宀 beside 电 电>: a group word among the parts groups the parts after it
+		val innerAt = tokens.indices.firstOrNull { it > 0 && isGroup(tokens[it]) } ?: tokens.size
+		val parts = tokens.take(innerAt).map { token ->
 			naming?.let { form(it, token) } ?: (if (token.utf8Size > 1) name(token) else null) ?: token
-		}
+		}.toMutableList()
 		val first = parts.firstOrNull() ?: return ""
 		val script = first.firstCodePoint()?.let(::scriptOf) ?: ""
-		val prefix = name("$group *prefix $script")
-		val infix = name("$group *infix $script")
+		val affix = { kind: String -> name("$group $kind $script") }
+		val prefix = affix("*prefix")
+		val infix = affix("*infix")
 		if (prefix == null && infix == null) warn("no $group group of $first", at)
+		if (innerAt < tokens.size) {
+			val grouped = group(tokens[innerAt], naming, tokens.drop(innerAt + 1).joinToString(" "), at)
+			parts += (affix("*open") ?: "") + grouped + (affix("*close") ?: "")
+		}
 		return (prefix ?: "") + parts.joinToString(infix ?: "")
 	}
 
