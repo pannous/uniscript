@@ -2,7 +2,7 @@
 vcpkg_download_distfile(ARCHIVE
     URLS "https://github.com/pannous/uniscript/releases/download/v${VERSION}/uniscript-c-${VERSION}.tar.gz"
     FILENAME "uniscript-c-${VERSION}.tar.gz"
-    SHA512 85274aa850bbc196d4ce0ca82f29dfbb2aba60ee26944fc18126080923cfd11ba5bae8f4787e36aaa2fec3af8ce6239fb477b2612c2a6e4e4882363e70264693
+    SHA512 e84868658976147f6e1b228f756e25c1ec50e8ca9ac1f22823e0d22f8a5c6a80d378e7bffb62286c8f80f451fdcd2ec6362e742e123c3ed1ad0c167e38233edc
 )
 vcpkg_extract_source_archive(SOURCE_PATH ARCHIVE "${ARCHIVE}")
 
