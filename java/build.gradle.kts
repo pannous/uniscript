@@ -92,16 +92,6 @@ if (providers.gradleProperty("signing.gnupg.keyName").isPresent) {
 
 tasks.javadoc { (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:all,-missing", "-quiet") }
 
-// scripts/publish.sh installs into this repository and builds probes/publish/java-consumer from it
-publishing {
-	repositories {
-		maven {
-			name = "Site"
-			url = uri(providers.gradleProperty("siteRepository").getOrElse("$repositoryRoot/probes/publish/site/maven"))
-		}
-	}
-}
-
 mavenPublishing {
 	publishToMavenCentral(automaticRelease = false)
 	if (signingConfigured) signAllPublications()
