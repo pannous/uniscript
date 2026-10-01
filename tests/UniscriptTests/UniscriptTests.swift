@@ -88,6 +88,22 @@ final class UniscriptTests: XCTestCase {
 		converts("<:beside 犭 句>", "⿰犭句")
 	}
 
+	func testOperandsWinOverBlockWords() {
+		converts("<:egyptian red crown>", "𓋔")
+		converts("<:egyptian A1 red crown>", "𓀀𓋔")
+		converts("<:egyptian red crown A1>", "𓋔𓀀")
+		XCTAssertEqual(try Uniscript.toUnicode("<:red egyptian red crown>"), try Uniscript.toUnicode("<:red egyptian S3>"))
+		converts("<:mirror red A>", "A\u{E0072}\u{E004D}")
+	}
+
+	func testGroupsReadOperandsByTheNamesOfABlock() {
+		converts("<:egyptian above A1 A2>", "𓀀\u{13430}𓀁")
+		converts("<:above egyptian A1 A2>", "𓀀\u{13430}𓀁")
+		converts("<:egyptian beside sun red crown>", "𓇳\u{13431}𓋔")
+		converts("<:egyptian above 𓀀 A2>", "𓀀\u{13430}𓀁")
+		converts("<:above 𓀀 𓁐>", "𓀀\u{13430}𓁐")
+	}
+
 	func testHieroglyphsHaveGardinerNumbersAndDescriptions() {
 		converts("<:egyptian A1>", "𓀀")
 		converts("<:gardiner A1>", "𓀀")

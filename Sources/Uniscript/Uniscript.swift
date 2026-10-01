@@ -22,6 +22,9 @@ private let maxHexDigits = 8
 private let minBareHexDigits = 4
 /// The scalars after a backslash that decide `\U1F60D`: U, 8 digits and the one that ends the token
 private let unicodeEscapeWindow = 10
+private let groupKey = "*group"
+/// The most words one operand spans: `<:egyptian man with hand to mouth>`
+private let maxOperandWords = 8
 private let fontKey = "font"
 private let langKey = "lang"
 private let valuePlaceholder = "{}"
@@ -418,7 +421,7 @@ private final class Conversion {
 	/// The text inside a full block (`<:greek> filosofia kosmos<:/greek>`) as written: its whitespace stays, each word is
 	/// an operand; a group block joins its parts
 	private func blockText(_ block: String, _ text: String, _ at: Int) -> String {
-		if name("\(block) *group") != nil { return operands(block, text, [], at) }
+		if isGroup(block) { return group(block, nil, text, at) }
 		var out = ""
 		var word = ""
 		for scalar in text.unicodeScalars {
@@ -432,32 +435,50 @@ private final class Conversion {
 		return out + operand(block, word, [], at)
 	}
 
-	/// The space separated operands of an inline tag, spaces dropped, or one operand of several words (egyptian seated man);
-	/// a group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script
-	/// of the first part has
+	/// The words of an inline tag as operands of the block: a run of words that names one operand stays one (seated man,
+	/// red crown), the longest run first
+	private func operandTokens(_ block: String, _ content: String) -> [String] {
+		let words = splitOnSpaces(content)
+		var tokens: [String] = []
+		var start = 0
+		while start < words.count {
+			var end = min(words.count, start + maxOperandWords)
+			while end > start + 1 && form(block, words[start..<end].joined(separator: "-")) == nil { end -= 1 }
+			tokens.append(words[start..<end].joined(separator: "-"))
+			start = end
+		}
+		return tokens
+	}
+
+	/// Whether the content starts with an operand of the block: `<:egyptian red crown>` names a sign, red is no effect
+	private func startsOperand(_ block: String, _ content: String) -> Bool {
+		operandTokens(block, content).first.map { form(block, $0) != nil } ?? false
+	}
+
+	/// The space separated operands of an inline tag, spaces dropped
 	private func operands(_ block: String, _ content: String, _ effects: [String], _ at: Int) -> String {
-		let phrase = splitOnSpaces(content).joined(separator: "-")
-		if phrase.contains("-") && name("\(block) \(phrase)") != nil {
-			return operand(block, phrase, effects, at)
+		operandTokens(block, content).map { operand(block, $0, effects, at) }.joined()
+	}
+
+	private func isGroup(_ block: String) -> Bool {
+		form(block, groupKey) != nil
+	}
+
+	/// A group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script of
+	/// the first part has; the parts are operands of the naming block (`<:egyptian above A1 A2>`), else names or text
+	private func group(_ group: String, _ naming: String?, _ content: String, _ at: Int) -> String {
+		let tokens = naming.map { operandTokens($0, content) } ?? splitOnSpaces(content)
+		let parts = tokens.map { token in
+			naming.flatMap { form($0, token) } ?? (token.utf8.count > 1 ? name(token) : nil) ?? token
 		}
-		let group = name("\(block) *group") != nil
-		var out = ""
-		var script = ""
-		for (position, token) in splitOnSpaces(content).enumerated() {
-			let part = group ? (token.utf8.count > 1 ? name(token) : nil) ?? token : operand(block, token, effects, at)
-			if position == 0 {
-				script = part.unicodeScalars.first.map(scriptOf) ?? ""
-				let prefix = name("\(block) *prefix \(script)")
-				out += prefix ?? ""
-				if group && prefix == nil && name("\(block) *infix \(script)") == nil {
-					warn("no \(block) group of \(part)", at)
-				}
-			} else {
-				out += name("\(block) *infix \(script)") ?? ""
-			}
-			out += part
+		guard let first = parts.first else { return "" }
+		let script = first.unicodeScalars.first.map(scriptOf) ?? ""
+		let prefix = name("\(group) *prefix \(script)")
+		let infix = name("\(group) *infix \(script)")
+		if prefix == nil && infix == nil {
+			warn("no \(group) group of \(first)", at)
 		}
-		return out
+		return (prefix ?? "") + parts.joined(separator: infix ?? "")
 	}
 
 	/// `<:key value …>` with meta keys: `<:font han-japanese>` opens spans, `<:color #ff8800 mirror A>` attaches to each
@@ -507,12 +528,18 @@ private final class Conversion {
 			return text
 		}
 		if let (first, afterFirst) = splitOnce(content, " ") ?? splitOnce(content, "-"), isBlock(first) {
-			// <:mirror red A>: effect words stack, the last takes the operands, the others add their suffixes
+			// <:mirror red A>: effect words stack, the last takes the operands, the others add their suffixes; a word that
+			// starts an operand of the block before it is no block (<:egyptian red crown>)
 			var words = [first]
 			var rest = afterFirst
-			while let (word, after) = splitOnce(rest, " "), isBlock(word) {
+			while let (word, after) = splitOnce(rest, " "), isBlock(word), !startsOperand(words[words.count - 1], rest) {
 				words.append(word)
 				rest = after
+			}
+			if let position = words.firstIndex(where: isGroup) {
+				// <:egyptian above A1 A2>: the other block names the parts of the group
+				let groupWord = words.remove(at: position)
+				return group(groupWord, words.last { !isEffect($0) }, rest, at)
 			}
 			let block = words.removeLast()
 			let effects = words.filter(isEffect)
