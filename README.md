@@ -92,9 +92,9 @@ Rust, Swift, Python, JavaScript/TypeScript, WebAssembly, Java, Kotlin, C#, C and
 implementation. [Warp](https://github.com/pannous/warp) is supporting UniScript natively.
 
 ### Package managers
-**Available today**: crates.io, PyPI, npm, Swift Package Manager (from this
+###**Available today**: crates.io, PyPI, npm, Swift Package Manager (from this
 repository), the Homebrew tap `pannous/tap` and an apt repository for Debian and Ubuntu (both: the CLI and the C/C++
-library), plus release downloads on [GitHub](https://github.com/pannous/uniscript/releases). 
+library), plus release downloads on [GitHub](https://github.com/pannous/uniscript/releases).  
 **Prepared**: Maven Central (Java, Kotlin), NuGet (C#), Conan Center (pending review), vcpkg and the JetBrains Marketplace. Until then, build those libraries from a checkout as each section below shows. The full table is in [usage.md](usage.md); more in [[Support]].
 
 
