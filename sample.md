@@ -68,4 +68,6 @@ circle := <:pi> * r<:upper 2>  // \:infinity <:nosuchthing> <:greek c>
 | `<:greek bold alpha>` | <:greek small letter alpha> |
 
 [[test]]
+[[test2]]
 [[test.md]]
+[[test2.md]]
