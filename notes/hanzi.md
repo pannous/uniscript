@@ -2,10 +2,11 @@
 
 Question (user, 2026-10-01): can a font combine arbitrary radicals into new characters with the IDS operators, 界 = ⿱田介?
 **Yes, for simple characters**: `fonts/dist/UniscriptHanzi-Regular.otf` (`python3 fonts/uniscript_fonts.py hanzi`)
-draws any ⿰ ⿱ ⿲ ⿳ ⿴ ⿵ ⿶ ⿷ ⿸ ⿹ ⿺ ⿻ sequence of its 3,910 parts (simplest first by Unihan kTotalStrokes: every radical, stroke
-and character up to 8 strokes, including components that rarely stand alone (㐅 㔾 䒑 丬), plus the 20 parts IDS use most;
+draws any ⿰ ⿱ ⿲ ⿳ ⿴ ⿵ ⿶ ⿷ ⿸ ⿹ ⿺ ⿻ sequence of its 2,995 parts (simplest first by Unihan kTotalStrokes: every radical, stroke
+and character up to 7 strokes and most with 8, including components that rarely stand alone (㐅 㔾 䒑 丬), plus the 20 parts IDS use most;
 complex characters such as 猫 are left out, so ⿱艹猫 stays uncomposed), whether or not Unicode has the character: ⿰讠尤, ⿱匕月, ⿰木电, ⿰丬㐅.
-One level of nesting works for the 20 most used parts (⿱艹⿰氵火). Renders: `probes/uniscript-hanzi/`
+Splits inside splits work for every part (⿱宀⿰电电, ⿰电⿱电电: ⿰ or ⿱ inside ⿰ or ⿱, the nested operand never gets less
+than half); any other nesting (⿺辶⿰木木) only for the 20 parts IDS use most. Renders: `probes/uniscript-hanzi/`
 (`render.py` → reference_*.png real vs composed vs naive, invented_*.png; chrome.png, firefox.png from `browser.html`).
 
 ## How it works (the NewGardinerOmni idea applied to hanzi)
@@ -40,21 +41,20 @@ naive columns of `reference_ot.png`: composed 林 狗 草 思 国 连 are close 
 
 ## Glyph budget (65,535 per font)
 
-Why 15 sizes per part: ⿰ and ⿱ each split at 5 learned shares (⅓ … ⅔), giving 5 widths and 5 heights, plus the inner
+Why 20 sizes per part: 15 for unnested sequences — ⿰ and ⿱ each split at 5 learned shares (⅓ … ⅔), giving 5 widths and 5 heights, plus the inner
 boxes of the surrounds, the thirds of ⿲ ⿳ and the full size. With 3 shares it would be ≈9 sizes and ≈6,500 parts, but
-讠 or 艹 would then take 40 % instead of a third. Since 3,910 parts already reach every character up to 8 strokes, the
-proportions are worth more than the extra parts.
+讠 or 艹 would then take 40 % instead of a third. Splits in splits add 5 sizes (quadrants, quarter columns and rows, ⅔ boxes), which costs ≈900 parts (3,910 → 2,995).
 
 Nothing is generated at render time: OpenType cannot scale or draw outlines while shaping, it can only pick and move
 glyphs that exist. So every part is precompiled at each size it can take, but combinations are not: the cost grows with
-parts × sizes (≈16 glyphs per part), never with the millions of possible pairs. The ceiling is the glyph budget, ≈4,000 parts.
+parts × sizes (≈21 glyphs per part), never with the millions of possible pairs. The ceiling is the glyph budget, ≈3,000 parts.
 
 | tier | parts | sizes | glyphs |
 |---|---|---|---|
-| nest (most used parts) | 20 | 59 | 1,180 + 20 |
-| simple sequences only | 3,890 | 15 | 58,350 + 3,890 |
+| nest in any shape (most used parts) | 20 | 47 | 940 + 20 |
+| unnested and splits in splits | 2,975 | 20 | 59,500 + 2,975 |
 | operators, invisible operators, .notdef | | | ≈45 |
-| **total** | 3,910 | | **63,485** |
+| **total** | 2,995 | | **63,480** |
 
 Nesting is what is expensive: a part inside a nested box needs ~44 more sizes. Every ×1.2 size step coarser or each split
 share fewer saves glyphs; the 5 shares (⅓ … ⅔) and 15 simple sizes are the floor for decent proportions.

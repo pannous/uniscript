@@ -63,7 +63,7 @@ HANZI_SHARES = (1 / 3, 0.42, 0.5, 0.58, 2 / 3)  # first part's share of a ⿰ or
 HANZI_BUCKET = 0.25  # parts are classed by their learned strength in steps of this many logits
 HANZI_BUCKETS = range(-4, 5)
 HANZI_NESTED_STRENGTH = 0.6  # a nested sequence holds its own like a dense part
-HANZI_TIERS = (20, 6000)  # the parts IDS use most also nest; the others, simplest first, only form unnested sequences
+HANZI_TIERS = (20, 6000)  # the parts IDS use most nest in any shape; the others, simplest first, only in ⿰ ⿱ (splits_in_splits)
 HANZI_RASTER = 96  # pixels per em when measuring how real characters split
 HANZI_GRID = 32  # characters and parts are compared at this many pixels square
 HANZI_STRENGTHS = os.path.join(SOURCES, "hanzi-strengths.json")
@@ -480,9 +480,9 @@ def arity(operator):
     return 3 if operator in "⿲⿳" else 2
 
 
-def share_of(strength_difference):
+def share_of(strength_difference, shares=HANZI_SHARES):
     share = 1 / (1 + math.exp(-strength_difference))
-    return min(HANZI_SHARES, key=lambda s: abs(s - share))
+    return min(shares, key=lambda s: abs(s - share))
 
 
 def bucket_of(strength):
@@ -595,8 +595,17 @@ def is_part(tree):
 
 
 def root_share(children):
+    """A nested operand never gets less than half, so splits inside splits need only a few more part sizes."""
     strengths = [HANZI_BUCKET * child[1][2] if is_part(child) else HANZI_NESTED_STRENGTH for child in children]
-    return share_of(strengths[0] - strengths[1])
+    first_nested, second_nested = (not is_part(child) for child in children)
+    shares = (0.5,) if first_nested and second_nested else (0.5, 2 / 3) if first_nested else (1 / 3, 0.5) if second_nested else HANZI_SHARES
+    return share_of(strengths[0] - strengths[1], shares)
+
+
+def splits_in_splits(tree):
+    """Unnested shapes, and ⿰ or ⿱ with ⿰ or ⿱ inside: what every part can form (⿱宀⿰电电)."""
+    operator, children = tree
+    return all(map(is_part, children)) or operator in "⿰⿱" and all(is_part(c) or c[0] in "⿰⿱" for c in children)
 
 
 def part_boxes(operator, box, shares=None):
@@ -936,12 +945,12 @@ def build_hanzi(tier_sizes=HANZI_TIERS):
     trees = list(hanzi_trees())
     placements = [layout(tree, HANZI_FACE) for tree in trees]
     every_size = part_sizes(placements)
-    unnested_size = part_sizes(p for tree, p in zip(trees, placements) if all(map(is_part, tree[1])))
+    common_size = part_sizes(p for tree, p in zip(trees, placements) if splits_in_splits(tree))
     ranked, full = ranked_components(cmap), tier_sizes[0]
     operators = list(HANZI_SPLITS) + list(HANZI_SURROUNDS)
     fixed = 1 + len(operators) + 2 * len(placements)  # .notdef, operators, at most two invisible ones per shape
-    unnested = min(tier_sizes[1] - full, (MAX_GLYPHS - fixed - full * (1 + len(every_size))) // (1 + len(unnested_size)))
-    tiers = [(ranked[:full], every_size), (ranked[full:full + unnested], unnested_size)]
+    rest = min(tier_sizes[1] - full, (MAX_GLYPHS - fixed - full * (1 + len(every_size))) // (1 + len(common_size)))
+    tiers = [(ranked[:full], every_size), (ranked[full:full + rest], common_size)]
     fea, hidden, shapes = hanzi_features(placements, tiers, strengths)
 
     programs, metrics = {}, {}
@@ -962,7 +971,7 @@ def build_hanzi(tier_sizes=HANZI_TIERS):
     assert len(programs) <= MAX_GLYPHS, "%d glyphs exceed the OpenType limit" % len(programs)
     font = hanzi_font(programs, metrics, {ord(c): glyph_name(c) for c in [c for components, _ in tiers for c in components] + operators})
     addOpenTypeFeaturesFromString(font, fea)
-    print("%d parts with %d sizes, %d with %d; %d IDS shapes" % (len(tiers[0][0]), len(every_size), len(tiers[1][0]), len(unnested_size), shapes))
+    print("%d parts with %d sizes, %d with %d; %d IDS shapes" % (len(tiers[0][0]), len(every_size), len(tiers[1][0]), len(common_size), shapes))
     return [save(font, "UniscriptHanzi-Regular.otf")]
 
 

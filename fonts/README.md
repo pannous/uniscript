@@ -33,7 +33,7 @@ Tags are default-ignorable: without these fonts the text shows the plain charact
 |---|---|---|
 | **Uniscript Sans** | Noto Sans (Latin, Greek, Cyrillic) + Noto Sans Math | ASCII + Greek letters: all geometries × all colors; Latin-1/Ext-A, Greek, symbols, arrows, operators: every geometry or color, not combined; the rest, including math alphanumerics 𝔄𝕕: mirror and turn |
 | **Uniscript CJK** | Noto Sans CJK | IDS composition (27,688 sequences from cjkvi-ids, nested ones too: ⿱木⿰木木 → 森); mirror for radicals, strokes and the 3,755 most common hanzi (GB 2312 level 1) |
-| **Uniscript Hanzi** | Noto Sans CJK, 3,910 parts | IDS draw **new** characters from scaled, re-thickened parts with learned proportions: ⿰讠尤, ⿱匕月, ⿰丬㐅; one level of nesting for the 20 most used parts (⿱艹⿰氵火). A separate font, put it before Uniscript CJK; see [notes/hanzi.md](../notes/hanzi.md) |
+| **Uniscript Hanzi** | Noto Sans CJK, 2,995 parts | IDS draw **new** characters from scaled, re-thickened parts with learned proportions: ⿰讠尤, ⿱匕月, ⿰丬㐅; splits inside splits for all of them (⿱宀⿰电电). A separate font, put it before Uniscript CJK; see [notes/hanzi.md](../notes/hanzi.md) |
 | **NewGardinerOmni2d4** | Nederhof's NewGardiner, OFL, unchanged | Unicode 15 Egyptian format controls: joiners U+13430 vertical / U+13431 horizontal, insertions, U+13440 mirror, groups up to depth 4 |
 | **… Mirror** | NFM-Indus Script (Sublime), JetBrains Mono (JetBrains IDEs), Monaco (iTerm), Menlo (VS Code) | mirror for every character, advance kept, so monospace stays monospace |
 
@@ -41,5 +41,5 @@ Tags are default-ignorable: without these fonts the text shows the plain charact
 
 - OpenType allows 65,535 glyphs. Uniscript Sans uses 50,159, CJK 64,975 (61,001 of them from Noto), and Omni uses 38,238 for its group state machine.
   Hence the tiers above, no mirror for rarer hanzi, and no per-sign colors for hieroglyphs.
-- Uniscript CJK composes IDS only to characters that exist; new layouts need pre-scaled copies of every part (what Omni does for hieroglyphs), hence the separate Uniscript Hanzi (63,485 glyphs: 20 parts × 59 sizes + 3,890 parts × 15 sizes).
+- Uniscript CJK composes IDS only to characters that exist; new layouts need pre-scaled copies of every part (what Omni does for hieroglyphs), hence the separate Uniscript Hanzi (63,480 glyphs: 20 parts × 47 sizes + 2,975 parts × 20 sizes).
 - Terminals and editors must shape with HarfBuzz or CoreText for tags to take effect, e.g. iTerm with ligatures enabled, Sublime, VS Code. Chrome and Firefox render the colors (COLR v0). The results were verified in headless Chrome.
