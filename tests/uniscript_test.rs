@@ -109,6 +109,12 @@ fn hieroglyphs_have_gardiner_numbers_and_descriptions() {
 }
 
 #[test]
+fn gardiner_numbers_beyond_unicode_use_the_aegyptus_private_use_signs() {
+	converts("<:gardiner Q4A>", "\u{F446E}");
+	converts("<:gardiner Q4>", "𓊫");
+}
+
+#[test]
 fn hieroglyph_looks_in_every_hieroglyphic_script() {
 	converts("<:anatolian 1>", "\u{14400}");
 	converts("<:luwian 10A>", "\u{1440A}");

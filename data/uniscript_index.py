@@ -23,6 +23,9 @@ INDEX_FILE = HERE / "entities.idx"
 UNICODE_BLOCKS = HERE / "sources" / "Blocks.txt"  # https://www.unicode.org/Public/16.0.0/ucd/Blocks.txt
 # Wikipedia's Template:List_of_hieroglyphs (CC BY-SA 4.0): Gardiner number, code point and a short description per sign
 HIEROGLYPH_DESCRIPTIONS = HERE / "sources" / "list_of_hieroglyphs.wiki"
+# the Aegyptus font's extended sign list (https://rhbarnhart.net/Aegyptus_character_list.html): Gardiner number, private
+# use code point from U+F3000, decimal, sign; NewGardinerOmni has the same code points. Its Aa section is numbered J.
+EXTENDED_SIGN_LIST = HERE / "sources" / "gardiner.full.csv"
 # the Anatolian Hieroglyphs section of Unicode's NamesList.txt: Latin logogram names and Luwian syllabic values as aliases
 ANATOLIAN_NAMES_LIST = HERE / "sources" / "anatolian_names_list.txt"
 UNICODE_MATH_TABLE = Path("/usr/local/texlive/2026basic/texmf-dist/tex/latex/unicode-math/unicode-math-table.tex")
@@ -322,8 +325,15 @@ def gardiner_number(unicode_name):
 	return category + match.group(2) + match.group(3)
 
 
+def extended_signs():
+	"""Gardiner number → private use sign of the extended sign list: Q4A → U+F446E"""
+	rows = (line.split("\t") for line in EXTENDED_SIGN_LIST.read_text().splitlines())
+	return {row[0].strip(): chr(int(row[1], 16)) for row in rows if len(row) >= 3}
+
+
 def egyptian_block(named):
-	"""Gardiner number → hieroglyph, then description (and its synonyms) → hieroglyph; the first entry of a text wins"""
+	"""Gardiner number → hieroglyph, then description (and its synonyms) → hieroglyph, then the numbers Unicode lacks →
+	private use sign; the first entry of a text wins"""
 	numbers = {gardiner_number(n): c for c, n in named if gardiner_number(n)}
 	descriptions = hieroglyph_descriptions()
 	table = dict(numbers)
@@ -333,6 +343,8 @@ def egyptian_block(named):
 			for spelling in [name] + [pattern.sub(synonym, name) for pattern, synonyms in DESCRIPTION_SYNONYMS
 			                          for synonym in synonyms if pattern.match(name)]:
 				table.setdefault(spelling, character)
+	for number, sign in extended_signs().items():
+		table.setdefault(number, sign)
 	return table
 
 

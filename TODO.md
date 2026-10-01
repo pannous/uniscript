@@ -104,3 +104,4 @@ From CHANGES.md (changes that need to be propagated through all implementations)
 - DONE a general feature mechanism that propagates unknown features to special renderers: `<:red 𓀀>` warns "red on 𓀀 kept as color meta" and carries `color red` as a TAG meta, which `--html` renders as `<span style="color: red">`.
 - TODO DYM "did you mean" mechanism: `uniscript: no greek form of c at byte 26, did you mean <:greek chi> or <:greek kappa> or <:greek zeta>?` (also for unknown names); in every implementation.
 - TODO html mode?? Partially implemented: `--html` renders meta information (fonts, colors, angles) as spans, but styles stay Unicode (`<:bold a>` ⩵ 𝐚 rather than `<b>a</b>`). Which features can be done in HTML and which can't? Do we really want that?
+- DONE <:gardiner Q4A> renders the Aegyptus/NewGardinerOmni private-use sign U+F446E (data/sources/gardiner.full.csv, 6026 numbers beyond Unicode); its Aa section is numbered J (J1 = U+F4AD9), no Aa→J alias yet
