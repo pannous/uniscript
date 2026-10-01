@@ -13,3 +13,6 @@ probes/finefreq/
 probes/usage/build/
 probes/usage/node_modules/
 probes/usage/rust/Cargo.lock
+kotlin/build
+kotlin/.gradle
+kotlin/.kotlin

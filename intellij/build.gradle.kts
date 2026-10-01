@@ -9,7 +9,6 @@ plugins {
 group = "com.pannous"
 version = "1.0.0"
 
-val entitiesIndex = rootDir.resolve("../data/entities.idx")
 val platformLocalPath = providers.gradleProperty("platformLocalPath").get()
 // the oldest IDE matching sinceBuild, checked by verifyPlugin next to the IDE compiled against
 val verifyOldestVersion = providers.gradleProperty("verifyOldestVersion")
@@ -22,6 +21,8 @@ repositories {
 }
 
 dependencies {
+	// the IDE ships the Kotlin stdlib
+	implementation("com.pannous:uniscript-kotlin:$version") { exclude(group = "org.jetbrains.kotlin") }
 	intellijPlatform {
 		if (file(platformLocalPath).exists()) local(platformLocalPath)
 		else intellijIdea(providers.gradleProperty("platformVersion"))
@@ -68,6 +69,3 @@ intellijPlatform {
 		token = secret("PUBLISH_TOKEN")
 	}
 }
-
-// the index shared with the Rust crate and the Swift package (data/entities.idx)
-tasks.processResources { from(entitiesIndex) }

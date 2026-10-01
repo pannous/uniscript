@@ -75,7 +75,7 @@ class EntityIndex(private val bytes: ByteArray) {
 		/** data/entities.idx, shared with the Rust crate and the Swift package */
 		val bundled: EntityIndex by lazy {
 			val stream = EntityIndex::class.java.getResourceAsStream(BUNDLED_RESOURCE)
-				?: error("entities.idx is missing from the uniscript plugin")
+				?: error("entities.idx is missing from the uniscript-kotlin jar")
 			EntityIndex(stream.use { it.readBytes() })
 		}
 	}
