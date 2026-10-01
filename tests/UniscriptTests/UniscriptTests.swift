@@ -104,6 +104,13 @@ final class UniscriptTests: XCTestCase {
 		converts("<:above 𓀀 𓁐>", "𓀀\u{13430}𓁐")
 	}
 
+	func testAGroupWordAmongThePartsGroupsTheRest() {
+		converts("<:above 宀 beside 电 电>", "⿱宀⿰电电")
+		converts("<:beside 电 above 电 电>", "⿰电⿱电电")
+		converts("<:above 宀 beside 女 above 子 子>", "⿱宀⿰女⿱子子")
+		converts("<:egyptian above A1 beside A2 A3>", "𓀀\u{13430}\u{13437}𓀁\u{13431}𓀂\u{13438}")
+	}
+
 	func testHieroglyphsHaveGardinerNumbersAndDescriptions() {
 		converts("<:egyptian A1>", "𓀀")
 		converts("<:gardiner A1>", "𓀀")

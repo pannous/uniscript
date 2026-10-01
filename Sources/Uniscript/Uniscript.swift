@@ -467,16 +467,24 @@ private final class Conversion {
 	/// A group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script of
 	/// the first part has; the parts are operands of the naming block (`<:egyptian above A1 A2>`), else names or text
 	private func group(_ group: String, _ naming: String?, _ content: String, _ at: Int) -> String {
-		let tokens = naming.map { operandTokens($0, content) } ?? splitOnSpaces(content)
-		let parts = tokens.map { token in
+		var tokens = naming.map { operandTokens($0, content) } ?? splitOnSpaces(content)
+		// <:above 宀 beside 电 电>: a group word among the parts groups the parts after it
+		let innerAt = tokens.indices.dropFirst().first { isGroup(tokens[$0]) }
+		let inner = innerAt.map { Array(tokens[$0...]) } ?? []
+		if let innerAt { tokens.removeSubrange(innerAt...) }
+		var parts = tokens.map { token in
 			naming.flatMap { form($0, token) } ?? (token.utf8.count > 1 ? name(token) : nil) ?? token
 		}
 		guard let first = parts.first else { return "" }
 		let script = first.unicodeScalars.first.map(scriptOf) ?? ""
-		let prefix = name("\(group) *prefix \(script)")
-		let infix = name("\(group) *infix \(script)")
+		let affix = { (kind: String) in self.name("\(group) \(kind) \(script)") }
+		let (prefix, infix) = (affix("*prefix"), affix("*infix"))
 		if prefix == nil && infix == nil {
 			warn("no \(group) group of \(first)", at)
+		}
+		if let groupWord = inner.first {
+			let grouped = self.group(groupWord, naming, inner.dropFirst().joined(separator: " "), at)
+			parts.append((affix("*open") ?? "") + grouped + (affix("*close") ?? ""))
 		}
 		return (prefix ?? "") + parts.joined(separator: infix ?? "")
 	}

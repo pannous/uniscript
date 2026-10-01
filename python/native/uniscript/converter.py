@@ -351,14 +351,23 @@ class Uniscript:
                 named = self._name(token)
             return token if named is None else named
 
-        parts = [part(token) for token in tokens]
+        # <:above 宀 beside 电 电>: a group word among the parts groups the parts after it
+        inner_at = next((position for position, token in enumerate(tokens) if position and self._is_group(token)), None)
+        inner = tokens[inner_at:] if inner_at else []
+        parts = [part(token) for token in (tokens[:inner_at] if inner_at else tokens)]
         if not parts:
             return ""
         script = script_of(parts[0][0]) if parts[0] else ""
-        prefix = self._name(f"{group} *prefix {script}")
-        infix = self._name(f"{group} *infix {script}")
+
+        def affix(kind):
+            return self._name(f"{group} {kind} {script}")
+
+        prefix, infix = affix("*prefix"), affix("*infix")
         if prefix is None and infix is None:
             self._warn(f"no {group} group of {parts[0]}", at)
+        if inner:
+            grouped = self._group(inner[0], naming, " ".join(inner[1:]), at)
+            parts.append((affix("*open") or "") + grouped + (affix("*close") or ""))
         return (prefix or "") + (infix or "").join(parts)
 
     def _tag(self, content: str, at: int) -> str:
