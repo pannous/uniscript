@@ -247,6 +247,35 @@ Uniscript.metaRuns(tagged); Uniscript.header(source); Uniscript.font("cuneiform-
 
 `cd java && ./gradlew test` runs the shared cases (`js/test/cases.json`) against the bundled library.
 
+### C and C++
+
+A C11 library with one header for two implementations, plain C ([c/native](c/native), the packaged one) and the Rust
+crate behind the same C ABI ([c/ffi](c/ffi)), plus the header-only C++17 wrapper [c/uniscript.hpp](c/uniscript.hpp).
+
+```sh
+vcpkg install uniscript --overlay-ports=<checkout>/packaging/vcpkg/ports   # until the port is in microsoft/vcpkg
+conan remote add uniscript <checkout>/packaging/conan --type local-recipes-index && conan install --requires uniscript/1.0.0 --build=missing
+brew install pannous/tap/libuniscript                                       # pkg-config uniscript
+cmake -S c -B build && cmake --build build && cmake --install build          # from source; -DUNISCRIPT_BACKEND=rust: c/ffi
+```
+
+```cmake
+find_package(uniscript CONFIG REQUIRED)
+target_link_libraries(app PRIVATE uniscript::uniscript)   # C: <uniscript.h>, C++17: <uniscript.hpp>
+```
+
+```cpp
+#include <uniscript.hpp>
+uniscript::to_unicode("<:alpha> <:fracture A>");                // "α 𝔄", throws uniscript::Error; warnings to stderr
+auto [text, warnings] = uniscript::convert("<:greek c>");       // "c", {{"no greek form of c", 0}}
+uniscript::convert("<:nosuch>", uniscript::Mode::Lenient).text;  // "<:nosuch>", with a warning
+uniscript::to_uniscript("α 𝔄");                                // "<:alpha> <:fracture A>"
+uniscript::html(tagged).text;                                   // meta information as <span>s with CSS
+```
+
+`ctest --test-dir build` (or `make -C c/native test`, `make -C c/ffi test`) runs the shared cases (`c/tests/cases.h`)
+through C and C++.
+
 ## Syntax
 
 - `<:name>` or `\:name`: an entity. Names are case sensitive; spaces may replace hyphens (`<:greek small letter alpha>`).

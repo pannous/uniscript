@@ -23,6 +23,9 @@ kotlin { jvmToolchain(21) }
 // the index shared with the Rust crate and the Swift package (data/entities.idx)
 tasks.processResources { from(entitiesIndex) }
 
+// the JPMS name next to com.pannous.uniscript.ffi (java/), so both jars sit on one module path
+tasks.jar { manifest { attributes("Automatic-Module-Name" to "com.pannous.uniscript") } }
+
 tasks.test { systemProperty("uniscript.cases", sharedCases.absolutePath) }
 
 // credentials (mavenCentralUsername, mavenCentralPassword, signingInMemoryKey…) come from ~/.gradle/gradle.properties
