@@ -422,13 +422,19 @@ export class Uniscript {
 	 * the first part has; the parts are operands of the naming block (`<:egyptian above A1 A2>`), else names or text */
 	#group(group: string, naming: string | undefined, content: string, at: number): string {
 		const tokens = naming === undefined ? words(content.replace(/\s+/g, " ")) : this.#operandTokens(naming, content);
+		// <:above 宀 beside 电 电>: a group word among the parts groups the parts after it
+		const innerAt = tokens.findIndex((token, position) => position > 0 && this.#isGroup(token));
+		const inner = innerAt > 0 ? tokens.splice(innerAt) : [];
 		const parts = tokens.map((token) => (naming === undefined ? undefined : this.#form(naming, token))
 			?? (utf8Length(token) > 1 ? this.#name(token) : undefined) ?? token);
 		if (!parts.length) return "";
 		const script = scriptOf(firstCharacter(parts[0]));
-		const prefix = this.#name(`${group} *prefix ${script}`);
-		const infix = this.#name(`${group} *infix ${script}`);
+		const affix = (kind: string) => this.#name(`${group} ${kind} ${script}`);
+		const [prefix, infix] = [affix("*prefix"), affix("*infix")];
 		if (prefix === undefined && infix === undefined) this.#warn(`no ${group} group of ${parts[0]}`, at);
+		if (inner.length) {
+			parts.push((affix("*open") ?? "") + this.#group(inner[0], naming, inner.slice(1).join(" "), at) + (affix("*close") ?? ""));
+		}
 		return (prefix ?? "") + parts.join(infix ?? "");
 	}
 
