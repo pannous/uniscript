@@ -22,6 +22,7 @@ probes/chunk_size/
 probes/release-check/
 probes/homebrew-tap/
 probes/publish/cpp/
+probes/publish/deb/
 probes/publish/jar/
 probes/publish/zip/
 probes/publish/example-repository.json
