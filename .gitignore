@@ -16,3 +16,19 @@ probes/usage/rust/Cargo.lock
 kotlin/build
 kotlin/.gradle
 kotlin/.kotlin
+# build output and scratch of the packaging probes
+test.wasm
+probes/chunk_size/
+probes/release-check/
+probes/homebrew-tap/
+probes/publish/cpp/
+probes/publish/jar/
+probes/publish/zip/
+probes/publish/example-repository.json
+probes/uniscript-cpp/cci/
+probes/uniscript-cpp/conan-home-release/
+probes/uniscript-cpp/download/
+probes/uniscript-cpp/overlay/
+probes/uniscript-cpp/fm.json
+probes/uniscript-cpp/cci_pr_body.md
+probes/uniscript-kotlin/
