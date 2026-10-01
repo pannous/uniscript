@@ -33,6 +33,8 @@ CLOSING_SLASH = "/"
 ESCAPED_COLON = "<::>"
 ESCAPED_UNICODE = "<:U>"
 SUFFIX_KEY = "*suffix"
+GROUP_KEY = "*group"
+MAX_OPERAND_WORDS = 8  # the most words one operand spans: `<:egyptian man with hand to mouth>`
 # the block control naming the meta a block becomes where it has no suffix control (`red *meta` → `color red`)
 META_FALLBACK_KEY = "*meta"
 FONT_KEY = "font"
@@ -307,38 +309,57 @@ class Uniscript:
     def _block_text(self, block: str, text: str, at: int) -> str:
         """The text inside a full block (`<:greek> filosofia kosmos<:/greek>`) as written: its whitespace stays, each
         word is an operand; a group block joins its parts"""
-        if self._name(f"{block} *group") is not None:
-            return self._operands(block, text, [], at)
+        if self._is_group(block):
+            return self._group(block, None, text, at)
         pieces = re.split(r"(\s)", text)
         return "".join(piece if piece.isspace() else self._operand(block, piece, [], at) for piece in pieces)
 
+    def _operand_tokens(self, block: str, content: str) -> list:
+        """The words of an inline tag as operands of the block: a run of words that names one operand stays one (seated
+        man, red crown), the longest run first"""
+        words, tokens, start = content.split(), [], 0
+        while start < len(words):
+            end = min(len(words), start + MAX_OPERAND_WORDS)
+            while end > start + 1 and self._form(block, "-".join(words[start:end])) is None:
+                end -= 1
+            tokens.append("-".join(words[start:end]))
+            start = end
+        return tokens
+
+    def _starts_operand(self, block: str, content: str) -> bool:
+        """Whether the content starts with an operand of the block: `<:egyptian red crown>` names a sign, red is no
+        effect"""
+        tokens = self._operand_tokens(block, content)
+        return bool(tokens) and self._form(block, tokens[0]) is not None
+
     def _operands(self, block: str, content: str, effects, at: int) -> str:
-        """The space separated operands of an inline tag, spaces dropped, or one operand of several words (egyptian
-        seated man); a group (above, beside) joins its parts unstyled with the prefix before or the infix between them
-        that the script of the first part has"""
-        phrase = "-".join(content.split())
-        if "-" in phrase and self._name(f"{block} {phrase}") is not None:
-            return self._operand(block, phrase, effects, at)
-        group = self._name(f"{block} *group") is not None
-        out, script = [], ""
-        for position, token in enumerate(token for token in content.split(" ") if token):
-            named = self._name(token)
-            if not group:
-                part = self._operand(block, token, effects, at)
-            elif named is not None and utf8_length(token) > 1:
-                part = named
-            else:
-                part = token
-            if position == 0:
-                script = script_of(part[0]) if part else ""
-                prefix = self._name(f"{block} *prefix {script}")
-                out.append(prefix or "")
-                if group and prefix is None and self._name(f"{block} *infix {script}") is None:
-                    self._warn(f"no {block} group of {part}", at)
-            else:
-                out.append(self._name(f"{block} *infix {script}") or "")
-            out.append(part)
-        return "".join(out)
+        """The space separated operands of an inline tag, spaces dropped"""
+        return "".join(self._operand(block, token, effects, at) for token in self._operand_tokens(block, content))
+
+    def _is_group(self, block: str) -> bool:
+        return self._form(block, GROUP_KEY) is not None
+
+    def _group(self, group: str, naming, content: str, at: int) -> str:
+        """A group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the
+        script of the first part has; the parts are operands of the naming block (`<:egyptian above A1 A2>`), else
+        names or text"""
+        tokens = content.split() if naming is None else self._operand_tokens(naming, content)
+
+        def part(token):
+            named = self._form(naming, token) if naming is not None else None
+            if named is None and utf8_length(token) > 1:
+                named = self._name(token)
+            return token if named is None else named
+
+        parts = [part(token) for token in tokens]
+        if not parts:
+            return ""
+        script = script_of(parts[0][0]) if parts[0] else ""
+        prefix = self._name(f"{group} *prefix {script}")
+        infix = self._name(f"{group} *infix {script}")
+        if prefix is None and infix is None:
+            self._warn(f"no {group} group of {parts[0]}", at)
+        return (prefix or "") + (infix or "").join(parts)
 
     def _tag(self, content: str, at: int) -> str:
         """The text of `<:content>` at byte `at` that is no block opener or closer"""
@@ -356,11 +377,18 @@ class Uniscript:
         split = content.find(" ")
         split = split if split >= 0 else content.find("-")
         if split >= 0 and self._is_block(content[:split]):
-            # <:mirror red A>: effect words stack, the last takes the operands, the others add their suffixes
+            # <:mirror red A>: effect words stack, the last takes the operands, the others add their suffixes; a word
+            # that starts an operand of the block before it is no block (<:egyptian red crown>)
             words, rest = [content[:split]], content[split + 1:]
-            while " " in rest and self._is_block(rest.split(" ", 1)[0]):
+            while " " in rest and self._is_block(rest.split(" ", 1)[0]) and not self._starts_operand(words[-1], rest):
                 word, rest = rest.split(" ", 1)
                 words.append(word)
+            groups = [word for word in words if self._is_group(word)]
+            if groups:
+                # <:egyptian above A1 A2>: the other block names the parts of the group
+                words.remove(groups[0])
+                naming = next((word for word in reversed(words) if not self._is_effect(word)), None)
+                return self._group(groups[0], naming, rest, at)
             block = words.pop()
             effects = [word for word in words if self._is_effect(word)]
             styles = [word for word in words if not self._is_effect(word)]
