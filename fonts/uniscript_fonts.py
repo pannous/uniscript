@@ -5,9 +5,11 @@ select a mirrored, rotated or colored variant of it via GSUB, and IDS sequences 
 Tags follow their character like variation selectors and emoji tags do: text engines split runs by script and
 attach Common characters such as tags to the preceding run, so a prefix would be lost at every script change.
 
-  python3 fonts/uniscript_fonts.py [sans|cjk|egyptian|mirror|all] [--install]
+  python3 fonts/uniscript_fonts.py [sans|cjk|hanzi|egyptian|mirror|all] [--install]
 """
 import copy
+import itertools
+import math
 import os
 import shutil
 import sys
@@ -46,6 +48,29 @@ IDS_DATA = os.path.join(SOURCES, "cjkvi-ids.txt")
 IDS_URL = "https://raw.githubusercontent.com/cjkvi/cjkvi-ids/master/ids.txt"
 OMNI_URL = "https://github.com/nederhof/newgardiner/raw/refs/heads/main/fonts/NewGardinerOmni2d4.ttf"
 LIGATURES_PER_SUBTABLE = 1500  # keeps each LigatureSet below the 64 KB offset limit
+
+# Uniscript Hanzi: IDS of components draw new characters from scaled parts (see notes/hanzi.md)
+HANZI_FACE = (40, -80, 960, 840)  # box a full-size character fills, in Noto CJK units
+HANZI_ADVANCE = 1000
+HANZI_STEM = 80  # stroke width of Noto Sans CJK Regular
+HANZI_KEEP_STROKE = 0.7  # share of the stroke width lost to scaling that a part gets back
+HANZI_GAP = 0.05  # space between neighbouring parts, as a share of the split box
+HANZI_MAX_DISTORTION = 2.6  # largest ratio between a part's horizontal and vertical scale
+HANZI_SIZE_STEP = 1.15  # part boxes are rounded to powers of this
+HANZI_SHARES = (1 / 3, 0.42, 0.5, 0.58, 2 / 3)  # first part's share of a ⿰ or ⿱ split
+HANZI_BUCKET = 0.25  # parts are classed by their learned strength in steps of this many logits
+HANZI_BUCKETS = range(-4, 5)
+HANZI_NESTED_STRENGTH = 0.6  # a nested sequence holds its own like a dense part
+HANZI_TIERS = (400, 6000)  # most frequent parts get every size, the next ones only those of unnested sequences
+HANZI_RASTER = 96  # pixels per em when measuring how real characters split
+HANZI_GRID = 32  # characters and parts are compared at this many pixels square
+HANZI_STRENGTHS = os.path.join(SOURCES, "hanzi-strengths.json")
+HANZI_SPLITS = {"⿰": 0, "⿱": 1, "⿲": 0, "⿳": 1}  # parts follow each other along x (0) or y (1)
+HANZI_SURROUNDS = {  # inner part as fractions (x0, y0, x1, y1) of the box, y up; the outer part fills the box
+    "⿴": (0.2, 0.15, 0.8, 0.8), "⿵": (0.2, 0, 0.8, 0.75), "⿶": (0.2, 0.3, 0.8, 1),
+    "⿷": (0.25, 0.15, 1, 0.85), "⿸": (0.3, 0, 1, 0.72), "⿹": (0, 0, 0.72, 0.72),
+    "⿺": (0.32, 0.28, 1, 1), "⿻": (0, 0, 1, 1),
+}
 
 SANS_BASE = os.path.join(USER_FONTS, "NotoSans-Regular.ttf")
 SANS_MATH = os.path.join(USER_FONTS, "NotoSansMath-Regular.ttf")
@@ -402,12 +427,10 @@ def add_prefix_rules(font, effects):
 
 # ---------------------------------------------------------------- IDS composition
 
-def ids_ligatures(font):
-    """{(operator, part, part…) glyphs: composed glyph} for flat IDS whose parts are all in the font."""
+def ids_sequences(cmap):
+    """(character, IDS) from cjkvi-ids for every sequence whose characters are all in cmap."""
     if not os.path.exists(IDS_DATA):
         download(IDS_URL, IDS_DATA)
-    cmap = font.getBestCmap()
-    ligatures = {}
     for line in open(IDS_DATA, encoding="utf-8"):
         if line.startswith("#") or "\t" not in line:
             continue
@@ -416,11 +439,16 @@ def ids_ligatures(font):
             continue
         for sequence in sequences:
             sequence = sequence.split("[")[0]  # drop region annotations like [GTJ]
-            if len(sequence) < 3 or ord(sequence[0]) not in IDS_OPERATORS:
-                continue
-            if all(ord(c) in cmap for c in sequence):
-                key = tuple(cmap[ord(c)] for c in sequence)
-                ligatures.setdefault(key, cmap[ord(character)])
+            if len(sequence) >= 3 and ord(sequence[0]) in IDS_OPERATORS and all(ord(c) in cmap for c in sequence):
+                yield character, sequence
+
+
+def ids_ligatures(font):
+    """{(operator, part, part…) glyphs: composed glyph} for flat IDS whose parts are all in the font."""
+    cmap = font.getBestCmap()
+    ligatures = {}
+    for character, sequence in ids_sequences(cmap):
+        ligatures.setdefault(tuple(cmap[ord(c)] for c in sequence), cmap[ord(character)])
     return ligatures
 
 
@@ -440,6 +468,318 @@ def add_ids_composition(font):
     ligatures = ids_ligatures(font)
     append_lookups(font, [ligature_lookup(ligatures), ligature_lookup(ligatures)], [0, 1])
     return len(ligatures)
+
+
+# ---------------------------------------------------------------- composing new characters (Uniscript Hanzi)
+# Each part of an IDS becomes a pre-scaled variant (GSUB picks it by the sequence's shape), the operator becomes an
+# invisible glyph carrying the advance, and GPOS moves every part into its box. Variants cost parts × sizes, not pairs.
+
+def arity(operator):
+    return 3 if operator in "⿲⿳" else 2
+
+
+def share_of(strength_difference):
+    share = 1 / (1 + math.exp(-strength_difference))
+    return min(HANZI_SHARES, key=lambda s: abs(s - share))
+
+
+def bucket_of(strength):
+    return max(HANZI_BUCKETS[0], min(HANZI_BUCKETS[-1], round(strength / HANZI_BUCKET)))
+
+
+class Raster:
+    """Renderings of a font's characters as gray levels cropped to the ink, resized on demand."""
+
+    def __init__(self, path):
+        import freetype
+        self.face = freetype.Face(path)
+        self.face.set_pixel_sizes(0, HANZI_RASTER)
+        self.cache = {}
+
+    def ink(self, character, width=HANZI_GRID, height=HANZI_GRID):
+        import freetype
+        import numpy
+        from PIL import Image
+        if (character, width, height) not in self.cache:
+            self.face.load_char(character, freetype.FT_LOAD_RENDER)
+            bitmap = self.face.glyph.bitmap
+            pixels = numpy.array(bitmap.buffer, dtype=numpy.uint8).reshape(bitmap.rows, bitmap.pitch)[:, :bitmap.width]
+            image = Image.fromarray(pixels).resize((max(width, 1), max(height, 1)), Image.BILINEAR)
+            self.cache[character, width, height] = numpy.asarray(image, dtype=numpy.float32) / 255
+        return self.cache[character, width, height]
+
+
+def split_share(raster, character, first, second, axis):
+    """Share of the first part at which both parts, stretched into their two boxes, look most like the character:
+    the mean of the best match of the whole picture (misled by parts narrower than their box, 界 gives 田 0.34)
+    and of the ink profile along the split axis (misled by interlocking parts, 村 gives 木 0.5)."""
+    import numpy
+    real = raster.ink(character)
+    best = [(-1, 0.5), (-1, 0.5)]
+    for step in range(10, 41):
+        share = step / 50
+        cut = round(share * HANZI_GRID)
+        sizes = ((cut, HANZI_GRID), (HANZI_GRID - cut, HANZI_GRID)) if axis == 0 else ((HANZI_GRID, cut), (HANZI_GRID, HANZI_GRID - cut))
+        parts = numpy.concatenate([raster.ink(part, *size) for part, size in zip((first, second), sizes)], axis=1 - axis)
+        for index, (seen, drawn) in enumerate(((real, parts), (real.sum(axis=axis), parts.sum(axis=axis)))):
+            score = seen.ravel().dot(drawn.ravel()) / (numpy.linalg.norm(drawn) + 1e-9)
+            best[index] = max(best[index], (score, share))
+    return (best[0][1] + best[1][1]) / 2
+
+
+def learned_strengths(cmap):
+    """learn_strengths, cached in sources/ (delete the file to learn again)."""
+    import json
+    if not os.path.exists(HANZI_STRENGTHS):
+        learned = learn_strengths(cmap, Raster(CJK_BASE))
+        json.dump({"%s%d" % key: values for key, values in learned.items()}, open(HANZI_STRENGTHS, "w"), ensure_ascii=False)
+    stored = json.load(open(HANZI_STRENGTHS))
+    return {(key[0], int(key[1])): values for key, values in stored.items()}
+
+
+def learn_strengths(cmap, raster):
+    """{(operator, position): {part: strength}} with logit(first part's share) ≈ first − second strength,
+    fitted to how the real characters of the font split (界 = ⿱田介 gives 田 less than half)."""
+    samples, seen = defaultdict(list), set()
+    for character, sequence in ids_sequences(cmap):
+        operator = sequence[0]
+        if operator not in "⿰⿱" or len(sequence) != 3 or (character, operator) in seen:
+            continue
+        seen.add((character, operator))
+        share = split_share(raster, character, sequence[1], sequence[2], HANZI_SPLITS[operator])
+        samples[operator].append((sequence[1], sequence[2], math.log(share / (1 - share))))
+    strengths = {}
+    for operator, rows in samples.items():
+        first, second = defaultdict(float), defaultdict(float)
+        for _ in range(20):  # alternate least squares, shrunk toward 0 for rarely seen parts
+            first = average_by(rows, 0, lambda a, b, logit: logit + second[b])
+            second = average_by(rows, 1, lambda a, b, logit: first[a] - logit)
+        strengths[operator, 0], strengths[operator, 1] = first, second
+    return strengths
+
+
+def average_by(rows, key, value, prior_weight=2):
+    sums, counts = defaultdict(float), defaultdict(int)
+    for row in rows:
+        sums[row[key]] += value(*row)
+        counts[row[key]] += 1
+    return defaultdict(float, {part: sums[part] / (counts[part] + prior_weight) for part in sums})
+
+
+PART = ("part", None)
+
+
+def hanzi_trees():
+    """Every IDS shape the font composes: one level of nesting; the parts of a ⿰ or ⿱ split are classed by strength."""
+    operators = list(HANZI_SPLITS) + list(HANZI_SURROUNDS)
+    nested = [(operator, [PART] * arity(operator)) for operator in operators]
+    for operator in operators:
+        options = []
+        for position in range(arity(operator)):
+            if operator in "⿰⿱":
+                options.append([("part", (operator, position, b)) for b in HANZI_BUCKETS] + nested)
+            elif operator in HANZI_SURROUNDS and position == 0:
+                options.append([PART])
+            elif arity(operator) == 3:
+                options.append([PART] + [tree for tree in nested if tree[0] in "⿰⿱"])
+            else:
+                options.append([PART] + nested)
+        for children in itertools.product(*options):
+            yield operator, list(children)
+
+
+def is_part(tree):
+    return tree[0] == "part"
+
+
+def root_share(children):
+    strengths = [HANZI_BUCKET * child[1][2] if is_part(child) else HANZI_NESTED_STRENGTH for child in children]
+    return share_of(strengths[0] - strengths[1])
+
+
+def part_boxes(operator, box, shares=None):
+    x0, y0, x1, y1 = box
+    if operator in HANZI_SURROUNDS:
+        fx0, fy0, fx1, fy1 = HANZI_SURROUNDS[operator]
+        width, height = x1 - x0, y1 - y0
+        return [box, (x0 + fx0 * width, y0 + fy0 * height, x0 + fx1 * width, y0 + fy1 * height)]
+    count = arity(operator)
+    shares = shares or [1 / count] * count
+    start, length = (x0, x1 - x0) if HANZI_SPLITS[operator] == 0 else (y1, y0 - y1)  # left to right, top to bottom
+    boxes, done = [], 0
+    for index, share in enumerate(shares):
+        t0 = done + (HANZI_GAP / 2 if index else 0)
+        t1 = done + share - (HANZI_GAP / 2 if index < count - 1 else 0)
+        a, b = sorted((start + t0 * length, start + t1 * length))
+        boxes.append((a, y0, b, y1) if HANZI_SPLITS[operator] == 0 else (x0, a, x1, b))
+        done += share
+    return boxes
+
+
+def hidden_operator(operator, root, shares):
+    name = "ids%04X.%s" % (ord(operator), "root" if root else "inner")
+    return name + ("%02d" % round(100 * shares[0]) if shares else "")
+
+
+def layout(tree, box, root=True):
+    """[(token, box)] in text order; a token is a part or (operator, invisible glyph replacing it)."""
+    if is_part(tree):
+        return [(tree, box)]
+    operator, children = tree
+    shares = None
+    if root and operator in "⿰⿱":
+        share = root_share(children)
+        shares = [share, 1 - share]
+    tokens = [((operator, hidden_operator(operator, root, shares)), box)]
+    for child, child_box in zip(children, part_boxes(operator, box, shares)):
+        tokens += layout(child, child_box, False)
+    return tokens
+
+
+def face_size():
+    x0, y0, x1, y1 = HANZI_FACE
+    return x1 - x0, y1 - y0
+
+
+def size_key(box):
+    steps = math.log(HANZI_SIZE_STEP)
+    return tuple(round(math.log((box[i + 2] - box[i]) / full) / steps) for i, full in enumerate(face_size()))
+
+
+def size_name(key):
+    return "w%dh%d" % tuple(round(100 * HANZI_SIZE_STEP ** k) for k in key)
+
+
+def stroke_growth(scale):
+    """Thickening per side that gives a part scaled by `scale` back HANZI_KEEP_STROKE of its lost stroke width."""
+    return HANZI_STEM * (1 - scale) * HANZI_KEEP_STROKE / 2
+
+
+def thicken(path, grow_x, grow_y):
+    """Minkowski sum with an ellipse of radii (grow_x, grow_y): a round stroke in a space where it is a circle."""
+    import pathops
+    radius = max(grow_x, grow_y)
+    if radius < 1:
+        return path
+    grow_x, grow_y = max(grow_x, radius / 5), max(grow_y, radius / 5)
+    circular = path.transform(radius / grow_x, 0, 0, radius / grow_y)
+    outline = circular.transform()
+    outline.stroke(2 * radius, pathops.LineCap.ROUND_CAP, pathops.LineJoin.ROUND_JOIN, 4)
+    outline.convertConicsToQuads()
+    try:
+        thick = pathops.op(circular, outline, pathops.PathOp.UNION)
+    except pathops.PathOpsError:  # Skia gives up on some near-coincident curves; cleaned-up inputs usually work
+        try:
+            thick = pathops.op(pathops.simplify(circular), pathops.simplify(outline), pathops.PathOp.UNION)
+        except pathops.PathOpsError:
+            print("warning: could not thicken a part, it keeps its thin strokes", file=sys.stderr)
+            return path
+    return thick.transform(grow_x / radius, 0, 0, grow_y / radius)
+
+
+def part_path(glyph_set, name, bounds, key):
+    """The glyph fitted into a box of size `key` centered on the origin, with its strokes thickened back."""
+    import pathops
+    x0, y0, x1, y1 = bounds
+    width, height = max(x1 - x0, 1), max(y1 - y0, 1)
+    box_width, box_height = (full * HANZI_SIZE_STEP ** k for full, k in zip(face_size(), key))
+    sx, sy = min(box_width / width, 1), min(box_height / height, 1)
+    sx, sy = min(sx, sy * HANZI_MAX_DISTORTION), min(sy, sx * HANZI_MAX_DISTORTION)
+    grow_x, grow_y = stroke_growth(sx), stroke_growth(sy)
+    sx, sy = min(sx, (box_width - 2 * grow_x) / width), min(sy, (box_height - 2 * grow_y) / height)
+    path = pathops.Path()
+    glyph_set[name].draw(TransformPen(path.getPen(), (sx, 0, 0, sy, -sx * (x0 + x1) / 2, -sy * (y0 + y1) / 2)))
+    return thicken(path, grow_x, grow_y)
+
+
+def charstring_program(draw, advance=0):
+    pen = T2CharStringPen(advance, None)
+    draw(pen)
+    return pen.getCharString().program
+
+
+HANZI_WORKER = {}
+
+
+def draw_parts(job):
+    """Worker: charstring programs of one component's variants."""
+    if not HANZI_WORKER:
+        font = TTFont(CJK_BASE)
+        HANZI_WORKER.update(glyph_set=font.getGlyphSet(), bounds=Outlines(font).bounds)
+    name, keys = job
+    bounds = HANZI_WORKER["bounds"](name)
+    variants = {}
+    for key in keys:
+        path = part_path(HANZI_WORKER["glyph_set"], name, bounds, key)
+        variants[key] = charstring_program(path.draw), path.bounds[0] if path.bounds else 0
+    return variants
+
+
+def ranked_components(cmap):
+    """Characters by how often IDS use them as parts, then the common hanzi no IDS uses."""
+    counts = defaultdict(int)
+    for _, sequence in ids_sequences(cmap):
+        for character in sequence[1:]:
+            if ord(character) not in IDS_OPERATORS:
+                counts[character] += 1
+    ranked = sorted(counts, key=lambda c: (-counts[c], c))
+    return ranked + [chr(code) for code in sorted(cmap) if is_common_hanzi(code) and chr(code) not in counts]
+
+
+def glyph_name(character):
+    return "uni%04X" % ord(character) if ord(character) <= 0xFFFF else "u%05X" % ord(character)
+
+
+def variant_name(character, key):
+    return "%s.%s" % (glyph_name(character), size_name(key))
+
+
+def hanzi_features(placements, tiers, strengths):
+    """GSUB picks variants and invisible operators, GPOS moves the parts; both follow the same IDS shapes.
+    tiers: [(components, size keys they get)]. Returns (feature code, invisible operators, shapes composed)."""
+    fea = ["languagesystem DFLT dflt;", "languagesystem hani dflt;"]
+
+    def sized(key):
+        return [c for components, keys in tiers if key in keys for c in components]
+
+    def part_class(constraint, key):
+        if not constraint:
+            return sized(key)
+        operator, position, bucket = constraint
+        return [c for c in sized(key) if bucket_of(strengths[operator, position].get(c, 0)) == bucket]
+
+    substitutions, positions, hidden, places = [], set(), set(), {}
+    for tokens in placements:
+        classes = [part_class(token[1], size_key(box)) if is_part(token) else None for token, box in tokens]
+        if any(c == [] for c in classes):
+            continue
+        sub, pos = [], []
+        for (token, box), members in zip(tokens, classes):
+            if is_part(token):
+                sub.append("%s' lookup size_%s" % (glyph_class(map(glyph_name, members)), size_name(size_key(box))))
+                offset = (round((box[0] + box[2]) / 2 - HANZI_ADVANCE), round((box[1] + box[3]) / 2))
+                place = places.setdefault((offset, size_key(box)), "place_%d" % len(places))
+                pos.append("@parts' lookup %s" % place)
+            else:
+                hidden.add(token)
+                sub.append("\\%s' lookup hide_%s" % (glyph_name(token[0]), token[1].replace(".", "_")))
+                pos.append("\\%s'" % token[1])
+        substitutions.append("  sub %s;" % " ".join(sub))
+        positions.add("  pos %s;" % " ".join(pos))
+    for operator, invisible in sorted(hidden):
+        name = invisible.replace(".", "_")
+        fea.append("lookup hide_%s { sub \\%s by \\%s; } hide_%s;" % (name, glyph_name(operator), invisible, name))
+    for key in sorted({key for _, keys in tiers for key in keys}):
+        sources = sized(key)
+        fea.append("@%s = %s;" % (size_name(key), glyph_class(variant_name(c, key) for c in sources)))
+        fea.append("lookup size_%s { sub %s by @%s; } size_%s;" % (size_name(key), glyph_class(map(glyph_name, sources)),
+                                                                  size_name(key), size_name(key)))
+    fea.append("@parts = %s;" % glyph_class(variant_name(c, key) for components, keys in tiers for c in components for key in keys))
+    for ((dx, dy), key), place in places.items():  # HarfBuzz drops a GPOS whose single positions cover too many glyphs
+        fea.append("lookup %s { pos @%s <%d %d 0 0>; } %s;" % (place, size_name(key), dx, dy, place))
+    fea.append("feature ccmp {\n lookup compose {\n%s\n } compose;\n} ccmp;" % "\n".join(substitutions))
+    fea.append("feature dist {\n lookup arrange {\n%s\n } arrange;\n} dist;" % "\n".join(sorted(positions)))
+    return "\n".join(fea), sorted(hidden), len(substitutions)
 
 
 # ---------------------------------------------------------------- naming / io
@@ -562,6 +902,65 @@ def build_cjk():
     return [save(font, "UniscriptCJK-Regular.otf")]
 
 
+def build_hanzi(tier_sizes=HANZI_TIERS):
+    """Uniscript Hanzi: IDS draw new characters from scaled, thickened parts (a separate font, see notes/hanzi.md)."""
+    from multiprocessing import Pool
+    source = TTFont(CJK_BASE)
+    cmap, glyph_set, bounds = source.getBestCmap(), source.getGlyphSet(), Outlines(source).bounds
+    strengths = learned_strengths(cmap)
+    trees = list(hanzi_trees())
+    placements = [layout(tree, HANZI_FACE) for tree in trees]
+    every_size = part_sizes(placements)
+    unnested_size = part_sizes(p for tree, p in zip(trees, placements) if all(map(is_part, tree[1])))
+    ranked, full = ranked_components(cmap), tier_sizes[0]
+    operators = list(HANZI_SPLITS) + list(HANZI_SURROUNDS)
+    fixed = 1 + len(operators) + 2 * len(placements)  # .notdef, operators, at most two invisible ones per shape
+    unnested = min(tier_sizes[1] - full, (MAX_GLYPHS - fixed - full * (1 + len(every_size))) // (1 + len(unnested_size)))
+    tiers = [(ranked[:full], every_size), (ranked[full:full + unnested], unnested_size)]
+    fea, hidden, shapes = hanzi_features(placements, tiers, strengths)
+
+    programs, metrics = {}, {}
+    def add(name, program, advance, x_min):
+        programs[name], metrics[name] = program, (advance, int(x_min))
+    add(".notdef", charstring_program(lambda pen: None, HANZI_ADVANCE), HANZI_ADVANCE, 0)
+    for character in [c for components, _ in tiers for c in components] + operators:
+        source_name = cmap[ord(character)]
+        add(glyph_name(character), charstring_program(glyph_set[source_name].draw, HANZI_ADVANCE), HANZI_ADVANCE, bounds(source_name)[0])
+    for _, invisible in hidden:
+        advance = HANZI_ADVANCE if ".root" in invisible else 0
+        add(invisible, charstring_program(lambda pen: None, advance), advance, 0)
+    jobs = [(c, cmap[ord(c)], keys) for components, keys in tiers for c in components]
+    with Pool() as pool:
+        for character, variants in zip((job[0] for job in jobs), pool.imap(draw_parts, [job[1:] for job in jobs], 20)):
+            for key, (program, x_min) in variants.items():
+                add(variant_name(character, key), program, 0, x_min)
+    assert len(programs) <= MAX_GLYPHS, "%d glyphs exceed the OpenType limit" % len(programs)
+    font = hanzi_font(programs, metrics, {ord(c): glyph_name(c) for c in [c for components, _ in tiers for c in components] + operators})
+    addOpenTypeFeaturesFromString(font, fea)
+    print("%d parts with %d sizes, %d with %d; %d IDS shapes" % (len(tiers[0][0]), len(every_size), len(tiers[1][0]), len(unnested_size), shapes))
+    return [save(font, "UniscriptHanzi-Regular.otf")]
+
+
+def part_sizes(placements):
+    return sorted({size_key(box) for tokens in placements for token, box in tokens if is_part(token)})
+
+
+def hanzi_font(programs, metrics, characters):
+    from fontTools.fontBuilder import FontBuilder
+    from fontTools.misc.psCharStrings import T2CharString
+    builder = FontBuilder(HANZI_ADVANCE, isTTF=False)
+    builder.setupGlyphOrder(list(programs))
+    builder.setupCharacterMap(characters)
+    builder.setupCFF("UniscriptHanzi-Regular", {"FullName": "Uniscript Hanzi"},
+                     {name: T2CharString(program=program) for name, program in programs.items()}, {})
+    builder.setupHorizontalMetrics(metrics)
+    builder.setupHorizontalHeader(ascent=HANZI_FACE[3] + 40, descent=HANZI_FACE[1] - 40)
+    builder.setupNameTable({"familyName": "Uniscript Hanzi", "styleName": "Regular"})
+    builder.setupOS2(sTypoAscender=880, sTypoDescender=-120, usWinAscent=1160, usWinDescent=288, fsType=0)
+    builder.setupPost()
+    return builder.font
+
+
 def build_egyptian():
     """NewGardinerOmni implements the Unicode 15 format controls (joiners, insertions, U+13440 mirror)."""
     path = os.path.join(SOURCES, os.path.basename(OMNI_URL))
@@ -587,7 +986,7 @@ def build_mirror():
     return paths
 
 
-BUILDS = {"sans": build_sans, "cjk": build_cjk, "egyptian": build_egyptian, "mirror": build_mirror}
+BUILDS = {"sans": build_sans, "cjk": build_cjk, "hanzi": build_hanzi, "egyptian": build_egyptian, "mirror": build_mirror}
 
 
 def main(args):

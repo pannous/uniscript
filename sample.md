@@ -1,7 +1,12 @@
 <:uniscript version="https://uniscript.org/v1">
 <:alpha> <:beta> <:gamma>: this file starts with the uniscript marker, so MarkdownPreview converts uniscript in its prose.
+
+\:1F60D
 \:U1F60D
+\:0x1F60D
 \U1F60D
+<:gardiner Q4A>
+
 # Uniscript in <:fracture M>arkdown
 
 ## Unknown entities stay visible
