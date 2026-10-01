@@ -8,6 +8,7 @@
 | npm | `@pannous/uniscript` | `js/` | `@pannous/uniscript`, `@pannous/uniscript/core` |
 | npm | `@pannous/uniscript-wasm` | `wasm/` | `@pannous/uniscript-wasm` (`await init()`) |
 | Maven Central | `com.pannous:uniscript-kotlin` | `kotlin/` | `com.pannous.uniscript.Uniscript` (notes/kotlin.md) |
+| Maven Central | `com.pannous:uniscript` | `java/` | `com.pannous.uniscript.Uniscript`, Java 22+ (notes/java.md) |
 
 - Taken names (2026-09-30): npm `uniscript` (unrelated, errisy), PyPI `uniscript` (subscript converter). The npm user
   `pannous` exists (owns `netbase`), so the `@pannous` scope is the user's. Checked free: crates.io `uniscript`, PyPI
