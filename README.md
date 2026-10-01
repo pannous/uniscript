@@ -32,9 +32,10 @@ The full specification is [[docs/uniscript.md]]
 
 ```
 <:alpha> → α
-<:fracture Hello> ℌ𝔢𝔩𝔩𝔬 
-<:double R> \:infinity ℝ ∞
+<:fracture Hello> →ℌ𝔢𝔩𝔩𝔬 
+<:double R> → ℝ 
 <:red ○> or <:red circle> → 🔴
+\:infinity → ∞
 ```
 <!-- <:mirror red R>                                     →   a mirrored red R  (if renderer supports it) -->
 
