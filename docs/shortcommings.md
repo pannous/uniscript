@@ -64,5 +64,7 @@ U+2066–2069) whose effects reach beyond what is visible; the Trojan Source att
 👨‍👩‍👧‍👦 is 7 code points, 11 UTF-16 units and 25 UTF-8 bytes, but one "character" to the reader. `'𝔄'.length == 2` in  
 JavaScript.    
 
+Why is Unicode so crowded, and why no bigger ranges? UTF-16 can only reach 17 planes of 65,536 code points each, which caps Unicode at U+10FFFF (about 1.1 million). Only planes 15 and 16 (about 131,000 code points) are private, and every font that needs private code points shares them. Unicode already has over 150,000 characters, so the space itself isn't full; private use is the crowded part. UTF-8 could reach further, but UTF-16 is built into Windows, Java, JavaScript and macOS, so the limit is fixed for good.
+
 [Uniscript](https://github.com/pannous/uniscript) tries to alleviate many of these shortcomings 
 <!-- Todo which ones exactly and which ones are unsolvable  -->

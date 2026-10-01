@@ -26,6 +26,12 @@ upper A => ᴬ
  
 The full specification is [[docs/uniscript.md]]
 
+
+# Why?
+Unicode is a great standard, seriously! But it has some [[shortcommings]] ...
+Finding and entering Unicode through system shortcuts can be slow and cumbersome 
+HTML is a great standard, but not everything is HTML and many modifiers are missing (fracture A => 𝔄  A => 𝔸 ...)
+
 # uniscript
 
 **Type any Unicode character in plain ASCII, and style it: mirrored, rotated, colored.**
@@ -95,7 +101,7 @@ implementation. [Warp](https://github.com/pannous/warp) is supporting UniScript 
 **Available today**: crates.io, PyPI, npm, Swift Package Manager (from this
 repository), the Homebrew tap `pannous/tap` and an apt repository for Debian and Ubuntu (both: the CLI and the C/C++
 library), plus release downloads on [GitHub](https://github.com/pannous/uniscript/releases).  
-**Prepared**: Maven Central (Java, Kotlin), NuGet (C#), Conan Center (pending review), vcpkg and the JetBrains Marketplace. Until then, build those libraries from a checkout as each section below shows. The full table is in [usage.md](usage.md); more in [[Support]]. 
+**Prepared**: Maven Central (Java, Kotlin), NuGet (C#), Conan Center (pending review), vcpkg and the JetBrains Marketplace. Until then, build those libraries from a checkout as each section below shows. The full table is in [usage.md](usage.md); more in [[Support]].  
 **Future** hopefully this will develop into its very own standard. 
 
 
@@ -150,12 +156,9 @@ Download them from the [releases](https://github.com/pannous/uniscript/releases)
 | **NewGardinerOmni** (M.-J. Nederhof) | hieroglyph groups with the Unicode 15 joiners and the mirror control U+13440 |
 
 # Header
-A uniscript file may start with the header `<:uniscript version="https://uniscript.org/v1">`. Every implementation
-(Rust, Swift, wasp) recognizes it only at the very start, converts it and one line break after it to nothing, reads every
-`https://uniscript.org/vN` without warning (backwards compatible) and warns only about a foreign version (`unsupported uniscript version …`). Anywhere else `<:uniscript …>` is an unknown
-entity; the escaped `<<::>uniscript version="https://uniscript.org/v1">` is the header as text.
+A uniscript file may start with the header `<:uniscript version="https://uniscript.org/v1">`. 
 Renderers might choose to switch on Uniscript mode when encountering the header or `<:` at the start of a file.
-[Warp](https://github.com/pannous/warp/) has built-in support for Uniscript, so all code should be rendered with it. 
+[Warp](https://github.com/pannous/warp/) has built-in support for Uniscript, so all code is rendered with it automatically.
 
 ## Use
 
