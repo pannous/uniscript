@@ -87,6 +87,31 @@ zig_wrapper() { # name, zig arguments: a compiler or archiver CMake can call by 
 	printf '#!/bin/sh\nexec zig %s "$@"\n' "$2" >"$DEB_WORK/zig/$1" && chmod +x "$DEB_WORK/zig/$1"
 }
 
+publish_debian() { # the .debs into the flat apt repository $APT_URL (signed on $DEB_HOST) and onto the GitHub release
+	ssh "$DEB_HOST" mkdir -p "$APT_DIR"
+	rsync -a "$DIST"/deb/*.deb "$DEB_HOST:$APT_DIR/"
+	ssh "$DEB_HOST" sh -s "$APT_DIR" "$APT_GNUPGHOME" <<-'EOF'
+		set -e
+		export GNUPGHOME="$2"
+		if [ ! -d "$GNUPGHOME" ]; then
+			install -d -m 700 "$GNUPGHOME"
+			gpg --batch --quiet --passphrase '' --quick-generate-key "uniscript apt repository <info@pannous.com>" rsa4096 sign never
+		fi
+		cd "$1"
+		gpg --export >uniscript.gpg
+		apt-ftparchive packages . >Packages && gzip -9nkf Packages
+		apt-ftparchive -o APT::FTPArchive::Release::Origin=pannous -o APT::FTPArchive::Release::Label=uniscript \
+			-o APT::FTPArchive::Release::Suite=stable release . >../apt-Release && mv ../apt-Release Release
+		gpg --batch --yes --clearsign -o InRelease Release
+		gpg --batch --yes --detach-sign --armor -o Release.gpg Release
+	EOF
+	if gh release view "v$VERSION" --repo pannous/uniscript >/dev/null 2>&1; then
+		gh release upload "v$VERSION" "$DIST"/deb/*.deb --repo pannous/uniscript --clobber
+	else
+		echo "no GitHub release v$VERSION yet: after gh release create, run gh release upload v$VERSION $DIST/deb/*.deb" >&2
+	fi
+}
+
 has_gradle_property() { # name
 	grep -qs "^$1=" "$GRADLE_PROPERTIES" || [ -n "$(printenv "ORG_GRADLE_PROJECT_$1")" ]
 }
@@ -98,6 +123,7 @@ check_credentials() {
 	npm whoami >/dev/null 2>&1 || fail "not logged in to npm: run npm login"
 	[ -s "${CARGO_HOME:-$HOME/.cargo}/credentials.toml" ] || [ -n "$CARGO_REGISTRY_TOKEN" ] || fail "no crates.io token: run cargo login"
 	grep -qs '^\[pypi\]' "$HOME/.pypirc" || [ -n "$TWINE_PASSWORD" ] || fail "no PyPI token: add [pypi] to ~/.pypirc or set TWINE_PASSWORD"
+	ssh -o BatchMode=yes -o ConnectTimeout=10 "$DEB_HOST" true || fail "no ssh to $DEB_HOST, which serves the apt repository"
 	[ -n "$NUGET_API_KEY" ] || fail "no nuget.org API key: set NUGET_API_KEY (nuget.org → API Keys, push scope for Uniscript)"
 	[ -z "$(git -C "$ROOT" status --porcelain)" ] || fail "the working tree has uncommitted changes: commit them first"
 }
@@ -278,7 +304,8 @@ step "publishing"
 npm publish "$DIST/pannous-uniscript-$VERSION.tgz" --access public
 npm publish "$DIST/pannous-uniscript-wasm-$VERSION.tgz" --access public
 dotnet nuget push "$DIST/Uniscript.$VERSION.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
+publish_debian
 # uploads a signed deployment; release it at https://central.sonatype.com/publishing/deployments
 (cd "$ROOT/kotlin" && ./gradlew publishToMavenCentral)
 (cd "$ROOT/java" && ./gradlew publishToMavenCentral)
-step "published uniscript $VERSION to crates.io, PyPI, npm, NuGet and Maven Central (release the deployment on central.sonatype.com)"
+step "published uniscript $VERSION to crates.io, PyPI, npm, NuGet, $APT_URL and Maven Central (release the deployment on central.sonatype.com)"
