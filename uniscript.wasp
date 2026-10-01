@@ -268,17 +268,25 @@ group(group_name:text, naming:text, content:text, at) := {
 	i = skip_spaces(content, 0)
 	while i < content.bytes {
 		end = operand_end(naming, content, i)
-		part = group_part(naming, hyphenated(byte_slice(content, i, end)))
-		if parts == 0 {
-			script = script_of(part)
-			out += entry(group_name + " *prefix " + script)
-			if find(names_table, group_name + " *prefix " + script) < 0 and find(names_table, group_name + " *infix " + script) < 0 {
-				out += unsupported("no " + group_name + " group of " + part, at)
-			}
+		word = hyphenated(byte_slice(content, i, end))
+		part = group_part(naming, word)
+		if parts > 0 and is_group(word) {
+			// <:above 宀 beside 电 电>: a group word among the parts groups the parts after it
+			out += entry(group_name + " *infix " + script) + entry(group_name + " *open " + script)
+			out += group(word, naming, byte_slice(content, end, content.bytes), at) + entry(group_name + " *close " + script)
+			end = content.bytes
 		} else {
-			out += entry(group_name + " *infix " + script)
+			if parts == 0 {
+				script = script_of(part)
+				out += entry(group_name + " *prefix " + script)
+				if find(names_table, group_name + " *prefix " + script) < 0 and find(names_table, group_name + " *infix " + script) < 0 {
+					out += unsupported("no " + group_name + " group of " + part, at)
+				}
+			} else {
+				out += entry(group_name + " *infix " + script)
+			}
+			out += part
 		}
-		out += part
 		parts++
 		i = skip_spaces(content, end)
 	}

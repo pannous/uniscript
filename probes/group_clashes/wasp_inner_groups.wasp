@@ -1,0 +1,4 @@
+use uniscript
+ok = uniscript("<:above 宀 beside 电 电> <:beside 电 above 电 电> <:above 宀 beside 女 above 子 子>") == "⿱宀⿰电电 ⿰电⿱电电 ⿱宀⿰女⿱子子"
+ok = ok and uniscript("<:egyptian above A1 beside A2 A3>") == "𓀀𓐰𓐷𓀁𓐱𓀂𓐸"
+ok
