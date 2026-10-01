@@ -8,17 +8,23 @@
 #   NuGet      Uniscript                  (csharp/, P/Invoke over c/ffi built per runtime identifier by `make -C c/ffi natives`)
 #   SwiftPM    Uniscript                  (Package.swift; git tag v$VERSION + swiftpackageindex.com, smoke-tested only)
 #   Maven      com.pannous:uniscript-kotlin (kotlin/, pure Kotlin/JVM; Central Portal, released by hand after upload)
+#   Maven      com.pannous:uniscript        (java/, FFM over c/ffi built per runtime identifier, Java 22+; released by hand too)
+#   C/C++      uniscript                  (c/ CMake package uniscript::uniscript of the release tarball; Conan recipe
+#                                         packaging/conan, vcpkg port packaging/vcpkg: smoke-tested only, upstream by PR)
 # Publishing needs: `npm login` (user pannous), `cargo login <crates.io token>`, a PyPI token in ~/.pypirc
 # ([pypi] username = __token__, password = pypi-…) or TWINE_USERNAME=__token__ TWINE_PASSWORD=pypi-….
 # Maven Central: mavenCentralUsername, mavenCentralPassword (a Central Portal user token), signingInMemoryKey and
 # signingInMemoryKeyPassword in ~/.gradle/gradle.properties (or ORG_GRADLE_PROJECT_<name> variables).
 # Needs dotnet, cargo-zigbuild, rustup target x86_64-pc-windows-gnu, maturin, zig (Linux wheels and natives), wasm-pack, rustup targets x86_64/aarch64-unknown-linux-gnu, python -m build, twine.
+# C/C++ needs cmake and conan; the vcpkg port is tested when VCPKG_ROOT is a bootstrapped clone of microsoft/vcpkg.
 set -e
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DIST="$ROOT/probes/publish/dist"
 SITE="$ROOT/probes/publish/site"
 MAVEN_REPOSITORY="$DIST/maven"
 GRADLE_PROPERTIES="$HOME/.gradle/gradle.properties"
+CPP_WORK="$ROOT/probes/publish/cpp"
+TARBALL="$DIST/uniscript-c-$VERSION.tar.gz"
 PYTHON="${PYTHON:-python3}"
 WHEEL_TARGETS="universal2-apple-darwin x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu"
 SMOKE_INPUT='<:alpha> <:fracture A>'
@@ -39,6 +45,13 @@ expect_smoke() { # name, actual output
 smoke_python() { # name, wheel
 	rm -rf "$SITE/$1" && "$PYTHON" -m pip install --quiet --no-deps --break-system-packages --target "$SITE/$1" "$2"
 	expect_smoke "$1" "$(cd "$SITE/$1" && "$PYTHON" -c "import sys, uniscript; print(uniscript.to_unicode(sys.argv[1]), '|', uniscript.to_uniscript(uniscript.to_unicode(sys.argv[1])))" "$SMOKE_INPUT")"
+}
+
+smoke_cmake() { # name, cmake arguments that find the installed package: builds and runs c/tests/consumer
+	name="$1" build="$CPP_WORK/consumer-$1" && shift && rm -rf "$build"
+	cmake -S "$ROOT/c/tests/consumer" -B "$build" -DCMAKE_BUILD_TYPE=Release "$@" >/dev/null
+	cmake --build "$build" >/dev/null && ctest --test-dir "$build" --output-on-failure >/dev/null
+	expect_smoke "$name" "$("$build/smoke" "$SMOKE_INPUT")"
 }
 
 has_gradle_property() { # name
@@ -111,6 +124,53 @@ rm -rf "$CONSUMER/bin" "$CONSUMER/obj" "$CONSUMER/packages"
 NUGET_PACKAGES="$CONSUMER/packages" dotnet build --nologo -v quiet "$CONSUMER" -p:UniscriptVersion="$VERSION"
 expect_smoke nuget "$(dotnet "$CONSUMER/bin/Debug/net9.0/Consumer.dll" "$SMOKE_INPUT")"
 
+step "C/C++: the release tarball of c/native as CMake package, Conan recipe and vcpkg port (uniscript $VERSION)"
+make -C "$ROOT/c/native" dist
+cp "$ROOT/c/native/build/uniscript-c-$VERSION.tar.gz" "$TARBALL"
+rm -rf "$CPP_WORK" && mkdir -p "$CPP_WORK" && tar xzf "$TARBALL" -C "$CPP_WORK"
+cmake -S "$CPP_WORK/uniscript-c-$VERSION/c" -B "$CPP_WORK/build" -DCMAKE_BUILD_TYPE=Release >/dev/null
+cmake --build "$CPP_WORK/build" --parallel >/dev/null
+ctest --test-dir "$CPP_WORK/build" --output-on-failure
+rm -rf "$SITE/cmake" && cmake --install "$CPP_WORK/build" --prefix "$SITE/cmake" >/dev/null
+smoke_cmake cmake -DCMAKE_PREFIX_PATH="$SITE/cmake"
+
+# the recipes as a local-recipes-index remote, their sources pointed at the tarball
+CONAN_INDEX="$CPP_WORK/conan-index"
+cp -R "$ROOT/packaging/conan" "$CONAN_INDEX"
+printf 'versions:\n  "%s":\n    folder: all\n' "$VERSION" >"$CONAN_INDEX/recipes/uniscript/config.yml"
+printf 'sources:\n  "%s":\n    url: "file://%s"\n    sha256: "%s"\n' "$VERSION" "$TARBALL" "$(shasum -a 256 "$TARBALL" | cut -d' ' -f1)" \
+	>"$CONAN_INDEX/recipes/uniscript/all/conandata.yml"
+(
+	export CONAN_HOME="$CPP_WORK/conan-home"
+	conan profile detect >/dev/null 2>&1
+	conan remote add uniscript-local "$CONAN_INDEX" --type local-recipes-index
+	for shared in False True; do
+		conan test "$CONAN_INDEX/recipes/uniscript/all/test_package" "uniscript/$VERSION" -r uniscript-local --build=missing \
+			-o "uniscript/*:shared=$shared" >"$CPP_WORK/conan-test.log" 2>&1 || { cat "$CPP_WORK/conan-test.log"; exit 1; }
+		grep -E '^(ok|FAIL)' "$CPP_WORK/conan-test.log"
+	done
+	conan install --requires "uniscript/$VERSION" -r uniscript-local -g CMakeDeps --output-folder "$CPP_WORK/conan-deps" >/dev/null 2>&1
+)
+smoke_cmake conan -Duniscript_DIR="$CPP_WORK/conan-deps"
+
+if [ -x "$VCPKG_ROOT/vcpkg" ]; then
+	mkdir -p "$CPP_WORK/vcpkg-ports/uniscript"
+	cp "$ROOT"/packaging/vcpkg/ports/uniscript/* "$CPP_WORK/vcpkg-ports/uniscript"
+	sed -e "s|URLS \".*\"|URLS \"file://$TARBALL\"|" -e "s|SHA512 [0-9a-f]*|SHA512 $(shasum -a 512 "$TARBALL" | cut -d' ' -f1)|" \
+		"$ROOT/packaging/vcpkg/ports/uniscript/portfile.cmake" >"$CPP_WORK/vcpkg-ports/uniscript/portfile.cmake"
+	"$VCPKG_ROOT/vcpkg" install uniscript --overlay-ports="$CPP_WORK/vcpkg-ports" --x-install-root="$CPP_WORK/vcpkg-installed" >"$CPP_WORK/vcpkg.log" 2>&1 \
+		|| { cat "$CPP_WORK/vcpkg.log"; fail "vcpkg install uniscript failed"; }
+	smoke_cmake vcpkg -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_MANIFEST_MODE=OFF \
+		-DVCPKG_INSTALLED_DIR="$CPP_WORK/vcpkg-installed"
+else
+	echo "skip vcpkg: no \$VCPKG_ROOT/vcpkg (git clone https://github.com/microsoft/vcpkg && vcpkg/bootstrap-vcpkg.sh)"
+fi
+
+step "Maven: com.pannous:uniscript $VERSION (into $MAVEN_REPOSITORY)"
+(cd "$ROOT/java" && ./gradlew --quiet checkNatives test publishToMavenLocal -Dmaven.repo.local="$MAVEN_REPOSITORY")
+expect_smoke uniscript-java "$("$ROOT/java/gradlew" --quiet -p "$ROOT/probes/publish/java-consumer" run \
+	-PuniscriptRepository="file://$MAVEN_REPOSITORY" -PuniscriptVersion="$VERSION" --args="'$SMOKE_INPUT'")"
+
 if ! $PUBLISH; then
 	step "all packages built and smoke-tested in $DIST; run with --publish to upload them"
 	exit 0
@@ -124,4 +184,5 @@ npm publish "$DIST/pannous-uniscript-wasm-$VERSION.tgz" --access public
 dotnet nuget push "$DIST/Uniscript.$VERSION.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
 # uploads a signed deployment; release it at https://central.sonatype.com/publishing/deployments
 (cd "$ROOT/kotlin" && ./gradlew publishToMavenCentral)
+(cd "$ROOT/java" && ./gradlew publishToMavenCentral)
 step "published uniscript $VERSION to crates.io, PyPI, npm and Maven Central (release the deployment on central.sonatype.com)"

@@ -108,7 +108,7 @@ Download them from the [releases](https://github.com/pannous/uniscript/releases)
 ## Support
 
 Libraries for UniScript are provided for all major programming languages in this repository:  
-Swift, Rust, Python, JavaScript/TypeScript, Kotlin, C and C++. The Rust crate is the reference implementation.  
+Swift, Rust, Python, JavaScript/TypeScript, Java, Kotlin, C and C++. The Rust crate is the reference implementation.  
 [Warp](https://github.com/pannous/warp) is supporting UniScript natively.  
 See [[Support]] for more details 
 
@@ -224,6 +224,28 @@ Uniscript.Html(tagged);                                    // meta information a
 ```
 
 `make -C c/ffi natives && dotnet test csharp/tests` runs the shared cases.
+
+### Java
+
+The Rust core for Java 22+ over the Foreign Function & Memory API ([java/](java/)), published to Maven Central as
+`com.pannous:uniscript`. The jar bundles the native library for macOS (arm64, x86_64), Linux (x86_64, arm64, glibc 2.17+)
+and Windows x86_64 and loads it from there (`-Duniscript.library=<path>` loads another one). Run with
+`--enable-native-access=ALL-UNNAMED` (or `Enable-Native-Access: ALL-UNNAMED` in an executable jar's manifest) to silence the
+JDK's restricted-method warning.
+
+```java
+// build.gradle.kts: implementation("com.pannous:uniscript:1.0.0")
+// pom.xml: <dependency><groupId>com.pannous</groupId><artifactId>uniscript</artifactId><version>1.0.0</version></dependency>
+import com.pannous.uniscript.Uniscript;
+Uniscript.toUnicode("<:alpha> <:fracture A>");              // "α 𝔄", leniently: faulty uniscript stays, warnings are logged
+Uniscript.toUniscript("α 𝔄");                              // "<:alpha> <:fracture A>"
+Uniscript.convert("<:greek c>", Uniscript.Mode.WARN);       // Result[text=c, warnings=[uniscript: no greek form of c at byte 0]]
+Uniscript.convert("<:nosuchthing>", Uniscript.Mode.WARN);   // throws UniscriptException (kind() UNKNOWN_ENTITY, detail() "nosuchthing")
+Uniscript.html(Uniscript.convert("<:font han-japanese>直").text()).text();  // <span lang="ja" …>直</span>
+Uniscript.metaRuns(tagged); Uniscript.header(source); Uniscript.font("cuneiform-hittite");
+```
+
+`cd java && ./gradlew test` runs the shared cases (`js/test/cases.json`) against the bundled library.
 
 ## Syntax
 
