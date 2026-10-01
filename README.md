@@ -31,7 +31,9 @@ The full specification is [[docs/uniscript.md]]
 **Type any Unicode character in plain ASCII, and style it: mirrored, rotated, colored.**
 
 ```
-<:alpha> <:fracture Hello> <:double R> \:infinity     →   α ℌ𝔢𝔩𝔩𝔬 ℝ ∞
+<:alpha> → α
+<:fracture Hello> ℌ𝔢𝔩𝔩𝔬 
+<:double R> \:infinity ℝ ∞
 <:red ○> or <:red circle> → 🔴
 ```
 <!-- <:mirror red R>                                     →   a mirrored red R  (if renderer supports it) -->
