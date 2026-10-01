@@ -1,6 +1,9 @@
 <:uniscript version="https://uniscript.org/v1">
 <:alpha> <:beta> <:gamma>: this file starts with the uniscript marker, so MarkdownPreview converts uniscript in its prose.
 
+
+Quick check of **GitHub-flavoured** Markdown: *emphasis*, ~~strikethrough~~, `inline code`, and an autolink https://github.com.
+
 <!-- \:1F60D TODO Disable! -->
 \:U1F60D
 \:0x1F60D
