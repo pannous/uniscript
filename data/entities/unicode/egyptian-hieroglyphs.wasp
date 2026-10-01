@@ -9055,4 +9055,5 @@ blocks {
 block-aliases {
 	gardiner: egyptian
 	hieroglyph: "egyptian anatolian"
+	eg: egyptian
 }

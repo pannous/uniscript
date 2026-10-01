@@ -240,3 +240,7 @@ blocks {
 		omega: "ω"
 	}
 }
+
+block-aliases {
+	gr: greek
+}

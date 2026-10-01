@@ -15,6 +15,8 @@ const FONTS: &str = "fonts";
 const META: &str = "meta";
 const CONTROL_PREFIX: char = '*';
 const SUFFIX_KEY: &str = "*suffix";
+/// a block only for typing: its characters do not spell back as it (口 stays 口, not `<:chinese kou>`)
+const ONE_WAY_KEY: &str = "*one-way";
 const ENTITY_EXTENSION: &str = "wasp";
 
 /// Key → entry, in file order
@@ -243,7 +245,7 @@ impl Entities {
 			chosen.set_default(text, &format!("<:{name}>"));
 		}
 		let mut block_forms = Ordered::default();
-		for (block, table) in self.blocks().tables() {
+		for (block, table) in self.blocks().tables().filter(|(_, table)| table.get(ONE_WAY_KEY).is_none()) {
 			for (operand, text) in table.texts() {
 				if !operand.starts_with(CONTROL_PREFIX) && is_single_character(text) && chosen.get(text).is_none() {
 					block_forms.set_default(text, &format!("{block} {operand}"));

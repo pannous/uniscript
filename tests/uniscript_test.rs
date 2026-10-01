@@ -137,6 +137,18 @@ fn anatolian_hieroglyphs_have_their_latin_names_and_syllabic_values() {
 }
 
 #[test]
+fn short_aliases_type_greek_egyptian_and_chinese_by_pinyin() {
+	converts("<:gr a>", "α");
+	converts("<:eg A1>", "𓀀");
+	converts("<:cn kou>", "口");
+	converts("<:cn kou3>", "口");
+	converts("<:cn kou4>", "扣");
+	converts("<:cn lv4>", "律");
+	converts("<:chinese> wo3 ai4 ni3 <:/chinese>", " 我 爱 你 ");
+	assert_eq!(to_uniscript("口 扣"), "口 扣");
+}
+
+#[test]
 fn the_marker_is_escaped_by_single_character_entities() {
 	converts("<:<> <::> <<::>", "< : <:");
 	converts("<:less>:", "<:");

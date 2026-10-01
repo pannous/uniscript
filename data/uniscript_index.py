@@ -28,6 +28,8 @@ HIEROGLYPH_DESCRIPTIONS = HERE / "sources" / "list_of_hieroglyphs.wiki"
 EXTENDED_SIGN_LIST = HERE / "sources" / "gardiner.full.csv"
 # the Anatolian Hieroglyphs section of Unicode's NamesList.txt: Latin logogram names and Luwian syllabic values as aliases
 ANATOLIAN_NAMES_LIST = HERE / "sources" / "anatolian_names_list.txt"
+# character → pinyin readings with tone numbers (de/di2/di4), most frequent character first
+CHINESE_READINGS = HERE / "sources" / "chinese_readings.tsv"
 UNICODE_MATH_TABLE = Path("/usr/local/texlive/2026basic/texmf-dist/tex/latex/unicode-math/unicode-math-table.tex")
 
 MAGIC = b"USX1"
@@ -102,6 +104,7 @@ GROUP_KEY = "*group"    # the block joins its operands (above, beside) instead o
 INFIX_KEY = "*infix"    # "*infix egyptian": goes between the parts of a group (a hieroglyph joiner)
 META_FALLBACK_KEY = "*meta"  # "color red": the attached meta a block becomes where it has no suffix
 RARE_KEY = "*rare"  # a block of a rare script: its names stay out of the web manifest's filter of absent names
+ONE_WAY_KEY = "*one-way"  # a block only for typing: its characters do not spell back as it (口 stays 口, not <:chinese kou>)
 # block type 'egyptian': Gardiner numbers (<:egyptian A1>) and descriptions (<:egyptian seated man>) of the hieroglyphs
 EGYPTIAN_BLOCK = "egyptian"
 EGYPTIAN_HIEROGLYPHS_START = 0x13000
@@ -112,6 +115,13 @@ ANATOLIAN_NUMBER = re.compile(r"^ANATOLIAN HIEROGLYPH A0*(\d+)([A-Z]*)(?: |$)") 
 # an alias may name several blocks, the first holding an operand wins: hieroglyph looks in every hieroglyphic script
 EGYPTIAN_ALIASES = {"gardiner": EGYPTIAN_BLOCK, "hieroglyph": f"{EGYPTIAN_BLOCK} {ANATOLIAN_BLOCK}"}
 ANATOLIAN_ALIASES = {"luwian": ANATOLIAN_BLOCK}
+# short aliases for typing: <:gr a>, <:eg A1>, <:cn kou>
+GREEK_ALIASES = {"gr": "greek"}
+EGYPTIAN_ALIASES["eg"] = EGYPTIAN_BLOCK
+# block type 'chinese': pinyin → hanzi, the most frequent character of a reading wins, with tone (kou4 扣) and without (kou 口)
+CHINESE_BLOCK = "chinese"
+CHINESE_ALIASES = {"cn": CHINESE_BLOCK}
+PINYIN_READING = re.compile(r"^[a-z]+(?:u:)?[a-z]*[1-5]?$")
 # aliases of NamesList.txt: "= syllabic tá", "= logosyllabic pari", "= caput+scalprum", "= infans, filius, frater"
 NAMES_LIST_ENTRY = re.compile(r"^([0-9A-F]{4,6})\t")
 NAMES_LIST_ALIAS = re.compile(r"^\t= (.+)$")
@@ -407,6 +417,27 @@ def anatolian_block(named):
 	return table
 
 
+def pinyin_keys(reading):
+	"""lu:3 → lv3, lv: with tone and without"""
+	toned = reading.lower().replace("u:", "v")
+	return [toned, toned.rstrip("12345")]
+
+
+def chinese_block():
+	"""reading → the most frequent character with it; every character's first reading before the others"""
+	readings = []
+	for line in CHINESE_READINGS.read_text().splitlines():
+		character, _, spellings = line.partition("\t")
+		if not line.startswith("#") and len(character) == 1:
+			readings.append((character, [r for r in re.split(r"[/,\s]+", spellings.strip().lower()) if PINYIN_READING.match(r)]))
+	table = {}
+	for position in range(max(len(spellings) for _, spellings in readings)):
+		for character, spellings in readings:
+			for key in pinyin_keys(spellings[position]) if position < len(spellings) else []:
+				table.setdefault(key, character)
+	return table
+
+
 def seed_files():
 	"""file path in entities/ → its sections"""
 	named = [(chr(cp), unicodedata.name(chr(cp))) for cp in range(0x110000) if unicodedata.name(chr(cp), None)]
@@ -435,7 +466,10 @@ def seed_files():
 	blocks = unicode_blocks()
 	for character, name in named_plain:
 		files.setdefault(block_file(character, blocks), {}).setdefault("names", {})[name_key(name)] = character
-	files[block_file("α", blocks)]["blocks"] = {"greek": greek_transliteration()}
+	greek = files[block_file("α", blocks)]
+	greek["blocks"] = {"greek": greek_transliteration()}
+	greek["block-aliases"] = dict(GREEK_ALIASES)
+	files.setdefault(block_file("口", blocks), {}).update({"blocks": {CHINESE_BLOCK: {RARE_KEY: "", ONE_WAY_KEY: "", **chinese_block()}}, "block-aliases": dict(CHINESE_ALIASES)})
 	egyptian = files[block_file(chr(EGYPTIAN_HIEROGLYPHS_START), blocks)]
 	egyptian["blocks"] = {EGYPTIAN_BLOCK: {RARE_KEY: "", **egyptian_block(named)}}
 	egyptian["block-aliases"] = dict(EGYPTIAN_ALIASES)
@@ -610,7 +644,7 @@ def reverse_entries(sections):
 	for text, name in agreed.items():
 		chosen.setdefault(text, f"<:{name}>")
 	block_forms = {}
-	for block, table in sections["blocks"].items():
+	for block, table in ((b, t) for b, t in sections["blocks"].items() if ONE_WAY_KEY not in t):
 		for operand, text in table.items():
 			if not is_control_key(operand) and len(text) == 1 and text not in chosen:
 				block_forms.setdefault(text, (block, operand))

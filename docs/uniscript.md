@@ -131,6 +131,9 @@ In an inline tag the spaces only separate the operands and are dropped: `<:greek
 the digraphs th ch ps ⩵ θ χ ψ (also inside words: `<:greek athos>` ⩵ αθοσ), and letter names for the rest:  
 `<:greek eta>` ⩵ η, `<:greek Omega>` ⩵ Ω. Letters without a clear Greek counterpart (c h j q v w y) are not guessed:  
 they stay unchanged, with a warning.    
+
+Short forms for typing: `gr` (greek), `eg` (egyptian), `cn` (chinese: pinyin with or without tone number, the most
+frequent character wins, `<:cn kou>` ⩵ 口, `<:cn kou4>` ⩵ 扣, ü as v). Chinese is typing only: 口 spells back as 口.
   
 # Stacked styles
   
