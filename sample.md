@@ -6,7 +6,7 @@
 \:0x1F60D
 <!-- \U1F60D NO -->
 # <:gardiner Q4A>
-# <:gardiner A1>
+# <:eg A1>
 
 # Uniscript in <:fracture M>arkdown
 
