@@ -51,6 +51,9 @@ const CODE_POINT_PREFIXES: [&str; 6] = ["U+", "u+", "0x", "0X", "U", "u"];
 const MAX_HEX_DIGITS: usize = 8;
 /// Bare hex (`\:1F60D`) and `\U` need at least 4 digits, so a mistyped short name stays unknown
 const MIN_BARE_HEX_DIGITS: usize = 4;
+/// The most words one operand spans: `<:egyptian man with hand to mouth>`
+const MAX_OPERAND_WORDS: usize = 8;
+const GROUP_KEY: &str = "*group";
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Error {
@@ -501,8 +504,8 @@ impl<'a> Uniscript<'a> {
 	/// The text inside a full block (`<:greek> filosofia kosmos<:/greek>`) as written: its whitespace stays, each word is an
 	/// operand; a group block joins its parts
 	fn block_text(&self, block: &str, text: &str, at: usize) -> String {
-		if self.name(&format!("{block} *group")).is_some() {
-			return self.operands(block, text, &[], at);
+		if self.is_group(block) {
+			return self.group(block, None, text, at);
 		}
 		text.split_inclusive(char::is_whitespace)
 			.map(|piece| {
@@ -512,36 +515,56 @@ impl<'a> Uniscript<'a> {
 			.collect()
 	}
 
-	/// The space separated operands of an inline tag, spaces dropped, or one operand of several words (egyptian seated man);
-	/// a group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script
-	/// of the first part has
+	/// The words of an inline tag as operands of the block: a run of words that names one operand stays one (seated man,
+	/// red crown), the longest run first
+	fn operand_tokens(&self, block: &str, content: &str) -> Vec<String> {
+		let words: Vec<&str> = content.split_whitespace().collect();
+		let mut tokens = Vec::new();
+		let mut start = 0;
+		while start < words.len() {
+			let longest = words.len().min(start + MAX_OPERAND_WORDS);
+			let names_one = |end: &usize| self.form(block, &words[start..*end].join("-")).is_some();
+			let end = (start + 2..=longest).rev().find(names_one).unwrap_or(start + 1);
+			tokens.push(words[start..end].join("-"));
+			start = end;
+		}
+		tokens
+	}
+
+	/// Whether the content starts with an operand of the block: `<:egyptian red crown>` names a sign, red is no effect
+	fn starts_operand(&self, block: &str, content: &str) -> bool {
+		self.operand_tokens(block, content).first().is_some_and(|token| self.form(block, token).is_some())
+	}
+
+	/// The space separated operands of an inline tag, spaces dropped
 	fn operands(&self, block: &str, content: &str, effects: &[&str], at: usize) -> String {
-		let phrase = content.split_whitespace().collect::<Vec<_>>().join("-");
-		if phrase.contains('-') && self.name(&format!("{block} {phrase}")).is_some() {
-			return self.operand(block, &phrase, effects, at);
+		self.operand_tokens(block, content).iter().map(|token| self.operand(block, token, effects, at)).collect()
+	}
+
+	fn is_group(&self, block: &str) -> bool {
+		self.form(block, GROUP_KEY).is_some()
+	}
+
+	/// A group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script of
+	/// the first part has; the parts are operands of the naming block (`<:egyptian above A1 A2>`), else names or text
+	fn group(&self, group: &str, naming: Option<&str>, content: &str, at: usize) -> String {
+		let tokens = match naming {
+			Some(block) => self.operand_tokens(block, content),
+			None => content.split_whitespace().map(str::to_string).collect(),
+		};
+		let part = |token: &String| {
+			let named = naming.and_then(|block| self.form(block, token)).or_else(|| self.name(token).filter(|_| token.len() > 1));
+			named.map_or_else(|| token.clone(), str::to_string)
+		};
+		let parts: Vec<String> = tokens.iter().map(part).collect();
+		let Some(first) = parts.first() else { return String::new() };
+		let script = first_script(first);
+		let prefix = self.name(&format!("{group} *prefix {script}"));
+		let infix = self.name(&format!("{group} *infix {script}"));
+		if prefix.is_none() && infix.is_none() {
+			self.warn(format!("no {group} group of {first}"), at);
 		}
-		let group = self.name(&format!("{block} *group")).is_some();
-		let mut out = String::new();
-		let mut script = "";
-		for (position, token) in content.split(' ').filter(|token| !token.is_empty()).enumerate() {
-			let part = match self.name(token) {
-				_ if !group => self.operand(block, token, effects, at),
-				Some(named) if token.len() > 1 => named.to_string(),
-				_ => token.to_string(),
-			};
-			if position == 0 {
-				script = first_script(&part);
-				let prefix = self.name(&format!("{block} *prefix {script}"));
-				out += prefix.unwrap_or("");
-				if group && prefix.is_none() && self.name(&format!("{block} *infix {script}")).is_none() {
-					self.warn(format!("no {block} group of {part}"), at);
-				}
-			} else {
-				out += self.name(&format!("{block} *infix {script}")).unwrap_or("");
-			}
-			out += &part;
-		}
-		out
+		prefix.unwrap_or("").to_string() + &parts.join(infix.unwrap_or(""))
 	}
 
 	/// The text of `<:content>` at byte `at` that is no block opener or closer
@@ -561,12 +584,21 @@ impl<'a> Uniscript<'a> {
 		let split = content.find(' ').or_else(|| content.find('-'));
 		if let Some((first, rest)) = split.map(|position| (&content[..position], &content[position + 1..])) {
 			if self.is_block(first) {
-				// <:mirror red A>: effect words stack, the last takes the operands, the others add their suffixes
+				// <:mirror red A>: effect words stack, the last takes the operands, the others add their suffixes; a word that
+				// starts an operand of the block before it is no block (<:egyptian red crown>)
 				let mut words: Vec<&str> = vec![first];
 				let mut rest = rest;
 				while let Some((word, after)) = rest.split_once(' ').filter(|(word, _)| self.is_block(word)) {
+					if words.last().is_some_and(|block| self.starts_operand(block, rest)) {
+						break;
+					}
 					words.push(word);
 					rest = after;
+				}
+				if let Some(position) = words.iter().position(|word| self.is_group(word)) {
+					// <:egyptian above A1 A2>: the other block names the parts of the group
+					let group = words.remove(position);
+					return Ok(self.group(group, words.iter().rev().find(|word| !self.is_effect(word)).copied(), rest, at));
 				}
 				let block = words.pop().expect("one block");
 				let (effects, styles): (Vec<&str>, Vec<&str>) = words.into_iter().partition(|word| self.is_effect(word));

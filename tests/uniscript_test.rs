@@ -185,3 +185,21 @@ fn the_index_is_built_from_the_readable_entities() {
 	assert!(index::check(&entities, &Index::new(ENTITIES_INDEX).unwrap()).is_empty());
 	assert!(index::build(&entities) == ENTITIES_INDEX, "data/entities.idx is stale: run `cargo run -- build`");
 }
+
+#[test]
+fn operands_win_over_block_words() {
+	converts("<:egyptian red crown>", "𓋔");
+	converts("<:egyptian A1 red crown>", "𓀀𓋔");
+	converts("<:egyptian red crown A1>", "𓋔𓀀");
+	assert_eq!(to_unicode("<:red egyptian red crown>"), to_unicode("<:red egyptian S3>"));
+	converts("<:mirror red A>", "A\u{E0072}\u{E004D}");
+}
+
+#[test]
+fn groups_read_operands_by_the_names_of_a_block() {
+	converts("<:egyptian above A1 A2>", "𓀀\u{13430}𓀁");
+	converts("<:above egyptian A1 A2>", "𓀀\u{13430}𓀁");
+	converts("<:egyptian beside sun red crown>", "𓇳\u{13431}𓋔");
+	converts("<:egyptian above 𓀀 A2>", "𓀀\u{13430}𓀁");
+	converts("<:above 𓀀 𓁐>", "𓀀\u{13430}𓁐");
+}
