@@ -115,3 +115,4 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - seed drift: `data/uniscript_index.py seed` drops the hand-added `*open/*close egyptian` keys of styles.wasp (seed them)
 - `<:eg>` alone now opens the Egyptian block instead of the HTML entity ⪚ (blocks shadow names of the same word)
 - DONE the extended signs drew nonsense: NewGardinerOmni's own private use glyphs (zero-width group fragments) at U+F3000… are unrelated to Aegyptus'; the built Omni drops them from its cmap and the egyptian build ships Aegyptus (probes/egyptian_private_use_test.py). Running editors keep the old font until restarted
+- Omni4 (finer stacking) breaks in HarfBuzz after 3 consecutive stacked groups (Chrome/Firefox, the web demo) and puts small groups 0.045 em above the descender (probes/egyptian_baseline_test.py fails test_stacked_group_composes_on_the_descender_too); CoreText is fine. Way out: our own Omni built with hieropy (smaller sep, finer scales), or back to 2d4 via OMNI_URL
