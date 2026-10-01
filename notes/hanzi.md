@@ -2,9 +2,9 @@
 
 Question (user, 2026-10-01): can a font combine arbitrary radicals into new characters with the IDS operators, 界 = ⿱田介?
 **Yes, for simple characters**: `fonts/dist/UniscriptHanzi-Regular.otf` (`python3 fonts/uniscript_fonts.py hanzi`)
-draws any ⿰ ⿱ ⿲ ⿳ ⿴ ⿵ ⿶ ⿷ ⿸ ⿹ ⿺ ⿻ sequence of its 3,827 parts (the 3,755 common hanzi of GB 2312 level 1 and the
-radicals IDS use most: 氵 讠 宀 钅 糹 …), whether or not Unicode has the character: ⿰讠尤, ⿱艹猫, ⿴囗猫, ⿰鱼电.
-One level of nesting works for the 50 most used parts (⿱艹⿰氵火). Renders: `probes/uniscript-hanzi/`
+draws any ⿰ ⿱ ⿲ ⿳ ⿴ ⿵ ⿶ ⿷ ⿸ ⿹ ⿺ ⿻ sequence of its 3,910 parts (every character IDS use as a part at least 20 times,
+such as 氵 讠 宀 钅 匕, and the common hanzi of GB 2312 level 1 except 75 compounds no IDS uses, like 饭 = ⿰饣反), whether or not Unicode has the character: ⿰讠尤, ⿱匕月, ⿱艹猫, ⿴囗猫, ⿰鱼电.
+One level of nesting works for the 20 most used parts (⿱艹⿰氵火). Renders: `probes/uniscript-hanzi/`
 (`render.py` → reference_*.png real vs composed vs naive, invented_*.png; chrome.png, firefox.png from `browser.html`).
 
 ## How it works (the NewGardinerOmni idea applied to hanzi)
@@ -39,12 +39,16 @@ naive columns of `reference_ot.png`: composed 林 狗 草 思 国 连 are close 
 
 ## Glyph budget (65,535 per font)
 
+Nothing is generated at render time: OpenType cannot scale or draw outlines while shaping, it can only pick and move
+glyphs that exist. So every part is precompiled at each size it can take, but combinations are not: the cost grows with
+parts × sizes (≈16 glyphs per part), never with the millions of possible pairs. The ceiling is the glyph budget, ≈4,000 parts.
+
 | tier | parts | sizes | glyphs |
 |---|---|---|---|
-| nest (most used parts) | 50 | 59 | 2,950 + 50 |
-| simple sequences only | 3,777 | 15 | 56,655 + 3,777 |
+| nest (most used parts) | 20 | 59 | 1,180 + 20 |
+| simple sequences only | 3,890 | 15 | 58,350 + 3,890 |
 | operators, invisible operators, .notdef | | | ≈45 |
-| **total** | 3,827 | | **63,477** |
+| **total** | 3,910 | | **63,485** |
 
 Nesting is what is expensive: a part inside a nested box needs ~44 more sizes. Every ×1.2 size step coarser or each split
 share fewer saves glyphs; the 5 shares (⅓ … ⅔) and 15 simple sizes are the floor for decent proportions.
@@ -71,7 +75,7 @@ macOS: the fallback cascade is per character.
 - No form changes: real fonts reshape a part by position (木 on the left ends its last stroke in a dot, 火 under → 灬,
   人 on the left → 亻). The font only scales; give the radical form yourself (⿰亻尤, not ⿰人尤).
 - No interlocking: 介's roof reaches under 田 in 界; composed parts never overlap their neighbours' boxes.
-- Dense parts in small boxes clog (thickening fills small counters); quarter-size parts are only for the 50 nesting parts.
+- Dense parts in small boxes clog (thickening fills small counters); quarter-size parts are only for the 20 nesting parts.
 - Existing characters are drawn composed too (⿱田介 is composed, not Noto's 界); Uniscript CJK keeps its ligatures to real
   characters, Hanzi is for new ones. An unsupported part leaves the sequence uncomposed, visibly.
 - HarfBuzz drops a whole GPOS whose single-positioning lookups cover too many glyphs (sanitizer charges coverage

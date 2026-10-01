@@ -23,7 +23,7 @@ INVENTED = [  # none of these is a Unicode character (checked against cjkvi-ids)
     ("⿰鱼电", "<:beside 鱼 电>", "electric eel"),
     ("⿸广猫", "raw IDS", "cat house"),
     ("⿰讠尤", "<:beside 讠 尤>", "the user's first try"),
-    ("⿱艹⿰氵火", "<:above 艹 ⿰氵火>", "nested: only the 50 most used parts nest"),
+    ("⿱艹⿰氵火", "<:above 艹 ⿰氵火>", "nested: only the 20 most used parts nest"),
     ("⿰火⿱日月", "<:beside 火 ⿱日月>", "nested"),
 ]
 
