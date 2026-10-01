@@ -98,3 +98,9 @@ I briefly ran git stash and restored it straight away while testing the wasp por
 - Debian: lintian info tags left: .comment sections, no _FORTIFY_SOURCE (zig), no symbols file for libuniscript1 (shlibs only). The packages are tested on Ubuntu 24.04 (amd64 on pannous.com, arm64 in Apple's container); older glibc targets (2.17 claimed) untested.
 - Homebrew: no man page in the formula: packaging/debian/uniscript.1 is not in the crate (Cargo.toml include) nor the C tarball; add it at the next release and `man1.install`.
 - Homebrew: machines that installed the one-day-old pannous/tap/libuniscript must `brew uninstall libuniscript` before uniscript 1.0.0_1 links (same lib/ files); no automatic migration.
+
+From CHANGES.md (changes that need to be propagated through all implementations), merged 2026-10-01:
+- DONE spaces should be preserved: `<:greek> filosofia kosmos<:/greek>` ⩵ " φιλοσοφια κοσμοσ"; everything in full tags is rendered as it is, with spaces (`<:greek> a b g d <:/greek>` ⩵ " α β γ δ "), while inline tags drop them (`<:greek phi chi>` ⩵ φχ).
+- DONE a general feature mechanism that propagates unknown features to special renderers: `<:red 𓀀>` warns "red on 𓀀 kept as color meta" and carries `color red` as a TAG meta, which `--html` renders as `<span style="color: red">`.
+- TODO DYM "did you mean" mechanism: `uniscript: no greek form of c at byte 26, did you mean <:greek chi> or <:greek kappa> or <:greek zeta>?` (also for unknown names); in every implementation.
+- TODO html mode?? Partially implemented: `--html` renders meta information (fonts, colors, angles) as spans, but styles stay Unicode (`<:bold a>` ⩵ 𝐚 rather than `<b>a</b>`). Which features can be done in HTML and which can't? Do we really want that?
