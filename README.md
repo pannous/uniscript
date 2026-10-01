@@ -84,17 +84,30 @@ Online, two pages:
   HTML. 
   <!-- Redeploy with `docs/make_demo.sh deploy`. -->
 
-### Homebrew
-```sh
-brew install pannous/tap/uniscript     # the command line and the C/C++ library (uniscript.h, uniscript.hpp, CMake, pkg-config)
-```
 
-### Debian and Ubuntu
-amd64 and arm64 packages in a signed apt repository (also attached to the [GitHub release](https://github.com/pannous/uniscript/releases/tag/v1.0.0)):
+## Support
+
+Libraries for UniScript are provided for all major programming languages in this repository:  
+Rust, Swift, Python, JavaScript/TypeScript, WebAssembly, Java, Kotlin, C#, C and C++. The Rust crate is the reference
+implementation. [Warp](https://github.com/pannous/warp) is supporting UniScript natively.
+
+### Package managers
+**Available today**: crates.io, PyPI, npm, Swift Package Manager (from this
+repository), the Homebrew tap `pannous/tap` and an apt repository for Debian and Ubuntu (both: the CLI and the C/C++
+library), plus release downloads on [GitHub](https://github.com/pannous/uniscript/releases). 
+**Prepared**: Maven Central (Java, Kotlin), NuGet (C#), Conan Center (pending review), vcpkg and the JetBrains Marketplace. Until then, build those libraries from a checkout as each section below shows. The full table is in [usage.md](usage.md); more in [[Support]].
+
+
+### Apps
+
+An example native app with built-in support on the Mac: use it in Markdown via [MarkdownPreview](https://github.com/pannous/MarkdownPreview)
+
+Future: hopefully this will develop into its very own standard. 
+
+### Python
 ```sh
-sudo curl -fsSLo /etc/apt/keyrings/uniscript.gpg https://pannous.com/uniscript/apt/uniscript.gpg
-echo "deb [signed-by=/etc/apt/keyrings/uniscript.gpg] https://pannous.com/uniscript/apt ./" | sudo tee /etc/apt/sources.list.d/uniscript.list
-sudo apt update && sudo apt install uniscript   # the command line; libuniscript-dev: the C/C++ library, CMake, pkg-config
+pip install uniscript
+python -m uniscript "<:alpha> <:fracture A>"     # α 𝔄
 ```
 
 ### Rust
@@ -107,6 +120,22 @@ echo "<:beside 犭 句>" | uniscript      # ⿰犭句 (狗 in the Uniscript CJK 
 ```
 <!-- # uniscript --html "<:font cuneiform-hittite>𒀭<:/font>"   
 # <span lang="hit-Xsux" style="font-family: 'UllikummiA', …">𒀭</span>
+ -->
+
+
+### Homebrew
+```sh
+brew install pannous/tap/uniscript     # the command line and the C/C++ library 
+```
+
+
+<!-- ### Debian and Ubuntu
+amd64 and arm64 packages in a signed apt repository (also attached to the [GitHub release](https://github.com/pannous/uniscript/releases/tag/v1.0.0)):
+```sh
+sudo curl -fsSLo /etc/apt/keyrings/uniscript.gpg https://pannous.com/uniscript/apt/uniscript.gpg
+echo "deb [signed-by=/etc/apt/keyrings/uniscript.gpg] https://pannous.com/uniscript/apt ./" | sudo tee /etc/apt/sources.list.d/uniscript.list
+sudo apt update && sudo apt install uniscript   # the command line; libuniscript-dev: the C/C++ library, CMake, pkg-config
+```
  -->
 ## Fonts
 Basic Uniscript does **not require special fonts**, and the standard should be backwards compatible so that __features__ not available in the renderer are simply ignored! Whenever the Unicode standard provides a built-in character for some entity or combination, it will be used immediately, so most of the above examples work out of the box: `<:alpha> <:fracture A>` => `α 𝔄` ...
@@ -121,26 +150,6 @@ Download them from the [releases](https://github.com/pannous/uniscript/releases)
 | **Uniscript Sans** (from Noto Sans + Noto Sans Math) | every geometry and color on ASCII and Greek, and one effect at a time on Latin-1/Ext-A, Greek, symbols, arrows and operators; mirror and turn on the rest |
 | **Uniscript CJK** (from Noto Sans CJK) | IDS composition (⿰犭句 → 狗, 27,688 sequences) and mirror for radicals and the 3,755 most common hanzi |
 | **NewGardinerOmni** (M.-J. Nederhof) | hieroglyph groups with the Unicode 15 joiners and the mirror control U+13440 |
-
-## Support
-
-Libraries for UniScript are provided for all major programming languages in this repository:  
-Rust, Swift, Python, JavaScript/TypeScript, WebAssembly, Java, Kotlin, C#, C and C++. The Rust crate is the reference
-implementation. [Warp](https://github.com/pannous/warp) is supporting UniScript natively.
-
-**Package managers are limited for now.** Available today: crates.io, PyPI, npm, Swift Package Manager (from this
-repository), the Homebrew tap `pannous/tap` and an apt repository for Debian and Ubuntu (both: the CLI and the C/C++
-library), plus release downloads on
-[GitHub](https://github.com/pannous/uniscript/releases). Not yet: Maven Central (Java, Kotlin), NuGet (C#), Conan Center
-(pending review), vcpkg and the JetBrains Marketplace. Until then, build those libraries from a checkout as each
-section below shows. The full table is in [usage.md](usage.md); more in [[Support]].
-
-
-### Apps
-
-An example native app with built-in support on the Mac: use it in Markdown via [MarkdownPreview](https://github.com/pannous/MarkdownPreview)
-
-Future: hopefully this will develop into its very own standard. 
 
 # Header
 A uniscript file may start with the header `<:uniscript version="https://uniscript.org/v1">`. Every implementation
