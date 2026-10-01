@@ -6,6 +6,8 @@
 \:0x1F60D
 <!-- \:U+1F60D NO, OK -->
 <!-- \U1F60D NO, OK-->
+󳀃
+# <:gardiner A1C>
 # <:gardiner Q4A>
 # <:eg A1>
 
