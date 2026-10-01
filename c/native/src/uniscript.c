@@ -25,6 +25,8 @@
 #define VALUE_PLACEHOLDER "{}"
 #define CLOSE_SPAN "</span>"
 #define SUFFIX_KEY "*suffix"
+#define GROUP_KEY "*group"
+#define MAX_OPERAND_WORDS 8 /* the most words one operand spans: <:egyptian man with hand to mouth> */
 /* the block control naming the meta a block becomes where it has no suffix control (red *meta → color red) */
 #define META_FALLBACK_KEY "*meta"
 #define REPLACEMENT_CHARACTER 0xFFFDu
@@ -149,8 +151,6 @@ static size_t unicode_escape(str after_backslash) {
 	return hex_value(str_slice(after_backslash, 1, 1 + length), MIN_BARE_HEX_DIGITS, &value) ? 1 + length : 0;
 }
 
-static bool contains(str text, char byte) { return str_find(text, byte) < text.n; }
-
 static size_t character_count(str text) {
 	size_t count = 0;
 	for (size_t i = 0; i < text.n; i++) count += ((unsigned char)text.p[i] & 0xC0) != 0x80;
@@ -262,56 +262,15 @@ static bool next_token(str *rest, char separator, str *token) {
 	return true;
 }
 
-/* The words of the text split on whitespace, joined by '-' */
-static void hyphenated_words(buf *out, str text) {
+/* The next whitespace separated word of rest; false at the end */
+static bool next_word(str *rest, str *word) {
 	uint32_t character;
-	size_t length;
-	bool gap = false;
-	text = trim(text);
-	for (size_t at = 0; (length = utf8_decode(str_from(text, at), &character)); at += length) {
-		if (is_whitespace(character)) {
-			gap = true;
-			continue;
-		}
-		if (gap) buf_addz(out, "-");
-		gap = false;
-		buf_add(out, text.p + at, length);
-	}
-}
-
-/* The space separated operands, spaces dropped, or one operand of several words (egyptian seated man); a group
- * (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script of the
- * first part has */
-static void operands(converter *self, buf *out, str block, str content, strs effects, size_t at) {
-	buf phrase = { 0 };
-	hyphenated_words(&phrase, content);
-	bool whole = contains(buf_str(&phrase), '-') && index_getf(TABLE_NAMES, NULL, "%.*s %.*s", S(block), S(phrase));
-	if (whole) operand(self, out, block, buf_str(&phrase), effects, at);
-	buf_free(&phrase);
-	if (whole) return;
-	bool group = index_getf(TABLE_NAMES, NULL, "%.*s *group", S(block));
-	const char *script = "";
-	str rest = content, token, named, affix;
-	buf part = { 0 };
-	for (size_t position = 0; next_token(&rest, ' ', &token); position++) {
-		part.n = 0;
-		if (!group)
-			operand(self, &part, block, token, effects, at);
-		else
-			buf_adds(&part, name(token, &named) && token.n > 1 ? named : token);
-		if (position == 0) {
-			uint32_t first = first_character(buf_str(&part));
-			script = first == NO_CHARACTER ? "" : script_of(first);
-			bool prefix = index_getf(TABLE_NAMES, &affix, "%.*s *prefix %s", S(block), script);
-			if (prefix) buf_adds(out, affix);
-			if (group && !prefix && !index_getf(TABLE_NAMES, NULL, "%.*s *infix %s", S(block), script))
-				warn(self, at, "no %.*s group of %.*s", S(block), S(buf_str(&part)));
-		} else if (index_getf(TABLE_NAMES, &affix, "%.*s *infix %s", S(block), script)) {
-			buf_adds(out, affix);
-		}
-		buf_adds(out, buf_str(&part));
-	}
-	buf_free(&part);
+	size_t length, start = 0, end;
+	while ((length = utf8_decode(str_from(*rest, start), &character)) && is_whitespace(character)) start += length;
+	for (end = start; (length = utf8_decode(str_from(*rest, end), &character)) && !is_whitespace(character);) end += length;
+	*word = str_slice(*rest, start, end);
+	*rest = str_from(*rest, end);
+	return word->n > 0;
 }
 
 /* A block with a suffix control (mirror, red), which stacks as an effect instead of restyling */
@@ -319,6 +278,67 @@ static bool is_effect(str block) { return index_getf(TABLE_NAMES, NULL, "%.*s " 
 
 static bool form(str block, str operand_text, str *found) {
 	return index_getf(TABLE_NAMES, found, "%.*s %.*s", S(block), S(operand_text));
+}
+
+/* The next operand of the block (none: the next word) in rest, hyphenated into token: the longest run of words that
+ * names one operand (seated man, red crown), else one word */
+static bool next_operand(const str *block, str *rest, buf *token) {
+	str words[MAX_OPERAND_WORDS], after[MAX_OPERAND_WORDS], left = *rest;
+	size_t count = 0;
+	while (count < (block ? MAX_OPERAND_WORDS : 1) && next_word(&left, &words[count])) after[count++] = left;
+	for (size_t n = count; n > 0; n--) {
+		token->n = 0;
+		for (size_t i = 0; i < n; i++) {
+			if (i) buf_addz(token, "-");
+			buf_adds(token, words[i]);
+		}
+		if (n == 1 || form(*block, buf_str(token), NULL)) {
+			*rest = after[n - 1];
+			return true;
+		}
+	}
+	return false;
+}
+
+/* Whether the content starts with an operand of the block: <:egyptian red crown> names a sign, red is no effect */
+static bool starts_operand(str block, str content) {
+	buf token = { 0 };
+	bool starts = next_operand(&block, &content, &token) && form(block, buf_str(&token), NULL);
+	buf_free(&token);
+	return starts;
+}
+
+/* The space separated operands of an inline tag, spaces dropped */
+static void operands(converter *self, buf *out, str block, str content, strs effects, size_t at) {
+	buf token = { 0 };
+	for (str rest = content; next_operand(&block, &rest, &token);) operand(self, out, block, buf_str(&token), effects, at);
+	buf_free(&token);
+}
+
+static bool is_group(str block) { return index_getf(TABLE_NAMES, NULL, "%.*s " GROUP_KEY, S(block)); }
+
+/* A group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script of
+ * the first part has; the parts are operands of the naming block (<:egyptian above A1 A2>), else names or text */
+static void group(converter *self, buf *out, str group_name, const str *naming, str content, size_t at) {
+	buf token = { 0 };
+	str part, infix = { 0 }, prefix;
+	bool has_infix = false;
+	for (size_t position = 0; next_operand(naming, &content, &token); position++) {
+		str written = buf_str(&token);
+		if (!(naming && form(*naming, written, &part)) && !(written.n > 1 && name(written, &part))) part = written;
+		if (position == 0) {
+			uint32_t first = first_character(part);
+			const char *script = first == NO_CHARACTER ? "" : script_of(first);
+			bool has_prefix = index_getf(TABLE_NAMES, &prefix, "%.*s *prefix %s", S(group_name), script);
+			has_infix = index_getf(TABLE_NAMES, &infix, "%.*s *infix %s", S(group_name), script);
+			if (has_prefix) buf_adds(out, prefix);
+			if (!has_prefix && !has_infix) warn(self, at, "no %.*s group of %.*s", S(group_name), S(part));
+		} else if (has_infix) {
+			buf_adds(out, infix);
+		}
+		buf_adds(out, part);
+	}
+	buf_free(&token);
 }
 
 /* The block and plain operand a character spells back as: 𝐚 → (bold, a), α → ("", alpha) */
@@ -441,8 +461,8 @@ static void restyled(converter *self, buf *out, strs styles, uint32_t character,
 
 /* The text of a full block (<:greek> … <:/greek>) as written: each word an operand, the whitespace after it kept */
 static void block_text(converter *self, buf *out, str block, str text, size_t at) {
-	if (index_getf(TABLE_NAMES, NULL, "%.*s *group", S(block))) {
-		operands(self, out, block, text, (strs){ 0 }, at);
+	if (is_group(block)) {
+		group(self, out, block, NULL, text, at);
 		return;
 	}
 	uint32_t character;
@@ -561,13 +581,26 @@ static bool tag(converter *self, buf *out, str content, size_t at) {
 	if (split == content.n) split = str_find(content, '-');
 	str first = str_slice(content, 0, split < content.n ? split : 0);
 	if (split < content.n && is_block(first)) {
-		/* <:mirror red A>: effect words stack, the last takes the operands, the others add their suffixes */
+		/* <:mirror red A>: effect words stack, the last takes the operands, the others add their suffixes; a word that
+		 * starts an operand of the block before it is no block (<:egyptian red crown>) */
 		strs words = { 0 };
 		strs_push(&words, first);
 		str rest = str_from(content, split + 1), word, after;
-		while (split_once(rest, ' ', &word, &after) && is_block(word)) {
+		while (split_once(rest, ' ', &word, &after) && is_block(word) && !starts_operand(words.items[words.n - 1], rest)) {
 			strs_push(&words, word);
 			rest = after;
+		}
+		size_t group_at = 0;
+		while (group_at < words.n && !is_group(words.items[group_at])) group_at++;
+		if (group_at < words.n) { /* <:egyptian above A1 A2>: the other block names the parts of the group */
+			str group_name = words.items[group_at];
+			memmove(&words.items[group_at], &words.items[group_at + 1], (words.n - group_at - 1) * sizeof(str));
+			words.n--;
+			size_t naming = words.n;
+			while (naming > 0 && is_effect(words.items[naming - 1])) naming--;
+			group(self, out, group_name, naming ? &words.items[naming - 1] : NULL, rest, at);
+			free(words.items);
+			return true;
 		}
 		str block = words.items[--words.n];
 		strs effects = { 0 }, styles = { 0 };
