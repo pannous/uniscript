@@ -146,7 +146,10 @@ decomposition (𝛂 is `<font>` α), not from their names, so the Greek alphabet
 A word after a block type is read as one more stacked block only when it does not start an operand of the block before
 it: `<:egyptian red crown>` ⩵ 𓋔 (the sign S3), while `<:red egyptian S3>` colors it. Operands of several words are
 read longest first, also in a row of operands: `<:egyptian A1 red crown>` ⩵ 𓀀𓋔. A group block takes its parts from the
-other block of the tag: `<:egyptian above A1 A2>` ⩵ `<:above egyptian A1 A2>` ⩵ 𓀀 U+13430 𓀁.
+other block of the tag: `<:egyptian above A1 A2>` ⩵ `<:above egyptian A1 A2>` ⩵ 𓀀 U+13430 𓀁. A group word among the
+parts groups all the parts after it, without nested tags: `<:above 宀 beside 电 电>` ⩵ ⿱宀⿰电电,
+`<:egyptian above A1 beside A2 A3>` ⩵ 𓀀 U+13430 U+13437 𓀁 U+13431 𓀂 U+13438 (hieroglyphs take the inner group into a
+segment).
   
 # Warnings
   
@@ -297,7 +300,7 @@ script-neutral characters such as TAG join the preceding run, so a prefix is cut
 
 The font Uniscript Hanzi (`python3 fonts/uniscript_fonts.py hanzi`) draws any Ideographic Description Sequence of its 2,849
 parts, also characters Unicode does not have: `<:beside 讠 尤>` ⩵ ⿰讠尤, `<:above 匕 月>` ⩵ ⿱匕月, and raw IDS such as ⿰丬㐅 or,
-nested ⿱宀⿰电电 (`<:above 宀 ⿰电电>`). Parts are scaled into proportions learned from real
+nested ⿱宀⿰电电 (`<:above 宀 beside 电 电>`). Parts are scaled into proportions learned from real
 characters and their strokes thickened back. It works in HarfBuzz (Chrome) and CoreText (Safari, macOS apps) wherever the
 font draws the whole sequence; details and limits in [notes/hanzi.md](../notes/hanzi.md).
 
