@@ -72,3 +72,12 @@ vcpkg port, all built by c/CMakeLists.txt except Homebrew (Makefile). c/ffi (Rus
    `brew install pannous/tap/uniscript pannous/tap/libuniscript`.
 4. Upstream PRs (need the go of whoever owns the release): conan-io/conan-center-index (recipes/uniscript) and
    microsoft/vcpkg (branch uniscript-port, after `vcpkg x-add-version uniscript --overwrite-version`).
+
+## Upstream status (2026-10-01)
+- v1.0.0 C tarball re-cut from main (now with c/CMakeLists.txt); the tag v1.0.0 stays on 8a07951, because moving it would
+  break SwiftPM pins. sha256 516c9da0…, in conandata.yml and both libuniscript.rb copies; sha512 in the vcpkg portfile.
+  Checked from the real URL: conan create + test_package, vcpkg overlay install, brew reinstall + test.
+- conan-center-index PR https://github.com/conan-io/conan-center-index/pull/31084 (fork pannous/conan-center-index,
+  branch uniscript-1.0.0). Needs the CLA signed at cla-assistant.io by pannous.
+- vcpkg: not submitted. New ports need a release at least 6 months old or 6 months of public development; the repo dates
+  from 2026-09-30, so 2027-03-30 at the earliest. Branch uniscript-port in probes/uniscript-cpp/vcpkg is ready (one commit).

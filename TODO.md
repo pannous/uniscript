@@ -92,3 +92,4 @@ I briefly ran git stash and restored it straight away while testing the wasp por
 - C/C++: no MSVC build: c/native/src/index.c embeds entities.idx with `.incbin` in top-level asm. A generated C array (or C23 `#embed`) under `_MSC_VER` would open Windows for Conan/vcpkg (ConanCenter and vcpkg CI build MSVC; both now mark it unsupported).
 - C/C++: no private Conan remote to upload to (only conancenter is configured); `conan upload` needs an Artifactory/conan_server the user hosts, else ConanCenter by PR.
 - C/C++: Linux aarch64 and MinGW builds of c/CMakeLists.txt untested (Linux x86_64 gcc 13 passes on pannous.com).
+- TODO: open the microsoft/vcpkg PR for the uniscript port once the project is 6 months old (2027-03-30); branch uniscript-port in probes/uniscript-cpp/vcpkg, notes/c-packaging.md.
