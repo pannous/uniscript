@@ -16,6 +16,9 @@ const CLOSING_SLASH = "/";
 const ESCAPED_COLON = "<::>";
 const ESCAPED_UNICODE = "<:U>";
 const SUFFIX_KEY = "*suffix";
+const GROUP_KEY = "*group";
+/** The most words one operand spans: `<:egyptian man with hand to mouth>` */
+const MAX_OPERAND_WORDS = 8;
 /** The block control naming the meta a block becomes where it has no suffix control (`red *meta` → `color red`) */
 const META_FALLBACK_KEY = "*meta";
 const FONT_KEY = "font";
@@ -377,7 +380,7 @@ export class Uniscript {
 	/** The text inside a full block (`<:greek> filosofia kosmos<:/greek>`) as written: its whitespace stays, each word is an
 	 * operand; a group block joins its parts */
 	#blockText(block: string, text: string, at: number): string {
-		if (this.#name(`${block} *group`) !== undefined) return this.#operands(block, text, [], at);
+		if (this.#isGroup(block)) return this.#group(block, undefined, text, at);
 		return (text.match(WHITESPACE_ENDED_PIECES) ?? [])
 			.map((piece) => {
 				const word = piece.trimEnd();
@@ -386,32 +389,47 @@ export class Uniscript {
 			.join("");
 	}
 
-	/** The space separated operands of an inline tag, spaces dropped, or one operand of several words (egyptian seated man);
-	 * a group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script
-	 * of the first part has */
+	/** The words of an inline tag as operands of the block: a run of words that names one operand stays one (seated man,
+	 * red crown), the longest run first */
+	#operandTokens(block: string, content: string): string[] {
+		const all = content.split(/\s+/).filter((word) => word.length > 0);
+		const tokens: string[] = [];
+		for (let start = 0; start < all.length;) {
+			let end = Math.min(all.length, start + MAX_OPERAND_WORDS);
+			while (end > start + 1 && this.#form(block, all.slice(start, end).join("-")) === undefined) end--;
+			tokens.push(all.slice(start, end).join("-"));
+			start = end;
+		}
+		return tokens;
+	}
+
+	/** Whether the content starts with an operand of the block: `<:egyptian red crown>` names a sign, red is no effect */
+	#startsOperand(block: string, content: string): boolean {
+		const first = this.#operandTokens(block, content)[0];
+		return first !== undefined && this.#form(block, first) !== undefined;
+	}
+
+	/** The space separated operands of an inline tag, spaces dropped */
 	#operands(block: string, content: string, effects: string[], at: number): string {
-		const phrase = content.split(/\s+/).filter((word) => word.length > 0).join("-");
-		if (phrase.includes("-") && this.#name(`${block} ${phrase}`) !== undefined) return this.#operand(block, phrase, effects, at);
-		const group = this.#name(`${block} *group`) !== undefined;
-		let out = "";
-		let script = "";
-		words(content).forEach((token, position) => {
-			const named = this.#name(token);
-			const part = !group ? this.#operand(block, token, effects, at)
-				: named !== undefined && utf8Length(token) > 1 ? named : token;
-			if (position === 0) {
-				script = scriptOf(firstCharacter(part));
-				const prefix = this.#name(`${block} *prefix ${script}`);
-				out += prefix ?? "";
-				if (group && prefix === undefined && this.#name(`${block} *infix ${script}`) === undefined) {
-					this.#warn(`no ${block} group of ${part}`, at);
-				}
-			} else {
-				out += this.#name(`${block} *infix ${script}`) ?? "";
-			}
-			out += part;
-		});
-		return out;
+		return this.#operandTokens(block, content).map((token) => this.#operand(block, token, effects, at)).join("");
+	}
+
+	#isGroup(block: string): boolean {
+		return this.#form(block, GROUP_KEY) !== undefined;
+	}
+
+	/** A group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script of
+	 * the first part has; the parts are operands of the naming block (`<:egyptian above A1 A2>`), else names or text */
+	#group(group: string, naming: string | undefined, content: string, at: number): string {
+		const tokens = naming === undefined ? words(content.replace(/\s+/g, " ")) : this.#operandTokens(naming, content);
+		const parts = tokens.map((token) => (naming === undefined ? undefined : this.#form(naming, token))
+			?? (utf8Length(token) > 1 ? this.#name(token) : undefined) ?? token);
+		if (!parts.length) return "";
+		const script = scriptOf(firstCharacter(parts[0]));
+		const prefix = this.#name(`${group} *prefix ${script}`);
+		const infix = this.#name(`${group} *infix ${script}`);
+		if (prefix === undefined && infix === undefined) this.#warn(`no ${group} group of ${parts[0]}`, at);
+		return (prefix ?? "") + parts.join(infix ?? "");
 	}
 
 	/** The text of `<:content>` at byte `at` that is no block opener or closer */
@@ -426,12 +444,20 @@ export class Uniscript {
 		const split = content.includes(" ") ? content.indexOf(" ") : content.indexOf("-");
 		const [first, rest] = [content.slice(0, split), content.slice(split + 1)];
 		if (split >= 0 && this.#isBlock(first)) {
-			// <:mirror red A>: effect words stack, the last takes the operands, the others add their suffixes
+			// <:mirror red A>: effect words stack, the last takes the operands, the others add their suffixes; a word that
+			// starts an operand of the block before it is no block (<:egyptian red crown>)
 			const blocks = [first];
 			let operands = rest;
 			for (let next = splitOnce(operands, " "); next && this.#isBlock(next[0]); next = splitOnce(operands, " ")) {
+				if (this.#startsOperand(blocks[blocks.length - 1], operands)) break;
 				blocks.push(next[0]);
 				operands = next[1];
+			}
+			const groupAt = blocks.findIndex((word) => this.#isGroup(word));
+			if (groupAt >= 0) {
+				// <:egyptian above A1 A2>: the other block names the parts of the group
+				const [group] = blocks.splice(groupAt, 1);
+				return this.#group(group, blocks.findLast((word) => !this.#isEffect(word)), operands, at);
 			}
 			const block = blocks.pop()!;
 			const effects = blocks.filter((word) => this.#isEffect(word));
