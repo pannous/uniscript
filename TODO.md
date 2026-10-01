@@ -6,7 +6,7 @@
 - DONE: the converter rejects the spec'd header `<:uniscript version="https://uniscript.org/v1">` ("unknown uniscript entity"); the Sublime plugin skips a leading header line itself, MarkdownPreview's probe fails on it. The library should accept (drop) it.
 - TODO: Sublime plugin: typing the closer `<:/greek>` could convert the whole block on that line; for now blocks need the command.
 - TODO: the Swift package and wasp's lib/uniscript.wasp have no lenient mode yet (Rust: WarningMode::Lenient, `--lenient`: errors become warnings, the faulty uniscript stays as written).
-- TODO: the Kotlin port in intellij/ (fourth implementation) must follow src/lib.rs changes; a shared test vector file for Rust, Swift, wasp and Kotlin would keep them in step.
+- DONE: the Kotlin port in intellij/ (fourth implementation) must follow src/lib.rs changes; a shared test vector file for Rust, Swift, wasp and Kotlin would keep them in step.
 - TODO: intellij/ plugin: no Settings page (colors, folding on/off); unknown `\:name` is an error in every file, also LaTeX's `\:` spacing command in .tex files.
 - TODO: wasp's lib/uniscript.wasp (warp) needs the stacked-style resolution of src/lib.rs `restyled` (combined block over permutations, else commute): `<:bold italic alpha>` → 𝜶, `<:greek bold a>` → 𝛂.
 - TODO: README "Support" lists Python, JavaScript and C++ libraries, but the repository only has Rust, Swift and Kotlin.
@@ -57,7 +57,7 @@ DONE - C ffi/native: NULL or invalid UTF-8 input fails with UNISCRIPT_INVALID_IN
 - Other hieroglyphic scripts could join `hieroglyph: "egyptian anatolian"`: Meroitic hieroglyphs (letter names), Egyptian Extended-A once it has Gardiner/Unikemet numbers.
 - TODO: release 1.0.0 is on crates.io, PyPI (uniscript-py, uniscript-rs), GitHub (v1.0.0 with the C tarball and the IntelliJ zip, sublime-1.0.0), Homebrew (pannous/homebrew-tap) and pending at the Swift Package Index (SwiftPackageIndex/PackageList#15450). Still open: npm (@pannous/uniscript, @pannous/uniscript-wasm) needs the user's 2FA per publish: `npm publish probes/publish/dist/pannous-uniscript{,-wasm}-1.0.0.tgz --access public`; the first JetBrains Marketplace upload by hand; the Package Control PR (line above).
 - Python (both packages) has `reads_version` only as `uniscript.converter.reads_version` (native), not exported as `uniscript.reads_version`, although AGENTS.md says every implementation has it; usage.md therefore shows no `reads_version` for Python.
-- The Kotlin port (intellij/) has no lenient mode, no `metaRuns`/`html` and no public `header()`/`Header`; Swift has no lenient mode (`WarningMode` is `.warn`/`.error`). usage.md documents these gaps.
+- DONE (Kotlin, now kotlin/): The Kotlin port (intellij/) has no lenient mode, no `metaRuns`/`html` and no public `header()`/`Header`; Swift has no lenient mode (`WarningMode` is `.warn`/`.error`). usage.md documents these gaps.
 - DONE: The code point forms of docs/uniscript.md "# Code points" (`\:U+1F60D`, `<:1F60D>`, `\U0001F60D`) are implemented in Rust (2087c7c) but not yet in the ports (Python native: `unknown uniscript entity: U+1F60D`). Once they are, add them to the "every tag form" lists of the other languages in usage.md and rerun probes/usage/run_all.sh.
 - to_uniscript keeps characters without a name as they are; an option to write them as `<:U+XXXX>` (ASCII-only output) is not implemented in any port (docs/uniscript.md "# Code points").
 - Code points as block operands (`<:red U+2661>`, `<:bold 0x41>`) are not supported: only a whole tag or `\:` token is a code point.
@@ -76,5 +76,9 @@ a multi-line if block misparses;
 / on integers that don't divide gives a float.
 I didn't touch README.md. Suggested line: "Any character by its code point: \:U+1F60D, <:1F60D> or \U1F60D → 😍".
 I briefly ran git stash and restored it straight away while testing the wasp port, which goes against your "don't stash" rule; nothing was lost.
-- Inline tags eat leading block words before trying the operand: `<:egyptian red crown>` ⩵ 👑+TAG r (warnings) instead of 𓋔; `<:egyptian A1 red crown>` ⩵ 𓀀red👑. Same for descriptions starting with white blue double left right upper lower (probes/group_clashes/block_operand_clashes.rs). `red-crown` works.
-- Group blocks resolve operands by global names only: `<:above A1 A2>` ⩵ A1A2 and `<:above sun star>` ⩵ ☉⋆, no way to say "Gardiner A1 above A2" inline; `<:egyptian above A1 A2>` reads above as the operand block.
+- DONE Inline tags eat leading block words before trying the operand: `<:egyptian red crown>` ⩵ 👑+TAG r (warnings) instead of 𓋔; `<:egyptian A1 red crown>` ⩵ 𓀀red👑. Same for descriptions starting with white blue double left right upper lower (probes/group_clashes/block_operand_clashes.rs). `red-crown` works.
+- DONE Group blocks resolve operands by global names only: `<:above A1 A2>` ⩵ A1A2 and `<:above sun star>` ⩵ ☉⋆, no way to say "Gardiner A1 above A2" inline; `<:egyptian above A1 A2>` reads above as the operand block.
+- TODO: Maven Central: com.pannous:uniscript-kotlin (kotlin/) is built, signed (checked with a throwaway key) and smoke-tested from a local repository, not uploaded. Needs: the namespace com.pannous verified on central.sonatype.com (DNS TXT on pannous.com), a Central Portal user token as mavenCentralUsername/mavenCentralPassword and the GPG key (0DA96849CA330895 is passphrase-protected) as signingInMemoryKey/signingInMemoryKeyPassword in ~/.gradle/gradle.properties, the public key on keys.openpgp.org; then `scripts/publish.sh --publish` and *Publish* the deployment on central.sonatype.com.
+
+- warp: `while i < 3 and not f(i, 5) { … }` misparses ("f needs a value for parameter b"); outside a while condition it works (probes/group_clashes/warp_not_call.wasp). uniscript.wasp writes `(f(a, b) == false)`.
+- Kotlin port: operands-before-block-words and named groups are delegated to the uniscript-kotlin worker; until it lands, the shared cases for them fail in Kotlin.

@@ -141,6 +141,13 @@ Styles without a combined block commute: `<:greek bold a>` ⩵ bold(greek a) ⩵
 applied is kept: `<:greek bold alpha>` ⩵ 𝛂. The Mathematical Alphanumeric Symbols come from their Unicode
 decomposition (𝛂 is `<font>` α), not from their names, so the Greek alphabets have all their styles.
   
+# Operands before block words
+
+A word after a block type is read as one more stacked block only when it does not start an operand of the block before
+it: `<:egyptian red crown>` ⩵ 𓋔 (the sign S3), while `<:red egyptian S3>` colors it. Operands of several words are
+read longest first, also in a row of operands: `<:egyptian A1 red crown>` ⩵ 𓀀𓋔. A group block takes its parts from the
+other block of the tag: `<:egyptian above A1 A2>` ⩵ `<:above egyptian A1 A2>` ⩵ 𓀀 U+13430 𓀁.
+  
 # Warnings
   
 Whenever a character or combination has no counterpart, the character stays plain and uniscript warns, naming the  

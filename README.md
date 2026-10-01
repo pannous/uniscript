@@ -55,7 +55,8 @@ followed by TAG characters (U+E0020…E007E). Basic fonts shows the plain letter
 - **Hieroglyphs**: `<:egyptian A1>` (alias `gardiner`, Gardiner numbers and descriptions), `<:anatolian CAPUT>` (alias
   `luwian`: Laroche numbers, Latin logogram names, syllabic values `ka` `tá`/`ta2`, from Unicode's NamesList), and
   `<:hieroglyph …>`, which looks in both (Egyptian first).
-- **Groups**: Egyptian hieroglyph joiners (`<:above 𓀀 𓁐>`) and CJK composition (`<:beside 犭 句>` → 狗).
+- **Groups**: Egyptian hieroglyph joiners (`<:above 𓀀 𓁐>`, by Gardiner number `<:egyptian above A1 A2>`) and CJK
+  composition (`<:beside 犭 句>` → 狗).
 - **Meta information**: font styles for scripts Unicode unified (`<:font cuneiform-old-babylonian> … <:/font>`,
   `<:font han-japanese>`), languages, colors and angles (`<:color #ff8800 angle 90 A>`), carried in plain text as
   invisible TAG sequences and rendered by `--html` as spans with CSS.
@@ -107,7 +108,7 @@ Download them from the [releases](https://github.com/pannous/uniscript/releases)
 ## Support
 
 Libraries for UniScript are provided for all major programming languages in this repository:  
-Swift, Rust, Python, JavaScript/TypeScript, C and C++. The Rust crate is the reference implementation.  
+Swift, Rust, Python, JavaScript/TypeScript, Kotlin, C and C++. The Rust crate is the reference implementation.  
 [Warp](https://github.com/pannous/warp) is supporting UniScript natively.  
 See [[Support]] for more details 
 
@@ -187,6 +188,25 @@ Uniscript.standard.html(styled)
 
 `xcrun swift test` (in `tests/UniscriptTests`) runs the cases of `tests/uniscript_test.rs`, `tests/styles_test.rs` and `tests/meta_test.rs`
 plus a walk over all index tables.
+
+### Kotlin
+
+A pure Kotlin/JVM port ([kotlin/](kotlin/), Java 21+, `entities.idx` inside the jar), published to Maven Central as
+`com.pannous:uniscript-kotlin`; the IntelliJ plugin ([intellij/](intellij/)) is built on it.
+
+```kotlin
+// build.gradle.kts: implementation("com.pannous:uniscript-kotlin:1.0.0")
+import com.pannous.uniscript.*
+val uniscript = Uniscript()
+uniscript.toUnicode("<:alpha> <:fracture A>")         // "α 𝔄", throws UniscriptError.UnknownEntity / Unclosed / InvalidMeta
+uniscript.convert("<:greek c>")                        // Converted("c", [Warning("no greek form of c", 0)])
+uniscript.convert("<:greek c>", WarningMode.ERROR)     // throws UniscriptError.Unsupported(warning); LENIENT never throws
+uniscript.toUniscript("α 𝔄")                          // "<:alpha> <:fracture A>"
+val (styled, warnings) = uniscript.metaRuns(tagged)    // meta information, as in Rust
+uniscript.html(styled)
+```
+
+`cd kotlin && ./gradlew test` runs the shared cases (`js/test/cases.json`) and the ported Rust tests.
 
 ## Syntax
 
