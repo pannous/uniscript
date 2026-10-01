@@ -1,4 +1,4 @@
-package com.pannous.uniscript;
+package com.pannous.uniscript.ffi;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
@@ -10,15 +10,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.pannous.uniscript.NativeLibrary.FONT;
-import static com.pannous.uniscript.NativeLibrary.META_RUN;
-import static com.pannous.uniscript.NativeLibrary.RESULT;
-import static com.pannous.uniscript.NativeLibrary.STYLED;
-import static com.pannous.uniscript.NativeLibrary.WARNING;
-import static com.pannous.uniscript.NativeLibrary.array;
-import static com.pannous.uniscript.NativeLibrary.pointer;
-import static com.pannous.uniscript.NativeLibrary.size;
-import static com.pannous.uniscript.NativeLibrary.string;
+import static com.pannous.uniscript.ffi.NativeLibrary.FONT;
+import static com.pannous.uniscript.ffi.NativeLibrary.META_RUN;
+import static com.pannous.uniscript.ffi.NativeLibrary.RESULT;
+import static com.pannous.uniscript.ffi.NativeLibrary.STYLED;
+import static com.pannous.uniscript.ffi.NativeLibrary.WARNING;
+import static com.pannous.uniscript.ffi.NativeLibrary.array;
+import static com.pannous.uniscript.ffi.NativeLibrary.pointer;
+import static com.pannous.uniscript.ffi.NativeLibrary.size;
+import static com.pannous.uniscript.ffi.NativeLibrary.string;
 import static java.lang.foreign.ValueLayout.ADDRESS;
 import static java.lang.foreign.ValueLayout.JAVA_INT;
 import static java.lang.foreign.ValueLayout.JAVA_LONG;
@@ -32,7 +32,7 @@ public final class Uniscript {
 	/** The current uniscript version of the header {@code <:uniscript version="…">}; every https://uniscript.org/vN
 	 * is read without warning, a foreign version URL warns */
 	public static final String VERSION = "https://uniscript.org/v1";
-	private static final System.Logger LOGGER = System.getLogger("com.pannous.uniscript");
+	private static final System.Logger LOGGER = System.getLogger("com.pannous.uniscript.ffi");
 
 	/** WARN: unsupported characters stay plain with a warning; ERROR: the first warning is the error; LENIENT: errors
 	 * too become warnings and their uniscript stays as written. In the order of c/uniscript.h's uniscript_mode. */
@@ -64,7 +64,7 @@ public final class Uniscript {
 
 	private Uniscript() {}
 
-	/** Uniscript → Unicode, leniently: faulty uniscript stays as written; warnings go to the logger com.pannous.uniscript */
+	/** Uniscript → Unicode, leniently: faulty uniscript stays as written; warnings go to the logger com.pannous.uniscript.ffi */
 	public static String toUnicode(String source) {
 		Result result = convert(source);
 		result.warnings().forEach(warning -> LOGGER.log(System.Logger.Level.WARNING, warning.toString()));

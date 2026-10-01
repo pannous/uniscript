@@ -1,4 +1,4 @@
-package com.pannous.uniscript;
+package com.pannous.uniscript.ffi;
 
 /** A conversion that failed: in {@link Uniscript.Mode#WARN} an unknown entity, an unclosed {@code <:} or an invalid
  * meta value; in {@link Uniscript.Mode#ERROR} also the first unsupported character */

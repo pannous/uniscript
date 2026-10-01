@@ -1,4 +1,4 @@
-package com.pannous.uniscript;
+package com.pannous.uniscript.ffi;
 
 import java.io.IOException;
 import java.io.InputStream;

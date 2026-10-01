@@ -1,7 +1,7 @@
-package com.pannous.uniscript;
+package com.pannous.uniscript.ffi;
 
-import com.pannous.uniscript.Uniscript.Mode;
-import com.pannous.uniscript.Uniscript.Warning;
+import com.pannous.uniscript.ffi.Uniscript.Mode;
+import com.pannous.uniscript.ffi.Uniscript.Warning;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DynamicTest;

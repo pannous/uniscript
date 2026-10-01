@@ -68,7 +68,7 @@ sourceSets.main { output.dir(mapOf("builtBy" to bundleNatives), bundledNatives) 
 
 tasks.jar {
 	manifest.attributes(
-		"Automatic-Module-Name" to "com.pannous.uniscript",
+		"Automatic-Module-Name" to "com.pannous.uniscript.ffi",
 		"Enable-Native-Access" to "ALL-UNNAMED",
 		"Implementation-Version" to cargoVersion,
 	)

@@ -1,7 +1,8 @@
 # Java adapter (java/, com.pannous:uniscript)
 
 - The Rust core over the C ABI (c/uniscript.h) with the Foreign Function & Memory API, compiled with `--release 22`
-  (FFM is final since 22). One static facade `Uniscript` (records Result, Warning, Header, MetaRun, Styled, Font, enum
+  (FFM is final since 22). Package `com.pannous.uniscript.ffi` (like python/ffi, c/ffi): com.pannous:uniscript-kotlin
+  owns `com.pannous.uniscript.Uniscript`, and both jars on one classpath must not clash. One static facade `Uniscript` (records Result, Warning, Header, MetaRun, Styled, Font, enum
   Mode) and `UniscriptException` (enum Kind in the order of uniscript_error_kind, minus OK). `NativeLibrary` holds the
   struct layouts and downcall handles; struct returns by value take a `SegmentAllocator` as first argument.
 - `toUnicode` is lenient (as Python's `to_unicode`), warnings go to `System.Logger` "com.pannous.uniscript".

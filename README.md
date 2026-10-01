@@ -236,8 +236,8 @@ JDK's restricted-method warning.
 ```java
 // build.gradle.kts: implementation("com.pannous:uniscript:1.0.0")
 // pom.xml: <dependency><groupId>com.pannous</groupId><artifactId>uniscript</artifactId><version>1.0.0</version></dependency>
-import com.pannous.uniscript.Uniscript;
-Uniscript.toUnicode("<:alpha> <:fracture A>");              // "α 𝔄", leniently: faulty uniscript stays, warnings are logged
+import com.pannous.uniscript.ffi.Uniscript;               // package .ffi: com.pannous:uniscript-kotlin owns com.pannous.uniscript.Uniscript
+Uniscript.toUnicode("<:alpha> <:fracture A>");              // "α 𝔄", leniently: faulty uniscript stays, warnings are logged (logger com.pannous.uniscript.ffi)
 Uniscript.toUniscript("α 𝔄");                              // "<:alpha> <:fracture A>"
 Uniscript.convert("<:greek c>", Uniscript.Mode.WARN);       // Result[text=c, warnings=[uniscript: no greek form of c at byte 0]]
 Uniscript.convert("<:nosuchthing>", Uniscript.Mode.WARN);   // throws UniscriptException (kind() UNKNOWN_ENTITY, detail() "nosuchthing")

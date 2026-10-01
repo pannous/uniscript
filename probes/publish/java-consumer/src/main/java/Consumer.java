@@ -1,4 +1,4 @@
-import com.pannous.uniscript.Uniscript;
+import com.pannous.uniscript.ffi.Uniscript;
 
 public class Consumer {
 	public static void main(String[] arguments) {

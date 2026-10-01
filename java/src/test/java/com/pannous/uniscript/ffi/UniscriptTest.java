@@ -1,4 +1,4 @@
-package com.pannous.uniscript;
+package com.pannous.uniscript.ffi;
 
 import org.junit.jupiter.api.Test;
 
