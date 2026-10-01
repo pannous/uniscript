@@ -185,4 +185,4 @@ dotnet nuget push "$DIST/Uniscript.$VERSION.nupkg" --api-key "$NUGET_API_KEY" --
 # uploads a signed deployment; release it at https://central.sonatype.com/publishing/deployments
 (cd "$ROOT/kotlin" && ./gradlew publishToMavenCentral)
 (cd "$ROOT/java" && ./gradlew publishToMavenCentral)
-step "published uniscript $VERSION to crates.io, PyPI, npm and Maven Central (release the deployment on central.sonatype.com)"
+step "published uniscript $VERSION to crates.io, PyPI, npm, NuGet and Maven Central (release the deployment on central.sonatype.com)"

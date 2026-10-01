@@ -82,3 +82,5 @@ I briefly ran git stash and restored it straight away while testing the wasp por
 
 - warp: `while i < 3 and not f(i, 5) { … }` misparses ("f needs a value for parameter b"); outside a while condition it works (probes/group_clashes/warp_not_call.wasp). uniscript.wasp writes `(f(a, b) == false)`.
 - DONE Kotlin port: operands-before-block-words and named groups are delegated to the uniscript-kotlin worker; until it lands, the shared cases for them fail in Kotlin.
+- C#: NuGet package Uniscript not yet pushed: needs a nuget.org API key in NUGET_API_KEY for `scripts/publish.sh --publish`. win-x64, linux-arm64 and osx-x64 natives are built and packed but never loaded by .NET at runtime here (no Windows, no x64 .NET); a CI matrix (GitHub Actions windows-latest, ubuntu-24.04-arm) running csharp/tests would close that.
+- C#: no netstandard2.0 / .NET Framework / Unity target (LibraryImport needs .NET 7+; see notes/csharp.md).
