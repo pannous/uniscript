@@ -1,4 +1,4 @@
-prefix=${pcfiledir}/../..
+prefix=${pcfiledir}/@UNISCRIPT_PC_PREFIX@
 libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
 includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
 

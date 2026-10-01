@@ -16,6 +16,8 @@ write_basic_package_version_file(uniscript-config-version.cmake COMPATIBILITY Sa
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/uniscript-config.cmake" "${CMAKE_CURRENT_BINARY_DIR}/uniscript-config-version.cmake"
 	DESTINATION "${UNISCRIPT_CONFIG_DIR}")
 
-# relative to the .pc file, so the installed tree can move (vcpkg, Conan)
+# relative to the .pc file, so the installed tree can move (vcpkg, Conan); Debian's libdir lib/<triplet> is one level deeper
+file(RELATIVE_PATH UNISCRIPT_PC_PREFIX "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" "${CMAKE_INSTALL_PREFIX}")
+string(REGEX REPLACE "/$" "" UNISCRIPT_PC_PREFIX "${UNISCRIPT_PC_PREFIX}")
 configure_file(cmake/uniscript.pc.in uniscript.pc @ONLY)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/uniscript.pc" DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
