@@ -33,7 +33,7 @@ DONE - C ffi/native: NULL or invalid UTF-8 input fails with UNISCRIPT_INVALID_IN
 - Swift: `swift` in PATH is swiftly 6.0.3 and cannot build against the current macOS SDK (Foundation module error); use `xcrun swift`
 - DONE Swift: README Swift section still shows `branch: "main"`; switch to `from: "0.2.0"` once the tag is pushed
 - DONE C packaging: release v0.1.0 needs a git tag, a GitHub release with uniscript-c-0.1.0.tar.gz (make -C c/native dist), the sha256 filled into packaging/homebrew/Formula/*.rb and packaging/conan/conandata.yml, and the repo pannous/homebrew-tap (notes/c-packaging.md)
-- C packaging: no vcpkg port (needs CMake config files and MSVC, which .incbin blocks); no CMakeLists.txt, so CMake users rely on pkg-config
+- DONE C packaging: no vcpkg port (needs CMake config files and MSVC, which .incbin blocks); no CMakeLists.txt, so CMake users rely on pkg-config (c/CMakeLists.txt, packaging/vcpkg; MSVC still blocked, see below)
 - C packaging: the Linux shared library has no soname/versioned name (libuniscript.so only), and the install is untested on Linux
 - C packaging: c/native builds with -Werror, so a downstream compiler with new warnings breaks release builds (Homebrew, Conan); consider dropping -Werror outside `make test`
 - C packaging: c/native `make install` and c/ffi both name the library libuniscript: installing both would collide (c/ffi has no install target)
@@ -87,3 +87,8 @@ I briefly ran git stash and restored it straight away while testing the wasp por
 - TODO: Maven Central: com.pannous:uniscript (java/, the Rust core over FFM) is built, signed (checked with a throwaway key) and smoke-tested from a local repository, not uploaded. Same blockers as uniscript-kotlin: com.pannous namespace verification, Central Portal token, GPG key passphrase in ~/.gradle/gradle.properties.
 - Java: the jar's linux-arm64 and win-x64 natives were never loaded by a JVM here (docker daemon down, `podman machine start` fails: vfkit exit 1; no Windows host); osx-arm64, osx-x64 (Rosetta) and linux-x64 (pannous.com) were. A CI matrix running `cd java && ./gradlew test` on windows-latest and ubuntu-24.04-arm would close that.
 - Java: the bundled library is extracted to a fresh temp dir on every JVM start; on Windows the loaded DLL cannot be deleted at exit and stays in %TEMP%.
+- TODO: C/C++ release: the v1.0.0 asset uniscript-c-1.0.0.tar.gz predates c/CMakeLists.txt, so the CMake-based Conan recipe and vcpkg port fail against it. Needs a new release tarball (a new version, or a re-cut v1.0.0 asset, which changes the Homebrew sha too), then its sha256/sha512 in conandata.yml and portfile.cmake (notes/c-packaging.md).
+- TODO: C/C++ upstream: PRs to conan-io/conan-center-index (packaging/conan/recipes/uniscript) and microsoft/vcpkg (prepared on branch uniscript-port in probes/uniscript-cpp/vcpkg) not opened; wait for the release above and the go.
+- C/C++: no MSVC build: c/native/src/index.c embeds entities.idx with `.incbin` in top-level asm. A generated C array (or C23 `#embed`) under `_MSC_VER` would open Windows for Conan/vcpkg (ConanCenter and vcpkg CI build MSVC; both now mark it unsupported).
+- C/C++: no private Conan remote to upload to (only conancenter is configured); `conan upload` needs an Artifactory/conan_server the user hosts, else ConanCenter by PR.
+- C/C++: Linux aarch64 and MinGW builds of c/CMakeLists.txt untested (Linux x86_64 gcc 13 passes on pannous.com).
