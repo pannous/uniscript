@@ -1,10 +1,10 @@
 <:uniscript version="https://uniscript.org/v1">
 <:alpha> <:beta> <:gamma>: this file starts with the uniscript marker, so MarkdownPreview converts uniscript in its prose.
 
-\:1F60D
+\:beef
 \:U1F60D
 \:0x1F60D
-\:U+1F60D
+<!-- \:U+1F60D NO -->
 <!-- \U1F60D NO -->
 # <:gardiner Q4A>
 # <:eg A1>
