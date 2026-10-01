@@ -1,0 +1,17 @@
+Package: libuniscript-dev
+Source: uniscript
+Version: @VERSION@
+Architecture: @ARCH@
+Maintainer: pannous <info@pannous.com>
+Installed-Size: @SIZE@
+Depends: libuniscript1 (= @VERSION@)
+Section: libdevel
+Priority: optional
+Multi-Arch: same
+Homepage: https://pannous.com/uniscript/
+Description: ASCII names for Unicode text and back - development files
+ uniscript converts tags like <:alpha> or <:fracture A> into the Unicode text
+ they name and Unicode text back into tags.
+ .
+ This package contains the C header uniscript.h, the C++17 header uniscript.hpp,
+ the CMake package uniscript::uniscript and the pkg-config file uniscript.pc.

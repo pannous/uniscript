@@ -1,0 +1,14 @@
+Package: uniscript
+Version: @VERSION@
+Architecture: @ARCH@
+Maintainer: pannous <info@pannous.com>
+Installed-Size: @SIZE@
+Depends: libc6 (>= 2.17)
+Section: text
+Priority: optional
+Multi-Arch: foreign
+Homepage: https://pannous.com/uniscript/
+Description: ASCII names for Unicode text and back
+ uniscript converts tags like <:alpha> or <:fracture A> into the Unicode text
+ they name (α 𝔄) and, with -r, Unicode text back into tags. It reads its
+ arguments, files or standard input.

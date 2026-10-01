@@ -1,0 +1,16 @@
+Package: libuniscript1
+Source: uniscript
+Version: @VERSION@
+Architecture: @ARCH@
+Maintainer: pannous <info@pannous.com>
+Installed-Size: @SIZE@
+Depends: libc6 (>= 2.17)
+Section: libs
+Priority: optional
+Multi-Arch: same
+Homepage: https://pannous.com/uniscript/
+Description: ASCII names for Unicode text and back - shared library
+ uniscript converts tags like <:alpha> or <:fracture A> into the Unicode text
+ they name and Unicode text back into tags.
+ .
+ This package contains the shared C library.

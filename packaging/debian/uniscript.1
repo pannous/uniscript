@@ -1,0 +1,38 @@
+.TH UNISCRIPT 1 "October 2026" "uniscript 1.0.0" "User Commands"
+.SH NAME
+uniscript \- ASCII names for Unicode text and back
+.SH SYNOPSIS
+.B uniscript
+[\fB\-r\fR] [\fB\-\-strict\fR|\fB\-\-lenient\fR] [\fB\-\-html\fR] [\fItext\fR|\fI/path/file\fR]
+.br
+.B uniscript build
+[\fIentities/\fR] [\fIentities.idx\fR]
+.SH DESCRIPTION
+.B uniscript
+converts tags like \fB<:alpha>\fR or \fB<:fracture A>\fR into the Unicode text they name
+(\fBα 𝔄\fR). Without a text argument it reads standard input. Arguments starting with
+\fB/\fR are files whose content is converted.
+.SH OPTIONS
+.TP
+.B \-r
+the other direction: Unicode text back into tags.
+.TP
+.B \-\-strict
+unsupported characters are errors.
+.TP
+.B \-\-lenient
+no errors: unknown tags stay as written.
+.TP
+.B \-\-html
+meta information as <span lang style> instead of tag sequences.
+.TP
+.B build
+rebuild the name index from the readable entity files.
+.SH EXAMPLES
+.nf
+uniscript "<:alpha> <:fracture A>"      # α 𝔄
+uniscript \-r "α 𝔄"                     # <:alpha> <:fracture A>
+echo "<:beside 犭 句>" | uniscript      # ⿰犭句
+.fi
+.SH SEE ALSO
+https://pannous.com/uniscript/
