@@ -1,0 +1,10 @@
+prefix=${pcfiledir}/../..
+libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+
+Name: uniscript
+Description: ASCII names for Unicode text and back (C11, C++17 wrapper uniscript.hpp)
+Version: @PROJECT_VERSION@
+URL: https://github.com/pannous/uniscript
+Libs: -L${libdir} -luniscript
+Cflags: -I${includedir}

@@ -1,0 +1,8 @@
+# find_package(uniscript CONFIG REQUIRED): the imported target uniscript::uniscript (uniscript.h, uniscript.hpp)
+@PACKAGE_INIT@
+if("@UNISCRIPT_BACKEND@" STREQUAL "rust")
+	include(CMakeFindDependencyMacro)
+	find_dependency(Threads)
+endif()
+include("${CMAKE_CURRENT_LIST_DIR}/uniscript-targets.cmake")
+check_required_components(uniscript)
