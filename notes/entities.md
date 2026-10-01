@@ -25,3 +25,12 @@
   (sans-serif bold, not sans); other characters may belong to several (ᴎ: small-capital and reversed).
 - Stacked styles are resolved at runtime (Rust, Swift, Kotlin): combined block over all permutations of the parts,
   else commute through the character's own style, found via its reverse spelling in the chars table.
+- Short aliases `gr` `eg` `cn` (2026-10-01): `chinese` block (data/entities/unicode/cjk-unified-ideographs.wasp) from
+  `data/sources/chinese_readings.tsv` (character + pinyin columns of uruk_egypt's dicts/chinese.freq.tsv, most frequent
+  first; the personal columns stay out of this public repo). Every character's first reading is placed before second
+  readings, first wins, each with and without tone (kou → 口, kou4 → 扣, di → 第 not 的). `lu:3` → `lv3`.
+  `"*one-way"` keeps a block out of the reverse table (else to_uniscript would spell every hanzi as <:chinese …>);
+  honoured by both builders (Python and src/entities.rs). `*rare` keeps its 1,587 readings out of the web Bloom filter.
+  `eg` shadows the HTML entity `<:eg>` ⪚ (blocks win); the release binary at /opt/cargo/release must be rebuilt for
+  js differential tests after any index change.
+- Seeding drift: styles.wasp has hand-added `*open/*close egyptian` keys that `seed` does not produce.

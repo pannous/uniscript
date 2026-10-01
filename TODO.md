@@ -112,3 +112,5 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - TODO Uniscript Hanzi is 36 MB of unsubroutinized CFF: subroutinize (cffsubr) and slice before serving it on the web page.
 - TODO Uniscript Hanzi: parts keep their standalone form (no 木→dot-ending left form, 火→灬); no interlocking (介 under 田).
 - DONE (instead of nested tags, which the user does not want) a group word among the parts groups the rest: `<:above 宀 beside 电 电>` ⩵ ⿱宀⿰电电, in every port.
+- seed drift: `data/uniscript_index.py seed` drops the hand-added `*open/*close egyptian` keys of styles.wasp (seed them)
+- `<:eg>` alone now opens the Egyptian block instead of the HTML entity ⪚ (blocks shadow names of the same word)
