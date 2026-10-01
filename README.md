@@ -62,9 +62,10 @@ followed by TAG characters (U+E0020…E007E). Basic fonts shows the plain letter
   invisible TAG sequences and rendered by `--html` as spans with CSS.
 - **Honest**: an unknown name is an error. A character without a counterpart (`<:fracture 7>`) stays plain with a
   warning that can be made an error (`--strict`).
-- **Three implementations, one data file**: this Rust crate, a Swift package, and `uniscript.wasp` in
-  the [wasp](https://github.com/pannous/warp) language, all in this repository. All three read `data/entities.idx`.
-  In wasp, `use uniscript` fetches this repository as a package and loads `uniscript.wasp`.
+- **Many languages, one data file**: the Rust crate (the reference) with native ports in Swift, TypeScript, Python, C,
+  Kotlin and [wasp](https://github.com/pannous/warp), and the Rust core wrapped for Java, C#, C++, Python, C and
+  WebAssembly. All of them read `data/entities.idx` and pass the same shared cases. In wasp, `use uniscript` fetches this
+  repository as a package and loads `uniscript.wasp`.
 
 The full specification is [docs/uniscript.md](docs/uniscript.md)  
 <!-- , a hard link to the [uniscript page of the warp wiki](https://github.com/pannous/warp/wiki/uniscript). -->
@@ -108,9 +109,14 @@ Download them from the [releases](https://github.com/pannous/uniscript/releases)
 ## Support
 
 Libraries for UniScript are provided for all major programming languages in this repository:  
-Swift, Rust, Python, JavaScript/TypeScript, Java, Kotlin, C and C++. The Rust crate is the reference implementation.  
-[Warp](https://github.com/pannous/warp) is supporting UniScript natively.  
-See [[Support]] for more details 
+Rust, Swift, Python, JavaScript/TypeScript, WebAssembly, Java, Kotlin, C#, C and C++. The Rust crate is the reference
+implementation. [Warp](https://github.com/pannous/warp) is supporting UniScript natively.
+
+**Package managers are limited for now.** Available today: crates.io, PyPI, npm, Swift Package Manager (from this
+repository) and the Homebrew tap `pannous/tap` (the CLI and the C library), plus release downloads on
+[GitHub](https://github.com/pannous/uniscript/releases). Not yet: Maven Central (Java, Kotlin), NuGet (C#), Conan Center
+(pending review), vcpkg, apt and the JetBrains Marketplace. Until then, build those libraries from a checkout as each
+section below shows. The full table is in [usage.md](usage.md); more in [[Support]].
 
 
 ### Apps
@@ -191,8 +197,9 @@ plus a walk over all index tables.
 
 ### Kotlin
 
-A pure Kotlin/JVM port ([kotlin/](kotlin/), Java 21+, `entities.idx` inside the jar), published to Maven Central as
-`com.pannous:uniscript-kotlin`; the IntelliJ plugin ([intellij/](intellij/)) is built on it.
+A pure Kotlin/JVM port ([kotlin/](kotlin/), Java 21+, `entities.idx` inside the jar), packaged as
+`com.pannous:uniscript-kotlin`; the IntelliJ plugin ([intellij/](intellij/)) is built on it. **Not on Maven Central yet**:
+`cd kotlin && ./gradlew publishToMavenLocal` installs it into `~/.m2`, then add `mavenLocal()` to your repositories.
 
 ```kotlin
 // build.gradle.kts: implementation("com.pannous:uniscript-kotlin:1.0.0")
@@ -210,8 +217,9 @@ uniscript.html(styled)
 
 ### C# / .NET
 
-The Rust crate through its C ABI ([csharp/](csharp/), .NET 8+), on NuGet as `Uniscript` with the native library for
-osx-arm64, osx-x64, linux-x64, linux-arm64 and win-x64.
+The Rust crate through its C ABI ([csharp/](csharp/), .NET 8+), packaged as `Uniscript` with the native library for
+osx-arm64, osx-x64, linux-x64, linux-arm64 and win-x64. **Not on nuget.org yet**: `make -C c/ffi natives`, then
+reference `csharp/src/Uniscript.csproj` from your project.
 
 ```csharp
 // dotnet add package Uniscript
@@ -227,8 +235,9 @@ Uniscript.Html(tagged);                                    // meta information a
 
 ### Java
 
-The Rust core for Java 22+ over the Foreign Function & Memory API ([java/](java/)), published to Maven Central as
-`com.pannous:uniscript`. The jar bundles the native library for macOS (arm64, x86_64), Linux (x86_64, arm64, glibc 2.17+)
+The Rust core for Java 22+ over the Foreign Function & Memory API ([java/](java/)), packaged as
+`com.pannous:uniscript`. **Not on Maven Central yet**: `make -C c/ffi natives && cd java && ./gradlew publishToMavenLocal`,
+then add `mavenLocal()` to your repositories. The jar bundles the native library for macOS (arm64, x86_64), Linux (x86_64, arm64, glibc 2.17+)
 and Windows x86_64 and loads it from there (`-Duniscript.library=<path>` loads another one). Run with
 `--enable-native-access=ALL-UNNAMED` (or `Enable-Native-Access: ALL-UNNAMED` in an executable jar's manifest) to silence the
 JDK's restricted-method warning.
@@ -254,7 +263,7 @@ crate behind the same C ABI ([c/ffi](c/ffi)), plus the header-only C++17 wrapper
 
 ```sh
 vcpkg install uniscript --overlay-ports=<checkout>/packaging/vcpkg/ports   # until the port is in microsoft/vcpkg
-conan remote add uniscript <checkout>/packaging/conan --type local-recipes-index && conan install --requires uniscript/1.0.0 --build=missing
+conan remote add uniscript <checkout>/packaging/conan --type local-recipes-index && conan install --requires uniscript/1.0.0 --build=missing   # Conan Center: pending review
 brew install pannous/tap/libuniscript                                       # pkg-config uniscript
 cmake -S c -B build && cmake --build build && cmake --install build          # from source; -DUNISCRIPT_BACKEND=rust: c/ffi
 ```

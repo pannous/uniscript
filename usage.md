@@ -2,7 +2,12 @@
 
 Every library in this repository reads the same `data/entities.idx` and passes the same reference cases. The Rust crate
 is the reference; Swift, TypeScript, Python, C and Kotlin have native ports, Python and C/C++ also wrappers around the
-Rust crate (same API as their native port), and the WebAssembly package is the Rust crate compiled for the web.
+Rust crate (same API as their native port), Java and C# wrap the Rust crate too, and the WebAssembly package is the Rust
+crate compiled for the web.
+
+Package managers are limited for now: crates.io, PyPI, npm, SwiftPM and the Homebrew tap `pannous/tap` work today. Maven
+Central, NuGet, Conan Center, vcpkg, apt and the JetBrains Marketplace do not have uniscript yet; the table says how to
+build those from a checkout.
 
 Each section shows the same five things:
 
@@ -28,21 +33,23 @@ Offsets (`at`, `start`, `end`, `length`) are UTF-8 byte offsets in every languag
 Every code block tagged with a `probes/usage/…` path is that probe program verbatim: `probes/usage/run_all.sh` extracts
 them from this file and runs them all (`probes/usage/run_all.sh rust python` runs a selection).
 
-| language | package | install |
-|---|---|---|
-| [Rust](#rust) (reference) | crate `uniscript` | `cargo add uniscript` |
-| [CLI](#command-line) | crate `uniscript` | `cargo install uniscript` or `brew install pannous/tap/uniscript` |
-| [Swift](#swift) | SwiftPM product `Uniscript` | `.package(url: "https://github.com/pannous/uniscript", from: "1.0.0")` |
-| [TypeScript / JavaScript](#typescript--javascript) | npm `@pannous/uniscript` | `npm install @pannous/uniscript` |
-| [WebAssembly](#webassembly) | npm `@pannous/uniscript-wasm` | `npm install @pannous/uniscript-wasm` |
-| [Python](#python) pure | PyPI `uniscript-py` | `pip install uniscript-py` |
-| [Python](#python) Rust-backed | PyPI `uniscript-rs` | `pip install uniscript-rs` |
-| [C](#c) native | `libuniscript` | `brew install pannous/tap/libuniscript` |
-| [C](#c) Rust-backed | `c/ffi` | `make -C c/ffi` |
-| [C++](#c-1) | `c/uniscript.hpp` | with either C library |
-| [Kotlin](#kotlin--intellij) (JVM) | Maven `com.pannous:uniscript-kotlin` | `implementation("com.pannous:uniscript-kotlin:1.0.0")` |
-| [IntelliJ](#kotlin--intellij) | plugin `Uniscript` | JetBrains Marketplace |
-| [wasp / warp](#wasp--warp) | `use uniscript` | built in |
+| language | package | install | from a registry |
+|---|---|---|---|
+| [Rust](#rust) (reference) | crate `uniscript` | `cargo add uniscript` | yes |
+| [CLI](#command-line) | crate `uniscript` | `cargo install uniscript` or `brew install pannous/tap/uniscript` | yes |
+| [Swift](#swift) | SwiftPM product `Uniscript` | `.package(url: "https://github.com/pannous/uniscript", from: "1.0.0")` | yes (git) |
+| [TypeScript / JavaScript](#typescript--javascript) | npm `@pannous/uniscript` | `npm install @pannous/uniscript` | yes |
+| [WebAssembly](#webassembly) | npm `@pannous/uniscript-wasm` | `npm install @pannous/uniscript-wasm` | yes |
+| [Python](#python) pure | PyPI `uniscript-py` | `pip install uniscript-py` | yes |
+| [Python](#python) Rust-backed | PyPI `uniscript-rs` | `pip install uniscript-rs` | yes |
+| [C](#c) native | `libuniscript` | `brew install pannous/tap/libuniscript` | yes (tap) |
+| [C](#c) Rust-backed | `c/ffi` | `make -C c/ffi` | no |
+| [C++](#c-1) | `c/uniscript.hpp`, CMake `uniscript::uniscript` | with either C library; Conan and vcpkg recipes in `packaging/` | Homebrew tap; Conan Center pending, vcpkg later |
+| [Kotlin](#kotlin--intellij) (JVM) | Maven `com.pannous:uniscript-kotlin` | `cd kotlin && ./gradlew publishToMavenLocal`, then `implementation("com.pannous:uniscript-kotlin:1.0.0")` | not yet (Maven Central) |
+| [Java](README.md#java) | Maven `com.pannous:uniscript` | `make -C c/ffi natives && cd java && ./gradlew publishToMavenLocal`, then `implementation("com.pannous:uniscript:1.0.0")` | not yet (Maven Central) |
+| [C# / .NET](README.md#c--net) | NuGet `Uniscript` | `make -C c/ffi natives`, then reference `csharp/src/Uniscript.csproj` | not yet (NuGet) |
+| [IntelliJ](#kotlin--intellij) | plugin `Uniscript` | *Install Plugin from Disk…* with the zip from the GitHub release | not yet (JetBrains Marketplace) |
+| [wasp / warp](#wasp--warp) | `use uniscript` | built in | yes (git) |
 
 ## Rust
 
