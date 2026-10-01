@@ -24,13 +24,13 @@ SITE="$ROOT/probes/publish/site"
 MAVEN_REPOSITORY="$DIST/maven"
 GRADLE_PROPERTIES="$HOME/.gradle/gradle.properties"
 CPP_WORK="$ROOT/probes/publish/cpp"
-TARBALL="$DIST/uniscript-c-$VERSION.tar.gz"
 PYTHON="${PYTHON:-python3}"
 WHEEL_TARGETS="universal2-apple-darwin x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu"
 SMOKE_INPUT='<:alpha> <:fracture A>'
 SMOKE_EXPECTED='α 𝔄 | <:alpha> <:fracture A>'
 export CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-/opt/cargo}"
 VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' "$ROOT/Cargo.toml" | head -1)"
+TARBALL="$DIST/uniscript-c-$VERSION.tar.gz"
 PUBLISH=false
 [ "$1" = "--publish" ] && PUBLISH=true
 

@@ -1,0 +1,6 @@
+uniscript provides CMake targets:
+
+  find_package(uniscript CONFIG REQUIRED)
+  target_link_libraries(main PRIVATE uniscript::uniscript)
+
+C: #include <uniscript.h>; C++17: #include <uniscript.hpp>
