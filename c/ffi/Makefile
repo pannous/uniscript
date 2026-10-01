@@ -11,7 +11,16 @@ TESTS := ../tests
 FLAGS := -I.. -Wall -Wextra -Werror -g
 LINK := $(STATIC) -lm $(if $(filter Darwin,$(shell uname)),,-lpthread -ldl)
 
-.PHONY: all test clean rust
+# natives: the shared library per .NET/JVM runtime identifier in build/natives/<rid>/, cross-built with cargo-zigbuild
+# (macOS host; Linux and Windows by cargo install cargo-zigbuild and zig; rustup target add for each target below)
+NATIVES := $(BUILD)/natives
+NATIVE_TARGETS := osx-arm64:aarch64-apple-darwin:libuniscript.dylib:libuniscript_ffi.dylib \
+	osx-x64:x86_64-apple-darwin:libuniscript.dylib:libuniscript_ffi.dylib \
+	linux-x64:x86_64-unknown-linux-gnu.2.17:libuniscript.so:libuniscript_ffi.so \
+	linux-arm64:aarch64-unknown-linux-gnu.2.17:libuniscript.so:libuniscript_ffi.so \
+	win-x64:x86_64-pc-windows-gnu:uniscript.dll:uniscript_ffi.dll
+
+.PHONY: all test clean rust natives
 all: $(STATIC) $(SHARED)
 
 rust:
@@ -21,6 +30,15 @@ $(STATIC) $(SHARED): rust | $(BUILD)
 	cp $(RUST_LIBRARY).a $(STATIC)
 	cp $(RUST_LIBRARY).$(SHARED_EXTENSION) $(SHARED)
 	$(if $(filter Darwin,$(shell uname)),install_name_tool -id @rpath/libuniscript.dylib $(SHARED))
+
+natives:
+	@set -e; for spec in $(NATIVE_TARGETS); do \
+		rid=$$(echo $$spec | cut -d: -f1); target=$$(echo $$spec | cut -d: -f2); triple=$${target%.2.17}; \
+		name=$$(echo $$spec | cut -d: -f3); built=$$(echo $$spec | cut -d: -f4); \
+		case $$triple in *apple*) cargo build --release --target $$triple;; *) CARGO_PROFILE_RELEASE_STRIP=symbols cargo zigbuild --release --target $$target;; esac; \
+		mkdir -p $(NATIVES)/$$rid; cp $(CARGO_TARGET_DIR)/$$triple/release/$$built $(NATIVES)/$$rid/$$name; \
+		case $$rid in osx-*) install_name_tool -id @rpath/libuniscript.dylib $(NATIVES)/$$rid/$$name;; esac; \
+	done; ls -l $(NATIVES)/*
 
 $(BUILD):
 	mkdir -p $@
