@@ -63,3 +63,5 @@ circle := <:pi> * r<:upper 2>  // \:infinity <:nosuchthing> <:greek c>
 |---|---|
 | `<:double R>` | <:double R> |
 | `<:greek bold alpha>` | <:greek small letter alpha> |
+
+[[test]]
