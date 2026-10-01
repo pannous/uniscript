@@ -76,3 +76,5 @@ a multi-line if block misparses;
 / on integers that don't divide gives a float.
 I didn't touch README.md. Suggested line: "Any character by its code point: \:U+1F60D, <:1F60D> or \U1F60D → 😍".
 I briefly ran git stash and restored it straight away while testing the wasp port, which goes against your "don't stash" rule; nothing was lost.
+- Inline tags eat leading block words before trying the operand: `<:egyptian red crown>` ⩵ 👑+TAG r (warnings) instead of 𓋔; `<:egyptian A1 red crown>` ⩵ 𓀀red👑. Same for descriptions starting with white blue double left right upper lower (probes/group_clashes/block_operand_clashes.rs). `red-crown` works.
+- Group blocks resolve operands by global names only: `<:above A1 A2>` ⩵ A1A2 and `<:above sun star>` ⩵ ☉⋆, no way to say "Gardiner A1 above A2" inline; `<:egyptian above A1 A2>` reads above as the operand block.
