@@ -17,11 +17,10 @@ SIZE = 150
 CELL = 200
 REFERENCES = [("界", "⿱田介"), ("林", "⿰木木"), ("狗", "⿰犭句"), ("草", "⿱艹早"), ("思", "⿱田心"), ("国", "⿴囗玉"), ("连", "⿺辶车")]
 INVENTED = [  # none of these is a Unicode character (checked against cjkvi-ids)
-    ("⿱艹猫", "<:above 艹 猫>", "catnip"),
-    ("⿴囗猫", "raw IDS", "cat in a box"),
+    ("⿱匕月", "<:above 匕 月>", "simple parts"),
+    ("⿰丬㐅", "raw IDS", "components that rarely stand alone"),
     ("⿰木电", "<:beside 木 电>", "electric tree"),
     ("⿰鱼电", "<:beside 鱼 电>", "electric eel"),
-    ("⿸广猫", "raw IDS", "cat house"),
     ("⿰讠尤", "<:beside 讠 尤>", "the user's first try"),
     ("⿱艹⿰氵火", "<:above 艹 ⿰氵火>", "nested: only the 20 most used parts nest"),
     ("⿰火⿱日月", "<:beside 火 ⿱日月>", "nested"),

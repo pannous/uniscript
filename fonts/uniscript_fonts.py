@@ -46,6 +46,8 @@ COLORS = {  # name: (tag letter, RGB)
 IDS_OPERATORS = range(0x2FF0, 0x3000)
 IDS_DATA = os.path.join(SOURCES, "cjkvi-ids.txt")
 IDS_URL = "https://raw.githubusercontent.com/cjkvi/cjkvi-ids/master/ids.txt"
+UNIHAN_DATA = os.path.join(SOURCES, "Unihan.zip")
+UNIHAN_URL = "https://www.unicode.org/Public/UCD/latest/ucd/Unihan.zip"
 OMNI_URL = "https://github.com/nederhof/newgardiner/raw/refs/heads/main/fonts/NewGardinerOmni2d4.ttf"
 LIGATURES_PER_SUBTABLE = 1500  # keeps each LigatureSet below the 64 KB offset limit
 
@@ -61,8 +63,7 @@ HANZI_SHARES = (1 / 3, 0.42, 0.5, 0.58, 2 / 3)  # first part's share of a ⿰ or
 HANZI_BUCKET = 0.25  # parts are classed by their learned strength in steps of this many logits
 HANZI_BUCKETS = range(-4, 5)
 HANZI_NESTED_STRENGTH = 0.6  # a nested sequence holds its own like a dense part
-HANZI_TIERS = (20, 6000)  # the most frequent parts also nest, the others only form simple (unnested) sequences
-HANZI_OFTEN_USED = 20  # parts used this often in IDS rank with the common hanzi
+HANZI_TIERS = (20, 6000)  # the parts IDS use most also nest; the others, simplest first, only form unnested sequences
 HANZI_RASTER = 96  # pixels per em when measuring how real characters split
 HANZI_GRID = 32  # characters and parts are compared at this many pixels square
 HANZI_STRENGTHS = os.path.join(SOURCES, "hanzi-strengths.json")
@@ -716,16 +717,38 @@ def draw_parts(job):
     return variants
 
 
-def ranked_components(cmap):
-    """Parts by how often IDS use them, the often used ones and the common hanzi (what people combine) first."""
+def total_strokes():
+    """{code point: stroke count} from Unihan (kTotalStrokes, first value)."""
+    import zipfile
+    if not os.path.exists(UNIHAN_DATA):
+        download(UNIHAN_URL, UNIHAN_DATA)
+    strokes = {}
+    with zipfile.ZipFile(UNIHAN_DATA) as archive:
+        for line in archive.read("Unihan_IRGSources.txt").decode("utf-8").splitlines():
+            if "\tkTotalStrokes\t" in line:
+                code, _, value = line.split("\t")
+                strokes[int(code[2:], 16)] = int(value.split()[0])
+    return strokes
+
+
+def is_radical_or_stroke(code):
+    return 0x2E80 <= code < 0x2FE0 or 0x31C0 <= code < 0x31F0
+
+
+def ranked_components(cmap, nesting_parts=HANZI_TIERS[0]):
+    """The parts IDS use most (they also nest), then every radical, stroke, component and hanzi from the simplest
+    (fewest strokes) up; among equally simple ones the common hanzi and the parts IDS use most come first."""
     counts = defaultdict(int)
     for _, sequence in ids_sequences(cmap):
         for character in sequence[1:]:
             if ord(character) not in IDS_OPERATORS:
                 counts[character] += 1
-    common = {chr(code) for code in cmap if is_common_hanzi(code)}
-    first = lambda c: c in common or counts[c] >= HANZI_OFTEN_USED
-    return sorted(set(counts) | common, key=lambda c: (not first(c), -counts[c], c))
+    nesting = sorted(counts, key=lambda c: (-counts[c], c))[:nesting_parts]
+    strokes = total_strokes()
+    simple = [chr(code) for code in cmap if is_radical_or_stroke(code) or (0x4E00 <= code < 0xA000 and code in strokes)
+              or (code in strokes and counts[chr(code)])]  # components from the extensions (𠂉 丬 㐅) that rarely stand alone
+    simple.sort(key=lambda c: (strokes.get(ord(c), 0), not is_common_hanzi(ord(c)), -counts[c], c))
+    return nesting + [c for c in simple if c not in nesting]
 
 
 def glyph_name(character):

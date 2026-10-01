@@ -2,8 +2,9 @@
 
 Question (user, 2026-10-01): can a font combine arbitrary radicals into new characters with the IDS operators, 界 = ⿱田介?
 **Yes, for simple characters**: `fonts/dist/UniscriptHanzi-Regular.otf` (`python3 fonts/uniscript_fonts.py hanzi`)
-draws any ⿰ ⿱ ⿲ ⿳ ⿴ ⿵ ⿶ ⿷ ⿸ ⿹ ⿺ ⿻ sequence of its 3,910 parts (every character IDS use as a part at least 20 times,
-such as 氵 讠 宀 钅 匕, and the common hanzi of GB 2312 level 1 except 75 compounds no IDS uses, like 饭 = ⿰饣反), whether or not Unicode has the character: ⿰讠尤, ⿱匕月, ⿱艹猫, ⿴囗猫, ⿰鱼电.
+draws any ⿰ ⿱ ⿲ ⿳ ⿴ ⿵ ⿶ ⿷ ⿸ ⿹ ⿺ ⿻ sequence of its 3,910 parts (simplest first by Unihan kTotalStrokes: every radical, stroke
+and character up to 8 strokes, including components that rarely stand alone (㐅 㔾 䒑 丬), plus the 20 parts IDS use most;
+complex characters such as 猫 are left out, so ⿱艹猫 stays uncomposed), whether or not Unicode has the character: ⿰讠尤, ⿱匕月, ⿰木电, ⿰丬㐅.
 One level of nesting works for the 20 most used parts (⿱艹⿰氵火). Renders: `probes/uniscript-hanzi/`
 (`render.py` → reference_*.png real vs composed vs naive, invented_*.png; chrome.png, firefox.png from `browser.html`).
 
@@ -38,6 +39,11 @@ scaled by s regains 70 % of the stem width it lost (`HANZI_KEEP_STROKE`), separa
 naive columns of `reference_ot.png`: composed 林 狗 草 思 国 连 are close to Noto's own; naive halves are spindly.
 
 ## Glyph budget (65,535 per font)
+
+Why 15 sizes per part: ⿰ and ⿱ each split at 5 learned shares (⅓ … ⅔), giving 5 widths and 5 heights, plus the inner
+boxes of the surrounds, the thirds of ⿲ ⿳ and the full size. With 3 shares it would be ≈9 sizes and ≈6,500 parts, but
+讠 or 艹 would then take 40 % instead of a third. Since 3,910 parts already reach every character up to 8 strokes, the
+proportions are worth more than the extra parts.
 
 Nothing is generated at render time: OpenType cannot scale or draw outlines while shaping, it can only pick and move
 glyphs that exist. So every part is precompiled at each size it can take, but combinations are not: the cost grows with

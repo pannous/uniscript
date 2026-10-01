@@ -33,7 +33,7 @@ Tags are default-ignorable: without these fonts the text shows the plain charact
 |---|---|---|
 | **Uniscript Sans** | Noto Sans (Latin, Greek, Cyrillic) + Noto Sans Math | ASCII + Greek letters: all geometries × all colors; Latin-1/Ext-A, Greek, symbols, arrows, operators: every geometry or color, not combined; the rest, including math alphanumerics 𝔄𝕕: mirror and turn |
 | **Uniscript CJK** | Noto Sans CJK | IDS composition (27,688 sequences from cjkvi-ids, nested ones too: ⿱木⿰木木 → 森); mirror for radicals, strokes and the 3,755 most common hanzi (GB 2312 level 1) |
-| **Uniscript Hanzi** | Noto Sans CJK, 3,910 parts | IDS draw **new** characters from scaled, re-thickened parts with learned proportions: ⿰讠尤, ⿱艹猫, ⿴囗猫; one level of nesting for the 20 most used parts (⿱艹⿰氵火). A separate font, put it before Uniscript CJK; see [notes/hanzi.md](../notes/hanzi.md) |
+| **Uniscript Hanzi** | Noto Sans CJK, 3,910 parts | IDS draw **new** characters from scaled, re-thickened parts with learned proportions: ⿰讠尤, ⿱匕月, ⿰丬㐅; one level of nesting for the 20 most used parts (⿱艹⿰氵火). A separate font, put it before Uniscript CJK; see [notes/hanzi.md](../notes/hanzi.md) |
 | **NewGardinerOmni2d4** | Nederhof's NewGardiner, OFL, unchanged | Unicode 15 Egyptian format controls: joiners U+13430 vertical / U+13431 horizontal, insertions, U+13440 mirror, groups up to depth 4 |
 | **… Mirror** | NFM-Indus Script (Sublime), JetBrains Mono (JetBrains IDEs), Monaco (iTerm), Menlo (VS Code) | mirror for every character, advance kept, so monospace stays monospace |
 
