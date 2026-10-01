@@ -321,14 +321,22 @@ static bool is_group(str block) { return index_getf(TABLE_NAMES, NULL, "%.*s " G
  * the first part has; the parts are operands of the naming block (<:egyptian above A1 A2>), else names or text */
 static void group(converter *self, buf *out, str group_name, const str *naming, str content, size_t at) {
 	buf token = { 0 };
-	str part, infix = { 0 }, prefix;
+	str part, infix = { 0 }, prefix, affix;
 	bool has_infix = false;
+	const char *script = "";
 	for (size_t position = 0; next_operand(naming, &content, &token); position++) {
 		str written = buf_str(&token);
+		if (position > 0 && is_group(written)) { /* <:above 宀 beside 电 电>: a group word groups the parts after it */
+			if (has_infix) buf_adds(out, infix);
+			if (index_getf(TABLE_NAMES, &affix, "%.*s *open %s", S(group_name), script)) buf_adds(out, affix);
+			group(self, out, written, naming, content, at);
+			if (index_getf(TABLE_NAMES, &affix, "%.*s *close %s", S(group_name), script)) buf_adds(out, affix);
+			break;
+		}
 		if (!(naming && form(*naming, written, &part)) && !(written.n > 1 && name(written, &part))) part = written;
 		if (position == 0) {
 			uint32_t first = first_character(part);
-			const char *script = first == NO_CHARACTER ? "" : script_of(first);
+			script = first == NO_CHARACTER ? "" : script_of(first);
 			bool has_prefix = index_getf(TABLE_NAMES, &prefix, "%.*s *prefix %s", S(group_name), script);
 			has_infix = index_getf(TABLE_NAMES, &infix, "%.*s *infix %s", S(group_name), script);
 			if (has_prefix) buf_adds(out, prefix);
