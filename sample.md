@@ -7,7 +7,7 @@
 <!-- \:U+1F60D NO, OK -->
 <!-- \U1F60D NO, OK-->
 
-𓀀 abcd <:gardiner A1C> | <:eg A1> 𓀀󳀃  
+<:eg A1>|<:gardiner A1C>  𓀀|󳀃  
 
 # Uniscript in <:fracture M>arkdown
 
