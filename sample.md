@@ -65,3 +65,4 @@ circle := <:pi> * r<:upper 2>  // \:infinity <:nosuchthing> <:greek c>
 | `<:greek bold alpha>` | <:greek small letter alpha> |
 
 [[test]]
+[[test.md]]
