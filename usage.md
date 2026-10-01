@@ -16,7 +16,7 @@ Each section shows the same five things:
 - **warnings**: a character without a counterpart (`<:fracture 7>`) stays plain with a warning; the modes
   - *warn* (the default, Python: *lenient*): unsupported characters warn, an unknown name (`<:nosuch>`) is an error
   - *error*: the first warning is an error too (the CLI's `--strict`)
-  - *lenient*: errors become warnings too, the faulty uniscript stays as written (not in Swift and Kotlin)
+  - *lenient*: errors become warnings too, the faulty uniscript stays as written (not in Swift)
 - **header**: `<:uniscript version="https://uniscript.org/v1">` at the very start of a file converts to nothing; every
   `https://uniscript.org/vN` is read without warning, a foreign version warns
 - **meta information**: `<:color red 𓀀>` gives 𓀀 followed by invisible TAG characters; `meta_runs` reads them back as
@@ -40,7 +40,8 @@ them from this file and runs them all (`probes/usage/run_all.sh rust python` run
 | [C](#c) native | `libuniscript` | `brew install pannous/tap/libuniscript` |
 | [C](#c) Rust-backed | `c/ffi` | `make -C c/ffi` |
 | [C++](#c-1) | `c/uniscript.hpp` | with either C library |
-| [Kotlin / IntelliJ](#kotlin--intellij) | plugin `Uniscript` | JetBrains Marketplace |
+| [Kotlin](#kotlin--intellij) (JVM) | Maven `com.pannous:uniscript-kotlin` | `implementation("com.pannous:uniscript-kotlin:1.0.0")` |
+| [IntelliJ](#kotlin--intellij) | plugin `Uniscript` | JetBrains Marketplace |
 | [wasp / warp](#wasp--warp) | `use uniscript` | built in |
 
 ## Rust
@@ -521,15 +522,17 @@ highlights tags in every file type and folds each tag to its Unicode. Install: *
 `Uniscript`, or *Install Plugin from Disk…* with the zip of `cd intellij && ./gradlew buildPlugin`; see
 [intellij/README.md](intellij/README.md).
 
-Its converter is a Kotlin port (`com.pannous.uniscript`, reading the bundled `entities.idx` from the classpath), usable
-without the IDE. It has the modes `WARN` and `ERROR`, no lenient mode, and no `metaRuns`/`html` (the plugin only
-converts and highlights); the header is recognized by `convert`.
+Its converter is the Kotlin/JVM library `com.pannous:uniscript-kotlin` ([kotlin/](kotlin/), package
+`com.pannous.uniscript`, reading the bundled `entities.idx` from the classpath), usable without the IDE:
+`implementation("com.pannous:uniscript-kotlin:1.0.0")` in Gradle. It has the modes `WARN`, `ERROR` and `LENIENT`,
+`header()`, `metaRuns`/`html` and `font`, as in Rust.
 
 ```kotlin probes/usage/kotlin/Usage.kt
 import com.pannous.uniscript.Uniscript
 import com.pannous.uniscript.UniscriptError
 import com.pannous.uniscript.Warning
 import com.pannous.uniscript.WarningMode
+import com.pannous.uniscript.header
 
 fun main() {
 	val converter = Uniscript()
@@ -545,13 +548,20 @@ fun main() {
 	check(runCatching { converter.convert("<:fracture 7>", WarningMode.ERROR) }.exceptionOrNull() is UniscriptError.Unsupported)
 	check(runCatching { converter.convert("<:nosuch>") }.exceptionOrNull() == UniscriptError.UnknownEntity("nosuch"))
 
+	check(converter.convert("<:alpha> <:nosuch>", WarningMode.LENIENT).text == "α <:nosuch>")
+
 	check(converter.toUnicode("<:uniscript version=\"https://uniscript.org/v1\">\n<:alpha>") == "α")
+	check(header("<:uniscript version=\"https://uniscript.org/v1\">")?.version == "https://uniscript.org/v1")
+
+	val (styled, _) = converter.metaRuns(converter.toUnicode("<:color red 𓀀>"))
+	check(styled.text == "𓀀" && styled.runs[0].key == "color" && styled.runs[0].value == "red")
+	check(converter.html(styled) == "<span style=\"color: red\">𓀀</span>")
 	println("kotlin: ok")
 }
 ```
 
-Build and test: `cd intellij && ./gradlew test` (the converter against `tests/uniscript_test.rs`, and the plugin in a
-headless IDE), `./gradlew buildPlugin`.
+Build and test: `cd kotlin && ./gradlew test` (the library against the shared cases and the ported Rust tests),
+`cd intellij && ./gradlew test` (the plugin in a headless IDE), `./gradlew buildPlugin`.
 
 ## wasp / warp
 

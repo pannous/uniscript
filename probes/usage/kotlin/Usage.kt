@@ -2,6 +2,7 @@ import com.pannous.uniscript.Uniscript
 import com.pannous.uniscript.UniscriptError
 import com.pannous.uniscript.Warning
 import com.pannous.uniscript.WarningMode
+import com.pannous.uniscript.header
 
 fun main() {
 	val converter = Uniscript()
@@ -17,6 +18,13 @@ fun main() {
 	check(runCatching { converter.convert("<:fracture 7>", WarningMode.ERROR) }.exceptionOrNull() is UniscriptError.Unsupported)
 	check(runCatching { converter.convert("<:nosuch>") }.exceptionOrNull() == UniscriptError.UnknownEntity("nosuch"))
 
+	check(converter.convert("<:alpha> <:nosuch>", WarningMode.LENIENT).text == "α <:nosuch>")
+
 	check(converter.toUnicode("<:uniscript version=\"https://uniscript.org/v1\">\n<:alpha>") == "α")
+	check(header("<:uniscript version=\"https://uniscript.org/v1\">")?.version == "https://uniscript.org/v1")
+
+	val (styled, _) = converter.metaRuns(converter.toUnicode("<:color red 𓀀>"))
+	check(styled.text == "𓀀" && styled.runs[0].key == "color" && styled.runs[0].value == "red")
+	check(converter.html(styled) == "<span style=\"color: red\">𓀀</span>")
 	println("kotlin: ok")
 }

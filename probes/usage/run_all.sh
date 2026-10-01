@@ -10,7 +10,7 @@ LANGUAGES=(rust cli swift js wasm python c cpp kotlin wasp)
 export CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-/opt/cargo}
 UNISCRIPT_CLI="$CARGO_TARGET_DIR/release/uniscript"
 WARP=${WARP:-$(command -v warp || echo /opt/cargo/debug/warp)}
-KOTLIN_CLASSES="$ROOT/intellij/build/classes/kotlin/main:$ROOT/intellij/build/resources/main"
+KOTLIN_CLASSES="$ROOT/kotlin/build/classes/kotlin/main:$ROOT/kotlin/build/resources/main"
 cd "$ROOT" || exit 1
 
 extract_probes() {
@@ -68,7 +68,7 @@ run_c() { mkdir -p "$PROBES/build" && run_c_like "cc -std=c11 -Wall -Werror" "$P
 run_cpp() { mkdir -p "$PROBES/build" && run_c_like "c++ -std=c++17 -Wall -Werror" "$PROBES/cpp/usage.cpp"; }
 
 run_kotlin() {
-	(cd intellij && ./gradlew -q classes) \
+	(cd kotlin && ./gradlew -q classes) \
 		&& kotlinc -nowarn -cp "$KOTLIN_CLASSES" "$PROBES/kotlin/Usage.kt" -d "$PROBES/build/kotlin" \
 		&& kotlin -cp "$PROBES/build/kotlin:$KOTLIN_CLASSES" UsageKt
 }

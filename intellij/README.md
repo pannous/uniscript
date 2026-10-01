@@ -13,14 +13,15 @@ plugin depends only on `com.intellij.modules.platform`).
 A tag's content starts with no space and has no brackets, braces, `;`, `=` or quotes, so Scala's `T <: Bound[…]>`
 and C++'s `<:` digraph are left alone.
 
-The converter is a Kotlin port of `src/lib.rs` (`src/main/kotlin/com/pannous/uniscript/`) reading the shared
-`data/entities.idx`, which the build copies into the plugin.
+The converter is the library `com.pannous:uniscript-kotlin` ([../kotlin/](../kotlin/), a Kotlin port of `src/lib.rs`
+reading the shared `data/entities.idx`), built from source through `includeBuild("../kotlin")` and bundled as a jar in
+the plugin's `lib/`.
 
 ## Build
 
 ```sh
 cd intellij
-./gradlew test            # converter tests (tests/uniscript_test.rs) and the plugin in a headless IDE
+./gradlew test            # the plugin in a headless IDE (the converter's tests: cd ../kotlin && ./gradlew test)
 ./gradlew buildPlugin     # build/distributions/uniscript-intellij-1.0.0.zip
 ./gradlew verifyPlugin    # JetBrains' plugin verifier against IDEA 2024.3 (since-build 243) and the local IDE
 ```
