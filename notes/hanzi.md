@@ -2,7 +2,7 @@
 
 Question (user, 2026-10-01): can a font combine arbitrary radicals into new characters with the IDS operators, 界 = ⿱田介?
 **Yes, for simple characters**: `fonts/dist/UniscriptHanzi-Regular.otf` (`python3 fonts/uniscript_fonts.py hanzi`)
-draws any ⿰ ⿱ ⿲ ⿳ ⿴ ⿵ ⿶ ⿷ ⿸ ⿹ ⿺ ⿻ sequence of its 2,995 parts (simplest first by Unihan kTotalStrokes: every radical, stroke
+draws any ⿰ ⿱ ⿲ ⿳ ⿴ ⿵ ⿶ ⿷ ⿸ ⿹ ⿺ ⿻ sequence of its 2,849 parts (simplest first by Unihan kTotalStrokes: every radical, stroke
 and character up to 7 strokes and most with 8, including components that rarely stand alone (㐅 㔾 䒑 丬), plus the 20 parts IDS use most;
 complex characters such as 猫 are left out, so ⿱艹猫 stays uncomposed), whether or not Unicode has the character: ⿰讠尤, ⿱匕月, ⿰木电, ⿰丬㐅.
 Splits inside splits work for every part (⿱宀⿰电电, ⿰电⿱电电: ⿰ or ⿱ inside ⿰ or ⿱, the nested operand never gets less
@@ -32,6 +32,16 @@ each part a strength per position: logit(first share) ≈ first[A] − second[B]
 GSUB rules are generated per strength bucket pair, so an invented ⿰讠尤 gets 讠 a third, ⿱田X gets 田 ≈0.42.
 Cached in `fonts/sources/hanzi-strengths.json` (delete to relearn, ≈2 min).
 
+### Surrounds fit the opening of their outer part
+
+The inner part of ⿴ ⿵ ⿶ ⿷ ⿸ ⿹ ⿺ does not get one fixed box. Each surround has up to 6 candidate boxes: the largest
+(HANZI_SURROUNDS), then smaller sizes the font already has, anchored where the outer part opens (⿸ bottom right, ⿺ top
+right, ⿵ centre, slightly high). For every part the builder rasterizes its ink as it is drawn as outer part and takes the
+largest box it covers by at most 3 % (with a 30-unit margin). ⿸⺶目 gets a small box below the ⺶ strokes, ⿸广木 the largest,
+⿹勹木 the smallest. GSUB classes the outer part by its box, so this costs no glyphs, only rules. Before/after:
+probes/uniscript-hanzi/surround_before*.png, surround_after.png. Tuned by eye with the user: ⿵ inner higher and narrower,
+⿺ inner ≈30 units right and down (about one pixel at 32 px).
+
 ### Stroke weight
 
 Scaling 木 to a third of its width thins its vertical stems to a third. Each variant is thickened back by a Minkowski sum
@@ -51,10 +61,10 @@ parts × sizes (≈21 glyphs per part), never with the millions of possible pair
 
 | tier | parts | sizes | glyphs |
 |---|---|---|---|
-| nest in any shape (most used parts) | 20 | 47 | 940 + 20 |
-| unnested and splits in splits | 2,975 | 20 | 59,500 + 2,975 |
+| nest in any shape (most used parts) | 20 | 57 | 1,140 + 20 |
+| unnested and splits in splits | 2,829 | 21 | 59,409 + 2,829 |
 | operators, invisible operators, .notdef | | | ≈45 |
-| **total** | 2,995 | | **63,480** |
+| **total** | 2,849 | | **63,467** |
 
 Nesting is what is expensive: a part inside a nested box needs ~44 more sizes. Every ×1.2 size step coarser or each split
 share fewer saves glyphs; the 5 shares (⅓ … ⅔) and 15 simple sizes are the floor for decent proportions.
@@ -77,7 +87,7 @@ macOS: the fallback cascade is per character.
 
 ## Limits (quality)
 
-- Fixed layouts per operator: surround inners (⿴ ⿵ ⿺ …) use fixed boxes, not the actual opening of 囗 门 辶.
+- Surround inners pick from a few fixed candidate boxes, so an opening of unusual shape gets the nearest one.
 - No form changes: real fonts reshape a part by position (木 on the left ends its last stroke in a dot, 火 under → 灬,
   人 on the left → 亻). The font only scales; give the radical form yourself (⿰亻尤, not ⿰人尤).
 - No interlocking: 介's roof reaches under 田 in 界; composed parts never overlap their neighbours' boxes.

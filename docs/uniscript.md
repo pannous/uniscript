@@ -295,7 +295,7 @@ script-neutral characters such as TAG join the preceding run, so a prefix is cut
   
 # New hanzi
 
-The font Uniscript Hanzi (`python3 fonts/uniscript_fonts.py hanzi`) draws any Ideographic Description Sequence of its 2,995
+The font Uniscript Hanzi (`python3 fonts/uniscript_fonts.py hanzi`) draws any Ideographic Description Sequence of its 2,849
 parts, also characters Unicode does not have: `<:beside 讠 尤>` ⩵ ⿰讠尤, `<:above 匕 月>` ⩵ ⿱匕月, and raw IDS such as ⿰丬㐅 or,
 nested ⿱宀⿰电电 (`<:above 宀 ⿰电电>`). Parts are scaled into proportions learned from real
 characters and their strokes thickened back. It works in HarfBuzz (Chrome) and CoreText (Safari, macOS apps) wherever the

@@ -110,4 +110,4 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - TODO nested group tags: `<:above 宀 <:beside 电 脑>>` gives ⿱宀<:beside电脑> (the inner tag stays unconverted); raw IDS inside works (`<:above 宀 ⿰电脑>`).
 - TODO Firefox: an IDS right after Latin text is not composed (the IDC joins the Latin run); `--html` could wrap IDS in `<span lang="zh">`.
 - TODO Uniscript Hanzi is 36 MB of unsubroutinized CFF: subroutinize (cffsubr) and slice before serving it on the web page.
-- TODO Uniscript Hanzi: surround inners use fixed boxes; parts keep their standalone form (no 木→dot-ending left form, 火→灬); no interlocking (介 under 田).
+- TODO Uniscript Hanzi: parts keep their standalone form (no 木→dot-ending left form, 火→灬); no interlocking (介 under 田).

@@ -68,11 +68,17 @@ HANZI_RASTER = 96  # pixels per em when measuring how real characters split
 HANZI_GRID = 32  # characters and parts are compared at this many pixels square
 HANZI_STRENGTHS = os.path.join(SOURCES, "hanzi-strengths.json")
 HANZI_SPLITS = {"⿰": 0, "⿱": 1, "⿲": 0, "⿳": 1}  # parts follow each other along x (0) or y (1)
-HANZI_SURROUNDS = {  # inner part as fractions (x0, y0, x1, y1) of the box, y up; the outer part fills the box
-    "⿴": (0.2, 0.15, 0.8, 0.8), "⿵": (0.2, 0, 0.8, 0.75), "⿶": (0.2, 0.3, 0.8, 1),
-    "⿷": (0.25, 0.15, 1, 0.85), "⿸": (0.3, 0, 1, 0.72), "⿹": (0, 0, 0.72, 0.72),
-    "⿺": (0.32, 0.28, 1, 1), "⿻": (0, 0, 1, 1),
+HANZI_SURROUNDS = {  # largest inner part as fractions (x0, y0, x1, y1) of the box, y up; the outer part fills the box
+    "⿴": (0.22, 0.17, 0.78, 0.77), "⿵": (0.25, 0.1, 0.73, 0.77), "⿶": (0.22, 0.32, 0.78, 1),
+    "⿷": (0.27, 0.17, 0.95, 0.83), "⿸": (0.34, 0, 1, 0.66), "⿹": (0, 0, 0.68, 0.68),
+    "⿺": (0.37, 0.27, 1.03, 0.97), "⿻": (0, 0, 1, 1),
 }
+HANZI_OPENING_ANCHORS = {  # where a smaller inner part sits in that box: 0 left/bottom, 0.5 center, 1 right/top
+    "⿴": (0.5, 0.5), "⿵": (0.5, 0.6), "⿶": (0.5, 1), "⿷": (1, 0.5), "⿸": (1, 0), "⿹": (0, 0), "⿺": (1, 1),
+}
+HANZI_OPENINGS = 6  # inner box sizes tried per surround, from the largest down: the first the outer part leaves empty wins
+HANZI_OPENING_INK = 0.03  # share of an inner box the outer part may cover
+HANZI_OPENING_MARGIN = 30  # units the outer part keeps away from the inner one
 
 SANS_BASE = os.path.join(USER_FONTS, "NotoSans-Regular.ttf")
 SANS_MATH = os.path.join(USER_FONTS, "NotoSansMath-Regular.ttf")
@@ -511,6 +517,22 @@ class Raster:
         return self.cache[character, width, height]
 
 
+def ink_points(raster, character, bounds):
+    """(xs, ys) in font units of the character's ink when drawn full size centered in HANZI_FACE, as outer parts are."""
+    import freetype
+    import numpy
+    raster.face.load_char(character, freetype.FT_LOAD_RENDER)
+    glyph = raster.face.glyph
+    bitmap = glyph.bitmap
+    pixels = numpy.array(bitmap.buffer, dtype=numpy.uint8).reshape(bitmap.rows, bitmap.pitch)[:, :bitmap.width] > 127
+    rows, columns = numpy.nonzero(pixels)
+    unit = 1000 / HANZI_RASTER
+    x0, y0, x1, y1 = bounds
+    face_x0, face_y0, face_x1, face_y1 = HANZI_FACE
+    dx, dy = (face_x0 + face_x1 - x0 - x1) / 2, (face_y0 + face_y1 - y0 - y1) / 2
+    return (glyph.bitmap_left + columns + 0.5) * unit + dx, (glyph.bitmap_top - rows - 0.5) * unit + dy
+
+
 def split_share(raster, character, first, second, axis):
     """Share of the first part at which both parts, stretched into their two boxes, look most like the character:
     the mean of the best match of the whole picture (misled by parts narrower than their box, 界 gives 田 0.34)
@@ -571,8 +593,9 @@ def average_by(rows, key, value, prior_weight=2):
 PART = ("part", None)
 
 
-def hanzi_trees():
-    """Every IDS shape the font composes: one level of nesting; the parts of a ⿰ or ⿱ split are classed by strength."""
+def hanzi_trees(openings=None):
+    """Every IDS shape the font composes: one level of nesting; the parts of a ⿰ or ⿱ split are classed by strength,
+    the outer part of a surround around a single part by the opening it leaves (openings: {operator: inner boxes})."""
     operators = list(HANZI_SPLITS) + list(HANZI_SURROUNDS)
     nested = [(operator, [PART] * arity(operator)) for operator in operators]
     for operator in operators:
@@ -581,13 +604,49 @@ def hanzi_trees():
             if operator in "⿰⿱":
                 options.append([("part", (operator, position, b)) for b in HANZI_BUCKETS] + nested)
             elif operator in HANZI_SURROUNDS and position == 0:
-                options.append([PART])
+                options.append([PART] + [("part", ("opening", operator, i)) for i in range(len((openings or {}).get(operator, [])))])
             elif arity(operator) == 3:
                 options.append([PART] + [tree for tree in nested if tree[0] in "⿰⿱"])
             else:
                 options.append([PART] + nested)
         for children in itertools.product(*options):
+            fits_opening = is_part(children[0]) and children[0][1] is not None and children[0][1][0] == "opening"
+            if operator in (openings or {}) and fits_opening != is_part(children[1]):
+                continue  # a single inner part goes into the outer's opening, a nested one into the largest box
             yield operator, list(children)
+
+
+def opening_boxes(sizes):
+    """{surround: inner boxes in the face, largest first}: the largest box, then smaller part sizes the font already has,
+    anchored where the outer part opens."""
+    x0, y0, x1, y1 = HANZI_FACE
+    width, height = face_size()
+    openings = {}
+    for operator, anchor in HANZI_OPENING_ANCHORS.items():
+        fx0, fy0, fx1, fy1 = HANZI_SURROUNDS[operator]
+        largest = (x0 + fx0 * width, y0 + fy0 * height, x0 + fx1 * width, y0 + fy1 * height)
+        boxes = [largest]
+        for key in sorted(sizes, key=lambda k: -(HANZI_SIZE_STEP ** (k[0] + k[1]))):
+            w, h = (full * HANZI_SIZE_STEP ** k for full, k in zip(face_size(), key))
+            fits = w <= largest[2] - largest[0] + 20 and h <= largest[3] - largest[1] + 20  # rounding of the size step
+            if fits and w * h < 0.95 * (largest[2] - largest[0]) * (largest[3] - largest[1]) and len(boxes) < HANZI_OPENINGS:
+                left = largest[0] + anchor[0] * (largest[2] - largest[0] - w)
+                bottom = largest[1] + anchor[1] * (largest[3] - largest[1] - h)
+                boxes.append((left, bottom, left + w, bottom + h))
+        openings[operator] = boxes
+    return openings
+
+
+def opening_of(mask, boxes):
+    """Index of the first box the outer part's ink (mask: points in font units) leaves almost empty, else the last."""
+    import numpy
+    xs, ys = mask
+    for index, (x0, y0, x1, y1) in enumerate(boxes):
+        m = HANZI_OPENING_MARGIN
+        inside = numpy.count_nonzero((xs > x0 - m) & (xs < x1 + m) & (ys > y0 - m) & (ys < y1 + m))
+        if inside <= HANZI_OPENING_INK * (x1 - x0 + 2 * m) * (y1 - y0 + 2 * m) * (HANZI_RASTER / 1000) ** 2:
+            return index
+    return len(boxes) - 1
 
 
 def is_part(tree):
@@ -608,8 +667,10 @@ def splits_in_splits(tree):
     return all(map(is_part, children)) or operator in "⿰⿱" and all(is_part(c) or c[0] in "⿰⿱" for c in children)
 
 
-def part_boxes(operator, box, shares=None):
+def part_boxes(operator, box, shares=None, inner=None):
     x0, y0, x1, y1 = box
+    if inner:
+        return [box, inner]
     if operator in HANZI_SURROUNDS:
         fx0, fy0, fx1, fy1 = HANZI_SURROUNDS[operator]
         width, height = x1 - x0, y1 - y0
@@ -627,23 +688,27 @@ def part_boxes(operator, box, shares=None):
     return boxes
 
 
-def hidden_operator(operator, root, shares):
+def hidden_operator(operator, root, shares, opening):
     name = "ids%04X.%s" % (ord(operator), "root" if root else "inner")
-    return name + ("%02d" % round(100 * shares[0]) if shares else "")
+    return name + ("%02d" % round(100 * shares[0]) if shares else "") + ("o%d" % opening if opening is not None else "")
 
 
-def layout(tree, box, root=True):
+def layout(tree, box, openings=None, root=True):
     """[(token, box)] in text order; a token is a part or (operator, invisible glyph replacing it)."""
     if is_part(tree):
         return [(tree, box)]
     operator, children = tree
-    shares = None
+    shares, opening = None, None
     if root and operator in "⿰⿱":
         share = root_share(children)
         shares = [share, 1 - share]
-    tokens = [((operator, hidden_operator(operator, root, shares)), box)]
-    for child, child_box in zip(children, part_boxes(operator, box, shares)):
-        tokens += layout(child, child_box, False)
+    constraint = children[0][1] if is_part(children[0]) else None
+    if constraint and constraint[0] == "opening":
+        opening = constraint[2]
+    tokens = [((operator, hidden_operator(operator, root, shares, opening)), box)]
+    inner = openings[operator][opening] if opening is not None else None
+    for child, child_box in zip(children, part_boxes(operator, box, shares, inner)):
+        tokens += layout(child, child_box, openings, False)
     return tokens
 
 
@@ -768,7 +833,7 @@ def variant_name(character, key):
     return "%s.%s" % (glyph_name(character), size_name(key))
 
 
-def hanzi_features(placements, tiers, strengths):
+def hanzi_features(placements, tiers, class_of):
     """GSUB picks variants and invisible operators, GPOS moves the parts; both follow the same IDS shapes.
     tiers: [(components, size keys they get)]. Returns (feature code, invisible operators, shapes composed)."""
     fea = ["languagesystem DFLT dflt;", "languagesystem hani dflt;"]
@@ -779,8 +844,7 @@ def hanzi_features(placements, tiers, strengths):
     def part_class(constraint, key):
         if not constraint:
             return sized(key)
-        operator, position, bucket = constraint
-        return [c for c in sized(key) if bucket_of(strengths[operator, position].get(c, 0)) == bucket]
+        return [c for c in sized(key) if class_of(c, constraint)]
 
     substitutions, positions, hidden, places = [], set(), set(), {}
     for tokens in placements:
@@ -946,12 +1010,24 @@ def build_hanzi(tier_sizes=HANZI_TIERS):
     placements = [layout(tree, HANZI_FACE) for tree in trees]
     every_size = part_sizes(placements)
     common_size = part_sizes(p for tree, p in zip(trees, placements) if splits_in_splits(tree))
+    openings = opening_boxes(common_size)
+    trees = list(hanzi_trees(openings))
+    placements = [layout(tree, HANZI_FACE, openings) for tree in trees]
     ranked, full = ranked_components(cmap), tier_sizes[0]
     operators = list(HANZI_SPLITS) + list(HANZI_SURROUNDS)
     fixed = 1 + len(operators) + 2 * len(placements)  # .notdef, operators, at most two invisible ones per shape
     rest = min(tier_sizes[1] - full, (MAX_GLYPHS - fixed - full * (1 + len(every_size))) // (1 + len(common_size)))
     tiers = [(ranked[:full], every_size), (ranked[full:full + rest], common_size)]
-    fea, hidden, shapes = hanzi_features(placements, tiers, strengths)
+    raster = Raster(CJK_BASE)
+    inks = {c: ink_points(raster, c, bounds(cmap[ord(c)])) for components, _ in tiers for c in components}
+    fits = {(c, operator): opening_of(inks[c], boxes) for c in inks for operator, boxes in openings.items()}
+
+    def class_of(part, constraint):
+        if constraint[0] == "opening":
+            return fits[part, constraint[1]] == constraint[2]
+        operator, position, bucket = constraint
+        return bucket_of(strengths[operator, position].get(part, 0)) == bucket
+    fea, hidden, shapes = hanzi_features(placements, tiers, class_of)
 
     programs, metrics = {}, {}
     def add(name, program, advance, x_min):
