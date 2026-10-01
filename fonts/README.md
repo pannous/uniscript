@@ -5,7 +5,7 @@ into a mirrored, rotated or colored variant, and in which Ideographic Descriptio
 
 ```
 python3 fonts/uniscript_fonts.py [sans|cjk|hanzi|egyptian|mirror|all] [--install]   # → fonts/dist/
-python3 probes/uniscript_fonts_test.py                                        # shapes with hb-shape
+python3 probes/egyptian_baseline_test.py                                       # shapes with hb-shape
 ```
 
 Sources are the fonts in `~/Library/Fonts` and `/System/Library/Fonts`; downloads (IDS data, NewGardinerOmni) are cached in `fonts/sources/`.
@@ -34,7 +34,8 @@ Tags are default-ignorable: without these fonts the text shows the plain charact
 | **Uniscript Sans** | Noto Sans (Latin, Greek, Cyrillic) + Noto Sans Math | ASCII + Greek letters: all geometries × all colors; Latin-1/Ext-A, Greek, symbols, arrows, operators: every geometry or color, not combined; the rest, including math alphanumerics 𝔄𝕕: mirror and turn |
 | **Uniscript CJK** | Noto Sans CJK | IDS composition (27,688 sequences from cjkvi-ids, nested ones too: ⿱木⿰木木 → 森); mirror for radicals, strokes and the 3,755 most common hanzi (GB 2312 level 1) |
 | **Uniscript Hanzi** | Noto Sans CJK, 2,849 parts | IDS draw **new** characters from scaled, re-thickened parts with learned proportions: ⿰讠尤, ⿱匕月, ⿰丬㐅; splits inside splits for all of them (⿱宀⿰电电). A separate font, put it before Uniscript CJK; see [notes/hanzi.md](../notes/hanzi.md) |
-| **NewGardinerOmni2d4** | Nederhof's NewGardiner, OFL, unchanged | Unicode 15 Egyptian format controls: joiners U+13430 vertical / U+13431 horizontal, insertions, U+13440 mirror, groups up to depth 4 |
+| **NewGardinerOmni2d4** | Nederhof's NewGardiner, OFL, lowered 0.23 em | Unicode 15 Egyptian format controls: joiners U+13430 vertical / U+13431 horizontal, insertions, U+13440 mirror, groups up to depth 4 |
+| **Noto Sans Egyptian Hieroglyphs** | the editors' fallback for U+13000, lowered 0.17 em | none; signs of both stand on the descender (−0.17 em) like Aegyptus' extended ones (U+F3000…), not on the baseline. The original Noto is kept in `sources/` |
 | **… Mirror** | NFM-Indus Script (Sublime), JetBrains Mono (JetBrains IDEs), Monaco (iTerm), Menlo (VS Code) | mirror for every character, advance kept, so monospace stays monospace |
 
 ## Limits

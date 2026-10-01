@@ -9,9 +9,11 @@ attach Common characters such as tags to the preceding run, so a prefix would be
 """
 import copy
 import itertools
+import json
 import math
 import os
 import shutil
+import subprocess
 import sys
 from collections import defaultdict
 
@@ -49,6 +51,9 @@ IDS_URL = "https://raw.githubusercontent.com/cjkvi/cjkvi-ids/master/ids.txt"
 UNIHAN_DATA = os.path.join(SOURCES, "Unihan.zip")
 UNIHAN_URL = "https://www.unicode.org/Public/UCD/latest/ucd/Unihan.zip"
 OMNI_URL = "https://github.com/nederhof/newgardiner/raw/refs/heads/main/fonts/NewGardinerOmni2d4.ttf"
+NOTO_EGYPTIAN = os.path.join(USER_FONTS, "NotoSansEgyptianHieroglyphs-Regular.ttf")  # the system's fallback for the block
+EGYPTIAN_FOOT = -0.17  # em: signs stand on the descender like Aegyptus' extended ones, not on the baseline
+EGYPTIAN_PROBE = "\U00013000"  # A1, measured shaped (Omni places its signs by GPOS)
 LIGATURES_PER_SUBTABLE = 1500  # keeps each LigatureSet below the 64 KB offset limit
 
 # Uniscript Hanzi: IDS of components draw new characters from scaled parts (see notes/hanzi.md)
@@ -1071,16 +1076,55 @@ def hanzi_font(programs, metrics, characters):
     return builder.font
 
 
+def shaped_ink_bottom(path, text):
+    """Lowest ink of `text` as HarfBuzz shapes it, in font units"""
+    out = subprocess.run(["hb-shape", "--show-extents", "--output-format=json", path, text], capture_output=True, text=True, check=True).stdout
+    return min(g["dy"] + g["yb"] + g["h"] for g in json.loads(out) if g["h"])
+
+
+def lower_to_foot(path):
+    """Moves every outline down so A1 stands on EGYPTIAN_FOOT, line metrics along; already lowered fonts stay put"""
+    font = TTFont(path)
+    shift = round(shaped_ink_bottom(path, EGYPTIAN_PROBE) - EGYPTIAN_FOOT * font["head"].unitsPerEm)
+    glyf = font["glyf"]
+    simple, composite = [], []
+    for name in font.getGlyphOrder():
+        (composite if glyf[name].isComposite() else simple).append(glyf[name])
+    for glyph in simple:
+        if glyph.numberOfContours > 0:
+            glyph.coordinates.translate((0, -shift))
+            glyph.recalcBounds(glyf)
+    for glyph in composite:  # a scaled component moved by its scale only: its offset makes up the rest
+        for component in glyph.components:
+            (_, _), (skew, scale) = getattr(component, "transform", ((1, 0), (0, 1)))
+            component.x += round(shift * skew)
+            component.y -= round(shift * (1 - scale))
+        glyph.recalcBounds(glyf)
+    font["hhea"].ascent -= shift
+    font["hhea"].descent -= shift
+    os2 = font["OS/2"]
+    os2.sTypoAscender -= shift
+    os2.sTypoDescender -= shift
+    os2.usWinAscent = max(0, os2.usWinAscent - shift)
+    os2.usWinDescent += shift
+    font.save(path)
+    print("lowered %s by %d units" % (os.path.basename(path), shift))
+
+
 def build_egyptian():
-    """NewGardinerOmni implements the Unicode 15 format controls (joiners, insertions, U+13440 mirror)."""
-    path = os.path.join(SOURCES, os.path.basename(OMNI_URL))
-    if not os.path.exists(path):
-        download(OMNI_URL, path)
+    """NewGardinerOmni implements the Unicode 15 format controls (joiners, insertions, U+13440 mirror); it and Noto Sans
+    Egyptian Hieroglyphs, which editors fall back to, are lowered onto the descender."""
+    omni = os.path.join(SOURCES, os.path.basename(OMNI_URL))
+    if not os.path.exists(omni):
+        download(OMNI_URL, omni)
     os.makedirs(DIST, exist_ok=True)
-    target = os.path.join(DIST, os.path.basename(OMNI_URL))
-    shutil.copy(path, target)
-    print("copied %s" % target)
-    return [target]
+    targets = []
+    for source in (omni, NOTO_EGYPTIAN):
+        target = os.path.join(DIST, os.path.basename(source))
+        shutil.copy(source, target)
+        lower_to_foot(target)
+        targets.append(target)
+    return targets
 
 
 def build_mirror():
