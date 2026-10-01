@@ -52,6 +52,10 @@ UNIHAN_DATA = os.path.join(SOURCES, "Unihan.zip")
 UNIHAN_URL = "https://www.unicode.org/Public/UCD/latest/ucd/Unihan.zip"
 OMNI_URL = "https://github.com/nederhof/newgardiner/raw/refs/heads/main/fonts/NewGardinerOmni2d4.ttf"
 NOTO_EGYPTIAN = os.path.join(USER_FONTS, "NotoSansEgyptianHieroglyphs-Regular.ttf")  # the system's fallback for the block
+# George Douros' Aegyptus ("free for any use"): the extended signs Unicode lacks at U+F3000… (<:gardiner Q4A>), where Omni
+# has unrelated zero-width group fragments, so the built Omni leaves the private use planes to Aegyptus
+AEGYPTUS = os.path.join(USER_FONTS, "Aegyptus.otf")
+PRIVATE_USE_PLANES = 0xF0000
 EGYPTIAN_FOOT = -0.17  # em: signs stand on the descender like Aegyptus' extended ones, not on the baseline
 EGYPTIAN_PROBE = "\U00013000"  # A1, measured shaped (Omni places its signs by GPOS)
 LIGATURES_PER_SUBTABLE = 1500  # keeps each LigatureSet below the 64 KB offset limit
@@ -1111,9 +1115,16 @@ def lower_to_foot(path):
     print("lowered %s by %d units" % (os.path.basename(path), shift))
 
 
+def drop_private_use(path):
+    font = TTFont(path)
+    for table in font["cmap"].tables:
+        table.cmap = {code: glyph for code, glyph in table.cmap.items() if code < PRIVATE_USE_PLANES}
+    font.save(path)
+
+
 def build_egyptian():
     """NewGardinerOmni implements the Unicode 15 format controls (joiners, insertions, U+13440 mirror); it and Noto Sans
-    Egyptian Hieroglyphs, which editors fall back to, are lowered onto the descender."""
+    Egyptian Hieroglyphs, which editors fall back to, are lowered onto the descender. Aegyptus draws the extended signs."""
     omni = os.path.join(SOURCES, os.path.basename(OMNI_URL))
     if not os.path.exists(omni):
         download(OMNI_URL, omni)
@@ -1124,7 +1135,10 @@ def build_egyptian():
         shutil.copy(source, target)
         lower_to_foot(target)
         targets.append(target)
-    return targets
+    drop_private_use(targets[0])
+    aegyptus = os.path.join(DIST, os.path.basename(AEGYPTUS))
+    shutil.copy(AEGYPTUS, aegyptus)
+    return targets + [aegyptus]
 
 
 def build_mirror():

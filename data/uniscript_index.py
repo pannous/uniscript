@@ -24,7 +24,7 @@ UNICODE_BLOCKS = HERE / "sources" / "Blocks.txt"  # https://www.unicode.org/Publ
 # Wikipedia's Template:List_of_hieroglyphs (CC BY-SA 4.0): Gardiner number, code point and a short description per sign
 HIEROGLYPH_DESCRIPTIONS = HERE / "sources" / "list_of_hieroglyphs.wiki"
 # the Aegyptus font's extended sign list (https://rhbarnhart.net/Aegyptus_character_list.html): Gardiner number, private
-# use code point from U+F3000, decimal, sign; NewGardinerOmni has the same code points. Its Aa section is numbered J.
+# use code point from U+F3000, decimal, sign; drawn by Aegyptus (fonts/README.md). Its Aa section is numbered J.
 EXTENDED_SIGN_LIST = HERE / "sources" / "gardiner.full.csv"
 # the Anatolian Hieroglyphs section of Unicode's NamesList.txt: Latin logogram names and Luwian syllabic values as aliases
 ANATOLIAN_NAMES_LIST = HERE / "sources" / "anatolian_names_list.txt"

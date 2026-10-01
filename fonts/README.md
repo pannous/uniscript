@@ -36,6 +36,7 @@ Tags are default-ignorable: without these fonts the text shows the plain charact
 | **Uniscript Hanzi** | Noto Sans CJK, 2,849 parts | IDS draw **new** characters from scaled, re-thickened parts with learned proportions: ⿰讠尤, ⿱匕月, ⿰丬㐅; splits inside splits for all of them (⿱宀⿰电电). A separate font, put it before Uniscript CJK; see [notes/hanzi.md](../notes/hanzi.md) |
 | **NewGardinerOmni2d4** | Nederhof's NewGardiner, OFL, lowered 0.23 em | Unicode 15 Egyptian format controls: joiners U+13430 vertical / U+13431 horizontal, insertions, U+13440 mirror, groups up to depth 4 |
 | **Noto Sans Egyptian Hieroglyphs** | the editors' fallback for U+13000, lowered 0.17 em | none; signs of both stand on the descender (−0.17 em) like Aegyptus' extended ones (U+F3000…), not on the baseline. The original Noto is kept in `sources/` |
+| **Aegyptus** | George Douros, free for any use, copied unchanged from `~/Library/Fonts` | the extended sign list (`<:gardiner Q4A>` → U+F446E, 7059 signs from U+F3000); the built Omni drops its own unrelated private use glyphs (zero-width group fragments) from its cmap so systems fall back to Aegyptus there |
 | **… Mirror** | NFM-Indus Script (Sublime), JetBrains Mono (JetBrains IDEs), Monaco (iTerm), Menlo (VS Code) | mirror for every character, advance kept, so monospace stays monospace |
 
 ## Limits

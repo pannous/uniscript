@@ -114,3 +114,4 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - DONE (instead of nested tags, which the user does not want) a group word among the parts groups the rest: `<:above 宀 beside 电 电>` ⩵ ⿱宀⿰电电, in every port.
 - seed drift: `data/uniscript_index.py seed` drops the hand-added `*open/*close egyptian` keys of styles.wasp (seed them)
 - `<:eg>` alone now opens the Egyptian block instead of the HTML entity ⪚ (blocks shadow names of the same word)
+- DONE the extended signs drew nonsense: NewGardinerOmni's own private use glyphs (zero-width group fragments) at U+F3000… are unrelated to Aegyptus'; the built Omni drops them from its cmap and the egyptian build ships Aegyptus (probes/egyptian_private_use_test.py). Running editors keep the old font until restarted
