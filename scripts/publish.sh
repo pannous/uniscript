@@ -5,13 +5,14 @@
 #   PyPI       uniscript-rs               (python/ffi, abi3 wheels for macOS universal2, manylinux x86_64/aarch64 + sdist)
 #   npm        @pannous/uniscript         (js/, TypeScript port)
 #   npm        @pannous/uniscript-wasm    (wasm/, the Rust crate in WebAssembly)
+#   NuGet      Uniscript                  (csharp/, P/Invoke over c/ffi built per runtime identifier by `make -C c/ffi natives`)
 #   SwiftPM    Uniscript                  (Package.swift; git tag v$VERSION + swiftpackageindex.com, smoke-tested only)
 #   Maven      com.pannous:uniscript-kotlin (kotlin/, pure Kotlin/JVM; Central Portal, released by hand after upload)
 # Publishing needs: `npm login` (user pannous), `cargo login <crates.io token>`, a PyPI token in ~/.pypirc
 # ([pypi] username = __token__, password = pypi-…) or TWINE_USERNAME=__token__ TWINE_PASSWORD=pypi-….
 # Maven Central: mavenCentralUsername, mavenCentralPassword (a Central Portal user token), signingInMemoryKey and
 # signingInMemoryKeyPassword in ~/.gradle/gradle.properties (or ORG_GRADLE_PROJECT_<name> variables).
-# Needs maturin, zig (Linux wheels), wasm-pack, rustup targets x86_64/aarch64-unknown-linux-gnu, python -m build, twine.
+# Needs dotnet, cargo-zigbuild, rustup target x86_64-pc-windows-gnu, maturin, zig (Linux wheels and natives), wasm-pack, rustup targets x86_64/aarch64-unknown-linux-gnu, python -m build, twine.
 set -e
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DIST="$ROOT/probes/publish/dist"
@@ -51,6 +52,7 @@ check_credentials() {
 	npm whoami >/dev/null 2>&1 || fail "not logged in to npm: run npm login"
 	[ -s "${CARGO_HOME:-$HOME/.cargo}/credentials.toml" ] || [ -n "$CARGO_REGISTRY_TOKEN" ] || fail "no crates.io token: run cargo login"
 	grep -qs '^\[pypi\]' "$HOME/.pypirc" || [ -n "$TWINE_PASSWORD" ] || fail "no PyPI token: add [pypi] to ~/.pypirc or set TWINE_PASSWORD"
+	[ -n "$NUGET_API_KEY" ] || fail "no nuget.org API key: set NUGET_API_KEY (nuget.org → API Keys, push scope for Uniscript)"
 	[ -z "$(git -C "$ROOT" status --porcelain)" ] || fail "the working tree has uncommitted changes: commit them first"
 }
 
@@ -100,6 +102,15 @@ step "Maven: com.pannous:uniscript-kotlin $VERSION (into $MAVEN_REPOSITORY)"
 expect_smoke uniscript-kotlin "$("$ROOT/kotlin/gradlew" --quiet -p "$ROOT/probes/publish/kotlin-consumer" run \
 	-PuniscriptRepository="file://$MAVEN_REPOSITORY" -PuniscriptVersion="$VERSION" --args="'$SMOKE_INPUT'")"
 
+step "NuGet: Uniscript $VERSION"
+make -C "$ROOT/c/ffi" natives
+dotnet test "$ROOT/csharp/tests"
+dotnet pack "$ROOT/csharp/src" -c Release -p:Version="$VERSION" -o "$DIST"
+CONSUMER="$ROOT/probes/publish/dotnet-consumer"
+rm -rf "$CONSUMER/bin" "$CONSUMER/obj" "$CONSUMER/packages"
+NUGET_PACKAGES="$CONSUMER/packages" dotnet build --nologo -v quiet "$CONSUMER" -p:UniscriptVersion="$VERSION"
+expect_smoke nuget "$(dotnet "$CONSUMER/bin/Debug/net9.0/Consumer.dll" "$SMOKE_INPUT")"
+
 if ! $PUBLISH; then
 	step "all packages built and smoke-tested in $DIST; run with --publish to upload them"
 	exit 0
@@ -110,6 +121,7 @@ step "publishing"
 "$PYTHON" -m twine upload "$DIST"/uniscript_py-* "$DIST"/uniscript_rs-*
 npm publish "$DIST/pannous-uniscript-$VERSION.tgz" --access public
 npm publish "$DIST/pannous-uniscript-wasm-$VERSION.tgz" --access public
+dotnet nuget push "$DIST/Uniscript.$VERSION.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
 # uploads a signed deployment; release it at https://central.sonatype.com/publishing/deployments
 (cd "$ROOT/kotlin" && ./gradlew publishToMavenCentral)
 step "published uniscript $VERSION to crates.io, PyPI, npm and Maven Central (release the deployment on central.sonatype.com)"

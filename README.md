@@ -208,6 +208,23 @@ uniscript.html(styled)
 
 `cd kotlin && ./gradlew test` runs the shared cases (`js/test/cases.json`) and the ported Rust tests.
 
+### C# / .NET
+
+The Rust crate through its C ABI ([csharp/](csharp/), .NET 8+), on NuGet as `Uniscript` with the native library for
+osx-arm64, osx-x64, linux-x64, linux-arm64 and win-x64.
+
+```csharp
+// dotnet add package Uniscript
+using Pannous;
+Uniscript.ToUnicode("<:alpha> <:fracture A>");            // "α 𝔄", throws UniscriptException (Kind: UnknownEntity, Unclosed, InvalidMeta)
+Uniscript.Convert("<:greek c>");                          // Conversion("c", [("no greek form of c", 0)])
+Uniscript.Convert("<:greek c>", UniscriptMode.Error);     // throws UniscriptException, Kind Unsupported; Lenient never throws
+Uniscript.ToUniscript("α 𝔄");                             // "<:alpha> <:fracture A>"
+Uniscript.Html(tagged);                                    // meta information as <span>s; MetaRuns(tagged), Font(name)
+```
+
+`make -C c/ffi natives && dotnet test csharp/tests` runs the shared cases.
+
 ## Syntax
 
 - `<:name>` or `\:name`: an entity. Names are case sensitive; spaces may replace hyphens (`<:greek small letter alpha>`).

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<!-- installs the Uniscript package from the local feed probes/publish/dist (scripts/publish.sh) -->
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net9.0</TargetFramework>
+		<RestoreSources>$(MSBuildThisFileDirectory)../dist</RestoreSources>
+		<UniscriptVersion Condition="'$(UniscriptVersion)' == ''">1.0.0</UniscriptVersion>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Uniscript" Version="$(UniscriptVersion)" />
+	</ItemGroup>
+</Project>
