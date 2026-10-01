@@ -52,8 +52,9 @@ circle := <:pi> * r<:upper 2>  // \:infinity <:nosuchthing> <:greek c>
 - `<:iconic ⚠>` → <:iconic ⚠>
 - `<:mirror red A>` → <:mirror red A>
 - `<:forall> x <:in> <:double R>` → <:forall> x <:in> <:double R>
-- `<:above 𓀀 𓁐> <:beside 犭 句>` → <:above 𓀀 𓁐> <:beside 犭 句>
--  <:reverse 𓀀 𓁐>
+- `<:beside 犭 句>` → <:beside 犭 句>
+- `<:above 𓀀 𓁐>  <:reverse 𓀀 𓁐>` → <:above 𓀀 𓁐>  <:reverse 𓀀 𓁐>
+- `<:above 󳀃 𓁐>  <:reverse 󳀃 𓁐>` → <:above 󳀃 𓁐>  <:reverse 󳀃 𓁐>
 - `a literal <<::> marker` → a literal <<::> marker
 
 **Bold <:alpha>**, *italic <:Omega>* and a [link to <:infinity>](https://example.com).
