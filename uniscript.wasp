@@ -22,6 +22,7 @@ const max_code_point = 1114111    // 10FFFF
 const first_surrogate = 55296     // D800
 const last_surrogate = 57343      // DFFF
 const hex_digits = "0123456789ABCDEF"
+const max_operand_words = 8      // the most words one operand spans: <:egyptian man with hand to mouth>
 
 // ---- the index -------------------------------------------------------------------------------------------------
 
@@ -66,6 +67,10 @@ entry(key:text) := {
 }
 
 is_block(name:text) := find(names_table, name + " ") >= 0
+
+is_group(name:text) := find(names_table, name + " *group") >= 0
+
+is_effect(name:text) := find(names_table, name + " *suffix") >= 0
 
 // ---- characters ----------------------------------------------------------------------------------------------
 
@@ -192,7 +197,7 @@ is_space(b) := b == 32 or b == 9 or b == 10 or b == 13
 // the text inside a full block (<:greek> filosofia kosmos<:/greek>) as written: its whitespace stays, each word is an
 // operand; a group block joins its parts
 block_text(block:text, text:text, at) := {
-	if find(names_table, block + " *group") >= 0 { return operands(block, text, "", at) }
+	if is_group(block) { return group(block, "", text, at) }
 	out = ""
 	i = 0
 	while i < text.bytes {
@@ -205,37 +210,105 @@ block_text(block:text, text:text, at) := {
 	out
 }
 
-// the space separated operands of an inline tag, spaces dropped; a group (above, beside) joins its parts unstyled with the
-// prefix before or the infix between them that the script of the first part has
+// the first byte from start that is no space
+skip_spaces(content:text, start) := {
+	i = start
+	while i < content.bytes and byte_at(content, i) == 32 { i++ }
+	i
+}
+
+// the end of the operand of the block that starts at byte start: the longest run of words that names one operand (seated
+// man, red crown), else one word; block "" takes one word
+operand_end(block:text, content:text, start) := {
+	end = offset_of(content, 32, start)
+	best = end
+	words = 1
+	while block.bytes > 0 and words < max_operand_words and skip_spaces(content, end) < content.bytes {
+		end = offset_of(content, 32, skip_spaces(content, end))
+		words++
+		if find(names_table, block + " " + hyphenated(byte_slice(content, start, end))) >= 0 { best = end }
+	}
+	best
+}
+
+// whether the content starts with an operand of the block: <:egyptian red crown> names a sign, red is no effect
+starts_operand(block:text, content:text) := {
+	start = skip_spaces(content, 0)
+	start < content.bytes and find(names_table, block + " " + hyphenated(byte_slice(content, start, operand_end(block, content, start)))) >= 0
+}
+
+// the space separated operands of an inline tag, spaces dropped
 operands(block:text, content:text, effects:text, at) := {
+	out = ""
+	i = skip_spaces(content, 0)
+	while i < content.bytes {
+		end = operand_end(block, content, i)
+		out += operand(block, hyphenated(byte_slice(content, i, end)), effects, at)
+		i = skip_spaces(content, end)
+	}
+	out
+}
+
+// a part of a group: an operand of the naming block, else the entity it names, else itself
+group_part(naming:text, token:text) := {
+	part = token
+	named = find(names_table, token)
+	if named >= 0 and token.bytes > 1 { part = value_of(named) }
+	own = find(names_table, naming + " " + token)
+	if naming.bytes > 0 and own >= 0 { part = value_of(own) }
+	part
+}
+
+// a group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script of the
+// first part has; the parts are operands of the naming block (<:egyptian above A1 A2>), else names or text
+group(group_name:text, naming:text, content:text, at) := {
 	out = ""
 	script = ""
 	parts = 0
-	group = find(names_table, block + " *group") >= 0
-	i = 0
+	i = skip_spaces(content, 0)
 	while i < content.bytes {
-		if byte_at(content, i) == 32 { i++ } else {
-			end = offset_of(content, 32, i)
-			token = byte_slice(content, i, end)
-			part = token
-			named = find(names_table, token)
-			if group and named >= 0 and token.bytes > 1 { part = value_of(named) }
-			if not group { part = operand(block, token, effects, at) }
-			if parts == 0 {
-				script = script_of(part)
-				out += entry(block + " *prefix " + script)
-				if group and find(names_table, block + " *prefix " + script) < 0 and find(names_table, block + " *infix " + script) < 0 {
-					out += unsupported("no " + block + " group of " + part, at)
-				}
-			} else {
-				out += entry(block + " *infix " + script)
+		end = operand_end(naming, content, i)
+		part = group_part(naming, hyphenated(byte_slice(content, i, end)))
+		if parts == 0 {
+			script = script_of(part)
+			out += entry(group_name + " *prefix " + script)
+			if find(names_table, group_name + " *prefix " + script) < 0 and find(names_table, group_name + " *infix " + script) < 0 {
+				out += unsupported("no " + group_name + " group of " + part, at)
 			}
-			out += part
-			parts++
-			i = end
+		} else {
+			out += entry(group_name + " *infix " + script)
 		}
+		out += part
+		parts++
+		i = skip_spaces(content, end)
 	}
 	out
+}
+
+// the first group among the space separated words, else ""
+group_word(words:text) := {
+	found = ""
+	i = 0
+	while i < words.bytes {
+		end = offset_of(words, 32, i)
+		word = byte_slice(words, i, end)
+		if found.bytes == 0 and is_group(word) { found = word }
+		i = end + 1
+	}
+	found
+}
+
+// the last of the space separated words that is neither a group nor an effect: the block naming the parts of a group
+naming_word(words:text) := {
+	found = ""
+	i = 0
+	while i < words.bytes {
+		end = offset_of(words, 32, i)
+		word = byte_slice(words, i, end)
+		if not is_group(word) and not is_effect(word) { found = word }
+		i = end + 1
+	}
+	found
 }
 
 // the text of <:content> at byte `at` of the source, or the block it opens (as "<block>"), or "" for a closing tag; an Error when nothing matches
@@ -255,13 +328,17 @@ tag(content:text, at) := {
 			// <:mirror red A>: effect words stack, the last one takes the operands, the others add their suffixes
 			effects = ""
 			rest = byte_slice(content, space + 1, content.bytes)
+			// a word that starts an operand of the block before it is no block (<:egyptian red crown>)
 			next = offset_of(rest, 32, 0)
-			while next < rest.bytes and is_block(byte_slice(rest, 0, next)) {
+			while next < rest.bytes and is_block(byte_slice(rest, 0, next)) and (starts_operand(block, rest) == false) {
 				effects += block + " "
 				block = byte_slice(rest, 0, next)
 				rest = byte_slice(rest, next + 1, rest.bytes)
 				next = offset_of(rest, 32, 0)
 			}
+			// <:egyptian above A1 A2>: the other block names the parts of the group
+			grouping = group_word(effects + block)
+			if grouping.bytes > 0 { return group(grouping, naming_word(effects + block), rest, at) }
 			return operands(block, rest, effects, at)
 		}
 	}

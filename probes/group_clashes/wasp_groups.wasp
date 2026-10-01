@@ -1,0 +1,6 @@
+use uniscript
+ok = uniscript("<:egyptian red crown> <:egyptian A1 red crown> <:egyptian red crown A1>") == "𓋔 𓀀𓋔 𓋔𓀀"
+ok = ok and uniscript("<:egyptian above A1 A2> <:above egyptian A1 A2>") == "𓀀𓐰𓀁 𓀀𓐰𓀁"
+ok = ok and uniscript("<:egyptian beside sun red crown> <:egyptian above 𓀀 A2> <:above 𓀀 𓁐>") == "𓇳𓐱𓋔 𓀀𓐰𓀁 𓀀𓐰𓁐"
+ok = ok and uniscript("<:mirror red A> <:egyptian seated man>") == "A󠁲󠁍 𓀀"
+ok

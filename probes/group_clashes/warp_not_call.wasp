@@ -1,0 +1,4 @@
+f(a, b) := a > b
+i = 0
+while i < 3 and not f(i, 5) { i++ }
+i
