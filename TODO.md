@@ -105,3 +105,9 @@ From CHANGES.md (changes that need to be propagated through all implementations)
 - TODO DYM "did you mean" mechanism: `uniscript: no greek form of c at byte 26, did you mean <:greek chi> or <:greek kappa> or <:greek zeta>?` (also for unknown names); in every implementation.
 - TODO html mode?? Partially implemented: `--html` renders meta information (fonts, colors, angles) as spans, but styles stay Unicode (`<:bold a>` ⩵ 𝐚 rather than `<b>a</b>`). Which features can be done in HTML and which can't? Do we really want that?
 - DONE <:gardiner Q4A> renders the Aegyptus/NewGardinerOmni private-use sign U+F446E (data/sources/gardiner.full.csv, 6026 numbers beyond Unicode); its Aa section is numbered J (J1 = U+F4AD9), no Aa→J alias yet
+
+Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
+- TODO nested group tags: `<:above 宀 <:beside 电 脑>>` gives ⿱宀<:beside电脑> (the inner tag stays unconverted); raw IDS inside works (`<:above 宀 ⿰电脑>`).
+- TODO Firefox: an IDS right after Latin text is not composed (the IDC joins the Latin run); `--html` could wrap IDS in `<span lang="zh">`.
+- TODO Uniscript Hanzi is 36 MB of unsubroutinized CFF: subroutinize (cffsubr) and slice before serving it on the web page.
+- TODO Uniscript Hanzi: surround inners use fixed boxes; parts keep their standalone form (no 木→dot-ending left form, 火→灬); no interlocking (介 under 田).

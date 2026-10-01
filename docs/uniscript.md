@@ -293,6 +293,14 @@ So `<:red A>` encodes as A followed by TAG r. Hieroglyph groups use Unicode's ow
 Contrary to the wish above, the controls come *after* the character. Text engines split lines into runs by script, and  
 script-neutral characters such as TAG join the preceding run, so a prefix is cut off from its character at every script   change (`α ⟨red⟩R`).  
   
+# New hanzi
+
+The font Uniscript Hanzi (`python3 fonts/uniscript_fonts.py hanzi`) draws any Ideographic Description Sequence of its 3,827
+parts, also characters Unicode does not have: `<:beside 讠 尤>` ⩵ ⿰讠尤, `<:above 艹 猫>` ⩵ ⿱艹猫, and raw IDS such as ⿴囗猫 or,
+for the most used parts, nested ⿱艹⿰氵火 (`<:above 艹 ⿰氵火>`). Parts are scaled into proportions learned from real
+characters and their strokes thickened back. It works in HarfBuzz (Chrome) and CoreText (Safari, macOS apps) wherever the
+font draws the whole sequence; details and limits in [notes/hanzi.md](../notes/hanzi.md).
+
 # Meta information: fonts, languages, colors
   
 `<:font cuneiform-old-babylonian> … <:/font>`, `<:lang ja>`, `<:color #ff8800 A>`, `<:angle 90 B>`    
