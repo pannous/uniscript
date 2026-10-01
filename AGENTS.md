@@ -66,6 +66,6 @@ records them; `Uniscript::missing_chunks(text)` dry-runs convert (lenient), meta
 them. Callers fetch those, `add_chunk` them and ask again until nothing is missing (2–3 rounds), then convert
 synchronously with results identical to the whole index. JS: `await init({ chunks: manifestUrl })` then
 `await ensure(text)` (wasm/), `new Uniscript(await ChunkedIndex.load(manifestUrl))` then `await converter.ensure(text)` (js/).
- [`fonts/uniscript_fonts.py`](https://github.com/pannous/warp/tree/main/fonts) in warp. Text
+ [`fonts/uniscript_fonts.py`](fonts/) (`python3 fonts/uniscript_fonts.py all`, details in fonts/README.md). Text
 engines must shape with HarfBuzz or CoreText for the controls to take effect: Chrome, Firefox, Safari, Sublime Text,
 VS Code, and iTerm with ligatures on.

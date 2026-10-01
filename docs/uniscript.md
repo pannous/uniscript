@@ -283,8 +283,8 @@ https://unicode.org/L2/L2016/16018r-three-for-egyptian.pdf
   
 # Fonts implementing the extensions
   
-Until Unicode has such controls, fonts can implement them privately: `warp/fonts/uniscript_fonts.py` builds fonts in which  
-invisible TAG characters U+E0020–E007E select a variant of the character **before** them (see `warp/fonts/  README.md`):  
+Until Unicode has such controls, fonts can implement them privately: [fonts/uniscript_fonts.py](../fonts/uniscript_fonts.py) builds fonts in which  
+invisible TAG characters U+E0020–E007E select a variant of the character **before** them (see [fonts/README.md](../fonts/README.md)):  
   
 `A` U+E0072 ⩵ red A, `e` U+E0054 ⩵ turned e ə, `A` U+E004D U+E0072 ⩵ mirrored red A, ⿰犭句 ⩵ 狗    
   

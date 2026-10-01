@@ -33,3 +33,5 @@ probes/uniscript-cpp/overlay/
 probes/uniscript-cpp/fm.json
 probes/uniscript-cpp/cci_pr_body.md
 probes/uniscript-kotlin/
+fonts/dist/
+fonts/sources/
