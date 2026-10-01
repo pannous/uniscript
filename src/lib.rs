@@ -548,7 +548,7 @@ impl<'a> Uniscript<'a> {
 	/// A group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script of
 	/// the first part has; the parts are operands of the naming block (`<:egyptian above A1 A2>`), else names or text
 	fn group(&self, group: &str, naming: Option<&str>, content: &str, at: usize) -> String {
-		let tokens = match naming {
+		let mut tokens = match naming {
 			Some(block) => self.operand_tokens(block, content),
 			None => content.split_whitespace().map(str::to_string).collect(),
 		};
@@ -556,13 +556,19 @@ impl<'a> Uniscript<'a> {
 			let named = naming.and_then(|block| self.form(block, token)).or_else(|| self.name(token).filter(|_| token.len() > 1));
 			named.map_or_else(|| token.clone(), str::to_string)
 		};
-		let parts: Vec<String> = tokens.iter().map(part).collect();
+		// <:above 宀 beside 电 电>: a group word among the parts groups the parts after it
+		let inner = tokens.iter().skip(1).position(|token| self.is_group(token)).map(|position| tokens.split_off(position + 1));
+		let mut parts: Vec<String> = tokens.iter().map(part).collect();
 		let Some(first) = parts.first() else { return String::new() };
 		let script = first_script(first);
-		let prefix = self.name(&format!("{group} *prefix {script}"));
-		let infix = self.name(&format!("{group} *infix {script}"));
+		let affix = |kind: &str| self.name(&format!("{group} {kind} {script}"));
+		let (prefix, infix) = (affix("*prefix"), affix("*infix"));
 		if prefix.is_none() && infix.is_none() {
 			self.warn(format!("no {group} group of {first}"), at);
+		}
+		if let Some(inner) = inner {
+			let grouped = self.group(&inner[0], naming, &inner[1..].join(" "), at);
+			parts.push(affix("*open").unwrap_or("").to_string() + &grouped + affix("*close").unwrap_or(""));
 		}
 		prefix.unwrap_or("").to_string() + &parts.join(infix.unwrap_or(""))
 	}

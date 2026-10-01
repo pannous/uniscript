@@ -2294,11 +2294,15 @@ blocks {
 		"*group": ""
 		"*prefix cjk": "⿱"
 		"*infix egyptian": "\u{13430}"
+		"*open egyptian": "\u{13437}"
+		"*close egyptian": "\u{13438}"
 	}
 	beside {
 		"*group": ""
 		"*prefix cjk": "⿰"
 		"*infix egyptian": "\u{13431}"
+		"*open egyptian": "\u{13437}"
+		"*close egyptian": "\u{13438}"
 	}
 }
 
