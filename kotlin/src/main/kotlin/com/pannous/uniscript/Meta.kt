@@ -104,3 +104,114 @@ fun attach(text: String, sequences: String) = buildString {
 	}
 	append(sequences)
 }
+
+/** A UTF-8 byte range of the plain text under one meta key; `at` is the byte offset of its sequence in the tagged text */
+data class MetaRun(val key: String, val value: String, val start: Int, val end: Int, val at: Int)
+
+/** Plain text without its meta sequences, and the runs they cover, nested and in opening order */
+data class Styled(val text: String, val runs: List<MetaRun>) {
+	/** The text with `open(run)` before each run and `close` after it, `escape` applied to the text */
+	fun interleaved(open: (MetaRun) -> String, close: String, escape: (String) -> String): String {
+		val bytes = text.toByteArray(Charsets.UTF_8)
+		val out = StringBuilder()
+		var cursor = 0
+		val enclosing = ArrayDeque<MetaRun>()
+		fun advance(to: Int) {
+			out.append(escape(String(bytes, cursor, to - cursor, Charsets.UTF_8)))
+			cursor = to
+		}
+		for (run in runs) {
+			while (enclosing.isNotEmpty() && enclosing.last().end <= run.start) {
+				advance(enclosing.removeLast().end)
+				out.append(close)
+			}
+			advance(run.start)
+			out.append(open(run))
+			enclosing.addLast(run)
+		}
+		while (enclosing.isNotEmpty()) {
+			advance(enclosing.removeLast().end)
+			out.append(close)
+		}
+		advance(bytes.size)
+		return out.toString()
+	}
+
+	companion object {
+		/** Reads the meta sequences out of tagged text. A span closing over spans opened after it closes them too and
+		 *  reopens them, so runs always nest; a close without its open is a warning. */
+		fun parse(tagged: String): Pair<Styled, List<Warning>> {
+			val codePoints = tagged.codePoints().toArray()
+			val text = StringBuilder()
+			var textBytes = 0
+			val runs = mutableListOf<MetaRun>()
+			val warnings = mutableListOf<Warning>()
+			val open = mutableListOf<Int>()
+			var clusterStart = 0
+			var previous: Int? = null
+			var position = 0
+			var at = 0
+			while (position < codePoints.size) {
+				val found = meta(codePoints, position)
+				if (found == null) {
+					val character = codePoints[position++]
+					if (!extends(previous, character)) clusterStart = textBytes
+					text.appendCodePoint(character)
+					textBytes += utf8Length(character)
+					at += utf8Length(character)
+					previous = character
+					continue
+				}
+				val (meta, length) = found
+				val here = textBytes
+				when (meta) {
+					is Meta.Open -> {
+						open += runs.size
+						runs += MetaRun(meta.key, meta.value, here, here, at)
+					}
+					is Meta.Attached -> runs += MetaRun(meta.key, meta.value, clusterStart, here, at)
+					is Meta.Close -> {
+						val matching = open.indexOfLast { runs[it].key == meta.key }
+						if (matching < 0) warnings += Warning("</${meta.key} closes no open ${meta.key}", at)
+						else {
+							val closed = open.subList(matching, open.size).toList()
+							repeat(closed.size) { open.removeLast() }
+							closed.forEach { runs[it] = runs[it].copy(end = here) }
+							for (run in closed.drop(1)) {
+								open += runs.size
+								runs += runs[run].copy(start = here, end = here, at = at)
+							}
+						}
+					}
+				}
+				for (index in position until position + length) at += utf8Length(codePoints[index])
+				position += length
+			}
+			open.forEach { runs[it] = runs[it].copy(end = textBytes) }
+			val nested = runs.filter { it.start < it.end }.sortedWith(compareBy<MetaRun> { it.start }.thenByDescending { it.end })
+			return Styled(text.toString(), nested) to warnings
+		}
+	}
+}
+
+fun escapeHtml(text: String) = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;")
+
+/** A font style of data/entities/meta.wasp: the value of `<:font cuneiform-hittite>` */
+data class Font(
+	val name: String,
+	/** BCP 47 language tag: `hit-Xsux`, `ja`, `akk-Xsux-x-oldbab` */
+	val lang: String,
+	/** CSS font-family fallback list */
+	val families: List<String>,
+	/** OpenType feature tags (CSS font-feature-settings) */
+	val features: List<String>,
+)
+
+internal fun commaList(text: String) = text.split(',').map(String::trim).filter(String::isNotEmpty)
+
+private fun utf8Length(codePoint: Int) = when {
+	codePoint < 0x80 -> 1
+	codePoint < 0x800 -> 2
+	codePoint < 0x10000 -> 3
+	else -> 4
+}

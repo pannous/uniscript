@@ -24,9 +24,15 @@ private val UNICODE_ESCAPE = Regex("U([0-9A-Fa-f]{4,8})(?![A-Za-z0-9_-])")
 private val NAME_TOKEN = Regex("(?:[Uu]\\+)?[A-Za-z0-9_-]*")
 private val MARKERS = Regex("<:|\\\\:|\\\\(?=U[0-9A-Fa-f]{4,8}(?![A-Za-z0-9_-]))")
 private const val FONT_KEY = "font"
+private const val LANG_KEY = "lang"
+private const val VALUE_PLACEHOLDER = "{}"
 private const val SUFFIX_KEY = "*suffix"
 /** The block control naming the meta a block becomes where it has no suffix control (`red *meta` → `color red`) */
 private const val META_FALLBACK_KEY = "*meta"
+/** The most words one operand spans: `<:egyptian man with hand to mouth>` */
+private const val MAX_OPERAND_WORDS = 8
+private const val GROUP_KEY = "*group"
+private val WHITESPACE = Regex("\\s+")
 /** The current uniscript version, declared by the header `<:uniscript version="…">`; every later uniscript.org version is read too */
 const val UNISCRIPT_VERSION = "https://uniscript.org/v1"
 /** Every `https://uniscript.org/vN` is read (backwards compatible, a later version as well as the current tables allow) */
@@ -55,8 +61,25 @@ data class Warning(val message: String, /** UTF-8 byte offset of the tag or bloc
 	override fun toString() = "uniscript: $message at byte $at"
 }
 
-/** Whether unsupported characters are warnings (the output keeps them plain) or errors */
-enum class WarningMode { WARN, ERROR }
+/** Whether unsupported characters are warnings (the output keeps them plain) or errors; LENIENT also turns errors
+ *  (unknown entities, invalid meta values, an unclosed `<:`) into warnings and keeps their uniscript as written */
+enum class WarningMode { WARN, ERROR, LENIENT }
+
+/** The header `<:uniscript version="https://uniscript.org/v1">` that starts a uniscript file */
+data class Header(/** "" when the header names no version */ val version: String, /** UTF-8 bytes of the header and the line break after it */ val length: Int)
+
+/** The header and its length in chars of the source; it is no header anywhere but at the start */
+private fun headerSpan(source: String): Pair<String, Int>? {
+	val rest = source.removePrefix(HEADER_OPEN)
+	if (rest.length == source.length || !(rest.startsWith(' ') || rest.startsWith(TAG_CLOSE))) return null
+	val close = rest.indexOf(TAG_CLOSE).takeIf { it >= 0 } ?: return null
+	val version = rest.substring(0, close).substringAfter(VERSION_ATTRIBUTE, "").substringBefore(ATTRIBUTE_QUOTE)
+	val end = HEADER_OPEN.length + close + 1
+	return version to end + (LINE_BREAKS.firstOrNull { source.startsWith(it, end) }?.length ?: 0)
+}
+
+/** The header at the start of the source, else null */
+fun header(source: String): Header? = headerSpan(source)?.let { (version, length) -> Header(version, source.substring(0, length).utf8Size) }
 
 data class Converted(val text: String, val warnings: List<Warning>)
 
@@ -64,7 +87,7 @@ data class Converted(val text: String, val warnings: List<Warning>)
 class Uniscript(val index: EntityIndex = EntityIndex.bundled) {
 	/** Uniscript → Unicode and its warnings; in [WarningMode.ERROR] the first warning is the error */
 	fun convert(source: String, mode: WarningMode = WarningMode.WARN): Converted {
-		val conversion = Conversion(index, source)
+		val conversion = Conversion(index, source, mode == WarningMode.LENIENT)
 		val text = conversion.unicode()
 		if (mode == WarningMode.ERROR) conversion.warnings.firstOrNull()?.let { throw UniscriptError.Unsupported(it) }
 		return Converted(text, conversion.warnings)
@@ -77,6 +100,48 @@ class Uniscript(val index: EntityIndex = EntityIndex.bundled) {
 	fun isMetaKey(word: String) = index[Table.META, word] != null
 
 	fun isName(name: String) = index[Table.NAMES, name] != null
+
+	/** A font style of the entities: `cuneiform-hittite`, `han-japanese` */
+	fun font(name: String): Font? {
+		index[Table.FONTS, "$name "] ?: return null
+		fun field(field: String) = index[Table.FONTS, "$name $field"] ?: ""
+		return Font(name, field("lang"), commaList(field("families")), commaList(field("features")))
+	}
+
+	/** The CSS declaration template of a meta key (`color` → `color: {}`) */
+	fun metaTemplate(key: String) = index[Table.META, key]
+
+	/** Tagged text → plain text and meta runs; unknown keys and unmatched closes warn */
+	fun metaRuns(tagged: String): Pair<Styled, List<Warning>> {
+		val (styled, warnings) = Styled.parse(tagged)
+		val unknown = styled.runs.filter { metaTemplate(it.key) == null }.map { Warning("unknown meta key ${it.key}", it.at) }
+		return styled to (warnings + unknown).sortedBy(Warning::at)
+	}
+
+	/** HTML of tagged text: each meta run a `<span>` with its lang and CSS; an unknown key becomes a `data-` attribute */
+	fun html(styled: Styled) = styled.interleaved(::span, "</span>", ::escapeHtml)
+
+	private fun span(run: MetaRun): String {
+		fun attribute(name: String, value: String) = " $name=\"${escapeHtml(value)}\""
+		fun quoted(items: List<String>) = items.joinToString(", ") { "'$it'" }
+		val attributes = StringBuilder()
+		val style = mutableListOf<String>()
+		val font = font(run.value)
+		val template = metaTemplate(run.key)
+		when {
+			run.key == FONT_KEY && font != null -> {
+				attributes.append(attribute(LANG_KEY, font.lang))
+				style += "font-family: ${quoted(font.families)}"
+				if (font.features.isNotEmpty()) style += "font-feature-settings: ${quoted(font.features)}"
+			}
+			run.key == FONT_KEY && template != null -> style += template.replace(VALUE_PLACEHOLDER, quoted(listOf(run.value)))
+			run.key == LANG_KEY -> attributes.append(attribute(LANG_KEY, run.value))
+			template != null -> style += template.replace(VALUE_PLACEHOLDER, run.value)
+			else -> attributes.append(attribute("data-${run.key}", run.value))
+		}
+		if (style.isNotEmpty()) attributes.append(attribute("style", style.joinToString("; ")))
+		return "<span$attributes>"
+	}
 
 	private fun knownMeta(codePoints: IntArray, position: Int) = meta(codePoints, position)?.takeIf { isMetaKey(it.first.key) }
 
@@ -147,7 +212,7 @@ class Uniscript(val index: EntityIndex = EntityIndex.bundled) {
 }
 
 /** One uniscript → Unicode conversion of a source, collecting its warnings; positions are char indices of the source */
-private class Conversion(val index: EntityIndex, val source: String) {
+private class Conversion(val index: EntityIndex, val source: String, val lenient: Boolean) {
 	val warnings = mutableListOf<Warning>()
 
 	private fun name(key: String) = index[Table.NAMES, key]
@@ -276,35 +341,50 @@ private class Conversion(val index: EntityIndex, val source: String) {
 	/** The text inside a full block (`<:greek> filosofia kosmos<:/greek>`) as written: its whitespace stays, each word is
 	 *  an operand; a group block joins its parts */
 	private fun blockText(block: String, text: String, at: Int): String {
-		if (name("$block *group") != null) return operands(block, text, emptyList(), at)
+		if (isGroup(block)) return group(block, null, text, at)
 		return Regex("(?<=\\s)|(?=\\s)").split(text).joinToString("") { piece ->
 			if (piece.isBlank()) piece else operand(block, piece, emptyList(), at)
 		}
 	}
 
-	/** The space separated operands of an inline tag, spaces dropped, or one operand of several words (egyptian seated man);
-	 *  a group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script
-	 *  of the first part has */
-	private fun operands(block: String, content: String, effects: List<String>, at: Int): String {
-		val tokens = splitOnSpaces(content)
-		val phrase = tokens.joinToString("-")
-		if ('-' in phrase && name("$block $phrase") != null) return operand(block, phrase, effects, at)
-		val group = name("$block *group") != null
-		val out = StringBuilder()
-		var script = ""
-		tokens.forEachIndexed { position, token ->
-			val part = if (group) (if (token.utf8Size > 1) name(token) else null) ?: token else operand(block, token, effects, at)
-			if (position == 0) {
-				script = part.firstCodePoint()?.let(::scriptOf) ?: ""
-				val prefix = name("$block *prefix $script")
-				out.append(prefix ?: "")
-				if (group && prefix == null && name("$block *infix $script") == null) warn("no $block group of $part", at)
-			} else {
-				out.append(name("$block *infix $script") ?: "")
-			}
-			out.append(part)
+	/** The words of an inline tag as operands of the block: a run of words that names one operand stays one (seated man,
+	 *  red crown), the longest run first */
+	private fun operandTokens(block: String, content: String): List<String> {
+		val words = splitOnWhitespace(content)
+		val tokens = mutableListOf<String>()
+		var start = 0
+		while (start < words.size) {
+			val longest = minOf(words.size, start + MAX_OPERAND_WORDS)
+			val end = (longest downTo start + 2).firstOrNull { form(block, words.subList(start, it).joinToString("-")) != null } ?: (start + 1)
+			tokens += words.subList(start, end).joinToString("-")
+			start = end
 		}
-		return out.toString()
+		return tokens
+	}
+
+	/** Whether the content starts with an operand of the block: `<:egyptian red crown>` names a sign, red is no effect */
+	private fun startsOperand(block: String, content: String) =
+		operandTokens(block, content).firstOrNull()?.let { form(block, it) } != null
+
+	/** The space separated operands of an inline tag, spaces dropped */
+	private fun operands(block: String, content: String, effects: List<String>, at: Int) =
+		operandTokens(block, content).joinToString("") { operand(block, it, effects, at) }
+
+	private fun isGroup(block: String) = form(block, GROUP_KEY) != null
+
+	/** A group (above, beside) joins its parts unstyled with the prefix before or the infix between them that the script
+	 *  of the first part has; the parts are operands of the naming block (`<:egyptian above A1 A2>`), else names or text */
+	private fun group(group: String, naming: String?, content: String, at: Int): String {
+		val tokens = if (naming != null) operandTokens(naming, content) else splitOnWhitespace(content)
+		val parts = tokens.map { token ->
+			naming?.let { form(it, token) } ?: (if (token.utf8Size > 1) name(token) else null) ?: token
+		}
+		val first = parts.firstOrNull() ?: return ""
+		val script = first.firstCodePoint()?.let(::scriptOf) ?: ""
+		val prefix = name("$group *prefix $script")
+		val infix = name("$group *infix $script")
+		if (prefix == null && infix == null) warn("no $group group of $first", at)
+		return (prefix ?: "") + parts.joinToString(infix ?: "")
 	}
 
 	/** `<:key value …>` with meta keys: `<:font han-japanese>` opens spans, `<:color #ff8800 mirror A>` attaches to each
@@ -349,13 +429,21 @@ private class Conversion(val index: EntityIndex, val source: String) {
 		metaTag(content, at)?.let { return it }
 		val (first, afterFirst) = splitOnce(content, ' ') ?: splitOnce(content, '-') ?: throw UniscriptError.UnknownEntity(content)
 		if (!isBlock(first)) throw UniscriptError.UnknownEntity(content)
-		// <:mirror red A>: effect words stack, the last takes the operands, the others add their suffixes
+		// <:mirror red A>: effect words stack, the last takes the operands, the others add their suffixes; a word that starts
+		// an operand of the block before it is no block (<:egyptian red crown>)
 		val words = mutableListOf(first)
 		var rest = afterFirst
 		while (true) {
 			val (word, after) = splitOnce(rest, ' ')?.takeIf { isBlock(it.first) } ?: break
+			if (startsOperand(words.last(), rest)) break
 			words += word
 			rest = after
+		}
+		val groupAt = words.indexOfFirst(::isGroup)
+		if (groupAt >= 0) {
+			// <:egyptian above A1 A2>: the other block names the parts of the group
+			val group = words.removeAt(groupAt)
+			return group(group, words.lastOrNull { !isEffect(it) }, rest, at)
 		}
 		val block = words.removeAt(words.lastIndex)
 		val (effects, styles) = words.partition(::isEffect)
@@ -372,13 +460,16 @@ private class Conversion(val index: EntityIndex, val source: String) {
 	/** Chars of the header `<:uniscript version="…">` and its line break at the start; a version that is no
 	 *  uniscript.org version ([readsVersion]) warns */
 	private fun headerLength(): Int {
-		val rest = source.removePrefix(HEADER_OPEN)
-		if (rest.length == source.length || !(rest.startsWith(' ') || rest.startsWith(TAG_CLOSE))) return 0
-		val close = rest.indexOf(TAG_CLOSE).takeIf { it >= 0 } ?: return 0
-		val version = rest.substring(0, close).substringAfter(VERSION_ATTRIBUTE, "").substringBefore(ATTRIBUTE_QUOTE)
+		val (version, length) = headerSpan(source) ?: return 0
 		if (!readsVersion(version)) warn("unsupported uniscript version $version", 0)
-		val end = HEADER_OPEN.length + close + 1
-		return end + (LINE_BREAKS.firstOrNull { source.startsWith(it, end) }?.length ?: 0)
+		return length
+	}
+
+	/** The source text of an error, with a warning, when lenient; else the error */
+	private fun kept(error: UniscriptError, written: String, at: Int): String {
+		if (!lenient) throw error
+		warn(error.message!!, at)
+		return written
 	}
 
 	fun unicode(): String {
@@ -399,17 +490,29 @@ private class Conversion(val index: EntityIndex, val source: String) {
 			} else if (source[position] == SHORT_OPEN) {
 				val nameEnd = NAME_TOKEN.matchAt(source, position + 2)!!.range.last + 1
 				val entity = source.substring(position + 2, nameEnd)
-				out.append(name(entity) ?: codePoint(entity, source.substring(position, nameEnd), position) ?: throw UniscriptError.UnknownEntity(entity))
+				val written = source.substring(position, nameEnd)
+				out.append(name(entity) ?: codePoint(entity, written, position) ?: kept(UniscriptError.UnknownEntity(entity), written, position))
 				position = nameEnd
 			} else {
-				val close = firstIndex(position + 2) { source[it] == TAG_CLOSE } ?: throw UniscriptError.Unclosed(source.substring(position))
+				val close = firstIndex(position + 2) { source[it] == TAG_CLOSE }
+				if (close == null) {
+					val rest = source.substring(position)
+					out.append(kept(UniscriptError.Unclosed(rest), rest, position))
+					break
+				}
 				val content = source.substring(position + 2, close)
 				val closedKey = content.removePrefix(CLOSING_SLASH.toString())
 				when {
 					content.startsWith(CLOSING_SLASH) && index[Table.META, closedKey] != null -> out.append(Meta.Close(closedKey).tags)
 					isClosing(content) -> block = null
 					isBlock(content) -> block = content
-					else -> out.append(tag(content, position))
+					else -> out.append(
+						try {
+							tag(content, position)
+						} catch (error: UniscriptError) {
+							kept(error, source.substring(position, close + 1), position)
+						},
+					)
 				}
 				position = close + 1
 			}
@@ -440,12 +543,15 @@ private fun isClosing(content: String) = content.isEmpty() || content.startsWith
 /** Rust's `split(' ')` without the empty pieces */
 private fun splitOnSpaces(text: String) = text.split(' ').filter { it.isNotEmpty() }
 
-/** Rust's `split_once`: the text before and after the first separator */
+/** Rust's `split_whitespace` */
+private fun splitOnWhitespace(text: String) = text.split(WHITESPACE).filter { it.isNotEmpty() }
+
 /** Every order of the parts */
 private fun permutations(parts: List<String>): List<List<String>> =
 	if (parts.size <= 1) listOf(parts)
 	else parts.indices.flatMap { position -> permutations(parts - parts[position]).map { listOf(parts[position]) + it } }
 
+/** Rust's `split_once`: the text before and after the first separator */
 fun splitOnce(text: String, separator: Char): Pair<String, String>? {
 	val at = text.indexOf(separator)
 	return if (at < 0) null else text.substring(0, at) to text.substring(at + 1)
