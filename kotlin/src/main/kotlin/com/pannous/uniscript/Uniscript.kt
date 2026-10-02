@@ -1,7 +1,7 @@
 // Uniscript: a human readable, ASCII-only spelling of Unicode text; a port of the Rust crate in src/lib.rs.
 //
 //     Uniscript().toUnicode("<:alpha> <:fracture A> \\:infinity")  // "α 𝔄 ∞"
-//     Uniscript().toUniscript("α 𝔄 ∞")                            // "<:alpha> <:fracture A> <:infinity>"
+//     Uniscript().toUniscript("α 𝔄 ∞")                            // "\\:alpha \\:fracture-A \\:infinity"
 //
 // Rust `char` is a Unicode scalar, so the converter works on code points. The markers are ASCII, so the parser scans
 // UTF-16 chars; warning offsets are UTF-8 bytes, as in Rust.
@@ -99,9 +99,9 @@ class Uniscript(val index: EntityIndex = EntityIndex.bundled) {
 
 	fun toUnicode(source: String) = convert(source).text
 
-	fun isBlock(word: String) = index[Table.NAMES, "$word "] != null
+	fun isBlock(word: String) = index.isBlock(word)
 
-	fun isMetaKey(word: String) = index[Table.META, word] != null
+	fun isMetaKey(word: String) = index.isMetaKey(word)
 
 	fun isName(name: String) = index[Table.NAMES, name] != null
 
@@ -157,7 +157,6 @@ class Uniscript(val index: EntityIndex = EntityIndex.bundled) {
 		return "<:${blocks.joinToString(" ")} $inner>"
 	}
 
-	/** Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A>` */
 	/** The spelling of the longest known emoji sequence joined at [position] and its length in code points:
 	 *  👩‍🦰 → <:red-haired woman>; a zero width joiner may come first: ‍🦰 → <:red-hair> */
 	private fun joinedForm(characters: IntArray, position: Int): Pair<String, Int>? {
@@ -178,6 +177,26 @@ class Uniscript(val index: EntityIndex = EntityIndex.bundled) {
 		}
 	}
 
+	/** The source with its inline tags in their explicit form: `\:alpha` where it fits, else `<:color #ff8800 A/>`; the
+	 *  header and everything else stay */
+	fun explicit(source: String): String {
+		val start = headerSpan(source)?.second ?: 0
+		val out = StringBuilder(source.substring(0, start))
+		var position = start
+		while (true) {
+			val open = source.indexOf("$TAG_OPEN$MARKER_COLON", position).takeIf { it >= 0 } ?: break
+			val close = source.indexOf(TAG_CLOSE, open + 2).takeIf { it >= 0 } ?: break
+			val content = source.substring(open + 2, close)
+			out.append(source, position, open)
+			if (index.readsAsOpener(content)) out.append(index.shortForm(content, source.getOrNull(close + 1)) ?: selfClosedForm(content))
+			else out.append(source, open, close + 1)
+			position = close + 1
+		}
+		return out.append(source, position, source.length).toString()
+	}
+
+	/** Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A/>`, the
+	 *  other tags their explicit form (`\:alpha`, `<:alpha/>x`) */
 	fun toUniscript(text: String): String {
 		val characters = text.codePoints().toArray()
 		val out = StringBuilder()
@@ -237,9 +256,49 @@ class Uniscript(val index: EntityIndex = EntityIndex.bundled) {
 				},
 			)
 		}
-		return out.toString()
+		return explicit(out.toString())
 	}
 }
+
+private fun EntityIndex.isBlock(content: String) = this[Table.NAMES, "$content "] != null
+
+private fun EntityIndex.isMetaKey(word: String) = this[Table.META, word] != null
+
+/** `<:font han-japanese>`, `<:font x lang ja>`: meta keys with values only, opening spans */
+private fun EntityIndex.opensMeta(content: String): Boolean {
+	val words = splitOnWhitespace(content)
+	return words.isNotEmpty() && words.size % 2 == 0 && words.chunked(2).all { isMetaKey(it[0]) }
+}
+
+/** An inline tag's content (`<:alpha>`, `<:greek athos>`) looks like it opens something, as `<:greek>` does; not an
+ *  escape (`<:<>`), closer, self-closed tag, block or meta span opener */
+private fun EntityIndex.readsAsOpener(content: String) =
+	content.utf8Size > 1 && !isClosing(content) && !content.endsWith(CLOSING_SLASH) && !isBlock(content) && !opensMeta(content)
+
+/** The explicit forms of an inline tag followed by `next`, which convert alike: `\:greek-athos`,
+ *  `<:greek> athos <:/greek>` and `<:greek athos/>` */
+private fun EntityIndex.explicitForms(content: String, next: Char?) = listOfNotNull(shortForm(content, next), blockForm(content), selfClosedForm(content))
+
+/** `\:greek-athos` of `greek athos` followed by `next`: names only, no name character may follow, hyphens only without
+ *  spaces (\: reads them as spaces: `<:red-haired woman>` is no `\:red-haired-woman`), and no meta key, which reads
+ *  better as a tag (`<:color red A/>`) */
+private fun EntityIndex.shortForm(content: String, next: Char?): String? {
+	val namesOnly = content.all { isNameChar(it) || it == ' ' }
+	val startsMeta = splitOnce(content, ' ')?.let { isMetaKey(it.first) } == true
+	val fits = namesOnly && !(' ' in content && '-' in content) && !startsMeta && !(next != null && isNameChar(next))
+	return if (fits) "$SHORT_OPEN$MARKER_COLON${content.replace(' ', '-')}" else null
+}
+
+/** `<:greek> athos <:/greek>` of `greek athos`: a block and one operand (a block keeps the spaces between operands) */
+private fun EntityIndex.blockForm(content: String): String? {
+	val (block, operand) = splitOnce(content, ' ') ?: return null
+	return if (isBlock(block) && ' ' !in operand && !isBlock(operand)) "<:$block> $operand <:/$block>" else null
+}
+
+private fun selfClosedForm(content: String) = "$TAG_OPEN$MARKER_COLON$content$CLOSING_SLASH$TAG_CLOSE"
+
+/** `a, b or c` */
+private fun either(forms: List<String>) = if (forms.size <= 1) forms.joinToString() else forms.dropLast(1).joinToString(", ") + " or " + forms.last()
 
 /** One uniscript → Unicode conversion of a source, collecting its warnings; positions are char indices of the source */
 private class Conversion(val index: EntityIndex, val source: String, val lenient: Boolean) {
@@ -247,7 +306,7 @@ private class Conversion(val index: EntityIndex, val source: String, val lenient
 
 	private fun name(key: String) = index[Table.NAMES, key]
 
-	private fun isBlock(name: String) = name("$name ") != null
+	private fun isBlock(name: String) = index.isBlock(name)
 
 	/** The character of a code point token (`U+1F60D`, `1F60D`); an invalid one (surrogate, above 10FFFF) warns and
 	 *  stays `written`; null for no code point token */
@@ -553,18 +612,29 @@ private class Conversion(val index: EntityIndex, val source: String, val lenient
 						block = content
 						after += openingPaddingLength(source, after)
 					}
-					else -> out.append(
-						try {
-							tag(content, position)
-						} catch (error: UniscriptError) {
-							kept(error, source.substring(position, close + 1), position)
-						},
-					)
+					else -> inlineTag(content, position, close, out)
 				}
 				position = after
 			}
 		}
 		return out.toString()
+	}
+
+	/** `<:content>` or self-closed `<:content/>` at `at`, closed at `close`; an inline tag that converts quietly but reads
+	 *  as an opener warns with its explicit forms (one warning per tag: <:fracture 7> already says there is no fracture 7) */
+	private fun inlineTag(content: String, at: Int, close: Int, out: StringBuilder) {
+		val selfClosed = content.removeSuffix(CLOSING_SLASH.toString()).takeIf { it.length < content.length && it.isNotEmpty() }
+		val earlierWarnings = warnings.size
+		val converted = try {
+			tag(selfClosed ?: content, at)
+		} catch (error: UniscriptError) {
+			out.append(kept(error, source.substring(at, close + 1), at))
+			return
+		}
+		if (selfClosed == null && warnings.size == earlierWarnings && index.readsAsOpener(content)) {
+			warn("<:$content> looks like an opening tag: write ${either(index.explicitForms(content, source.getOrNull(close + 1)))}", at)
+		}
+		out.append(converted)
 	}
 
 	/** A tag's content closes a block: `<:>` or `<:/greek>`, not a meta close like `<:/color>` */

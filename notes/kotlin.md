@@ -21,3 +21,7 @@
 - Signing checked with a throwaway passphrase-less key passed as ORG_GRADLE_PROJECT_signingInMemoryKey: every artifact
   gets a valid .asc. The user's key 0DA96849CA330895 cannot be exported without its passphrase.
 - The javadoc jar is empty (no Dokka); Central accepts that.
+- Inline tags (8ed80c0): `Uniscript.explicit(source)` rewrites opener-like `<:…>` to `\:…` or `<:…/>`; `toUniscript` ends
+  with it. The opener test (`readsAsOpener`, `shortForm`, `blockForm`, `explicitForms`) are `EntityIndex` extensions so
+  both `Uniscript` and the private `Conversion` use them; `Conversion.inlineTag` counts warnings before `tag()` to warn
+  only for a quietly converted tag. Port tests assert the explicit spelling, as the Rust tests do.

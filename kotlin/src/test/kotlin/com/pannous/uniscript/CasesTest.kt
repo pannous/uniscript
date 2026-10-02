@@ -69,6 +69,9 @@ class CasesTest {
 	fun toUniscript() = check("toUniscript") { assertEquals("$it", it.text(1), uniscript.toUniscript(it.text(0))) }
 
 	@Test
+	fun explicit() = check("explicit") { assertEquals("$it", it.text(1), uniscript.explicit(it.text(0))) }
+
+	@Test
 	fun unicodeRoundTrips() = check("unicodeRoundTrips") { assertEquals("$it", it.text(0), uniscript.toUnicode(uniscript.toUniscript(it.text(0)))) }
 
 	@Test

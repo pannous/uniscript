@@ -17,22 +17,22 @@ class StylesTest {
 
 	@Test
 	fun greekLettersHaveTheirMathematicalStyles() {
-		roundTrips("<:bold Alpha>", "𝚨")
-		roundTrips("<:bold alpha>", "𝛂")
-		roundTrips("<:bold-italic alpha>", "𝜶")
-		roundTrips("<:sans-bold Alpha>", "𝝖")
-		roundTrips("<:sans-bold-italic alpha>", "𝞪")
-		roundTrips("<:bold-script B>", "𝓑")
+		roundTrips("\\:bold-Alpha", "𝚨")
+		roundTrips("\\:bold-alpha", "𝛂")
+		roundTrips("<:bold-italic alpha/>", "𝜶")
+		roundTrips("<:sans-bold Alpha/>", "𝝖")
+		roundTrips("<:sans-bold-italic alpha/>", "𝞪")
+		roundTrips("<:bold-script B/>", "𝓑")
 	}
 
 	@Test
 	fun stackedStylesCombineOrCommute() {
-		convertsQuietly("<:bold italic alpha>", "𝜶")
-		convertsQuietly("<:bold sans italic Alpha>", "𝞐")
-		convertsQuietly("<:fraktur bold A>", "𝕬")
-		convertsQuietly("<:mirror bold italic A>", "𝑨\uDB40\uDC4D")
-		convertsQuietly("<:greek bold a>", "𝛂")
-		convertsQuietly("<:greek bold alpha>", "𝛂")
+		convertsQuietly("<:bold italic alpha/>", "𝜶")
+		convertsQuietly("<:bold sans italic Alpha/>", "𝞐")
+		convertsQuietly("<:fraktur bold A/>", "𝕬")
+		convertsQuietly("<:mirror bold italic A/>", "𝑨\uDB40\uDC4D")
+		convertsQuietly("<:greek bold a/>", "𝛂")
+		convertsQuietly("<:greek bold alpha/>", "𝛂")
 	}
 
 	@Test

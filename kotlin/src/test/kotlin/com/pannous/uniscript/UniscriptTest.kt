@@ -81,7 +81,7 @@ class UniscriptTest {
 		converts("<:mirror 𓀀>", "𓀀𓑀")
 		converts("<:mirror red A>", "A$RED$MIRROR")
 		converts("<:mirror red circle>", "🔴$MIRROR")
-		assertEquals("<:mirror red A> <:mirror red circle>", uniscript.toUniscript("A$RED$MIRROR 🔴$MIRROR"))
+		assertEquals("\\:mirror-red-A \\:mirror-red-circle", uniscript.toUniscript("A$RED$MIRROR 🔴$MIRROR"))
 	}
 
 	@Test
@@ -90,7 +90,7 @@ class UniscriptTest {
 		converts("<:beside 犭 句>", "⿰犭句")
 		converts("<:egyptian seated man>", "𓀀")
 		converts("<:egyptian> A1 Aa1 <:/egyptian>", "𓀀 𓐍")
-		assertEquals("<:egyptian A1> <:egyptian Aa1>", uniscript.toUniscript("𓀀 𓐍"))
+		assertEquals("\\:egyptian-A1 \\:egyptian-Aa1", uniscript.toUniscript("𓀀 𓐍"))
 	}
 
 	@Test
@@ -103,7 +103,7 @@ class UniscriptTest {
 
 	@Test
 	fun unicodeSpellsBackAndRoundTrips() {
-		assertEquals("<:alpha> <:Omega> <:fracture A> <:infinity> <:double R>", uniscript.toUniscript("α Ω 𝔄 ∞ ℝ"))
+		assertEquals("\\:alpha \\:Omega \\:fracture-A \\:infinity \\:double-R", uniscript.toUniscript("α Ω 𝔄 ∞ ℝ"))
 		assertEquals("a <<::> b \\<::> c", uniscript.toUniscript("a <: b \\: c"))
 		val text = "∀x∈ℝ: 𝔄 A$RED$MIRROR 𓀀𓑀 ⿰犭句 <: é 🔴 日本語"
 		assertEquals(text, uniscript.toUnicode(uniscript.toUniscript(text)))
@@ -129,7 +129,7 @@ class UniscriptTest {
 		converts("<:color #ff8800 A b>", "A${orange}b$orange")
 		converts("<:color #ff8800 é>", "é$orange")
 		converts("<:angle>", "∠")
-		for (source in listOf("<:font han-japanese>直<:/font>", "<:color #ff8800 A>")) {
+		for (source in listOf("<:font han-japanese>直<:/font>", "<:color #ff8800 A/>")) {
 			assertEquals(source, uniscript.toUniscript(uniscript.toUnicode(source)))
 		}
 		val scotland = "🏴\uDB40\uDC67\uDB40\uDC62\uDB40\uDC73\uDB40\uDC63\uDB40\uDC74\uDB40\uDC7F"
