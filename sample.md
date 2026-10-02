@@ -1,10 +1,15 @@
 <:uniscript version="https://uniscript.org/v1">
 <:alpha> <:beta> <:gamma>: this file starts with the uniscript marker, so MarkdownPreview converts uniscript in its prose.
 
-\:a2
-\:egyptian-a1
-\:egyptian-seated-man
+\:yi2
+\:a2 á 𓀁 𒀉   
+𒀉𒊩  A2 SAL
+𒀉𒌉  A2 TUR
+𒀉𒌋𒆤 A2 U KID
+
+󳇦
 <:egyptian seated-man>
+𓀁
 
 • **languages**       (greek a => α)    
 • **modifiers**     (upper A => ᴬ , italic A => 𝐴 , bold A => 𝐀 , bold italic A => 𝑨 , bold alpha => 𝛂 … )    
