@@ -139,3 +139,6 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - DONE python: `python3 -m pytest python/native/tests` from the repo root imports the stale pip-installed uniscript (~/Library/Python/3.14/site-packages, 41 failures); run it from python/native or reinstall the package
 - DONE: kotlin: `./gradlew test` fails before compiling: "Failed to calculate the value of task ':compileTestJava' property 'javaCompiler'" (JDK toolchain not found)
 - js/test/differential.test.ts compares against /opt/cargo/release/uniscript (UNISCRIPT_RUST): a stale build fails it after an index or converter change; rebuild with CARGO_TARGET_DIR=/opt/cargo cargo build --release (the cause of the "flaky" run above)
+- TODO: probes/test_sublime_plugin.py expects a block to drop its spaces ("αθοσ
+") but the converter keeps them (" αθοσ 
+", like the shared case <:egyptian> A1 Aa1 <:/egyptian> → " 𓀀 𓐍 "): the probe or the block-spaces rule needs a decision

@@ -114,6 +114,10 @@ class Names:
                 self.blocks.add(block)
             elif not operand.startswith("*"):
                 self.operands.setdefault(block, []).append((operand, text))
+        for block, operands in self.operands.items():
+            # the index's case fallback twins (egyptian a1 of A1) are no operands of their own
+            cased = {(operand.lower(), text) for operand, text in operands if operand != operand.lower()}
+            self.operands[block] = [(operand, text) for operand, text in operands if operand != operand.lower() or (operand, text) not in cased]
         self.owners = {}  # an operand in lowercase → (block, operand, text) of every block holding it
         for block, operands in self.operands.items():
             for operand, text in operands:
@@ -127,6 +131,18 @@ class Names:
         for owner in ranked:
             chosen.setdefault(owner[2], owner)
         return list(chosen.values())
+
+    def short_operands(self, typed):
+        """(block-operand, text) of the block words leading the typed short name: \\:egyptian-seated-m offers
+        egyptian-seated-man, the short form of <:egyptian seated man>"""
+        segments = typed.split(SEGMENT_END)
+        leading = 0
+        while leading < len(segments) - 1 and segments[leading] in self.blocks:
+            leading += 1
+        if not leading:
+            return []
+        path = SEGMENT_END.join(segments[:leading]) + SEGMENT_END
+        return [(path + operand.replace(" ", SEGMENT_END), text) for operand, text in self.operands.get(segments[leading - 1], [])]
 
 
 def load_names(binary=""):
@@ -200,6 +216,8 @@ def completions(line_before_cursor, next_character, names, word, close_operands=
         return []
     is_short, words, leading, prefix = typed
     candidates = names.operands.get(words[leading - 1], []) if leading else names.entities
+    if is_short:
+        candidates = candidates + names.short_operands(prefix)
     word_start = max(0, len(prefix) - len(word))
     word_head = word[:max(0, len(word) - len(prefix))]  # where the word reaches before the name (\: in its word chars)
     closes = (close_operands or not leading) and not is_short and next_character != TAG_END
