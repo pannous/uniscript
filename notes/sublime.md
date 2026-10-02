@@ -32,8 +32,9 @@
   `sublime.load_binary_resource` or ship a `.no-sublime-package` marker to be extracted.
 - Completion (2026-10-02): names come from `uniscript names` (every NAMES entry `key<TAB>text`), loaded once per
   session; `uniscript_cli.completions` (probed by probes/test_sublime_completion.py) returns (trigger, annotation,
-  completion). Sublime replaces only the word after the last space or `-` (word_separators), so a completion holds the
-  name from there on. DYNAMIC_COMPLETIONS re-queries per keystroke; the popup is opened by `auto_complete` after `<:`
+  completion). Sublime replaces its `prefix`, the word before the cursor by the syntax's word_separators (`s` in plain
+  text, `equals-s` where `-` is a word character), so a completion is the name from where that word starts (plus any
+  marker the word reaches into). DYNAMIC_COMPLETIONS re-queries per keystroke; the popup is opened by `auto_complete` after `<:`
   / `\:` and after committing a group (`-`) or block word (` `).
 - Other packages' completions: Sublime merges every listener's list (sublime_plugin.on_query_completions loops over
   all_callbacks and view_event_listeners); INHIBIT_* flags only drop buffer words and .sublime-completions. So the
