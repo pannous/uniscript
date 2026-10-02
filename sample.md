@@ -1,6 +1,17 @@
 <:uniscript version="https://uniscript.org/v1">
 <:alpha> <:beta> <:gamma>: this file starts with the uniscript marker, so MarkdownPreview converts uniscript in its prose.
 
+\:a2
+\:egyptian-a1
+\:egyptian-seated-man
+<:egyptian seated-man>
+
+• **languages**       (greek a => α)    
+• **modifiers**     (upper A => ᴬ , italic A => 𝐴 , bold A => 𝐀 , bold italic A => 𝑨 , bold alpha => 𝛂 … )    
+
+
+
+
 <:egyptian seated-man>
 
 \:equal-to-by-definition
