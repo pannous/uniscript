@@ -22,7 +22,6 @@ MAX_COMPLETIONS = 1000  # the shortest first
 GROUP_SAMPLES = 3  # characters shown beside a group of names
 BLOCK_ANNOTATION = "block"  # a block word without operands of its own (mirror)
 SEGMENT_END = "-"
-WORD_SEPARATORS = " -"  # Sublime replaces the word after the last of these
 
 
 class UniscriptError(Exception):
@@ -111,9 +110,10 @@ def grouped(candidates, prefix):
         return sorted(folded, key=lambda entry: (len(entry[0]), entry[0]))[:MAX_COMPLETIONS]
 
 
-def completions(line_before_cursor, next_character, names):
+def completions(line_before_cursor, next_character, names, word):
     """(trigger, annotation, completion) for the tag being typed: entity names, block words, after block words their
-    operands. Sublime replaces the word after the last space or "-", so a completion holds only the rest from there."""
+    operands. Sublime replaces `word`, the word before the cursor by the syntax's word_separators ("s" or "equals-s"),
+    so a completion holds the name from where that word starts."""
     match = TYPED_TAG.search(line_before_cursor)
     if not match:
         return []
@@ -124,14 +124,15 @@ def completions(line_before_cursor, next_character, names):
         leading += 1
     prefix = SEGMENT_END.join(words[leading:])
     candidates = names.operands.get(words[leading - 1], []) if leading else names.entities
-    word_start = max(prefix.rfind(separator) for separator in WORD_SEPARATORS) + 1
+    word_start = max(0, len(prefix) - len(word))
+    word_head = word[:max(0, len(word) - len(prefix))]  # where the word reaches before the name (\: in its word chars)
     closes = not leading and not is_short and next_character != TAG_END
     entries = []
     for name, annotation, count in grouped(candidates, prefix):
         tail = "" if count > 1 or not closes else TAG_END
-        entries.append((name, annotation, name[word_start:] + tail))
+        entries.append((name, annotation, word_head + name[word_start:] + tail))
     if not is_short and not leading:
         # a block word is the group of its operands: <:red> shows 🔴🟥🍎… 18 and asks for them when chosen
-        entries += [(block, summary(names.operands[block]) if block in names.operands else BLOCK_ANNOTATION, block[word_start:] + " ")
+        entries += [(block, summary(names.operands[block]) if block in names.operands else BLOCK_ANNOTATION, word_head + block[word_start:] + " ")
                     for block in sorted(names.blocks) if block.lower().startswith(prefix.lower())]
     return entries[:MAX_COMPLETIONS]

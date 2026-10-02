@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """The Sublime Text plugin's completions inside <: and \\: tags, names from the real uniscript binary:
 python3 probes/test_sublime_completion.py"""
+import re
 import sys
 from pathlib import Path
 
@@ -10,9 +11,10 @@ from uniscript_cli import completions, load_names  # noqa: E402
 names = load_names()
 
 
-def completed(line_before_cursor, next_character=""):
-    """trigger → (annotation, the text replacing the word before the cursor)"""
-    return {trigger: (annotation, text) for trigger, annotation, text in completions(line_before_cursor, next_character, names)}
+def completed(line_before_cursor, next_character="", word=None):
+    """trigger → (annotation, the text replacing Sublime's word before the cursor: by default letters, digits and _)"""
+    word = re.search(r"\w*$", line_before_cursor).group() if word is None else word
+    return {trigger: (annotation, text) for trigger, annotation, text in completions(line_before_cursor, next_character, names, word)}
 
 
 def expect(actual, expected):
@@ -33,6 +35,10 @@ expect(completed("<:LATIN CAPITAL LETTER E")["latin-capital-letter-eth"], ("Ð",
 expect(completed("alph"), {})
 expect(completed("<:alpha> alph"), {})
 expect(completed("<:nosuchblock x"), {})
+# Sublime's word depends on the syntax's word_separators: in some "-" is part of the word, all of it is replaced
+expect(completed("\\:equals-s", word="equals-s")["equals-sign"], ("=", "equals-sign"))
+expect(completed("\\:equals-s", word="s")["equals-sign"], ("=", "sign"))
+expect(completed("\\:equals-s", word="\\:equals-s")["equals-sign"], ("=", "\\:equals-sign"))
 groups = completed("\\:al")
 expect(groups["alchemical-"][1], "alchemical-")  # a group: names sharing their next segment
 assert not any(name.startswith("alchemical-symbol") for name in groups), groups

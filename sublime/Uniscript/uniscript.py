@@ -137,7 +137,7 @@ class UniscriptCompletionListener(sublime_plugin.EventListener):
             return None
         silence_other_completions(view)
         try:
-            entries = cli.completions(line, view.substr(cursor), names())
+            entries = cli.completions(line, view.substr(cursor), names(), prefix)
         except cli.UniscriptError as error:
             view.window().status_message("uniscript: {}".format(error))
             return None
