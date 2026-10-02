@@ -89,6 +89,19 @@ class Names:
                 self.blocks.add(block)
             elif not operand.startswith("*"):
                 self.operands.setdefault(block, []).append((operand, text))
+        self.owners = {}  # an operand in lowercase → (block, operand, text) of every block holding it
+        for block, operands in self.operands.items():
+            for operand, text in operands:
+                self.owners.setdefault(operand.lower(), []).append((block, operand, text))
+
+    def across_blocks(self, operand):
+        """(block, operand, text) of the blocks holding the operand (ignoring case), one per text: of a block and its
+        aliases (egyptian, eg, gardiner, hieroglyph) the one with the fewest operands, then the longest name"""
+        chosen = {}
+        ranked = sorted(self.owners.get(operand.lower(), []), key=lambda owner: (len(self.operands[owner[0]]), -len(owner[0]), owner[0]))
+        for owner in ranked:
+            chosen.setdefault(owner[2], owner)
+        return list(chosen.values())
 
 
 def load_names(binary=""):
@@ -133,21 +146,30 @@ def typed_tag(line_before_cursor, names):
     return is_short, words, leading, SEGMENT_END.join(words[leading:])
 
 
+def typed_tag_start(line_before_cursor):
+    """Offset of the marker of the tag being typed, or None"""
+    match = TYPED_TAG.search(line_before_cursor)
+    return match.start() if match else None
+
+
 def tab_completion(line_before_cursor, next_character, names, close_operands=False):
-    """Tab without the popup: (length typed before the cursor to replace, its replacement) for the only match, CHOOSE
-    when there are several (the list is shown once, even when the typed name is whole), None when nothing matches"""
+    """Tab without the popup: (length typed before the cursor to replace, its replacement, the whole tag replacing
+    the typed one or None) for the only match, CHOOSE when there are several (the list is shown once, even when the
+    typed name is whole), None when nothing matches"""
     typed = typed_tag(line_before_cursor, names)
     entries = typed and completions(line_before_cursor, next_character, names, typed[3], close_operands)
     if not entries:
         return None
-    return CHOOSE if len(entries) > 1 else (len(typed[3]), entries[0][2])
+    return CHOOSE if len(entries) > 1 else (len(typed[3]),) + entries[0][2:]
 
 
 def completions(line_before_cursor, next_character, names, word, close_operands=False):
-    """(trigger, annotation, completion) for the tag being typed: entity names, block words, after block words their
-    operands. Sublime replaces `word`, the word before the cursor by the syntax's word_separators ("s" or "equals-s"),
-    so a completion holds the name from where that word starts. A name on its own closes its tag, an operand after
-    block words only with close_operands (when the tag becomes its character at once)."""
+    """(trigger, annotation, completion, whole tag) for the tag being typed: entity names, block words, after block
+    words their operands, and an operand of several blocks typed alone (\\:a2: egyptian A2, anatolian a2, chinese a2).
+    Sublime replaces `word`, the word before the cursor by the syntax's word_separators ("s" or "equals-s"), so a
+    completion holds the name from where that word starts. A name on its own closes its tag, an operand after block
+    words only with close_operands (when the tag becomes its character at once). The whole tag, set for operands of
+    other blocks, replaces the typed tag instead (\\:chinese-a2 is no name: <:chinese a2>)."""
     typed = typed_tag(line_before_cursor, names)
     if not typed:
         return []
@@ -159,9 +181,13 @@ def completions(line_before_cursor, next_character, names, word, close_operands=
     entries = []
     for name, annotation, count in grouped(candidates, prefix):
         tail = "" if count > 1 or not closes else TAG_END
-        entries.append((name, annotation, word_head + name[word_start:] + tail))
+        entries.append((name, annotation, word_head + name[word_start:] + tail, None))
+    if not leading:
+        for block, operand, text in names.across_blocks(prefix):
+            tag = "{}{} {}{}".format(MARKER, block, operand, TAG_END)
+            entries.append(("{} {}".format(block, operand), text, tag, tag))
     if not is_short and not leading:
         # a block word is the group of its operands: <:red> shows 🔴🟥🍎… 18 and asks for them when chosen
-        entries += [(block, summary(names.operands[block]) if block in names.operands else BLOCK_ANNOTATION, word_head + block[word_start:] + " ")
+        entries += [(block, summary(names.operands[block]) if block in names.operands else BLOCK_ANNOTATION, word_head + block[word_start:] + " ", None)
                     for block in sorted(names.blocks) if block.lower().startswith(prefix.lower())]
     return entries[:MAX_COMPLETIONS]

@@ -14,7 +14,7 @@ names = load_names()
 def completed(line_before_cursor, next_character="", word=None):
     """trigger → (annotation, the text replacing Sublime's word before the cursor: by default letters, digits and _)"""
     word = re.search(r"\w*$", line_before_cursor).group() if word is None else word
-    return {trigger: (annotation, text) for trigger, annotation, text in completions(line_before_cursor, next_character, names, word)}
+    return {entry[0]: entry[1:3] for entry in completions(line_before_cursor, next_character, names, word)}
 
 
 def expect(actual, expected):
@@ -40,15 +40,22 @@ expect(completed("\\:equals-s", word="equals-s")["equals-sign"], ("=", "equals-s
 expect(completed("\\:equals-s", word="s")["equals-sign"], ("=", "sign"))
 expect(completed("\\:equals-s", word="\\:equals-s")["equals-sign"], ("=", "\\:equals-sign"))
 # Tab without the popup: the only match is inserted, several open the list (once, even for a whole name), none blink
-expect(tab_completion("\\:equal-to-by-definition", "", names), (22, "equal-to-by-definition"))
+expect(tab_completion("\\:equal-to-by-definition", "", names), (22, "equal-to-by-definition", None))
 expect(tab_completion("\\:egyptian-a1", "", names), CHOOSE)  # a whole name, but egyptian-a10 … too
 expect(tab_completion("x <:alpha", "", names), CHOOSE)  # alpha, Alpha
 expect(tab_completion("\\:egyptian-", "", names), CHOOSE)
 expect(tab_completion("\\:equ", "", names), CHOOSE)
 expect(tab_completion("alph", "", names), None)
-expect(tab_completion("\\:a2", "", names), None)
+expect(tab_completion("\\:a2x", "", names), None)
+# an operand of several blocks: one entry per character, which replaces the whole tag (\:chinese-a2 is no name)
+across = {entry[0]: (entry[1], entry[3]) for entry in completions("\\:a2", "", names, "a2")}
+expect(across["egyptian A2"], ("𓀁", "<:egyptian A2>"))  # not also under its aliases eg, gardiner, hieroglyph
+expect(across["anatolian a2"], ("𔐓", "<:anatolian a2>"))
+expect(across["chinese a2"], ("啊", "<:chinese a2>"))
+assert not {"eg A2", "gardiner A2", "hieroglyph A2", "luwian a2", "cn a2"} & set(across), across
+expect(tab_completion("\\:a2", "", names), CHOOSE)
 # inserting characters: operands close their tag too, and a finished tag is found for its conversion
-entries = {trigger: text for trigger, _, text in completions("<:red c", "", names, "c", close_operands=True)}
+entries = {entry[0]: entry[2] for entry in completions("<:red c", "", names, "c", close_operands=True)}
 expect(entries["circle"], "circle>")
 expect(finished_tag_before_cursor("x \\:equal-to-by-definition"), 2)
 expect(finished_tag_before_cursor("x <:red circle>"), 2)

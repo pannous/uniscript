@@ -178,17 +178,41 @@ class UniscriptTabCompletionCommand(sublime_plugin.TextCommand):
             typed = cli.typed_tag(line, names())[3]
             blink(self.view, sublime.Region(cursor - len(typed), cursor))
             return self.view.window().status_message("uniscript: no name starts with {}".format(typed))
-        replaced, text = best
+        replaced, text, whole_tag = best
+        if whole_tag:
+            return replace_typed_tag(self.view, edit, whole_tag)
         self.view.replace(edit, sublime.Region(cursor - replaced, cursor), text)
         finish_completion(self.view)
 
 
 FINISH_TAG_COMMAND = "uniscript_finish_tag"
+REPLACE_TAG_COMMAND = "uniscript_replace_tag"
 
 
-def completion_item(trigger, annotation, completion, typed_word):
+def replace_typed_tag(view, edit, tag):
+    """The typed tag (\\\\:a2, or <:a2 with its > if typed) becomes the chosen tag of another block, or its character"""
+    cursor = view.sel()[0].b
+    start = cli.typed_tag_start(text_before_cursor(view, cursor))
+    if start is None:
+        return
+    start += view.line(cursor).begin()
+    end = cursor + 1 if view.substr(start) == "<" and view.substr(cursor) == cli.TAG_END else cursor
+    view.replace(edit, sublime.Region(start, end), tag)
+    if inserts_characters():
+        view.run_command("uniscript_convert", {"regions": [(start, start + len(tag))], "live": True})
+
+
+class UniscriptReplaceTagCommand(sublime_plugin.TextCommand):
+    def run(self, edit, tag):
+        replace_typed_tag(self.view, edit, tag)
+
+
+def completion_item(trigger, annotation, completion, typed_word, whole_tag=None):
     """Sublime hides a completion that would leave the typed word as it is (\\:egyptian-a1 typed whole): inserting
-    characters, that one finishes the tag by a command instead, so it is listed and chosen like the others"""
+    characters, that one finishes the tag by a command instead, so it is listed and chosen like the others. An
+    operand of another block replaces the whole typed tag, also by a command"""
+    if whole_tag:
+        return sublime.CompletionItem.command_completion(trigger, REPLACE_TAG_COMMAND, {"tag": whole_tag}, annotation=annotation)
     if completion == typed_word and inserts_characters():
         return sublime.CompletionItem.command_completion(trigger, FINISH_TAG_COMMAND, {"word": typed_word}, annotation=annotation)
     return sublime.CompletionItem(trigger, annotation=annotation, completion=completion)
@@ -222,6 +246,6 @@ class UniscriptCompletionListener(sublime_plugin.EventListener):
             return None
         if not entries:
             return None
-        items = [completion_item(trigger, annotation, completion, prefix) for trigger, annotation, completion in entries]
+        items = [completion_item(trigger, annotation, completion, prefix, whole_tag) for trigger, annotation, completion, whole_tag in entries]
         flags = sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS | sublime.DYNAMIC_COMPLETIONS
         return sublime.CompletionList(items, flags)
