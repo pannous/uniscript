@@ -1,3 +1,6 @@
+
+\:equal-to-or-succeeds
+
 <:uniscript version="https://uniscript.org/v1">
 <:alpha> <:beta> <:gamma>: this file starts with the uniscript marker, so MarkdownPreview converts uniscript in its prose.
 
@@ -59,6 +62,7 @@ circle := <:pi> * r<:upper 2>  // \:infinity <:nosuchthing> <:greek c>
 - `<:above 𓀀 𓁐>  <:reverse 𓀀 𓁐>` → <:above 𓀀 𓁐>  <:reverse 𓀀 𓁐>
 - `<:above 󳀃 𓁐>  <:reverse 󳀃 𓁐>` → <:above 󳀃 𓁐>  <:reverse 󳀃 𓁐>
 - `<:red-haired woman>` <:red-haired woman>
+ 
 
 **Bold <:alpha>**, *italic <:Omega>* and a [link to <:infinity>](https://example.com).
 
