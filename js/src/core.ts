@@ -5,7 +5,7 @@
 
 import { EntityIndex, Table } from "./entityIndex.ts";
 import type { Lookup } from "./entityIndex.ts";
-import { Meta, Styled, attach, emojiTagsAt, escapeHTML, isMetaValue, joinedPrefixes, list, metaAt, utf8Length } from "./meta.ts";
+import { Meta, Styled, attach, emojiTagsAt, escapeHTML, isMetaValue, joinedPrefixes, afterBase, list, metaAt, utf8Length } from "./meta.ts";
 import type { Font, MetaRun, Warning } from "./meta.ts";
 
 const MARKER_COLON = ":";
@@ -359,7 +359,7 @@ export class Uniscript {
 	 * of the operand, or of the entity it names */
 	#operand(block: string, token: string, effects: string[], at: number): string {
 		const own = this.#name(`${block} ${token}`);
-		if (own !== undefined) return own + this.#effectSuffixes(effects, firstCharacter(own) || " ", at);
+		if (own !== undefined) return afterBase(own, this.#effectSuffixes(effects, firstCharacter(own) || " ", at));
 		const named = this.#name(token);
 		const characters = [...(named !== undefined && utf8Length(token) > 1 ? named : token)];
 		let out = "";

@@ -291,7 +291,7 @@ class Uniscript:
         of the operand, or of the entity it names"""
         own = self._name(f"{block} {token}")
         if own is not None:
-            return own + self._effect_suffixes(effects, own[:1] or " ", at)
+            return meta.after_base(own, self._effect_suffixes(effects, own[:1] or " ", at))
         named = self._name(token)
         characters = named if named is not None and utf8_length(token) > 1 else token
         out, i = [], 0

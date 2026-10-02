@@ -119,6 +119,12 @@ def joined_prefixes(text: str, start: int = 0) -> list:
     return ends[::-1]
 
 
+def after_base(text: str, suffixes: str) -> str:
+    """Suffixes after text; in an emoji sequence joined by zero width joiners they style its first character: 👩🏿‍🦰"""
+    joiner = text.find(ZERO_WIDTH_JOINER)
+    return text + suffixes if joiner < 0 else text[:joiner] + suffixes + text[joiner:]
+
+
 def emoji_tags_at(text: str, start: int = 0):
     """The length of an emoji tag sequence's tags at `start` (TAG g b s c t CANCEL TAG after 🏴)"""
     found = tag_sequence_at(text, start)

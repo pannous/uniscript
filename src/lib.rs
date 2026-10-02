@@ -476,7 +476,7 @@ impl<'a> Uniscript<'a> {
 	fn operand(&self, block: &str, token: &str, effects: &[&str], at: usize) -> String {
 		if let Some(own) = self.name(&format!("{block} {token}")) {
 			let first = own.chars().next().unwrap_or(' ');
-			return own.to_string() + &self.effect_suffixes(effects, first, at);
+			return meta::after_base(own, &self.effect_suffixes(effects, first, at));
 		}
 		let characters: Vec<char> = match self.name(token) {
 			Some(named) if token.len() > 1 => named.chars().collect(),

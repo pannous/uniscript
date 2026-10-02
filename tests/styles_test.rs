@@ -79,3 +79,14 @@ fn participles_name_their_effects() {
 	assert_eq!(to_unicode("<:mirrored A>"), to_unicode("<:mirror A>"));
 	assert_eq!(to_unicode("<:flipped red A>"), to_unicode("<:flip red A>"));
 }
+
+#[test]
+fn skin_tones_follow_their_person_also_in_joined_sequences() {
+	round_trips("<:dark-skinned woman>", "👩🏿");
+	round_trips("<:medium-skinned man>", "👨🏽");
+	converts("<:fair-skinned adult>", "🧑🏻");
+	converts("<:brown-skinned woman>", "👩🏾");
+	converts("<:woman><:medium-light-skin-tone>", "👩🏼");
+	converts("<:dark-skinned red-haired woman>", "👩🏿\u{200D}🦰");
+	assert_eq!(to_uniscript("👩🏿\u{200D}🦰"), "<:dark-skinned woman><:red-hair>");
+}

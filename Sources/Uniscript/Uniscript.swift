@@ -401,7 +401,7 @@ private final class Conversion {
 	/// of the operand, or of the entity it names
 	private func operand(_ block: String, _ token: String, _ effects: [String], _ at: Int) -> String {
 		if let own = name("\(block) \(token)") {
-			return own + effectSuffixes(effects, own.unicodeScalars.first ?? " ", at)
+			return afterBase(own, effectSuffixes(effects, own.unicodeScalars.first ?? " ", at))
 		}
 		let characters = Array(((token.utf8.count > 1 ? name(token) : nil) ?? token).unicodeScalars)
 		var out = ""

@@ -21,4 +21,9 @@ uniscript {
 	red-hair: "\u{200D}🦰"
 	curly-hair: "\u{200D}🦱"
 	white-hair: "\u{200D}🦳"
+	light-skin-tone: "\u{1F3FB}"
+	medium-light-skin-tone: "\u{1F3FC}"
+	medium-skin-tone: "\u{1F3FD}"
+	medium-dark-skin-tone: "\u{1F3FE}"
+	dark-skin-tone: "\u{1F3FF}"
 }

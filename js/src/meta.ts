@@ -157,6 +157,12 @@ export function joinedPrefixes(text: string, position = 0): number[] {
 	return ends.reverse();
 }
 
+/** Suffixes after text; in an emoji sequence joined by zero width joiners they style its first character: 👩🏿‍🦰 */
+export function afterBase(text: string, suffixes: string): string {
+	const joiner = text.indexOf(String.fromCodePoint(ZERO_WIDTH_JOINER));
+	return joiner < 0 ? text + suffixes : text.slice(0, joiner) + suffixes + text.slice(joiner);
+}
+
 /** Whether the character belongs to the character before it: marks, joiners, variation selectors, TAG characters */
 function extendsPrevious(previous: number | undefined, code: number): boolean {
 	if (previous !== undefined && (previous === ZERO_WIDTH_JOINER || within(previous, HIEROGLYPH_JOINERS))) return true;

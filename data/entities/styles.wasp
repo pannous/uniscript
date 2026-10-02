@@ -2328,6 +2328,21 @@ blocks {
 		adult: "🧑\u{200D}🦲"
 		person: "🧑\u{200D}🦲"
 	}
+	light-skinned {
+		"*suffix": "\u{1F3FB}"
+	}
+	medium-light-skinned {
+		"*suffix": "\u{1F3FC}"
+	}
+	medium-skinned {
+		"*suffix": "\u{1F3FD}"
+	}
+	medium-dark-skinned {
+		"*suffix": "\u{1F3FE}"
+	}
+	dark-skinned {
+		"*suffix": "\u{1F3FF}"
+	}
 	blond-haired {
 		person: "👱"
 		woman: "👱\u{200D}♀\u{FE0F}"
@@ -2346,6 +2361,18 @@ block-aliases {
 	flipped: flip
 	grey: gray
 	blonde-haired: blond-haired
+	light-skin: light-skinned
+	medium-light-skin: medium-light-skinned
+	medium-skin: medium-skinned
+	medium-dark-skin: medium-dark-skinned
+	dark-skin: dark-skinned
+	fair-skinned: light-skinned
+	pale-skinned: light-skinned
+	light-brown-skinned: medium-light-skinned
+	olive-skinned: medium-skinned
+	tan-skinned: medium-skinned
+	brown-skinned: medium-dark-skinned
+	dark-brown-skinned: dark-skinned
 	emoji: iconic
 	text: plain
 }

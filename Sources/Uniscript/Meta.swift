@@ -253,3 +253,12 @@ func list(_ text: String) -> [String] {
 private extension Unicode.Scalar {
 	var utf8Length: Int { UTF8.width(self) }
 }
+
+/// Suffixes after text; in an emoji sequence joined by zero width joiners they style its first character: 👩🏿‍🦰
+func afterBase(_ text: String, _ suffixes: String) -> String {
+	var scalars = String.UnicodeScalarView()
+	scalars.append(contentsOf: text.unicodeScalars)
+	let joiner = scalars.firstIndex(of: "\u{200D}") ?? scalars.endIndex
+	scalars.insert(contentsOf: suffixes.unicodeScalars, at: joiner)
+	return String(scalars)
+}

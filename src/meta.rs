@@ -264,3 +264,11 @@ pub(crate) fn joined_prefixes(text: &str) -> Vec<usize> {
 	ends.reverse();
 	ends
 }
+
+/// Suffixes after text; in an emoji sequence joined by zero width joiners they style its first character: 👩🏿‍🦰
+pub(crate) fn after_base(text: &str, suffixes: &str) -> String {
+	match text.find(ZERO_WIDTH_JOINER) {
+		Some(joiner) => format!("{}{suffixes}{}", &text[..joiner], &text[joiner..]),
+		None => format!("{text}{suffixes}"),
+	}
+}
