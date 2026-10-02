@@ -96,19 +96,19 @@ def silence_other_completions(view):
 
 def report(view, warnings):
     if warnings:
-        view.window().status_message("uniscript: " + "; ".join(warnings))
+        view.window().status_message("uniscript: " + "; ".join(cli.with_fix_hint(warnings)))
 
 
 class UniscriptConvertCommand(sublime_plugin.TextCommand):
     """Replaces the regions (default: the selections or the whole file) with their conversion. While typing (live),
     errors go to the status bar and a tag converting to nothing (a block opener like <:greek>) stays as typed."""
 
-    def run(self, edit, reverse=False, regions=None, live=False):
+    def run(self, edit, reverse=False, regions=None, live=False, explicit=False):
         targets = [sublime.Region(*region) for region in regions] if regions else selected_or_whole(self.view)
         warnings = []
         try:
             for region in sorted(targets, key=lambda region: region.begin(), reverse=True):
-                converted, region_warnings = cli.convert(self.view.substr(region), reverse, settings().get("binary", ""))
+                converted, region_warnings = cli.convert(self.view.substr(region), reverse, settings().get("binary", ""), explicit)
                 if converted or not live:
                     self.view.replace(edit, region, converted)
                 warnings += region_warnings

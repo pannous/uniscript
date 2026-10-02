@@ -16,6 +16,9 @@ DEVELOPMENT_BUILDS = ("~/.cargo/shared-target/release", "/opt/cargo/release", "t
 CHECKOUT_INDEX = os.path.join("data", "entities.idx")  # compiled into the binary
 REVERSE_FLAG = "--reverse"
 LENIENT_FLAG = "--lenient"  # unknown entities stay as written, with a warning, instead of failing the conversion
+EXPLICIT_FLAG = "--explicit"  # <:alpha> → \:alpha, <:color red A> → <:color red A/>
+INLINE_TAG_WARNING = "looks like an opening tag"
+EXPLICIT_COMMAND_CAPTION = "Uniscript: Make Tags Explicit"  # Default.sublime-commands
 WARNING_PREFIX = "warning: "
 MARKER = "<:"
 TAG_END = ">"
@@ -79,13 +82,22 @@ def run(arguments, text="", binary=""):
     return process.stdout.decode("utf-8"), messages
 
 
-def convert(text, reverse=False, binary=""):
-    """Uniscript → Unicode (reverse: Unicode → uniscript); returns the text and the converter's warnings"""
-    output, messages = run([REVERSE_FLAG if reverse else LENIENT_FLAG], text, binary)
+def convert(text, reverse=False, binary="", explicit=False):
+    """Uniscript → Unicode (reverse: Unicode → uniscript, explicit: uniscript with its inline tags made explicit);
+    returns the text and the converter's warnings"""
+    flag = EXPLICIT_FLAG if explicit else REVERSE_FLAG if reverse else LENIENT_FLAG
+    output, messages = run([flag], text, binary)
     if not text.endswith("\n") and output.endswith("\n"):
         output = output[:-1]  # the converter always ends its output with a newline
     warnings = [line[len(WARNING_PREFIX):] if line.startswith(WARNING_PREFIX) else line for line in messages.splitlines()]
     return output, warnings
+
+
+def with_fix_hint(warnings):
+    """The warnings, and the command that fixes inline tags when one looks like an opening tag"""
+    if any(INLINE_TAG_WARNING in warning for warning in warnings):
+        return warnings + ["run " + EXPLICIT_COMMAND_CAPTION]
+    return warnings
 
 
 def is_uniscript_file(text):
