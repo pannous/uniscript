@@ -1,0 +1,9 @@
+use uniscript
+ok = explicit("<:greek athos> <:red-haired woman> <:color red A> <:fracture 7>") == "\\:greek-athos <:red-haired woman/> <:color red A/> \\:fracture-7"
+ok = ok and explicit("\\:alpha <:alpha/> <:/greek> <:>") == "\\:alpha <:alpha/> <:/greek> <:>"
+ok = ok and explicit("<:uniscript version=\"https://uniscript.org/v1\">\n<:alpha> <:greek> athos <:/greek> <:alpha>x <:color #ff8800 A> <:font han-japanese>直<:/font> <<::>alpha>") == "<:uniscript version=\"https://uniscript.org/v1\">\n\\:alpha <:greek> athos <:/greek> <:alpha/>x <:color #ff8800 A/> <:font han-japanese>直<:/font> <<::>alpha>"
+ok = ok and uniscript("<:alpha/> <:greek athos/> <:fracture A b c/> \\:greek-athos") == "α αθοσ 𝔄𝔟𝔠 αθοσ"
+ok = ok and unicode_to_uniscript("α Ω 𝔄 ∞ ℝ") == "\\:alpha \\:Omega \\:fracture-A \\:infinity \\:double-R"
+ok = ok and unicode_to_uniscript("𓀀 𓐍") == "\\:egyptian-A1 \\:egyptian-Aa1"
+ok = ok and unicode_to_uniscript("a <: b \\: c") == "a <<::> b \\<::> c"
+ok

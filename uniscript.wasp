@@ -1,6 +1,7 @@
 // Uniscript (wiki/uniscript.md): ASCII names for Unicode text, and back
-//   uniscript("<:alpha> <:fracture A> \:infinity")  →  "α 𝔄 ∞"
-//   unicode_to_uniscript("α 𝔄 ∞")                  →  "<:alpha> <:fracture A> <:infinity>"
+//   uniscript("\:alpha <:fracture A/> \:infinity")  →  "α 𝔄 ∞"
+//   unicode_to_uniscript("α 𝔄 ∞")                   →  "\:alpha \:fracture-A \:infinity"
+//   explicit("<:alpha> <:greek athos>")            →  "\:alpha \:greek-athos"  (a bare inline tag warns: it looks like an opener)
 // The wasp implementation, run by warp (github.com/pannous/warp): `use uniscript` there fetches this repository as a package.
 // Names and block types live in data/entities/*.wasp; this reads their binary index data/entities.idx, whose format
 // src/index.rs documents: tables of 20-byte records sorted by a hash of the key.
@@ -10,6 +11,7 @@ const uniscript_index = read(module_directory + "/data/entities.idx")
 const names_table = 0     // name → text, block entries as "block operand"
 const chars_table = 1     // text → its uniscript
 const suffixes_table = 2  // suffix control → block type
+const meta_table = 4      // meta key → its CSS template: color, font, lang
 const record_size = 20
 const hash_multiplier = 31
 const hash_modulus = 4294967296
@@ -23,6 +25,7 @@ const first_surrogate = 55296     // D800
 const last_surrogate = 57343      // DFFF
 const hex_digits = "0123456789ABCDEF"
 const max_operand_words = 8      // the most words one operand spans: <:egyptian man with hand to mouth>
+const warned_code_point = 64976  // U+FDD0, a noncharacter: the mark unsupported() leaves in converted text
 
 // ---- the index -------------------------------------------------------------------------------------------------
 
@@ -72,6 +75,8 @@ is_group(name:text) := find(names_table, name + " *group") >= 0
 
 is_effect(name:text) := find(names_table, name + " *suffix") >= 0
 
+is_meta_key(name:text) := find(meta_table, name) >= 0
+
 // ---- characters ----------------------------------------------------------------------------------------------
 
 utf8_width(lead) := if lead < 128 {1} else { if lead < 224 {2} else { if lead < 240 {3} else {4} } }
@@ -106,23 +111,52 @@ ascii_lowercased(name:text) := {
 	out
 }
 
-// spaces become hyphens: <:greek small letter alpha> names greek-small-letter-alpha
-hyphenated(name:text) := {
+// offset of the first occurrence of part in text at or after start, else text.bytes
+offset_of_text(text:text, part:text, start) := {
+	i = start
+	while i + part.bytes <= text.bytes and byte_slice(text, i, i + part.bytes) != part { i++ }
+	if i + part.bytes > text.bytes { return text.bytes }
+	i
+}
+
+// each byte of text replaced by the text by
+byte_replaced(text:text, byte, by:text) := {
 	out = ""
 	i = 0
-	while i < name.bytes {
-		space = offset_of(name, 32, i)
-		out += byte_slice(name, i, space)
-		if space < name.bytes { out += "-" }
-		i = space + 1
+	while i < text.bytes {
+		found = offset_of(text, byte, i)
+		out += byte_slice(text, i, found)
+		if found < text.bytes { out += by }
+		i = found + 1
 	}
 	out
 }
 
+// spaces become hyphens: <:greek small letter alpha> names greek-small-letter-alpha
+hyphenated(name:text) := byte_replaced(name, 32, "-")
+
+// hyphens become spaces: \:egyptian-seated-man reads as <:egyptian seated man>
+spaced(name:text) := byte_replaced(name, 45, " ")
+
 // ---- uniscript → Unicode ---------------------------------------------------------------------------------------
 
 // a warning (warp --strict or `use strict`: an error) about a character or combination Unicode has no counterpart for
-unsupported(message:text, at) := warning("uniscript: " + message + " at byte " + join([at], ""))
+// with a mark, so a tag knows it warned (a warp function cannot count in a global); uniscript() drops the marks
+unsupported(message:text, at) := warning("uniscript: " + message + " at byte " + join([at], "")) + (warned_code_point as char)
+
+warned(text:text) := offset_of_text(text, "" + (warned_code_point as char), 0) < text.bytes
+
+unmarked(text:text) := {
+	mark = "" + (warned_code_point as char)
+	out = ""
+	i = 0
+	while i < text.bytes {
+		at = offset_of_text(text, mark, i)
+		out += byte_slice(text, i, at)
+		i = at + mark.bytes
+	}
+	out
+}
 
 // the record of the control a block puts after a character of its script or after any character, -1 for none;
 // an empty control means the effect cannot apply to that script
@@ -384,7 +418,114 @@ tag(content:text, at) := {
 	// the case fallback, after the blocks: <:LATIN CAPITAL LETTER ETH> is latin-capital-letter-eth, <:TILDE> tilde
 	record = find(names_table, hyphenated(ascii_lowercased(content)))
 	if record >= 0 { return value_of(record) }
-	error("unknown uniscript entity: " + content)
+	unknown_entity(content)
+}
+
+unknown_entity(name:text) := error("unknown uniscript entity: " + name)
+
+// ---- explicit inline tags: <:alpha> looks like it opens something, as <:greek> does; \:alpha and <:alpha/> do not --------
+
+// <:font han-japanese>, <:font x lang ja>: meta keys with values only, opening spans
+opens_meta(content:text) := {
+	words = 0
+	keys = 0
+	i = skip_spaces(content, 0)
+	while i < content.bytes {
+		end = offset_of(content, 32, i)
+		if words % 2 == 0 and is_meta_key(byte_slice(content, i, end)) { keys++ }
+		words++
+		i = skip_spaces(content, end)
+	}
+	words > 0 and words % 2 == 0 and keys * 2 == words
+}
+
+// an inline tag's content looks like it opens something; not an escape (<:<>), closer, self-closed tag, block or meta span opener
+reads_as_opener(content:text) := {
+	if content.bytes <= 1 or byte_at(content, 0) == 47 or byte_at(content, content.bytes - 1) == 47 { return false }
+	not is_block(content) and not opens_meta(content)
+}
+
+self_closed_form(content:text) := "<:" + content + "/>"
+
+// \:greek-athos of greek athos followed by byte next (-1 at the end), else "": names only, no name byte may follow, hyphens
+// only without spaces (\: reads them as spaces), and no meta key, which reads better as a tag (<:color red A/>)
+short_form(content:text, next) := {
+	names_only = 0
+	spaces = 0
+	hyphens = 0
+	i = 0
+	while i < content.bytes {
+		b = byte_at(content, i)
+		if b == 32 { spaces++ } else { if is_name_byte(b) { names_only++ } }
+		if b == 45 { hyphens++ }
+		i++
+	}
+	space = offset_of(content, 32, 0)
+	starts_meta = space < content.bytes and is_meta_key(byte_slice(content, 0, space))
+	if names_only + spaces < content.bytes or (spaces > 0 and hyphens > 0) or starts_meta or is_name_byte(next) { return "" }
+	"\\:" + hyphenated(content)
+}
+
+// <:greek> athos <:/greek> of greek athos, else "": a block and one operand (a block keeps the spaces between operands)
+block_form(content:text) := {
+	space = offset_of(content, 32, 0)
+	if space == content.bytes { return "" }
+	block = byte_slice(content, 0, space)
+	word = byte_slice(content, space + 1, content.bytes)
+	if not is_block(block) or offset_of(word, 32, 0) < word.bytes or is_block(word) { return "" }
+	"<:" + block + "> " + word + " <:/" + block + ">"
+}
+
+// the explicit forms of an inline tag followed by byte next, which convert alike: "a, b or c"
+explicit_forms(content:text, next) := {
+	short = short_form(content, next)
+	block = block_form(content)
+	listed = short
+	if short.bytes > 0 and block.bytes > 0 { listed += ", " }
+	listed += block
+	if listed.bytes > 0 { listed += " or " }
+	listed + self_closed_form(content)
+}
+
+// the byte after offset at, -1 at the end
+byte_after(source:text, at) := if at + 1 < source.bytes { byte_at(source, at + 1) } else { 0 - 1 }
+
+// the text of the inline tag <:content> at byte at, followed by byte next: <:…/> self-closes; a bare one that converts without
+// a warning warns that it looks like an opening tag, naming its explicit forms
+inline_tag(content:text, at, next) := {
+	self_closed = content.bytes > 1 and byte_at(content, content.bytes - 1) == 47
+	name = content
+	if self_closed { name = byte_slice(content, 0, content.bytes - 1) }
+	text = tag(name, at)
+	if text == unknown_entity(name) { return text }
+	if not self_closed and not warned(text) and reads_as_opener(content) {
+		text = unsupported("<:" + content + "> looks like an opening tag: write " + explicit_forms(content, next), at) + text
+	}
+	unmarked(text)
+}
+
+// the source with its inline tags in their explicit form: \:alpha where it fits, else <:color #ff8800 A/>; the header stays
+explicit(source:text) := {
+	i = header_length(source)
+	out = byte_slice(source, 0, i)
+	while i < source.bytes {
+		open = offset_of_text(source, "<:", i)
+		close = offset_of(source, 62, open + 2)
+		if close >= source.bytes {
+			out += byte_slice(source, i, source.bytes)
+			i = source.bytes
+		} else {
+			content = byte_slice(source, open + 2, close)
+			out += byte_slice(source, i, open)
+			if reads_as_opener(content) {
+				form = short_form(content, byte_after(source, close))
+				if form.bytes == 0 { form = self_closed_form(content) }
+				out += form
+			} else { out += byte_slice(source, open, close + 1) }
+			i = close + 1
+		}
+	}
+	out
 }
 
 // ---- code points: \:1F60D \:U+1F60D \:0x1F60D <:U+1F60D> \U1F60D -------------------------------------------------
@@ -506,13 +647,13 @@ uniscript(source:text) := {
 			if block.bytes > 0 {
 				closing = closes_block_at(source, next)
 				if closing { run = byte_slice(run, 0, run.bytes - closing_padding(run)) }
-				out += block_text(block, run, i)
+				out += unmarked(block_text(block, run, i))
 			} else { out += run }
 			i = next
 		} else {
 			escape = unicode_escape_end(source, i)
 			if escape >= 0 {
-				out += code_point_text(hex_value(source, i + 2, escape, min_bare_hex_digits), byte_slice(source, i, escape), i)
+				out += unmarked(code_point_text(hex_value(source, i + 2, escape, min_bare_hex_digits), byte_slice(source, i, escape), i))
 				i = escape
 			} else { if byte_at(source, i) == 92 {
 				end = token_end(source, i + 2)
@@ -520,21 +661,25 @@ uniscript(source:text) := {
 				record = find(names_table, name)
 				if record >= 0 { out += value_of(record) } else {
 					value = code_point_value(name)
-					if value < 0 { return error("unknown uniscript entity: " + name) }
-					out += code_point_text(value, byte_slice(source, i, end), i)
+					if value >= 0 { out += unmarked(code_point_text(value, byte_slice(source, i, end), i)) } else {
+						// not a name: read as the tag with hyphens as spaces
+						text = tag(spaced(name), i)
+						if text == unknown_entity(spaced(name)) { return unknown_entity(name) }
+						out += unmarked(text)
+					}
 				}
 				i = end
 			} else {
 				close = offset_of(source, 62, i + 2)
 				if close == source.bytes { return error("unclosed <: at byte " + byte_slice(source, i, source.bytes)) }
 				content = byte_slice(source, i + 2, close)
-				text = tag(content, i)
+				at = i
 				i = close + 1
 				if content.bytes == 0 or byte_at(content, 0) == 47 { block = "" } else {
 					if is_block(content) {
 						block = content
 						i += opening_padding(source, i)
-					} else { out += text }
+					} else { out += inline_tag(content, at, byte_after(source, close)) }
 				}
 			} }
 		}
@@ -589,5 +734,5 @@ unicode_to_uniscript(text:text) := {
 			out += spelled(character, others + first)
 		} }
 	}
-	out
+	explicit(out)
 }
