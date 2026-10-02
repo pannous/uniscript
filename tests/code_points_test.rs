@@ -28,7 +28,7 @@ fn the_code_point_ends_where_a_name_ends() {
 	converts("\\:1F60D. \\:1F60D x <:1F60D>x", "😍. 😍 x 😍x");
 	converts("(\\U1F60D)", "(😍)");
 	assert_eq!(to_unicode("\\:1F60Dx"), Err(Error::UnknownEntity("1F60Dx".into())));
-	converts("<:greek> a \\:03B2 <:/greek>", " α β ");
+	converts("<:greek> a \\:03B2 <:/greek>", "α β");
 }
 
 #[test]

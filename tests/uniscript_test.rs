@@ -25,8 +25,8 @@ fn entities_become_characters() {
 fn block_types_style_their_operands() {
 	converts("<:fracture A>", "𝔄");
 	converts("<:fracture A b c >", "𝔄𝔟𝔠");
-	converts("<:fracture> A b c <:>", " 𝔄 𝔟 𝔠 ");
-	converts("<:greek> a b g d <:/greek>", " α β γ δ ");
+	converts("<:fracture> A b c <:>", "𝔄 𝔟 𝔠");
+	converts("<:greek> a b g d <:/greek>", "α β γ δ");
 	converts("<:double d>", "𝕕");
 	converts("<:double-d>", "𝕕");
 	converts("x<:upper a>", "xᵃ");
@@ -37,18 +37,21 @@ fn block_types_style_their_operands() {
 
 #[test]
 fn greek_is_transliterated_phonetically() {
-	converts("<:greek> athos <:/greek>", " αθοσ "); // th is one letter
+	converts("<:greek> athos <:/greek>", "αθοσ"); // th is one letter
 	converts("<:greek th ch ps>", "θχψ");
 	converts("<:greek eta Omega lambda>", "ηΩλ");
 }
 
-/// Full block tags keep their text as written, spaces and line breaks included; inline tags drop the spaces between operands
+/// A full block tag eats one whitespace on its inner side and keeps the rest as written; inline tags drop the spaces between operands
 #[test]
-fn full_blocks_keep_their_spaces() {
-	converts("<:greek> filosofia kosmos<:/greek>", " φιλοσοφια κοσμοσ");
+fn full_blocks_eat_one_space_of_padding() {
+	converts("<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμοσ");
 	converts("<:greek a kosmos>", "ακοσμοσ");
 	converts("<:greek phi chi>", "φχ");
-	assert_eq!(convert("<:greek>\nkosmos\t<:/greek>", WarningMode::Error), Ok(("\nκοσμοσ\t".to_string(), vec![])));
+	assert_eq!(convert("<:greek>\nkosmos\t<:/greek>", WarningMode::Error), Ok(("κοσμοσ".to_string(), vec![])));
+	converts("<:greek>  athos  <:/greek>", " αθοσ ");
+	converts("<:greek>\r\nkosmos\r\n<:/greek>", "κοσμοσ");
+	converts("<:greek>\nfilosofia\nkosmos\n<:/greek>", "φιλοσοφια\nκοσμοσ");
 }
 
 /// A character or combination without a Unicode counterpart stays plain, with a warning naming it and its position
@@ -104,7 +107,7 @@ fn hieroglyphs_have_gardiner_numbers_and_descriptions() {
 	converts("<:egyptian seated man>", "𓀀");
 	converts("<:egyptian man sitting>", "𓀀");
 	converts("<:egyptian man-sitting>", "𓀀");
-	converts("<:egyptian> A1 Aa1 <:/egyptian>", " 𓀀 𓐍 ");
+	converts("<:egyptian> A1 Aa1 <:/egyptian>", "𓀀 𓐍");
 	converts("<:mirror egyptian A1>", "𓀀\u{13440}");
 	assert_eq!(to_uniscript("𓀀 𓐍"), "<:egyptian A1> <:egyptian Aa1>");
 }
@@ -165,7 +168,7 @@ fn anatolian_hieroglyphs_have_their_latin_names_and_syllabic_values() {
 	converts("<:anatolian tá>", "\u{1441E}");
 	converts("<:anatolian ta2>", "\u{1441E}");
 	converts("<:anatolian word divider>", "\u{145B5}");
-	converts("<:anatolian> pi ha mi sa <:/anatolian>", " \u{14448} \u{144F7} \u{145BB} \u{145D4} ");
+	converts("<:anatolian> pi ha mi sa <:/anatolian>", "\u{14448} \u{144F7} \u{145BB} \u{145D4}");
 	assert_eq!(to_uniscript("\u{14409}"), "<:anatolian 10>");
 }
 
@@ -179,7 +182,7 @@ fn cuneiform_signs_by_their_readings_and_names() {
 	converts("<:sumerian diĝir>", "𒀭");
 	converts("<:sumerian dingir>", "𒀭");
 	converts("<:akkadian LUGAL>", "𒈗");
-	converts("<:cuneiform> an ki <:/cuneiform>", " 𒀭 𒆠 ");
+	converts("<:cuneiform> an ki <:/cuneiform>", "𒀭 𒆠");
 	assert_eq!(to_uniscript("𒀭"), "<:cuneiform-sign-an>");
 }
 
@@ -191,7 +194,7 @@ fn short_aliases_type_greek_egyptian_and_chinese_by_pinyin() {
 	converts("<:cn kou3>", "口");
 	converts("<:cn kou4>", "扣");
 	converts("<:cn lv4>", "律");
-	converts("<:chinese> wo3 ai4 ni3 <:/chinese>", " 我 爱 你 ");
+	converts("<:chinese> wo3 ai4 ni3 <:/chinese>", "我 爱 你");
 	assert_eq!(to_uniscript("口 扣"), "口 扣");
 }
 

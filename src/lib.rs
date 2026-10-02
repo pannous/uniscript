@@ -33,6 +33,9 @@ const TAG_OPEN: char = '<';
 const SHORT_OPEN: char = '\\';
 const TAG_CLOSE: char = '>';
 const CLOSING_SLASH: char = '/';
+/// A block tag eats one of these on its inner side: `<:greek> athos <:/greek>` is `αθοσ`
+const PADDING: [char; 4] = [' ', '\t', '\n', '\r'];
+const CRLF: &str = "\r\n";
 const ESCAPED_COLON: &str = "<::>";
 const ESCAPED_UNICODE: &str = "<:U>";
 const SUFFIX_KEY: &str = "*suffix";
@@ -275,6 +278,22 @@ fn is_closing(content: &str) -> bool {
 	content.is_empty() || content.starts_with(CLOSING_SLASH)
 }
 
+/// The content of the full tag starting the text: `greek` of `<:greek> athos`
+fn tag_content(text: &str) -> Option<&str> {
+	let content = text.strip_prefix(TAG_OPEN)?.strip_prefix(MARKER_COLON)?;
+	content.find(TAG_CLOSE).map(|close| &content[..close])
+}
+
+/// Bytes of the one whitespace a block tag eats on its inner side: a space, tab or line break (`\r\n` counts as one)
+fn padding_length(text: &str) -> usize {
+	text.strip_prefix(CRLF).or_else(|| text.strip_prefix(PADDING)).map_or(0, |rest| text.len() - rest.len())
+}
+
+/// The text without the one whitespace a block's closer eats before it
+fn without_closing_padding(text: &str) -> &str {
+	text.strip_suffix(CRLF).or_else(|| text.strip_suffix(PADDING)).unwrap_or(text)
+}
+
 impl<'a> Uniscript<'a> {
 	pub fn new(index: Index<'a>) -> Self {
 		Uniscript { index, warnings: RefCell::default() }
@@ -316,6 +335,11 @@ impl<'a> Uniscript<'a> {
 	}
 
 	/// The CSS declaration template of a meta key (`color` → `color: {}`)
+	/// A tag's content closes a block: `<:>` or `<:/greek>`, not a meta close like `<:/color>`
+	fn closes_block(&self, content: &str) -> bool {
+		is_closing(content) && content.strip_prefix(CLOSING_SLASH).is_none_or(|key| self.meta_template(key).is_none())
+	}
+
 	pub fn meta_template(&self, key: &str) -> Option<&'a str> {
 		self.index.get(Table::Meta, key)
 	}
@@ -712,7 +736,11 @@ impl<'a> Uniscript<'a> {
 			let rest = &source[position..];
 			let marker = rest.match_indices([TAG_OPEN, SHORT_OPEN]).map(|(at, _)| at).find(|&at| starts_marker(&rest[at..])).unwrap_or(rest.len());
 			match &block {
-				Some(block) => out += &self.block_text(block, &rest[..marker], position),
+				Some(block) => {
+					let text = &rest[..marker];
+					let closes_block = tag_content(&rest[marker..]).is_some_and(|content| self.closes_block(content));
+					out += &self.block_text(block, if closes_block { without_closing_padding(text) } else { text }, position)
+				}
 				None => out += &rest[..marker],
 			}
 			position += marker;
@@ -739,12 +767,13 @@ impl<'a> Uniscript<'a> {
 					break;
 				};
 				let content = &rest[2..close];
-				if let Some(key) = content.strip_prefix(CLOSING_SLASH).filter(|key| self.meta_template(key).is_some()) {
-					out += &Meta::Close { key: key.to_string() }.tags();
-				} else if is_closing(content) {
+				if self.closes_block(content) {
 					block = None;
+				} else if let Some(key) = content.strip_prefix(CLOSING_SLASH) {
+					out += &Meta::Close { key: key.to_string() }.tags();
 				} else if self.is_block(content) {
 					block = Some(content.to_string());
+					position += padding_length(&rest[close + 1..]);
 				} else {
 					out += &match self.tag(content, position) {
 						Ok(text) => text,

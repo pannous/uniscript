@@ -29,7 +29,7 @@ fn the_most_frequent_character_keeps_the_plain_reading() {
 fn rare_characters_beyond_the_frequency_list_have_their_unihan_readings() {
 	converts("<:cn biang2>", "𰻝");
 	converts("<:cn biang2.2>", "𰻞");
-	converts("<:cn> ni3 hao3 <:/cn>", " 你 好 ");
+	converts("<:cn> ni3 hao3 <:/cn>", "你 好");
 }
 
 #[test]
