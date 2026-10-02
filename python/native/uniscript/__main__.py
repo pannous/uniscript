@@ -1,4 +1,5 @@
-"""uniscript "<:alpha> <:fracture A>"   → α 𝔄   (stdin when no words; -r/--reverse, --strict, --lenient, --html)"""
+"""uniscript "<:alpha> <:fracture A>"   → α 𝔄   (stdin when no words; -r/--reverse, --strict, --lenient, --html;
+--explicit: the inline tags, which warn, made explicit: <:alpha> <:color red A> → \\:alpha <:color red A/>)"""
 
 import sys
 
@@ -8,7 +9,8 @@ REVERSE_FLAGS = ("-r", "--reverse")
 STRICT_FLAG = "--strict"
 HTML_FLAG = "--html"
 LENIENT_FLAG = "--lenient"
-FLAGS = (*REVERSE_FLAGS, STRICT_FLAG, HTML_FLAG, LENIENT_FLAG)
+EXPLICIT_FLAG = "--explicit"
+FLAGS = (*REVERSE_FLAGS, STRICT_FLAG, HTML_FLAG, LENIENT_FLAG, EXPLICIT_FLAG)
 
 
 def converted(arguments) -> str:
@@ -17,6 +19,8 @@ def converted(arguments) -> str:
     converter = Uniscript()
     if any(flag in arguments for flag in REVERSE_FLAGS):
         return converter.to_uniscript(text)
+    if EXPLICIT_FLAG in arguments:
+        return converter.explicit(text)
     strict = STRICT_FLAG in arguments
     mode = WarningMode.ERROR if strict else WarningMode.LENIENT if LENIENT_FLAG in arguments else WarningMode.WARN
     output, warnings = converter.convert(text, mode)

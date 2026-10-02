@@ -49,19 +49,19 @@ def test_font_styles_come_from_the_entities():
 
 def test_spans_open_and_close_with_tag_sequences():
     hittite = open_("font", "cuneiform-hittite")
-    round_trips("x <:font cuneiform-hittite><:cuneiform-sign-an><:/font> y", f"x {hittite}𒀭{close('font')} y")
+    round_trips("x <:font cuneiform-hittite>\\:cuneiform-sign-an<:/font> y", f"x {hittite}𒀭{close('font')} y")
     round_trips("<:color #ff8800>ab<:/color>", f"{open_('color', '#ff8800')}ab{close('color')}")
     assert to_unicode("<:lang ja><:font han-jis78>直") == f"{open_('lang', 'ja')}{open_('font', 'han-jis78')}直"
 
 
 def test_attached_sequences_follow_each_character_and_its_suffixes():
     orange = attached("color", "#ff8800")
-    round_trips("<:color #ff8800 A>", f"A{orange}")
-    round_trips("<:color #ff8800 mirror red A>", f"A\U000E0072\U000E004D{orange}")
-    round_trips("<:color #ff8800 angle 90 alpha>", f"α{orange}{attached('angle', '90')}")
+    round_trips("<:color #ff8800 A/>", f"A{orange}")
+    round_trips("<:color #ff8800 mirror red A/>", f"A\U000E0072\U000E004D{orange}")
+    round_trips("<:color #ff8800 angle 90 alpha/>", f"α{orange}{attached('angle', '90')}")
     assert to_unicode("<:color #ff8800 A b>") == f"A{orange}b{orange}"
     assert to_unicode("<:color #ff8800 e\u0301>") == f"e\u0301{orange}"
-    round_trips("<:color red B>", f"B{attached('color', 'red')}")
+    round_trips("<:color red B/>", f"B{attached('color', 'red')}")
 
 
 def test_entity_names_win_over_meta_keys():

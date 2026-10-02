@@ -68,7 +68,7 @@ def test_unsupported_characters_and_combinations_warn():
     warns("<:red 𓀀>", "𓀀" + red, "red on 𓀀 kept as color meta", 0)
     warns("<:mirror red 狗>", "狗\U000E004D" + red, "red on 狗 kept as color meta", 0)
     warns("<:beside a b>", "ab", "no beside group of a", 0)
-    assert convert("<:greek a>", WarningMode.ERROR) == ("α", [])
+    assert convert("<:greek a/>", WarningMode.ERROR) == ("α", [])
 
 
 def test_colors_and_geometry_are_suffix_controls():
@@ -85,7 +85,7 @@ def test_effect_words_stack_on_one_operand():
     converts("<:reverse red R>", "R\U000E0072\U000E004D")
     converts("<:mirror red A b>", "A\U000E0072\U000E004Db\U000E0072\U000E004D")
     converts("<:mirror red circle>", "🔴\U000E004D")
-    assert to_uniscript("A\U000E0072\U000E004D 🔴\U000E004D") == "<:mirror red A> <:mirror red circle>"
+    assert to_uniscript("A\U000E0072\U000E004D 🔴\U000E004D") == "\\:mirror-red-A \\:mirror-red-circle"
 
 
 def test_groups_join_hieroglyphs_and_compose_ideographs():
@@ -99,7 +99,7 @@ def test_hieroglyphs_have_gardiner_numbers_and_descriptions():
         converts(uniscript, "𓀀")
     converts("<:egyptian> A1 Aa1 <:/egyptian>", "𓀀 𓐍")
     converts("<:mirror egyptian A1>", "𓀀\U00013440")
-    assert to_uniscript("𓀀 𓐍") == "<:egyptian A1> <:egyptian Aa1>"
+    assert to_uniscript("𓀀 𓐍") == "\\:egyptian-A1 \\:egyptian-Aa1"
 
 
 def test_the_marker_is_escaped_by_single_character_entities():
@@ -136,8 +136,8 @@ def test_errors_are_reported():
 
 
 def test_unicode_spells_back_as_uniscript():
-    assert to_uniscript("α Ω 𝔄 ∞ ℝ") == "<:alpha> <:Omega> <:fracture A> <:infinity> <:double R>"
-    assert to_uniscript("A\U000E0072 🔴 xᵃ") == "<:red A> <:red circle> x<:upper a>"
+    assert to_uniscript("α Ω 𝔄 ∞ ℝ") == "\\:alpha \\:Omega \\:fracture-A \\:infinity \\:double-R"
+    assert to_uniscript("A\U000E0072 🔴 xᵃ") == "\\:red-A \\:red-circle x\\:upper-a"
     assert to_uniscript("a <: b \\: c") == "a <<::> b \\<::> c"
 
 
@@ -147,23 +147,23 @@ def test_spelling_back_round_trips():
 
 
 def test_greek_letters_have_their_mathematical_styles():
-    round_trips("<:bold Alpha>", "𝚨")
-    round_trips("<:bold alpha>", "𝛂")
-    round_trips("<:bold-italic Alpha>", "𝜜")
-    round_trips("<:bold-italic alpha>", "𝜶")
-    round_trips("<:sans-bold Alpha>", "𝝖")
-    round_trips("<:sans-bold alpha>", "𝝰")
-    round_trips("<:sans-bold-italic Alpha>", "𝞐")
-    round_trips("<:sans-bold-italic alpha>", "𝞪")
-    round_trips("<:double gamma>", "ℽ")
+    round_trips("\\:bold-Alpha", "𝚨")
+    round_trips("\\:bold-alpha", "𝛂")
+    round_trips("<:bold-italic Alpha/>", "𝜜")
+    round_trips("<:bold-italic alpha/>", "𝜶")
+    round_trips("<:sans-bold Alpha/>", "𝝖")
+    round_trips("<:sans-bold alpha/>", "𝝰")
+    round_trips("<:sans-bold-italic Alpha/>", "𝞐")
+    round_trips("<:sans-bold-italic alpha/>", "𝞪")
+    round_trips("\\:double-gamma", "ℽ")
     converts("<:bold ϑ>", "𝛝")
     converts("<:italic ω>", "𝜔")
 
 
 def test_a_styled_character_belongs_to_its_most_specific_style():
-    round_trips("<:bold-script B>", "𝓑")
-    round_trips("<:bold A>", "𝐀")
-    round_trips("<:upper minus>", "⁻")
+    round_trips("<:bold-script B/>", "𝓑")
+    round_trips("\\:bold-A", "𝐀")
+    round_trips("\\:upper-minus", "⁻")
 
 
 def test_every_index_record_is_found_by_its_key():
@@ -185,20 +185,20 @@ def converts_quietly(uniscript, unicode):
 
 
 def test_stacked_styles_compose_to_their_combined_style():
-    converts_quietly("<:bold italic alpha>", "𝜶")
-    converts_quietly("<:italic bold A>", "𝑨")
-    converts_quietly("<:sans bold italic alpha>", "𝞪")
-    converts_quietly("<:bold sans italic Alpha>", "𝞐")
-    converts_quietly("<:bold fracture A>", "𝕬")
-    converts_quietly("<:fraktur bold A>", "𝕬")
-    converts_quietly("<:bold script B>", "𝓑")
-    converts_quietly("<:mirror bold italic A>", "𝑨\U000E004D")
+    converts_quietly("<:bold italic alpha/>", "𝜶")
+    converts_quietly("<:italic bold A/>", "𝑨")
+    converts_quietly("<:sans bold italic alpha/>", "𝞪")
+    converts_quietly("<:bold sans italic Alpha/>", "𝞐")
+    converts_quietly("<:bold fracture A/>", "𝕬")
+    converts_quietly("<:fraktur bold A/>", "𝕬")
+    converts_quietly("<:bold script B/>", "𝓑")
+    converts_quietly("<:mirror bold italic A/>", "𝑨\U000E004D")
 
 
 def test_stacked_styles_commute_where_no_combined_style_exists():
-    converts_quietly("<:greek bold a>", "𝛂")
-    converts_quietly("<:bold greek a>", "𝛂")
-    converts_quietly("<:greek bold alpha>", "𝛂")
+    converts_quietly("<:greek bold a/>", "𝛂")
+    converts_quietly("<:bold greek a/>", "𝛂")
+    converts_quietly("<:greek bold alpha/>", "𝛂")
 
 
 def test_a_style_without_a_combination_keeps_the_inner_style():

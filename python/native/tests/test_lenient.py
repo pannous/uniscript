@@ -10,7 +10,7 @@ def lenient(uniscript):
 
 
 def test_unknown_entities_stay_and_the_rest_converts():
-    assert lenient("<:alpha> <:nosuchthing> \\:nosuch <:beta>") == ("α <:nosuchthing> \\:nosuch β", [
+    assert lenient("\\:alpha <:nosuchthing> \\:nosuch \\:beta") == ("α <:nosuchthing> \\:nosuch β", [
         "unknown uniscript entity: nosuchthing",
         "unknown uniscript entity: nosuch",
     ])
@@ -18,7 +18,7 @@ def test_unknown_entities_stay_and_the_rest_converts():
 
 def test_invalid_meta_and_unclosed_tags_stay():
     assert lenient("<:color red;x A> <:alpha>")[0] == "<:color red;x A> α"
-    assert lenient("<:alpha> a <: b") == ("α a <: b", ["unclosed <: at <: b"])
+    assert lenient("\\:alpha a <: b") == ("α a <: b", ["unclosed <: at <: b"])
 
 
 def test_unsupported_characters_still_warn():
@@ -26,5 +26,5 @@ def test_unsupported_characters_still_warn():
 
 
 def test_to_unicode_is_lenient_and_warns_on_stderr(capsys):
-    assert to_unicode("<:nosuchthing> <:alpha>") == "<:nosuchthing> α"
+    assert to_unicode("<:nosuchthing> \\:alpha") == "<:nosuchthing> α"
     assert capsys.readouterr().err == "warning: uniscript: unknown uniscript entity: nosuchthing at byte 0\n"

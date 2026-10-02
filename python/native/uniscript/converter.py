@@ -119,6 +119,15 @@ def is_closing(content: str) -> bool:
     return not content or content.startswith(CLOSING_SLASH)
 
 
+def self_closed_form(content: str) -> str:
+    return f"{TAG_OPEN}{MARKER_COLON}{content}{CLOSING_SLASH}{TAG_CLOSE}"
+
+
+def either(forms) -> str:
+    """`a, b or c`"""
+    return f"{', '.join(forms[:-1])} or {forms[-1]}" if len(forms) > 1 else "".join(forms)
+
+
 def opening_padding_length(text: str) -> int:
     """Characters of the one whitespace a block opener eats after it"""
     return next((len(padding) for padding in BLOCK_PADDING if text.startswith(padding)), 0)
@@ -153,6 +162,56 @@ class Uniscript:
     def meta_template(self, key: str):
         """The CSS declaration template of a meta key (`color` → `color: {}`)"""
         return self.index.get(Table.META, key)
+
+    def _opens_meta(self, content: str) -> bool:
+        """`<:font han-japanese>`, `<:font x lang ja>`: meta keys with values only, opening spans"""
+        words = content.split()
+        return bool(words) and len(words) % 2 == 0 and all(self.meta_template(key) is not None for key in words[::2])
+
+    def _reads_as_opener(self, content: str) -> bool:
+        """An inline tag's content (`<:alpha>`, `<:greek athos>`) looks like it opens something, as `<:greek>` does; not
+        an escape (`<:<>`), closer, self-closed tag, block or meta span opener"""
+        return (utf8_length(content) > 1 and not is_closing(content) and not content.endswith(CLOSING_SLASH)
+                and not self._is_block(content) and not self._opens_meta(content))
+
+    def _explicit_forms(self, content: str, next_character: str) -> list:
+        """The forms of an inline tag followed by `next_character`, which convert alike: `\\:greek-athos`,
+        `<:greek> athos <:/greek>` and `<:greek athos/>`"""
+        return [form for form in (self._short_form(content, next_character), self._block_form(content)) if form] + [self_closed_form(content)]
+
+    def _short_form(self, content: str, next_character: str):
+        """`\\:greek-athos` of `greek athos` followed by `next_character`: names only, no name character may follow,
+        hyphens only without spaces (\\: reads them as spaces: `<:red-haired woman>` is no `\\:red-haired-woman`), and no
+        meta key, which reads better as a tag (`<:color red A/>`)"""
+        names_only = all(is_name_character(character) or character == " " for character in content)
+        starts_meta = " " in content and self.meta_template(content.split(" ", 1)[0]) is not None
+        fits = (names_only and not (" " in content and "-" in content) and not starts_meta
+                and not (next_character and is_name_character(next_character)))
+        return f"{SHORT_OPEN}{MARKER_COLON}{content.replace(' ', '-')}" if fits else None
+
+    def _block_form(self, content: str):
+        """`<:greek> athos <:/greek>` of `greek athos`: a block and one operand (a block keeps the spaces between operands)"""
+        block, space, operand = content.partition(" ")
+        fits = space and self._is_block(block) and " " not in operand and not self._is_block(operand)
+        return f"<:{block}> {operand} <:/{block}>" if fits else None
+
+    def explicit(self, source: str) -> str:
+        """The source with its inline tags in their explicit form: `\\:alpha` where it fits, else `<:color #ff8800 A/>`"""
+        span = _header_span(source)
+        start = span[1] if span else 0
+        out, rest = [source[:start]], source[start:]
+        while (open_at := rest.find(TAG_OPEN + MARKER_COLON)) >= 0:
+            close = rest.find(TAG_CLOSE, open_at + 2)
+            if close < 0:
+                break
+            content = rest[open_at + 2:close]
+            out.append(rest[:open_at])
+            if self._reads_as_opener(content):
+                out.append(self._short_form(content, rest[close + 1:close + 2]) or self_closed_form(content))
+            else:
+                out.append(rest[open_at:close + 1])
+            rest = rest[close + 1:]
+        return "".join(out) + rest
 
     def meta_runs(self, tagged: str):
         """Tagged text → plain text and meta runs; unknown keys and unmatched closes warn"""
@@ -551,10 +610,20 @@ class Uniscript:
                 block = content
                 close += opening_padding_length(rest[close + 1:])
             else:
+                self_closed = content[:-1] if content.endswith(CLOSING_SLASH) and len(content) > 1 else None
+                earlier_warnings = len(self.warnings)
                 try:
-                    out.append(self._tag(content, byte_position))
+                    converted = self._tag(self_closed or content, byte_position)
                 except UniscriptError as error:
-                    out.append(self._kept(error, rest[:close + 1], byte_position, mode))
+                    converted = error
+                # one warning per tag: <:fracture 7> already says there is no fracture 7
+                quiet = not isinstance(converted, UniscriptError) and len(self.warnings) == earlier_warnings
+                if self_closed is None and quiet and self._reads_as_opener(content):
+                    forms = self._explicit_forms(content, rest[close + 1:close + 2])
+                    self._warn(f"<:{content}> looks like an opening tag: write {either(forms)}", byte_position)
+                if isinstance(converted, UniscriptError):
+                    converted = self._kept(converted, rest[:close + 1], byte_position, mode)
+                out.append(converted)
             advance(close + 1)
         return "".join(out)
 
@@ -589,7 +658,8 @@ class Uniscript:
         return None
 
     def to_uniscript(self, text: str) -> str:
-        """Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A>`"""
+        """Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A/>`,
+        the other tags their explicit form (`\\:alpha`, `<:alpha/>x`)"""
         out, position = [], 0
         while position < len(text):
             found = self._known_meta(text, position)
@@ -633,7 +703,7 @@ class Uniscript:
             else:
                 form = spelled[2:-1] if spelled.startswith("<:") and spelled.endswith(TAG_CLOSE) else spelled
                 out.append(f"<:{' '.join(attached)} {form}>")
-        return "".join(out)
+        return self.explicit("".join(out))
 
 
 _standard = None
@@ -662,3 +732,8 @@ def to_unicode(source: str) -> str:
 def to_uniscript(text: str) -> str:
     """Unicode → uniscript; to_unicode gives the text back"""
     return standard().to_uniscript(text)
+
+
+def explicit(source: str) -> str:
+    """The source with its inline tags in their explicit form (`<:alpha>` → `\\:alpha`), which converts without warnings"""
+    return standard().explicit(source)

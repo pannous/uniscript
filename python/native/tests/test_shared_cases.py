@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 import uniscript
-from uniscript import Meta, Uniscript, Unsupported, WarningMode, convert, to_uniscript
+from uniscript import Meta, Uniscript, Unsupported, WarningMode, convert, explicit, to_uniscript
 
 CASES_PATH = Path(__file__).resolve().parents[3] / "js" / "test" / "cases.json"
 PLACEHOLDER = re.compile(r"\{(U\+[0-9A-F]+|open \S+ \S+|close \S+|attached \S+ \S+)\}")
@@ -60,6 +60,11 @@ def test_round_trips(case):
 @pytest.mark.parametrize("case", cases("toUniscript"), ids=str)
 def test_to_uniscript(case):
     assert to_uniscript(case[0]) == case[1]
+
+
+@pytest.mark.parametrize("case", cases("explicit"), ids=str)
+def test_explicit(case):
+    assert explicit(case[0]) == case[1]
 
 
 @pytest.mark.parametrize("case", cases("unicodeRoundTrips"), ids=str)
