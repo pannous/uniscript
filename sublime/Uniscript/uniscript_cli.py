@@ -26,6 +26,7 @@ FINISHED_TAG_BEFORE_CURSOR = re.compile(r"<:[^<>\n]+>$|\\:[A-Za-z0-9_-]*[A-Za-z0
 # the tag the cursor is typing in: `<:` with words (no leading space), or `\:` with a name
 TYPED_TAG = re.compile(r"(?:<:(?! )([^<>\n\[\]{};=\"]*)|\\:([A-Za-z0-9_-]*))$")
 NAMES_COMMAND = "names"
+HOMOPHONE = re.compile(r"^(.+)\.(\d+)$")  # chinese yi2.2: the second most frequent character read yi2
 MAX_COMPLETIONS = 1000  # the shortest first
 CHOOSE = "choose"  # tab_completion: several names to choose from
 GROUP_SAMPLES = 3  # characters shown beside a group of names
@@ -100,6 +101,12 @@ def finished_tag_before_cursor(line_before_cursor):
     return match.start() if match else None
 
 
+def shown(name):
+    """A name as listed: without the internal homophone number (yi2.2 is listed as yi2, inserted as yi2.2)"""
+    homophone = HOMOPHONE.match(name)
+    return homophone.group(1) if homophone else name
+
+
 class Names:
     """The index's names: entities with their text, block words, and each block's operands"""
 
@@ -118,18 +125,24 @@ class Names:
             # the index's case fallback twins (egyptian a1 of A1) are no operands of their own
             cased = {(operand.lower(), text) for operand, text in operands if operand != operand.lower()}
             self.operands[block] = [(operand, text) for operand, text in operands if operand != operand.lower() or (operand, text) not in cased]
-        self.owners = {}  # an operand in lowercase → (block, operand, text) of every block holding it
+        # an operand in lowercase → (block, operand, text, homophone number) of every block holding it; a homophone
+        # (chinese yi2.2, the second most frequent yi2) is filed under its reading too, the reading itself as number 1
+        self.owners = {}
         for block, operands in self.operands.items():
             for operand, text in operands:
-                self.owners.setdefault(operand.lower(), []).append((block, operand, text))
+                self.owners.setdefault(operand.lower(), []).append((block, operand, text, 1))
+                homophone = HOMOPHONE.match(operand)
+                if homophone:
+                    self.owners.setdefault(homophone.group(1).lower(), []).append((block, operand, text, int(homophone.group(2))))
 
     def across_blocks(self, operand):
-        """(block, operand, text) of the blocks holding the operand (ignoring case), one per text: of a block and its
-        aliases (egyptian, eg, gardiner, hieroglyph) the one with the fewest operands, then the longest name"""
+        """(block, operand, text) of the blocks holding the operand (ignoring case), then its homophones by frequency
+        (yi2 疑, yi2.2 移, yi2.3 遗 …), one per text: of a block and its aliases (egyptian, eg, gardiner, hieroglyph) the
+        one with the fewest operands, then the longest name"""
         chosen = {}
-        ranked = sorted(self.owners.get(operand.lower(), []), key=lambda owner: (len(self.operands[owner[0]]), -len(owner[0]), owner[0]))
-        for owner in ranked:
-            chosen.setdefault(owner[2], owner)
+        ranked = sorted(self.owners.get(operand.lower(), []), key=lambda owner: (owner[3], len(self.operands[owner[0]]), -len(owner[0]), owner[0]))
+        for block, found, text, _ in ranked:
+            chosen.setdefault(text, (block, found, text))
         return list(chosen.values())
 
     def short_operands(self, typed):
@@ -224,11 +237,11 @@ def completions(line_before_cursor, next_character, names, word, close_operands=
     entries = []
     for name, annotation, count in grouped(candidates, prefix):
         tail = "" if count > 1 or not closes else TAG_END
-        entries.append((name, annotation, word_head + name[word_start:] + tail, None))
+        entries.append((shown(name), annotation, word_head + name[word_start:] + tail, None))
     if not leading:
         for block, operand, text in names.across_blocks(prefix):
             tag = "{}{} {}{}".format(MARKER, block, operand, TAG_END)
-            entries.append(("{} {}".format(block, operand), text, tag, tag))
+            entries.append(("{} {}".format(block, shown(operand)), text, tag, tag))
     if not is_short and not leading:
         # a block word is the group of its operands: <:red> shows 🔴🟥🍎… 18 and asks for them when chosen
         entries += [(block, summary(names.operands[block]) if block in names.operands else BLOCK_ANNOTATION, word_head + block[word_start:] + " ", None)

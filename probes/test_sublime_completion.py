@@ -48,12 +48,23 @@ expect(tab_completion("\\:equ", "", names), CHOOSE)
 expect(tab_completion("alph", "", names), None)
 expect(tab_completion("\\:a2x", "", names), None)
 # an operand of several blocks: one entry per character, which replaces the whole tag (\:chinese-a2 is no name)
-across = {entry[0]: (entry[1], entry[3]) for entry in completions("\\:a2", "", names, "a2")}
+across = {}
+for entry in completions("\\:a2", "", names, "a2"):
+    across.setdefault(entry[0], (entry[1], entry[3]))  # the first: homophones (chinese a2.2 …) are listed alike
 expect(across["egyptian A2"], ("𓀁", "<:egyptian A2>"))  # not also under its aliases eg, gardiner, hieroglyph
 expect(across["anatolian a2"], ("𔐓", "<:anatolian a2>"))
 expect(across["chinese a2"], ("啊", "<:chinese a2>"))
 assert not {"eg A2", "gardiner A2", "hieroglyph A2", "luwian a2", "cn a2"} & set(across), across
 expect(tab_completion("\\:a2", "", names), CHOOSE)
+# a reading's homophones (chinese yi2.N, numbered by frequency) follow it, in numeric order (yi2.10 after yi2.9);
+# the .N suffix is internal: listed as the plain reading, inserted as the exact key
+homophones = completions("\\:yi2", "", names, "yi2")
+expect([entry[:2] for entry in homophones[:3]], [("chinese yi2", "疑"), ("chinese yi2", "移"), ("chinese yi2", "遗")])
+expect(homophones[1][3], "<:chinese yi2.2>")
+numbers = [int(entry[3][:-1].rpartition(".")[2]) for entry in homophones[1:] if "." in entry[3]]
+expect(numbers, sorted(numbers))
+after_block = completions("<:cn yi2", "", names, "yi2")
+expect([entry[:3] for entry in after_block[:2]], [("yi2", "疑", "yi2"), ("yi2", "移", "yi2.2")])
 # inserting characters: operands close their tag too, and a finished tag is found for its conversion
 entries = {entry[0]: entry[2] for entry in completions("<:red c", "", names, "c", close_operands=True)}
 expect(entries["circle"], "circle>")
