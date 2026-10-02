@@ -22,7 +22,7 @@ def test_the_converter_is_the_rust_extension():
 def test_a_converter_reads_the_bytes_of_another_index():
     index = Index((REPOSITORY / "data" / "entities.idx").read_bytes())
     assert index.data == Index().data
-    assert Uniscript(index).convert("<:alpha> <:fracture A>") == ("α 𝔄", [])
+    assert Uniscript(index).convert("\\:alpha \\:fracture-A") == ("α 𝔄", [])
     assert Index.load().get(Table.NAMES, "alpha") == "α"
     assert Index().entry(Table.META, "color") == ("color", "color: {}")
 
@@ -33,7 +33,7 @@ def test_invalid_index_bytes_are_refused():
 
 
 def test_lenient_is_the_default():
-    assert uniscript.convert("<:nosuch> <:alpha>") == ("<:nosuch> α", [uniscript.Warning("unknown uniscript entity: nosuch", 0)])
+    assert uniscript.convert("<:nosuch> \\:alpha") == ("<:nosuch> α", [uniscript.Warning("unknown uniscript entity: nosuch", 0)])
     assert Uniscript().convert("a <: b")[0] == "a <: b"
 
 

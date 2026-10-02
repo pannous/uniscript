@@ -11,8 +11,9 @@ pip install uniscript-rs
 
 ```python
 import uniscript
-uniscript.to_unicode("<:alpha> <:fracture A>")   # 'α 𝔄'
-uniscript.to_uniscript("α 𝔄")                    # '<:alpha> <:fracture A>'
+uniscript.to_unicode(r"\:alpha \:fracture-A")    # 'α 𝔄'
+uniscript.to_uniscript("α 𝔄")                    # '\\:alpha \\:fracture-A'
+uniscript.explicit("<:alpha> <:color red A>")   # '\\:alpha <:color red A/>': inline tags in explicit form
 ```
 
 Offsets are UTF-8 byte offsets; conversion is lenient by default (errors become warnings and the faulty uniscript stays

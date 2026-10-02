@@ -19,7 +19,7 @@ UNISCRIPT_VERSION: str = _uniscript.UNISCRIPT_VERSION
 __all__ = [
     "UNISCRIPT_VERSION", "Index", "Table", "text_hash", "standard", "WarningMode", "Warning", "Header", "Font", "MetaRun", "Styled", "Meta", "Uniscript",
     "UniscriptError", "UnknownEntity", "Unclosed", "Unsupported", "InvalidMeta",
-    "convert", "to_unicode", "to_uniscript", "header",
+    "convert", "to_unicode", "to_uniscript", "explicit", "header",
 ]
 
 
@@ -212,6 +212,10 @@ class Uniscript:
     def to_uniscript(self, text: str) -> str:
         return self.converter.to_uniscript(text)
 
+    def explicit(self, source: str) -> str:
+        """The source with its opener-like inline tags in explicit form (<:alpha> → \\:alpha), which converts alike"""
+        return self.converter.explicit(source)
+
     def font(self, name: str) -> Optional[Font]:
         found = self.converter.font(name)
         return Font(*found) if found else None
@@ -254,6 +258,11 @@ def to_unicode(source: str) -> str:
 def to_uniscript(text: str) -> str:
     """Unicode → uniscript; to_unicode gives the text back"""
     return standard().to_uniscript(text)
+
+
+def explicit(source: str) -> str:
+    """The source with its opener-like inline tags in explicit form (<:alpha> → \\:alpha), which converts alike"""
+    return standard().explicit(source)
 
 
 def header(source: str) -> Optional[Header]:

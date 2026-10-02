@@ -137,6 +137,10 @@ impl Converter {
 		self.converter.lock().expect("converter lock").to_uniscript(text)
 	}
 
+	fn explicit(&self, source: &str) -> String {
+		self.converter.lock().expect("converter lock").explicit(source)
+	}
+
 	/// (name, lang, families, features)
 	fn font(&self, name: &str) -> Option<(String, String, Vec<String>, Vec<String>)> {
 		let converter = self.converter.lock().expect("converter lock");

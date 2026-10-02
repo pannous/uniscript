@@ -51,3 +51,5 @@
   ./uniscript shadows it. test.sh runs the FFI tests plus all of python/native/tests (278 pass).
 - Benchmark (tests/benchmark.py, M-series): convert 37 kB 1.68 ms native vs 0.29 ms ffi (5.9×), to_uniscript 25.5 vs
   4.7 ms (5.4×), a short string 11 vs 4 µs (2.6×), start + import 46 vs 36 ms.
+- python/ffi exposes `explicit(source)` (module function and `Uniscript.explicit`) through `Converter.explicit`; its
+  shared-case runner (the `explicit` section) lives in python/native/tests/test_shared_cases.py, which test.sh runs.
