@@ -44,6 +44,7 @@ HEADER_OPEN = "<:uniscript"
 VERSION_ATTRIBUTE = 'version="'
 ATTRIBUTE_QUOTE = '"'
 LINE_BREAKS = ("\r\n", "\n")
+BLOCK_PADDING = ("\r\n", " ", "\t", "\n", "\r")  # a block tag eats one on its inner side: `<:greek> athos <:/greek>` is αθοσ
 
 
 class WarningMode(enum.Enum):
@@ -116,6 +117,16 @@ def unicode_escape_at(text: str, position: int):
 def is_closing(content: str) -> bool:
     """`<:>` or `<:/greek>`"""
     return not content or content.startswith(CLOSING_SLASH)
+
+
+def opening_padding_length(text: str) -> int:
+    """Characters of the one whitespace a block opener eats after it"""
+    return next((len(padding) for padding in BLOCK_PADDING if text.startswith(padding)), 0)
+
+
+def without_closing_padding(text: str) -> str:
+    """The text without the one whitespace a block's closer eats before it"""
+    return next((text[:-len(padding)] for padding in BLOCK_PADDING if text.endswith(padding)), text)
 
 
 class Uniscript:
@@ -477,6 +488,16 @@ class Uniscript:
         self._warn(f"invalid code point U+{value:04X}", at)
         return written
 
+    def _closes_block(self, content: str) -> bool:
+        """`<:>` or `<:/greek>`, not a meta close like `<:/color>`"""
+        return is_closing(content) and (not content or self.meta_template(content[1:]) is None)
+
+    def _closes_block_at(self, source: str, marker: int) -> bool:
+        if not source.startswith(TAG_OPEN + MARKER_COLON, marker):
+            return False
+        close = source.find(TAG_CLOSE, marker + 2)
+        return close >= 0 and self._closes_block(source[marker + 2:close])
+
     def _unicode_of(self, source: str, mode: WarningMode) -> str:
         out, block = [], None
         position = self._header_length(source)
@@ -491,7 +512,11 @@ class Uniscript:
             found = MARKER.search(source, position)
             marker = found.start() if found else len(source)
             between = source[position:marker]
-            out.append(self._block_text(block, between, byte_position) if block is not None else between)
+            if block is not None:
+                if self._closes_block_at(source, marker):
+                    between = without_closing_padding(between)
+                between = self._block_text(block, between, byte_position)
+            out.append(between)
             advance(marker - position)
             if position >= len(source):
                 break
@@ -518,13 +543,13 @@ class Uniscript:
                 out.append(self._kept(Unclosed(rest), rest, byte_position, mode))
                 break
             content = rest[2:close]
-            key = content[1:] if content.startswith(CLOSING_SLASH) else None
-            if key is not None and self.meta_template(key) is not None:
-                out.append(Meta.close(key).tags())
-            elif is_closing(content):
+            if self._closes_block(content):
                 block = None
+            elif content.startswith(CLOSING_SLASH):
+                out.append(Meta.close(content[1:]).tags())
             elif self._is_block(content):
                 block = content
+                close += opening_padding_length(rest[close + 1:])
             else:
                 try:
                     out.append(self._tag(content, byte_position))
