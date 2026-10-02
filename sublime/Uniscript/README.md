@@ -14,6 +14,8 @@ Replaces uniscript with Unicode in place: `<:alpha> <:fracture A> \:infinity` �
   sharing their next segment fold into one group (`alchemical-` 🝟🜥🜙… 116) that asks for the rest when chosen. A name
   on its own closes its tag; in files converting while typing, it then becomes its character. Needs a `uniscript` with
   the `names` command (`uniscript names`).
+  While a tag is typed, the other packages' completions (All Autocomplete, LSP, …) stay quiet (setting
+  `only_uniscript_completions_in_tags`).
 
 Conversion never stops on errors: unknown entities (`<:nosuchthing>`), invalid meta values and an unclosed `<:` stay as
 written and everything else converts (`uniscript --lenient`). They and characters without a styled form

@@ -5,5 +5,8 @@
 
 	// replace a <:tag> with its Unicode as soon as its > is typed:
 	// true, false, or "header" for files starting with <: (the uniscript header <:uniscript version="…">)
-	"convert_while_typing": "header"
+	"convert_while_typing": "header",
+
+	// while a <: or \: tag is typed, the other packages' completions (All Autocomplete, LSP, …) stay quiet
+	"only_uniscript_completions_in_tags": true
 }

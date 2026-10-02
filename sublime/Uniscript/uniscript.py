@@ -15,6 +15,9 @@ COMMITTED_COMMANDS = ("commit_completion", "insert_completion")
 TAG_END = ">"
 TAG_OPENERS = ("<:", "\\:")
 CONTINUE_AFTER = ("-", " ")  # a committed group or block word asks for the rest
+QUIET_SETTING = "only_uniscript_completions_in_tags"
+QUERY_CALLBACK = "on_query_completions"
+QUIETED_MARK = "_uniscript_quieted"
 _names = None
 
 
@@ -38,6 +41,36 @@ def names():
 def text_before_cursor(view, cursor, length=None):
     start = view.line(cursor).begin() if length is None else max(0, cursor - length)
     return view.substr(sublime.Region(start, cursor))
+
+
+def is_typing_tag(view, point):
+    return cli.TYPED_TAG.search(text_before_cursor(view, point)) is not None
+
+
+def quieted(listener, query):
+    """The listener's on_query_completions, answering nothing while a uniscript tag is typed"""
+    def quiet_query(*args):
+        view = listener.view if isinstance(listener, sublime_plugin.ViewEventListener) else args[0]
+        locations = args[-1]
+        if settings().get(QUIET_SETTING, True) and is_typing_tag(view, locations[0]):
+            return None
+        return query(*args)
+    setattr(quiet_query, QUIETED_MARK, True)
+    return quiet_query
+
+
+def silence_other_completions(view):
+    """Sublime merges every package's completions and has no flag against other plugins' lists, so the other
+    listeners (All Autocomplete, LSP, …) are wrapped: inside <: and \\: tags they stay quiet. Uses sublime_plugin's
+    listener registries (all_callbacks, view_event_listeners), undocumented but stable since ST3; listeners loaded
+    later are wrapped at the next query."""
+    registered = getattr(sublime_plugin, "all_callbacks", {}).get(QUERY_CALLBACK, [])
+    per_view = getattr(sublime_plugin, "view_event_listeners", {}).get(view.id(), [])
+    for listener in list(registered) + list(per_view):
+        query = getattr(listener, QUERY_CALLBACK, None)
+        if query is None or isinstance(listener, UniscriptCompletionListener) or getattr(query, QUIETED_MARK, False):
+            continue
+        setattr(listener, QUERY_CALLBACK, quieted(listener, query))
 
 
 def report(view, warnings):
@@ -79,6 +112,7 @@ class UniscriptWhileTypingListener(sublime_plugin.ViewEventListener):
         committed = command_name in COMMITTED_COMMANDS
         before = text_before_cursor(self.view, self.view.sel()[0].b, 2) if len(self.view.sel()) else ""
         if typed and before in TAG_OPENERS or committed and before[-1:] in CONTINUE_AFTER:
+            silence_other_completions(self.view)
             return self.view.run_command("auto_complete", {"disable_auto_insert": True})
         if not (typed.endswith(TAG_END) or committed and before.endswith(TAG_END)) or not self.is_live():
             return
@@ -101,6 +135,7 @@ class UniscriptCompletionListener(sublime_plugin.EventListener):
         line = text_before_cursor(view, cursor)
         if not any(opener in line for opener in TAG_OPENERS):
             return None
+        silence_other_completions(view)
         try:
             entries = cli.completions(line, view.substr(cursor), names())
         except cli.UniscriptError as error:

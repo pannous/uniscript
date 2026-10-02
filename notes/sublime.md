@@ -35,3 +35,8 @@
   completion). Sublime replaces only the word after the last space or `-` (word_separators), so a completion holds the
   name from there on. DYNAMIC_COMPLETIONS re-queries per keystroke; the popup is opened by `auto_complete` after `<:`
   / `\:` and after committing a group (`-`) or block word (` `).
+- Other packages' completions: Sublime merges every listener's list (sublime_plugin.on_query_completions loops over
+  all_callbacks and view_event_listeners); INHIBIT_* flags only drop buffer words and .sublime-completions. So the
+  plugin wraps the other listeners' on_query_completions (instance attribute, marked against double wrapping) to return
+  None while a tag is typed; done before its own auto_complete and on every query (a listener running before ours
+  this once is caught next time). probes/test_sublime_quiet_completions.py with stubbed modules.
