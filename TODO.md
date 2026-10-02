@@ -122,7 +122,7 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - entity name table: 885 of 3227 rows are algorithmic Unicode names, unknown: `CJK UNIFIED IDEOGRAPH-4E00`, `CJK COMPATIBILITY IDEOGRAPH-F900`, `HANGUL SYLLABLE GA`, `EGYPTIAN HIEROGLYPH-13460`, `KHITAN SMALL SCRIPT CHARACTER-18B00`, `NUSHU CHARACTER-1B170`, `TANGUT COMPONENT-001` (UAX#44 NR1/NR2 rules, not in the index; `<:U+4E00>` works)
 - case fallback only in `<:…>` tags, not in `\:NAME`; intellij/UniscriptAnnotator.kt isName check does not know it (paints `<:TILDE>` as unknown)
 - suffix names (user idea): `<:SANS-SERIF DIGIT NINE>` for MATHEMATICAL SANS-SERIF DIGIT NINE is unknown and not even unique (DINGBAT CIRCLED SANS-SERIF DIGIT NINE …); unique word-suffix aliases of the Unicode names would add ~42.7k index entries (23.5k when only the first word is dropped)
-- kotlin tests need Java 21: `JAVA_HOME=$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home ./gradlew test -Dorg.gradle.java.installations.paths=$JAVA_HOME` (gradle found no 21 toolchain; installed openjdk@21 2026-10-02)
+- DONE: kotlin tests need Java 21: `JAVA_HOME=$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home ./gradlew test -Dorg.gradle.java.installations.paths=$JAVA_HOME` (gradle found no 21 toolchain; installed openjdk@21 2026-10-02)
 - probes/test_sublime_plugin.py fails against the current CLI: `<:greek> athos <:/greek>\n` now converts to ` αθοσ \n` (full blocks keep their spaces, as js/test/cases.json says); the probe still expects `αθοσ\n` (passed only with the old ~/.cargo/bin/uniscript from 2026-09-30)
 - Sublime completion glue (uniscript.py: on_query_completions, popup after `<:`/`\:`, commit_completion hooks) is untested in a live Sublime; only uniscript_cli.completions is probed
 - `~/.cargo/bin/uniscript` must be reinstalled (`cargo install --path .`) whenever the CLI gains commands the editor plugins use (`names`)
@@ -137,4 +137,4 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - local `.uniscript` block aliases can only name local blocks: the built-in blocks are not available when the local index is built (`block-aliases { tiniest: "upper" }` finds nothing)
 - TODO: js `npm test` failed once (1 of 29) on 2026-10-02 right after an index rebuild and passed in 4 reruns: find the flaky test (timing?)
 - python: `python3 -m pytest python/native/tests` from the repo root imports the stale pip-installed uniscript (~/Library/Python/3.14/site-packages, 41 failures); run it from python/native or reinstall the package
-- kotlin: `./gradlew test` fails before compiling: "Failed to calculate the value of task ':compileTestJava' property 'javaCompiler'" (JDK toolchain not found)
+- DONE: kotlin: `./gradlew test` fails before compiling: "Failed to calculate the value of task ':compileTestJava' property 'javaCompiler'" (JDK toolchain not found)

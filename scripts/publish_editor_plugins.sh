@@ -24,8 +24,8 @@ step "IntelliJ: com.pannous.uniscript $VERSION"
 verify_task=verifyPlugin
 [ "$VERIFY" = "false" ] && verify_task=verifyPluginProjectConfiguration
 (cd "$ROOT/intellij" && ./gradlew --quiet test buildPlugin "$verify_task")
-unzip -p "$ROOT/intellij/build/distributions/uniscript-intellij-$VERSION.zip" "uniscript-intellij/lib/uniscript-intellij-$VERSION.jar" >"$DIST/uniscript-intellij.jar"
-unzip -p "$DIST/uniscript-intellij.jar" entities.idx | cmp - "$ROOT/data/entities.idx" || fail "the plugin's entities.idx differs from data/entities.idx"
+unzip -p "$ROOT/intellij/build/distributions/uniscript-intellij-$VERSION.zip" "uniscript-intellij/lib/uniscript-kotlin-*.jar" >"$DIST/uniscript-kotlin.jar"
+unzip -p "$DIST/uniscript-kotlin.jar" entities.idx | cmp - "$ROOT/data/entities.idx" || fail "the plugin's entities.idx differs from data/entities.idx"
 echo "ok   intellij/build/distributions/uniscript-intellij-$VERSION.zip bundles data/entities.idx"
 
 step "Sublime Text: Uniscript $VERSION"

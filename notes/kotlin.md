@@ -5,6 +5,11 @@
   `includeBuild("../kotlin")` + `implementation("com.pannous:uniscript-kotlin:$version") { exclude(group = "org.jetbrains.kotlin") }`:
   Gradle substitutes the included build, the plugin zip gets `lib/uniscript-kotlin-1.0.0.jar` and no Kotlin stdlib
   (every IDE ships it). Version comes from Cargo.toml.
+- JDK 21 toolchain (`jvmToolchain(21)`): gradle.properties points `org.gradle.java.installations.paths` at Homebrew's
+  /opt/homebrew/opt/openjdk@21 (brew JDKs are not in /usr/libexec/java_home, so auto-detection misses them); without it
+  the foojay-resolver-convention plugin (settings.gradle.kts, also intellij/ and probes/publish/kotlin-consumer)
+  downloads Temurin 21 into ~/.gradle/jdks. A missing configured path only logs one line. Gradle itself runs on any JDK
+  (27 here).
 - `./gradlew test` runs CasesTest over js/test/cases.json (path passed as system property `uniscript.cases`; parsed with
   kotlinx-serialization-json's `Json.parseToJsonElement`, no compiler plugin needed) plus the ported Rust tests.
 - Same API as Rust: `WarningMode.WARN/ERROR/LENIENT`, `header()`, `metaRuns`/`html`, `font`, `metaTemplate`. Offsets are
