@@ -25,3 +25,6 @@
   with it. The opener test (`readsAsOpener`, `shortForm`, `blockForm`, `explicitForms`) are `EntityIndex` extensions so
   both `Uniscript` and the private `Conversion` use them; `Conversion.inlineTag` counts warnings before `tag()` to warn
   only for a quietly converted tag. Port tests assert the explicit spelling, as the Rust tests do.
+- `*readings` blocks (c9cd2a1): `operand` checks `form(block, READINGS_KEY)` after the own entry and splits the word via
+  `readings()` (DP over code-point bounds, end tried longest first, strict `<` keeps the longest first piece of equally
+  few); no split → word as written + one `no <block> form of <word>` warning at the block text start. Greek unchanged.

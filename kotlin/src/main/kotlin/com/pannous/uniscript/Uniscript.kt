@@ -36,6 +36,8 @@ private const val META_FALLBACK_KEY = "*meta"
 /** The most words one operand spans: `<:egyptian man with hand to mouth>` */
 private const val MAX_OPERAND_WORDS = 8
 private const val GROUP_KEY = "*group"
+/** A block whose words split into whole readings (chinese shihan → shi han), not letters and digraphs (greek) */
+private const val READINGS_KEY = "*readings"
 private val WHITESPACE = Regex("\\s+")
 /** The current uniscript version, declared by the header `<:uniscript version="…">`; every later uniscript.org version is read too */
 const val UNISCRIPT_VERSION = "https://uniscript.org/v1"
@@ -410,7 +412,13 @@ private class Conversion(val index: EntityIndex, val source: String, val lenient
 	/** One operand: its own entry (red circle → 🔴, greek eta → η), else each character or pair (greek th → θ)
 	 *  of the operand, or of the entity it names */
 	private fun operand(block: String, token: String, effects: List<String>, at: Int): String {
-		name("$block $token")?.let { own -> return afterBase(own, effectSuffixes(effects, own.firstCodePoint() ?: ' '.code, at)) }
+		fun ownForm(own: String) = afterBase(own, effectSuffixes(effects, own.firstCodePoint() ?: ' '.code, at))
+		name("$block $token")?.let { return ownForm(it) }
+		if (form(block, READINGS_KEY) != null) {
+			// <:chinese> shihan: whole readings, never letters (nuli is nu li, not n u l i)
+			return readings(block, token)?.joinToString("") { ownForm(it) }
+				?: token.also { warn("no $block form of $token", at) }
+		}
 		val characters = ((if (token.utf8Size > 1) name(token) else null) ?: token).codePoints().toArray()
 		val out = StringBuilder()
 		var position = 0
@@ -425,6 +433,32 @@ private class Conversion(val index: EntityIndex, val source: String, val lenient
 			}
 		}
 		return out.toString()
+	}
+
+	/** The forms of the whole readings a word splits into (shihan → 是 汉): the fewest pieces, of those the longest first
+	 *  piece; null when it does not split */
+	private fun readings(block: String, word: String): List<String>? {
+		val bounds = (0 until word.codePointCount(0, word.length)).map { word.offsetByCodePoints(0, it) } + word.length
+		val last = bounds.size - 1
+		fun piece(start: Int, end: Int) = form(block, word.substring(bounds[start], bounds[end]))
+		// fewest[k]: (pieces, end of the first piece) of the best split of the word from bounds[k]
+		val fewest = arrayOfNulls<Pair<Int, Int>>(last + 1)
+		fewest[last] = 0 to last
+		for (start in last - 1 downTo 0) {
+			for (end in last downTo start + 1) {
+				val pieces = fewest[end]?.first ?: continue
+				val best = fewest[start]?.first
+				if ((best == null || pieces + 1 < best) && piece(start, end) != null) fewest[start] = pieces + 1 to end
+			}
+		}
+		val forms = mutableListOf<String>()
+		var start = 0
+		while (start < last) {
+			val end = fewest[start]?.second ?: return null
+			forms += piece(start, end) ?: return null
+			start = end
+		}
+		return forms
 	}
 
 	/** The text inside a full block (`<:greek> filosofia kosmos<:/greek>`) as written: its whitespace stays, each word is
