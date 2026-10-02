@@ -17,7 +17,7 @@ Behaviour that is intended but can silently give a wrong result. Keep each entry
   (`athos` → αθοσ), and never read a letter name inside a word (`metal` → μεταλ, not μ eta λ).
 - Before 2026-10-02 every block used greek's digraph rule (pieces of at most 2 letters), so `nuli` → 努里 only by
   accident and `shihan` → shi哈㕶.
-- Tests: tests/block_readings_test.rs. Ports: the readings split is in the Rust core first (TODO: the other ports).
+- Tests: tests/block_readings_test.rs and the shared cases; every port has the split (Python, TypeScript, Kotlin, Swift, C, wasp).
 
 ## Shared cargo target directory
 
