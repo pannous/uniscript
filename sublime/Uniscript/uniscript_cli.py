@@ -12,6 +12,8 @@ INSTALL_HINT = "cargo install --git https://github.com/pannous/uniscript"
 # the shared target directories of ~/.cargo/config.toml, else the checkout's own target/
 CHECKOUT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 CARGO_MANIFEST = "Cargo.toml"
+CARGO_SOURCES = "src" + os.sep  # dep-info of a build of the checkout names <checkout>/src/…
+DEP_INFO_SUFFIX = ".d"
 DEVELOPMENT_BUILDS = ("~/.cargo/shared-target/release", "/opt/cargo/release", "target/release")
 CHECKOUT_INDEX = os.path.join("data", "entities.idx")  # compiled into the binary
 REVERSE_FLAG = "--reverse"
@@ -45,12 +47,23 @@ class UniscriptError(Exception):
     pass
 
 
+def built_from(binary, checkout):
+    """Whether cargo built the binary from the checkout: its dep-info file (`uniscript.d` beside it) lists the
+    checkout's sources. The shared target directories also hold other crates named uniscript (warp's fetched copy)"""
+    try:
+        with open(os.path.splitext(binary)[0] + DEP_INFO_SUFFIX) as dep_info:
+            return os.path.join(checkout, CARGO_SOURCES) in dep_info.readline()
+    except OSError:
+        return False
+
+
 def development_binary(checkout=CHECKOUT):
-    """The newest uniscript built from the checkout, None outside one"""
+    """The newest uniscript built from the checkout, None outside one or when none was"""
     if not os.path.isfile(os.path.join(checkout, CARGO_MANIFEST)):
         return None
     builds = [os.path.join(checkout, os.path.expanduser(directory), BINARY_NAME) for directory in DEVELOPMENT_BUILDS]
-    return max((build for build in builds if os.path.isfile(build)), key=os.path.getmtime, default=None)
+    ours = (build for build in builds if os.path.isfile(build) and built_from(build, checkout))
+    return max(ours, key=os.path.getmtime, default=None)
 
 
 def stale_build(binary, checkout=CHECKOUT):
@@ -183,6 +196,13 @@ class Names:
                 if homophone:
                     self.owners.setdefault(homophone.group(1).lower(), []).append((block, operand, text, int(homophone.group(2))))
 
+    def require(self, binary="uniscript"):
+        """These names, unless there are none: a binary without `uniscript names` (an old or foreign build, which converts
+        the word "names" instead) would leave every completion list empty without a word. Every index has blocks"""
+        if not self.blocks:
+            raise UniscriptError("no names from {} {}: build this checkout (cargo build --release)".format(binary, NAMES_COMMAND))
+        return self
+
     def across_blocks(self, operand):
         """(block, operand, text) of the blocks holding the operand (ignoring case), then its homophones by frequency
         (yi2 疑, yi2.2 移, yi2.3 遗 …), one per text: of a block and its aliases (egyptian, eg, gardiner, hieroglyph) the
@@ -207,7 +227,7 @@ class Names:
 
 
 def load_names(binary=""):
-    return Names(run([NAMES_COMMAND], binary=binary)[0].splitlines())
+    return Names(run([NAMES_COMMAND], binary=binary)[0].splitlines()).require(find_binary(binary))
 
 
 def summary(members):

@@ -70,3 +70,9 @@
   Output panels get no ViewEventListeners: run a typed-character test there by calling the command directly.
 - Tests: `tests/sublime/run.sh` runs tests/sublime/test_sublime_*.py (promoted from probes/ on 2026-10-02, append-only);
   test_sublime_package.py needs the zip and runs in scripts/publish_editor_plugins.sh.
+- Shared target collision (2026-10-02): warp builds its fetched copy ~/.cache/warp/packages/uniscript@1.0.0 into the same
+  ~/.cargo/shared-target, and as the same crate (uniscript 1.0.0) its lib and bin overwrite this checkout's. Sublime then
+  ran a binary without `uniscript names` (it echoes "names"): no completions, only Sublime's buffer words. Now the plugin
+  takes only builds whose dep-info (`uniscript.d`) lists this checkout's src/, and a name list without blocks is an error.
+  Cargo may still call the build fresh and even compile src/main.rs against warp's rlib: `cargo clean -p uniscript
+  --release && cargo build --release`. tests/sublime/test_sublime_binary_origin.py.

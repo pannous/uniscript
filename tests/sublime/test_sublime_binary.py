@@ -7,10 +7,11 @@ from pathlib import Path
 
 CHECKOUT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(CHECKOUT / "sublime" / "Uniscript"))
-from uniscript_cli import development_binary, find_binary, stale_build, DEVELOPMENT_BUILDS, BINARY_NAME  # noqa: E402
+from uniscript_cli import built_from, development_binary, find_binary, stale_build, DEVELOPMENT_BUILDS, BINARY_NAME  # noqa: E402
 
 builds = [CHECKOUT / os.path.expanduser(directory) / BINARY_NAME for directory in DEVELOPMENT_BUILDS]
-newest = max((build for build in builds if build.is_file()), key=os.path.getmtime)
+# of this checkout: the shared target directories also hold warp's build of its fetched uniscript copy
+newest = max((build for build in builds if build.is_file() and built_from(str(build), str(CHECKOUT))), key=os.path.getmtime)
 assert development_binary() == str(newest), development_binary()
 assert find_binary() == str(newest), find_binary()
 assert find_binary("~/bin/mine") == os.path.expanduser("~/bin/mine")  # the "binary" setting still wins
