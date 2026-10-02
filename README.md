@@ -25,7 +25,7 @@ upper A => ᴬ
 
  
 # Why?
-Unicode is a great standard, seriously! But it has some [shortcomings]([docs/shortcommings.md) ...  
+Unicode is a great standard, seriously! But it has some [shortcomings](docs/shortcommings.md) ...  
 Finding and entering Unicode through system shortcuts can be slow and cumbersome   
 HTML is a great standard, but not everything is HTML and many modifiers are missing (fracture A => 𝔄  A => 𝔸 ...)  
 
