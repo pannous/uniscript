@@ -19,7 +19,8 @@ const CLOSE_SIGIL: &str = "</";
 const ATTACH_SIGIL: char = ':';
 /// besides ASCII letters and digits; no spaces, quotes, `;` or brackets, so values stay safe inside CSS and HTML
 const VALUE_PUNCTUATION: &str = "#.%+-_,()/";
-const ZERO_WIDTH_JOINER: char = '\u{200D}';
+pub(crate) const ZERO_WIDTH_JOINER: char = '\u{200D}';
+const EMOJI_PRESENTATION: char = '\u{FE0F}';
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Meta {
@@ -242,4 +243,24 @@ pub struct Font<'a> {
 
 pub(crate) fn list(text: &str) -> Vec<&str> {
 	text.split(',').map(str::trim).filter(|item| !item.is_empty()).collect()
+}
+
+/// The byte lengths of the joined emoji prefixes at the start of text, longest first: 👩‍🦰 → [👩‍🦰]; ‍🦰 → [‍🦰]
+pub(crate) fn joined_prefixes(text: &str) -> Vec<usize> {
+	let mut ends = Vec::new();
+	let mut characters = text.char_indices().peekable();
+	let mut joined = characters.next_if(|&(_, c)| c == ZERO_WIDTH_JOINER).is_some();
+	while characters.next_if(|&(_, c)| c != ZERO_WIDTH_JOINER).is_some() {
+		characters.next_if(|&(_, c)| c == EMOJI_PRESENTATION);
+		let end = characters.peek().map_or(text.len(), |&(at, _)| at);
+		if joined {
+			ends.push(end);
+		}
+		joined = characters.next_if(|&(_, c)| c == ZERO_WIDTH_JOINER).is_some();
+		if !joined {
+			break;
+		}
+	}
+	ends.reverse();
+	ends
 }

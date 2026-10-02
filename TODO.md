@@ -126,3 +126,7 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - probes/test_sublime_plugin.py fails against the current CLI: `<:greek> athos <:/greek>\n` now converts to ` αθοσ \n` (full blocks keep their spaces, as js/test/cases.json says); the probe still expects `αθοσ\n` (passed only with the old ~/.cargo/bin/uniscript from 2026-09-30)
 - Sublime completion glue (uniscript.py: on_query_completions, popup after `<:`/`\:`, commit_completion hooks) is untested in a live Sublime; only uniscript_cli.completions is probed
 - `~/.cargo/bin/uniscript` must be reinstalled (`cargo install --path .`) whenever the CLI gains commands the editor plugins use (`names`)
+- joined emoji sequences (👩‍🦰 → `<:red-haired woman>`) spell back only in Rust, js and python; the C, Kotlin, Java, Swift and C# `to_uniscript` still read them character by character (`<:woman><:zero-width-joiner><:red emoji-component-hair>`), no shared case checks it
+- hair styles take no skin tone yet: `<:red-haired woman>` has no way to say 👩🏽‍🦰 except `<:woman><:emoji-modifier-fitzpatrick-type-4><:red-hair>`
+- csharp tests: `Converts` fails with "unknown uniscript entity: LATIN CAPITAL LETTER ETH" (native library behind the FFI looks stale), unrelated to the hair styles
+- swift test fails to build here: "could not build Objective-C module 'Foundation'" (toolchain, not code)

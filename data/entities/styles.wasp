@@ -2304,6 +2304,35 @@ blocks {
 		"*open egyptian": "\u{13437}"
 		"*close egyptian": "\u{13438}"
 	}
+	red-haired {
+		woman: "👩\u{200D}🦰"
+		man: "👨\u{200D}🦰"
+		adult: "🧑\u{200D}🦰"
+		person: "🧑\u{200D}🦰"
+	}
+	curly-haired {
+		woman: "👩\u{200D}🦱"
+		man: "👨\u{200D}🦱"
+		adult: "🧑\u{200D}🦱"
+		person: "🧑\u{200D}🦱"
+	}
+	white-haired {
+		woman: "👩\u{200D}🦳"
+		man: "👨\u{200D}🦳"
+		adult: "🧑\u{200D}🦳"
+		person: "🧑\u{200D}🦳"
+	}
+	bald {
+		woman: "👩\u{200D}🦲"
+		man: "👨\u{200D}🦲"
+		adult: "🧑\u{200D}🦲"
+		person: "🧑\u{200D}🦲"
+	}
+	blond-haired {
+		person: "👱"
+		woman: "👱\u{200D}♀\u{FE0F}"
+		man: "👱\u{200D}♂\u{FE0F}"
+	}
 }
 
 block-aliases {
@@ -2313,7 +2342,10 @@ block-aliases {
 	subscript: lower
 	reverseInPlace: reversed
 	reverse: mirror
+	mirrored: mirror
+	flipped: flip
 	grey: gray
+	blonde-haired: blond-haired
 	emoji: iconic
 	text: plain
 }

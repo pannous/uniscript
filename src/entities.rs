@@ -5,6 +5,7 @@
 //! (`hieroglyph: "egyptian anatolian"`) holds the operands of all, the first block holding one wins.
 
 use std::collections::{HashMap, HashSet};
+use crate::meta::ZERO_WIDTH_JOINER;
 use std::path::{Path, PathBuf};
 
 /// Sections holding plain entities, earlier ones win when a name occurs twice
@@ -113,6 +114,11 @@ fn merged_blocks<'a>(blocks: &Table, names: impl Iterator<Item = &'a str>) -> Ta
 
 fn is_single_character(text: &str) -> bool {
 	text.chars().count() == 1
+}
+
+/// One character or an emoji sequence joined by zero width joiners: 👩‍🦰
+fn is_one_glyph(text: &str) -> bool {
+	is_single_character(text) || text.contains(ZERO_WIDTH_JOINER)
 }
 
 /// The entity files under a directory, sorted by path, or the file itself
@@ -250,7 +256,7 @@ impl Entities {
 		let mut block_forms = Ordered::default();
 		for (block, table) in self.blocks().tables().filter(|(_, table)| table.get(ONE_WAY_KEY).is_none()) {
 			for (operand, text) in table.texts() {
-				if !operand.starts_with(CONTROL_PREFIX) && is_single_character(text) && chosen.get(text).is_none() {
+				if !operand.starts_with(CONTROL_PREFIX) && is_one_glyph(text) && chosen.get(text).is_none() {
 					block_forms.set_default(text, &format!("{block} {operand}"));
 					chosen.set_default(text, "");
 				}

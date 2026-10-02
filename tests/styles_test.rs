@@ -60,3 +60,22 @@ fn a_style_without_a_combination_keeps_the_inner_style() {
 	let (text, warnings) = uniscript::convert("<:double bold A>", uniscript::WarningMode::Warn).unwrap();
 	assert_eq!((text.as_str(), warnings.len()), ("𝐀", 1));
 }
+
+#[test]
+fn hair_styles_join_their_component_to_the_standard_people() {
+	round_trips("<:red-haired woman>", "👩\u{200D}🦰");
+	round_trips("<:curly-haired man>", "👨\u{200D}🦱");
+	round_trips("<:white-haired adult>", "🧑\u{200D}🦳");
+	round_trips("<:bald woman>", "👩\u{200D}🦲");
+	round_trips("<:blond-haired man>", "👱\u{200D}♂\u{FE0F}");
+	converts("<:red-haired person>", "🧑\u{200D}🦰");
+	converts("<:woman><:red-hair>", "👩\u{200D}🦰");
+	let (girl, warnings) = uniscript::convert("<:red-haired girl>", uniscript::WarningMode::Warn).unwrap();
+	assert_eq!((girl.as_str(), warnings.len()), ("👧", 1), "no standard red-haired girl");
+}
+
+#[test]
+fn participles_name_their_effects() {
+	assert_eq!(to_unicode("<:mirrored A>"), to_unicode("<:mirror A>"));
+	assert_eq!(to_unicode("<:flipped red A>"), to_unicode("<:flip red A>"));
+}

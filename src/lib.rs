@@ -751,6 +751,11 @@ impl<'a> Uniscript<'a> {
 		format!("<:{} {inner}>", blocks.join(" "))
 	}
 
+	/// The spelling of the longest known emoji sequence joined at the start of text: 👩‍🦰 → <:red-haired woman>
+	fn joined_form(&self, text: &str) -> Option<(&'a str, usize)> {
+		meta::joined_prefixes(text).into_iter().find_map(|length| self.index.get(Table::Chars, &text[..length]).map(|form| (form, length)))
+	}
+
 	/// Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A>`
 	pub fn to_uniscript(&self, text: &str) -> String {
 		let mut out = String::new();
@@ -759,6 +764,11 @@ impl<'a> Uniscript<'a> {
 		while let Some(character) = rest.chars().next() {
 			if let Some((meta, length)) = meta::meta_at(rest).and_then(known).filter(|(meta, _)| !matches!(meta, Meta::Attached { .. })) {
 				out += &meta.uniscript();
+				rest = &rest[length..];
+				continue;
+			}
+			if let Some((form, length)) = self.joined_form(rest) {
+				out += form;
 				rest = &rest[length..];
 				continue;
 			}
