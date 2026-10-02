@@ -1,0 +1,17 @@
+entities.idx 6117467 bytes, gzipped 2046896
+manifest.usxc 36576 bytes, gzipped 28965
+chunks 2025, chunks.pack 2403496 bytes
+     6 KB  /docs/demo.html
+     0 KB  /fonts/fonts.css
+     4 KB  /wasm/uniscript.js
+    25 KB  /wasm/pkg/uniscript_wasm.js
+     9 KB  /wasm/chunkFetcher.js
+     0 KB  /sequence_fonts.js
+   180 KB  /wasm/pkg/uniscript_wasm_bg.wasm
+     1 KB  /favicon.ico
+    36 KB  /data/chunks/manifest.usxc
+    13 KB  /data/chunks/chunks.pack?v=800311045
+    18 KB  /data/chunks/chunks.pack?v=800311045
+    14 KB  /data/chunks/chunks.pack?v=800311045
+     1 KB  /data/chunks/chunks.pack?v=800311045
+   308 KB  total, 13 requests

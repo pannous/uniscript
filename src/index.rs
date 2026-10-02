@@ -21,6 +21,9 @@ const MANIFEST_TABLE_SIZE: usize = 12;
 const CHUNK_START_SIZE: usize = 8;
 /// Chunks close once they pass this many bytes: small enough for a lookup to fetch little, large enough for few requests
 pub const CHUNK_TARGET_SIZE: usize = 4 * 1024;
+/// The names of a rare script's block (`chinese kou`) go in chunks this many times larger: fewer chunk starts in the
+/// manifest everybody loads, more bytes per fetch for the few texts that use them
+pub const RARE_CHUNK_FACTOR: usize = 2;
 /// The common chunk, loaded with the manifest, holds the most used entries up to this many bytes
 pub const COMMON_TARGET_SIZE: usize = 32 * 1024;
 
@@ -553,6 +556,8 @@ pub fn chunks(index: &Index, plan: &ChunkPlan) -> (Vec<u8>, Vec<Vec<u8>>) {
 			*group_sizes.entry(group_of(&entry.0)).or_default() += entry_size(entry);
 		}
 		let is_large = |group: u32| group_sizes[&group] * 4 >= target_size;
+		let rare = rare_groups(index, table);
+		let target_of = |group: u32| if rare.contains(&group) { target_size * RARE_CHUNK_FACTOR } else { target_size };
 		let first_chunk = chunks.len();
 		let mut current: Entries = Vec::new();
 		let mut size = 0;
@@ -567,7 +572,7 @@ pub fn chunks(index: &Index, plan: &ChunkPlan) -> (Vec<u8>, Vec<Vec<u8>>) {
 			if let Some((last, _)) = current.last() {
 				let last_group = group_of(last);
 				let group_edge = last_group != group && (is_large(last_group) || is_large(group));
-				if chunk_order(table, last) != order && (size >= target_size || group_edge) {
+				if chunk_order(table, last) != order && (size >= target_of(last_group) || group_edge) {
 					close(&mut current, &mut chunks);
 					size = 0;
 				}
@@ -592,6 +597,13 @@ pub fn chunks(index: &Index, plan: &ChunkPlan) -> (Vec<u8>, Vec<Vec<u8>>) {
 	words.chain(starts.into_iter().flat_map(|(group, hash)| [group, hash])).for_each(|word| manifest.extend(word.to_le_bytes()));
 	manifest.extend(filter);
 	(manifest, chunks)
+}
+
+/// The groups of the names of rare scripts' blocks (`chinese kou`, `cn kou`): their block words, marked `chinese *rare`
+fn rare_groups(index: &Index, table: Table) -> std::collections::HashSet<u32> {
+	let rare_mark = format!(" {RARE_KEY}");
+	let words = index.entries(Table::Names).filter_map(|(key, _)| key.strip_suffix(rare_mark.as_str()));
+	words.filter(|_| table == Table::Names).map(text_hash).collect()
 }
 
 /// Every entry of the entities resolves to the same text in the index; the failures, if any

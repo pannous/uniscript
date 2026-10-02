@@ -156,3 +156,18 @@ fn names_of_rare_scripts_are_fetched_not_filtered() {
 	}
 	assert!(manifest.len() < 32 * 1024, "{} bytes: rare names would grow the filter", manifest.len());
 }
+
+#[test]
+fn chinese_readings_are_fetched_in_rare_chunks_when_used() {
+	let whole = Uniscript::default();
+	let (manifest, chunks) = cut(whole.index());
+	let (manifest, chunks): (&'static [u8], &'static [Vec<u8>]) = (manifest.leak(), chunks.leak());
+	let converter = Uniscript::new(Index::chunked(manifest).unwrap());
+	let common = converter.index().common_chunk().unwrap();
+	converter.index().add_chunk(common, &chunks[common]).unwrap();
+	let text = "<:cn> wo3 ai4 ni3 zhong1 guo2 yi2 yi2.2 <:/cn>";
+	let fetched = load_for(&converter, chunks, text);
+	println!("{fetched:>7} bytes of chunks for {text}, manifest {} bytes", manifest.len());
+	assert!(fetched > 0, "chinese readings are no common entries");
+	assert_eq!(converter.convert(text, WarningMode::Lenient).unwrap(), whole.convert(text, WarningMode::Lenient).unwrap());
+}

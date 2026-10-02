@@ -30,7 +30,8 @@ use: older readers ignore the later tables.
 ### Chunked index (data/chunks/, for the web)
 
 `uniscript chunks [entities.idx] [chunks/]` cuts the index into `manifest.usxc` and chunks `<n>.idx` of about 4 KB
-(`index::CHUNK_TARGET_SIZE`), each a complete USX1 file holding one slice of one table (the other tables empty), so the
+(`index::CHUNK_TARGET_SIZE`; the names of a `*rare` block twice that, `RARE_CHUNK_FACTOR`, so the 47k chinese readings
+add few chunk starts to the manifest), each a complete USX1 file holding one slice of one table (the other tables empty), so the
 normal reader searches it. Git-ignored, rebuilt from `data/entities.idx`.
 
 ```
