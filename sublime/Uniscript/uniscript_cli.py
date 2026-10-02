@@ -12,8 +12,17 @@ REVERSE_FLAG = "--reverse"
 LENIENT_FLAG = "--lenient"  # unknown entities stay as written, with a warning, instead of failing the conversion
 WARNING_PREFIX = "warning: "
 MARKER = "<:"
+TAG_END = ">"
 # a complete `<:…>` tag just before the cursor, the last one on its line
 TAG_BEFORE_CURSOR = re.compile(r"<:[^<>\n]+>$")
+# the tag the cursor is typing in: `<:` with words (no leading space), or `\:` with a name
+TYPED_TAG = re.compile(r"(?:<:(?! )([^<>\n\[\]{};=\"]*)|\\:([A-Za-z0-9_-]*))$")
+NAMES_COMMAND = "names"
+MAX_COMPLETIONS = 1000  # the shortest first
+GROUP_SAMPLES = 3  # characters shown beside a group of names
+BLOCK_ANNOTATION = "block"
+SEGMENT_END = "-"
+WORD_SEPARATORS = " -"  # Sublime replaces the word after the last of these
 
 
 class UniscriptError(Exception):
@@ -30,14 +39,17 @@ def find_binary(configured=""):
     return found
 
 
-def convert(text, reverse=False, binary=""):
-    """Uniscript → Unicode (reverse: Unicode → uniscript); returns the text and the converter's warnings"""
-    command = [find_binary(binary), REVERSE_FLAG if reverse else LENIENT_FLAG]
-    process = subprocess.run(command, input=text.encode("utf-8"), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+def run(arguments, text="", binary=""):
+    process = subprocess.run([find_binary(binary)] + arguments, input=text.encode("utf-8"), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     messages = process.stderr.decode("utf-8").strip()
     if process.returncode:
         raise UniscriptError(messages or "{} exited with {}".format(BINARY_NAME, process.returncode))
-    output = process.stdout.decode("utf-8")
+    return process.stdout.decode("utf-8"), messages
+
+
+def convert(text, reverse=False, binary=""):
+    """Uniscript → Unicode (reverse: Unicode → uniscript); returns the text and the converter's warnings"""
+    output, messages = run([REVERSE_FLAG if reverse else LENIENT_FLAG], text, binary)
     if not text.endswith("\n") and output.endswith("\n"):
         output = output[:-1]  # the converter always ends its output with a newline
     warnings = [line[len(WARNING_PREFIX):] if line.startswith(WARNING_PREFIX) else line for line in messages.splitlines()]
@@ -53,3 +65,66 @@ def tag_before_cursor(line_before_cursor):
     """Offset of the `<:…>` tag that ends right at the cursor, or None"""
     match = TAG_BEFORE_CURSOR.search(line_before_cursor)
     return match.start() if match else None
+
+
+class Names:
+    """The index's names: entities with their text, block words, and each block's operands"""
+
+    def __init__(self, lines):
+        self.entities, self.blocks, self.operands = [], set(), {}
+        for line in lines:
+            name, _, text = line.partition("\t")
+            block, space, operand = name.partition(" ")
+            if not space:
+                self.entities.append((name, text))
+            elif not operand:
+                self.blocks.add(block)
+            elif not operand.startswith("*"):
+                self.operands.setdefault(block, []).append((operand, text))
+
+
+def load_names(binary=""):
+    return Names(run([NAMES_COMMAND], binary=binary)[0].splitlines())
+
+
+def grouped(candidates, prefix):
+    """(name, text, count) of the candidates starting with prefix (ignoring case), the shortest first; names sharing
+    their next segment fold into one group ending with "-" (count > 1), as deep as all of them agree"""
+    matching = [candidate for candidate in candidates if candidate[0].lower().startswith(prefix.lower())]
+    start = len(prefix)
+    while True:
+        groups = {}
+        for name, text in matching:
+            end = name.find(SEGMENT_END, start)
+            groups.setdefault(name if end < 0 else name[:end + 1], []).append((name, text))
+        if len(groups) == 1 and len(matching) > 1:
+            start = len(next(iter(groups)))
+            continue
+        folded = [members[0] + (1,) if len(members) == 1 else
+                  (key, "{}… {}".format("".join(text for _, text in members[:GROUP_SAMPLES]), len(members)), len(members))
+                  for key, members in groups.items()]
+        return sorted(folded, key=lambda entry: (len(entry[0]), entry[0]))[:MAX_COMPLETIONS]
+
+
+def completions(line_before_cursor, next_character, names):
+    """(trigger, annotation, completion) for the tag being typed: entity names, block words, after block words their
+    operands. Sublime replaces the word after the last space or "-", so a completion holds only the rest from there."""
+    match = TYPED_TAG.search(line_before_cursor)
+    if not match:
+        return []
+    is_short = match.group(2) is not None
+    words = (match.group(2) if is_short else match.group(1)).split(" ")
+    leading = 0
+    while leading < len(words) - 1 and words[leading] in names.blocks:
+        leading += 1
+    prefix = SEGMENT_END.join(words[leading:])
+    candidates = names.operands.get(words[leading - 1], []) if leading else names.entities
+    word_start = max(prefix.rfind(separator) for separator in WORD_SEPARATORS) + 1
+    closes = not leading and not is_short and next_character != TAG_END
+    entries = []
+    for name, annotation, count in grouped(candidates, prefix):
+        tail = "" if count > 1 or not closes else TAG_END
+        entries.append((name, annotation, name[word_start:] + tail))
+    if not is_short and not leading:
+        entries += [(block, BLOCK_ANNOTATION, block[word_start:] + " ") for block in sorted(names.blocks) if block.lower().startswith(prefix.lower())]
+    return entries[:MAX_COMPLETIONS]

@@ -123,3 +123,6 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - case fallback only in `<:…>` tags, not in `\:NAME`; intellij/UniscriptAnnotator.kt isName check does not know it (paints `<:TILDE>` as unknown)
 - suffix names (user idea): `<:SANS-SERIF DIGIT NINE>` for MATHEMATICAL SANS-SERIF DIGIT NINE is unknown and not even unique (DINGBAT CIRCLED SANS-SERIF DIGIT NINE …); unique word-suffix aliases of the Unicode names would add ~42.7k index entries (23.5k when only the first word is dropped)
 - kotlin tests need Java 21: `JAVA_HOME=$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home ./gradlew test -Dorg.gradle.java.installations.paths=$JAVA_HOME` (gradle found no 21 toolchain; installed openjdk@21 2026-10-02)
+- probes/test_sublime_plugin.py fails against the current CLI: `<:greek> athos <:/greek>\n` now converts to ` αθοσ \n` (full blocks keep their spaces, as js/test/cases.json says); the probe still expects `αθοσ\n` (passed only with the old ~/.cargo/bin/uniscript from 2026-09-30)
+- Sublime completion glue (uniscript.py: on_query_completions, popup after `<:`/`\:`, commit_completion hooks) is untested in a live Sublime; only uniscript_cli.completions is probed
+- `~/.cargo/bin/uniscript` must be reinstalled (`cargo install --path .`) whenever the CLI gains commands the editor plugins use (`names`)

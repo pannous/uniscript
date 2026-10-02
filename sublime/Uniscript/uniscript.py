@@ -1,4 +1,5 @@
-"""Sublime Text commands that replace uniscript (<:alpha> <:fracture A>) with Unicode (α 𝔄) and back."""
+"""Sublime Text commands that replace uniscript (<:alpha> <:fracture A>) with Unicode (α 𝔄) and back, and completion of
+names inside <: and \\: tags in every file type."""
 import sublime
 import sublime_plugin
 
@@ -10,7 +11,11 @@ SETTINGS_FILE = "Uniscript.sublime-settings"
 LIVE_SETTING = "convert_while_typing"  # true, false, or "header": only in files starting with <:
 LIVE_IN_UNISCRIPT_FILES = "header"
 TYPED_COMMAND = "insert"
+COMMITTED_COMMANDS = ("commit_completion", "insert_completion")
 TAG_END = ">"
+TAG_OPENERS = ("<:", "\\:")
+CONTINUE_AFTER = ("-", " ")  # a committed group or block word asks for the rest
+_names = None
 
 
 def settings():
@@ -20,6 +25,19 @@ def settings():
 def selected_or_whole(view):
     """The non-empty selections, else the whole buffer"""
     return [region for region in view.sel() if not region.empty()] or [sublime.Region(0, view.size())]
+
+
+def names():
+    """The index's names, from the CLI once per session"""
+    global _names
+    if _names is None:
+        _names = cli.load_names(settings().get("binary", ""))
+    return _names
+
+
+def text_before_cursor(view, cursor, length=None):
+    start = view.line(cursor).begin() if length is None else max(0, cursor - length)
+    return view.substr(sublime.Region(start, cursor))
 
 
 def report(view, warnings):
@@ -57,8 +75,12 @@ class UniscriptWhileTypingListener(sublime_plugin.ViewEventListener):
         return bool(live)
 
     def on_post_text_command(self, command_name, args):
-        typed = (args or {}).get("characters", "")
-        if command_name != TYPED_COMMAND or not typed.endswith(TAG_END) or not self.is_live():
+        typed = (args or {}).get("characters", "") if command_name == TYPED_COMMAND else ""
+        committed = command_name in COMMITTED_COMMANDS
+        before = text_before_cursor(self.view, self.view.sel()[0].b, 2) if len(self.view.sel()) else ""
+        if typed and before in TAG_OPENERS or committed and before[-1:] in CONTINUE_AFTER:
+            return self.view.run_command("auto_complete", {"disable_auto_insert": True})
+        if not (typed.endswith(TAG_END) or committed and before.endswith(TAG_END)) or not self.is_live():
             return
         regions = []
         for cursor in (region.b for region in self.view.sel() if region.empty()):
@@ -68,3 +90,24 @@ class UniscriptWhileTypingListener(sublime_plugin.ViewEventListener):
                 regions.append((line_start + offset, cursor))
         if regions:
             self.view.run_command("uniscript_convert", {"regions": regions, "live": True})
+
+
+class UniscriptCompletionListener(sublime_plugin.EventListener):
+    """Inside <: and \\: tags in any file: entity names with their character, block words, after block words their
+    operands; names sharing their next segment fold into one group (alchemical-)"""
+
+    def on_query_completions(self, view, prefix, locations):
+        cursor = locations[0]
+        line = text_before_cursor(view, cursor)
+        if not any(opener in line for opener in TAG_OPENERS):
+            return None
+        try:
+            entries = cli.completions(line, view.substr(cursor), names())
+        except cli.UniscriptError as error:
+            view.window().status_message("uniscript: {}".format(error))
+            return None
+        if not entries:
+            return None
+        items = [sublime.CompletionItem(trigger, annotation=annotation, completion=completion) for trigger, annotation, completion in entries]
+        flags = sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS | sublime.DYNAMIC_COMPLETIONS
+        return sublime.CompletionList(items, flags)

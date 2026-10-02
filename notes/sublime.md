@@ -30,3 +30,8 @@
 - The price: users must `cargo install` the CLI first. A self-contained package would bundle python/native plus
   entities.idx (3.6 MB); mmap cannot read inside a .sublime-package, so it would load the index with
   `sublime.load_binary_resource` or ship a `.no-sublime-package` marker to be extracted.
+- Completion (2026-10-02): names come from `uniscript names` (every NAMES entry `key<TAB>text`), loaded once per
+  session; `uniscript_cli.completions` (probed by probes/test_sublime_completion.py) returns (trigger, annotation,
+  completion). Sublime replaces only the word after the last space or `-` (word_separators), so a completion holds the
+  name from there on. DYNAMIC_COMPLETIONS re-queries per keystroke; the popup is opened by `auto_complete` after `<:`
+  / `\:` and after committing a group (`-`) or block word (` `).

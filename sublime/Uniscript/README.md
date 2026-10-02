@@ -9,6 +9,12 @@ Replaces uniscript with Unicode in place: `<:alpha> <:fracture A> \:infinity` �
   `convert_while_typing`: `"header"`, `true` or `false`). Block openers such as `<:greek>` stay until the whole block
   is converted with the command. Undo restores the tag.
 
+- **Completion** inside `<:` and `\:` tags in every file type, opening by itself after `<:` and `\:`: entity names
+  with their character, block words, after block words their operands (`<:egyptian seated m` → `seated-man`). Names
+  sharing their next segment fold into one group (`alchemical-` 🝟🜥🜙… 116) that asks for the rest when chosen. A name
+  on its own closes its tag; in files converting while typing, it then becomes its character. Needs a `uniscript` with
+  the `names` command (`uniscript names`).
+
 Conversion never stops on errors: unknown entities (`<:nosuchthing>`), invalid meta values and an unclosed `<:` stay as
 written and everything else converts (`uniscript --lenient`). They and characters without a styled form
 (`<:fracture 7>` → 7) are listed in the status bar.
@@ -21,5 +27,5 @@ first: `cargo install --git https://github.com/pannous/uniscript`. Then either
   `sublime-*`), or
 - from a checkout: `ln -s "$PWD/sublime/Uniscript" ~/Library/Application\ Support/Sublime\ Text*/Packages/Uniscript`
 
-`python3 probes/test_sublime_plugin.py` tests `uniscript_cli.py` against the binary; `scripts/publish_editor_plugins.sh`
+`python3 probes/test_sublime_completion.py` tests the completions, `python3 probes/test_sublime_plugin.py` `uniscript_cli.py` against the binary; `scripts/publish_editor_plugins.sh`
 also zips the package and imports it from the zip (`probes/test_sublime_package.py`).
