@@ -61,3 +61,6 @@
   beats one holding it as a later word (chinese wo). So an operand of another block is listed operand first
   (`wo  我 chinese`, cli.operand_first). To inspect the running plugin, copy probes/sublime_live_state.py into
   Packages/User (it dumps state to probes/sublime_live_state.json on load).
+- Up/down wrapping around the completion list is Sublime's `"auto_complete_cycle": true` (default false: up on the first
+  entry closes the list); set in the user's Preferences.sublime-settings. `"auto_complete_preserve_order": "strict"`
+  would also stop Sublime from re-sorting completions (default "some"), for every package.
