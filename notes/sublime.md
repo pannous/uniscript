@@ -70,9 +70,10 @@
   Output panels get no ViewEventListeners: run a typed-character test there by calling the command directly.
 - Tests: `tests/sublime/run.sh` runs tests/sublime/test_sublime_*.py (promoted from probes/ on 2026-10-02, append-only);
   test_sublime_package.py needs the zip and runs in scripts/publish_editor_plugins.sh.
-- Shared target collision (2026-10-02): warp builds its fetched copy ~/.cache/warp/packages/uniscript@1.0.0 into the same
-  ~/.cargo/shared-target, and as the same crate (uniscript 1.0.0) its lib and bin overwrite this checkout's. Sublime then
-  ran a binary without `uniscript names` (it echoes "names"): no completions, only Sublime's buffer words. Now the plugin
-  takes only builds whose dep-info (`uniscript.d`) lists this checkout's src/, and a name list without blocks is an error.
-  Cargo may still call the build fresh and even compile src/main.rs against warp's rlib: `cargo clean -p uniscript
-  --release && cargo build --release`. tests/sublime/test_sublime_binary_origin.py.
+- Shared target collision (2026-10-02, solved): a warp test ran `cargo run --release -- check` in warp's fetched copy
+  ~/.cache/warp/packages/uniscript@1.0.0, which as the same crate (uniscript 1.0.0) overwrote this checkout's lib and bin
+  in ~/.cargo/shared-target. Sublime then ran a binary without `uniscript names` (it echoes "names"): no completions, only
+  Sublime's buffer words. warp now runs package tools as prebuilt WASI .wasm (uniscript.wasm, a v1.0.0 release asset;
+  warp 7a1d9456). The plugin also takes only builds whose dep-info (`uniscript.d`) lists this checkout's src/, and a name
+  list without blocks is an error (tests/sublime/test_sublime_binary_origin.py). If it happens again: cargo may call the
+  build fresh and compile src/main.rs against the foreign rlib, so `cargo clean -p uniscript --release && cargo build --release`.

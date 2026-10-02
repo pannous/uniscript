@@ -37,3 +37,4 @@ fonts/dist/
 fonts/sources/
 probes/unihan/
 tests/wasp/case.wasp
+probes/usage/wasp/packages/
