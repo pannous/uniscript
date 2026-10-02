@@ -671,3 +671,7 @@ through C and C++.
 | `*infix egyptian` | goes between the parts of a hieroglyph group (joiners U+13430, U+13431) |
 | `*rare` | a rare script's block (`egyptian`, `anatolian`): its names stay out of the web manifest and are fetched when used |
 | `*meta` | the attached meta a block becomes where it has no suffix control (colors: `color red`, so `<:red 𓀀>` → 𓀀 + TAG `:color red`) |
+
+## tags
+Usually, things within one tag should be one semantic unit, so words inside of these must be expected to modify the others. e.g. <:Tilde> ∼  <:tilde> ˜ <:TILDE> ~   but  <:E with tilde below> Ḛ  <:arrow above tilde> ⥴ <:arrow above bold tilde> ⭌ <:tilde tilde> ≈ <:double tilde> ≈
+

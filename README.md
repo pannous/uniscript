@@ -73,7 +73,6 @@ followed by TAG characters (U+E0020…E007E). Basic fonts shows the plain letter
   WebAssembly. All of them read `data/entities.idx` and pass the same shared cases. In wasp, `use uniscript` fetches this
   repository as a package and loads `uniscript.wasp`.
 
-The full specification is [docs/uniscript.md](docs/uniscript.md)  
 <!-- , a hard link to the [uniscript page of the warp wiki](https://github.com/pannous/warp/wiki/uniscript). -->
 <!-- It covers the representation, escaping, the comparison with LaTeX, the Unicode extensions uniscript wishes for, and why controls follow their character. -->
 
@@ -204,3 +203,5 @@ let html = converter.html(&styled);
 
 Code: MIT. The seeded names come from the Unicode Character Database (Unicode License v3), the HTML5 entity list (W3C)
 and unicode-math-table.tex (LPPL 1.3c). Fonts: SIL Open Font License 1.1.
+
+The full specification is [docs/uniscript.md](docs/uniscript.md)  
