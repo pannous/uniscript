@@ -34,6 +34,8 @@ ESCAPED_COLON = "<::>"
 ESCAPED_UNICODE = "<:U>"
 SUFFIX_KEY = "*suffix"
 GROUP_KEY = "*group"
+# a block whose words split into whole readings (chinese shihan → shi han), not letters and digraphs (greek)
+READINGS_KEY = "*readings"
 MAX_OPERAND_WORDS = 8  # the most words one operand spans: `<:egyptian man with hand to mouth>`
 # the block control naming the meta a block becomes where it has no suffix control (`red *meta` → `color red`)
 META_FALLBACK_KEY = "*meta"
@@ -359,9 +361,19 @@ class Uniscript:
     def _operand(self, block: str, token: str, effects, at: int) -> str:
         """One operand: its own entry (red circle → 🔴, greek eta → η), else each character or pair (greek th → θ)
         of the operand, or of the entity it names"""
+        def own_form(own: str) -> str:
+            return meta.after_base(own, self._effect_suffixes(effects, own[:1] or " ", at))
+
         own = self._name(f"{block} {token}")
         if own is not None:
-            return meta.after_base(own, self._effect_suffixes(effects, own[:1] or " ", at))
+            return own_form(own)
+        if self._form(block, READINGS_KEY) is not None:
+            # <:chinese> shihan: whole readings, never letters (nuli is nu li, not n u l i)
+            pieces = self._readings(block, token)
+            if pieces is None:
+                self._warn(f"no {block} form of {token}", at)
+                return token
+            return "".join(own_form(piece) for piece in pieces)
         named = self._name(token)
         characters = named if named is not None and utf8_length(token) > 1 else token
         out, i = [], 0
@@ -375,6 +387,29 @@ class Uniscript:
                 out.append(self._styled(block, characters[i], effects, at))
                 i += 1
         return "".join(out)
+
+    def _readings(self, block: str, word: str):
+        """The forms of the whole readings a word splits into (shihan → 是 汉): the fewest pieces, of those the longest
+        first piece; None when it does not split"""
+        last = len(word)
+        # fewest[k]: (pieces, end of the first piece) of the best split of word[k:]
+        fewest = [None] * (last + 1)
+        fewest[last] = (0, last)
+        for start in reversed(range(last)):
+            for end in reversed(range(start + 1, last + 1)):
+                if fewest[end] is None or self._form(block, word[start:end]) is None:
+                    continue
+                pieces = fewest[end][0] + 1
+                if fewest[start] is None or pieces < fewest[start][0]:
+                    fewest[start] = (pieces, end)
+        if fewest[0] is None:
+            return None
+        forms, start = [], 0
+        while start < last:
+            end = fewest[start][1]
+            forms.append(self._form(block, word[start:end]))
+            start = end
+        return forms
 
     def _block_text(self, block: str, text: str, at: int) -> str:
         """The text inside a full block (`<:greek> filosofia kosmos<:/greek>`) as written: its whitespace stays, each

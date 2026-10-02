@@ -22,6 +22,9 @@
   but converts_quietly and quiet ERROR cases use `<:…/>` like the Rust tests, and unknown tags (`<:nosuchthing>`)
   stay: explicit() rewrites them too but the tests are about keeping them. tests/test_inline_tags.py ports
   tests/inline_tags_test.rs.
+- `*readings` blocks (c9cd2a1): `_readings` runs Rust's DP over code points (Python str indices are already
+  character boundaries); ties keep the longest first piece because ends are tried longest first and only a strictly
+  smaller piece count replaces. The warning `no <block> form of <word>` goes at the block-text offset `at`.
 - The bundled uniscript/entities.idx is a symlink to data/entities.idx; setuptools copies the target into the wheel.
 - Which `uniscript` the tests import: the only installed one is uniscript-rs (FFI wheel in
   ~/Library/Python/3.14/lib/python/site-packages/uniscript, from python/ffi/build.sh; uniscript-py is not installed,
