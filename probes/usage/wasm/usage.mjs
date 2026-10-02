@@ -3,7 +3,7 @@ import init, { toUnicode, toUniscript, convert, header, metaRuns, html, ensure, 
 
 await init();   // the .wasm and entities.idx next to the module; init(bytes or URL) takes another index
 assert.equal(toUnicode("<:alpha> <:fracture A>"), "α 𝔄");
-assert.equal(toUniscript("α 𝔄"), "<:alpha> <:fracture A>");
+assert.equal(toUniscript("α 𝔄"), "\\:alpha \\:fracture-A");
 
 assert.deepEqual(convert("<:fracture 7>"), { text: "7", warnings: [{ message: "no fracture form of 7", at: 0 }] });
 assert.throws(() => convert("<:fracture 7>", "error"), { name: "UniscriptError", kind: "Unsupported" });

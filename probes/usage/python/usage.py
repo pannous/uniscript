@@ -3,7 +3,7 @@ from uniscript import WarningMode, Warning
 
 # round trip; to_unicode prints warnings to stderr
 assert uniscript.to_unicode("<:alpha> <:fracture A>") == "α 𝔄"
-assert uniscript.to_uniscript("α 𝔄") == "<:alpha> <:fracture A>"
+assert uniscript.to_uniscript("α 𝔄") == "\\:alpha \\:fracture-A"
 
 # every tag form
 for source, unicode in [

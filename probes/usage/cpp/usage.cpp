@@ -5,7 +5,7 @@
 int main() {
 	// round trip; to_unicode prints warnings to stderr and throws uniscript::Error
 	assert(uniscript::to_unicode("<:alpha> <:fracture A>") == "α 𝔄");
-	assert(uniscript::to_uniscript("α 𝔄") == "<:alpha> <:fracture A>");
+	assert(uniscript::to_uniscript("α 𝔄") == "\\:alpha \\:fracture-A");
 
 	// every tag form
 	for (auto [source, unicode] : {std::pair{"\\:alpha", "α"}, {"<:greek small letter alpha>", "α"}, {"<:double-R>", "ℝ"},
@@ -32,7 +32,7 @@ int main() {
 	assert(uniscript::convert("<:nosuch>", uniscript::Mode::Lenient).text == "<:nosuch>");
 
 	// the header
-	const std::string source = "<:uniscript version=\"https://uniscript.org/v1\">\n<:alpha>";
+	const std::string source = "<:uniscript version=\"https://uniscript.org/v1\">\n\\:alpha";
 	assert(uniscript::header(source)->version == uniscript::version);
 	assert(uniscript::to_unicode(source) == "α");
 

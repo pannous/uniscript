@@ -3,7 +3,7 @@ use uniscript::{Error, Uniscript, WarningMode};
 fn main() -> Result<(), Error> {
 	// round trip; to_unicode prints warnings to stderr
 	assert_eq!(uniscript::to_unicode("<:alpha> <:fracture A>")?, "α 𝔄");
-	assert_eq!(uniscript::to_uniscript("α 𝔄"), "<:alpha> <:fracture A>");
+	assert_eq!(uniscript::to_uniscript("α 𝔄"), "\\:alpha \\:fracture-A");
 
 	// every tag form
 	for (source, unicode) in [
@@ -23,7 +23,7 @@ fn main() -> Result<(), Error> {
 	assert_eq!((kept.as_str(), warnings[0].message.as_str()), ("<:nosuch>", "unknown uniscript entity: nosuch"));
 
 	// the header
-	let source = "<:uniscript version=\"https://uniscript.org/v1\">\n<:alpha>";
+	let source = "<:uniscript version=\"https://uniscript.org/v1\">\n\\:alpha";
 	assert_eq!(uniscript::header(source).map(|header| header.version), Some(uniscript::UNISCRIPT_VERSION));
 	assert_eq!(uniscript::to_unicode(source)?, "α");
 	assert!(uniscript::reads_version("https://uniscript.org/v2"));

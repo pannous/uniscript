@@ -3,7 +3,7 @@ import Uniscript
 // round trip; toUnicode prints warnings to stderr
 let unicode = try Uniscript.toUnicode("<:alpha> <:fracture A>")
 precondition(unicode == "α 𝔄")
-precondition(Uniscript.toUniscript("α 𝔄") == "<:alpha> <:fracture A>")
+precondition(Uniscript.toUniscript("α 𝔄") == "\\:alpha \\:fracture-A")
 
 // every tag form
 for (source, unicode) in [
@@ -32,7 +32,7 @@ do {
 }
 
 // the header
-let source = "<:uniscript version=\"https://uniscript.org/v1\">\n<:alpha>"
+let source = "<:uniscript version=\"https://uniscript.org/v1\">\n\\:alpha"
 precondition(Header(of: source)?.version == uniscriptVersion)
 let body = try Uniscript.toUnicode(source)
 precondition(body == "α")

@@ -85,7 +85,7 @@ fn main() -> Result<(), Error> {
 	assert_eq!((kept.as_str(), warnings[0].message.as_str()), ("<:nosuch>", "unknown uniscript entity: nosuch"));
 
 	// the header
-	let source = "<:uniscript version=\"https://uniscript.org/v1\">\n<:alpha>";
+	let source = "<:uniscript version=\"https://uniscript.org/v1\">\n\\:alpha";
 	assert_eq!(uniscript::header(source).map(|header| header.version), Some(uniscript::UNISCRIPT_VERSION));
 	assert_eq!(uniscript::to_unicode(source)?, "α");
 	assert!(uniscript::reads_version("https://uniscript.org/v2"));
@@ -203,7 +203,7 @@ do {
 }
 
 // the header
-let source = "<:uniscript version=\"https://uniscript.org/v1\">\n<:alpha>"
+let source = "<:uniscript version=\"https://uniscript.org/v1\">\n\\:alpha"
 precondition(Header(of: source)?.version == uniscriptVersion)
 let body = try Uniscript.toUnicode(source)
 precondition(body == "α")
@@ -459,7 +459,7 @@ int main(void) {
 	uniscript_result_free(&result);
 
 	/* the header: version points into the source */
-	const char *source = "<:uniscript version=\"https://uniscript.org/v1\">\n<:alpha>";
+	const char *source = "<:uniscript version=\"https://uniscript.org/v1\">\n\\:alpha";
 	const char *version;
 	size_t version_length, length;
 	assert(uniscript_header(source, &version, &version_length, &length));
@@ -530,7 +530,7 @@ int main() {
 	assert(uniscript::convert("<:nosuch>", uniscript::Mode::Lenient).text == "<:nosuch>");
 
 	// the header
-	const std::string source = "<:uniscript version=\"https://uniscript.org/v1\">\n<:alpha>";
+	const std::string source = "<:uniscript version=\"https://uniscript.org/v1\">\n\\:alpha";
 	assert(uniscript::header(source)->version == uniscript::version);
 	assert(uniscript::to_unicode(source) == "α");
 
@@ -578,7 +578,7 @@ fun main() {
 
 	check(converter.convert("<:alpha> <:nosuch>", WarningMode.LENIENT).text == "α <:nosuch>")
 
-	check(converter.toUnicode("<:uniscript version=\"https://uniscript.org/v1\">\n<:alpha>") == "α")
+	check(converter.toUnicode("<:uniscript version=\"https://uniscript.org/v1\">\n\\:alpha") == "α")
 	check(header("<:uniscript version=\"https://uniscript.org/v1\">")?.version == "https://uniscript.org/v1")
 
 	val (styled, _) = converter.metaRuns(converter.toUnicode("<:color red 𓀀>"))

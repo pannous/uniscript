@@ -7,7 +7,7 @@ import com.pannous.uniscript.header
 fun main() {
 	val converter = Uniscript()
 	check(converter.toUnicode("<:alpha> <:fracture A>") == "α 𝔄")
-	check(converter.toUniscript("α 𝔄") == "<:alpha> <:fracture A>")
+	check(converter.toUniscript("α 𝔄") == "\\:alpha \\:fracture-A")
 	listOf(
 		"\\:alpha" to "α", "<:greek small letter alpha>" to "α", "<:double-R>" to "ℝ", "<:bold italic alpha>" to "𝜶",
 		"<:greek>athos<:/greek>" to "αθοσ", "<:greek>athos<:>" to "αθοσ", "<<::>alpha>" to "<:alpha>",
@@ -20,7 +20,7 @@ fun main() {
 
 	check(converter.convert("<:alpha> <:nosuch>", WarningMode.LENIENT).text == "α <:nosuch>")
 
-	check(converter.toUnicode("<:uniscript version=\"https://uniscript.org/v1\">\n<:alpha>") == "α")
+	check(converter.toUnicode("<:uniscript version=\"https://uniscript.org/v1\">\n\\:alpha") == "α")
 	check(header("<:uniscript version=\"https://uniscript.org/v1\">")?.version == "https://uniscript.org/v1")
 
 	val (styled, _) = converter.metaRuns(converter.toUnicode("<:color red 𓀀>"))

@@ -3,7 +3,7 @@ import { toUnicode, toUniscript, convert, header, readsVersion, metaRuns, html, 
 
 // round trip; toUnicode prints warnings to the console
 assert.equal(toUnicode("<:alpha> <:fracture A>"), "α 𝔄");
-assert.equal(toUniscript("α 𝔄"), "<:alpha> <:fracture A>");
+assert.equal(toUniscript("α 𝔄"), "\\:alpha \\:fracture-A");
 
 // every tag form
 for (const [source, unicode] of [

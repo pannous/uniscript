@@ -7,7 +7,7 @@ int main(void) {
 	/* round trip; uniscript_to_unicode prints warnings to stderr and returns NULL on an error */
 	char *unicode = uniscript_to_unicode("<:alpha> <:fracture A>");
 	char *spelled = uniscript_to_uniscript("α 𝔄");
-	assert(strcmp(unicode, "α 𝔄") == 0 && strcmp(spelled, "<:alpha> <:fracture A>") == 0);
+	assert(strcmp(unicode, "α 𝔄") == 0 && strcmp(spelled, "\\:alpha \\:fracture-A") == 0);
 	uniscript_free(unicode);
 	uniscript_free(spelled);
 
@@ -39,7 +39,7 @@ int main(void) {
 	uniscript_result_free(&result);
 
 	/* the header: version points into the source */
-	const char *source = "<:uniscript version=\"https://uniscript.org/v1\">\n<:alpha>";
+	const char *source = "<:uniscript version=\"https://uniscript.org/v1\">\n\\:alpha";
 	const char *version;
 	size_t version_length, length;
 	assert(uniscript_header(source, &version, &version_length, &length));
