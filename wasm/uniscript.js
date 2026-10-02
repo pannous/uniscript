@@ -10,7 +10,7 @@ const INDEX_FILE = new URL("./entities.idx", import.meta.url);
 export let fetched = { chunks: [], bytes: 0, requests: 0 };
 let chunkFetcher;
 
-export const { convert, toUnicode, toUniscript, header, font, metaTemplate, metaRuns, html } = wasm;
+export const { convert, toUnicode, toUniscript, explicit, header, font, metaTemplate, metaRuns, html } = wasm;
 
 /** The uniscript version this implementation reads; set by init() */
 export let UNISCRIPT_VERSION;

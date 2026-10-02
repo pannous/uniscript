@@ -2,7 +2,7 @@
 import { test, before } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import init, { UniscriptError, convert, font, header, html, metaRuns, toUniscript, toUnicode } from "../uniscript.js";
+import init, { UniscriptError, convert, explicit, font, header, html, metaRuns, toUniscript, toUnicode } from "../uniscript.js";
 
 const CASES = new URL("../../js/test/cases.json", import.meta.url);
 const TAG_BASE = 0xe0000;
@@ -53,6 +53,10 @@ test("roundTrips", () => {
 
 test("toUniscript", () => {
 	for (const [unicode, uniscript] of section("toUniscript")) assert.equal(toUniscript(unicode), uniscript);
+});
+
+test("explicit", () => {
+	for (const [source, rewritten] of section("explicit")) assert.equal(explicit(source), rewritten, source);
 });
 
 test("unicodeRoundTrips", () => {

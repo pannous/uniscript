@@ -17,7 +17,7 @@ test("init takes the index as bytes, a path or a URL, and rejects what is no ind
 	await init(await readFile(indexFile));
 	assert.equal(toUnicode("<:alpha>"), "α");
 	await init(indexFile.pathname);
-	assert.equal(toUniscript("𝔄"), "<:fracture A>");
+	assert.equal(toUniscript("𝔄"), "\\:fracture-A");
 	await assert.rejects(init(new TextEncoder().encode("no index")), /magic USX1/);
 	assert.equal(toUnicode("<:beta>"), "β", "a rejected index keeps the loaded one");
 });

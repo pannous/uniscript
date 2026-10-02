@@ -207,6 +207,12 @@ pub fn to_uniscript(text: &str) -> Result<String, JsValue> {
 	with_converter(|converter| converter.to_uniscript(text))
 }
 
+/// The source with its inline tags, which warn, in their explicit form: `<:alpha>` → `\:alpha`
+#[wasm_bindgen]
+pub fn explicit(source: &str) -> Result<String, JsValue> {
+	with_converter(|converter| converter.explicit(source))
+}
+
 /// The header `<:uniscript version="…">` at the start of the source: `{ version, length }`, else undefined
 #[wasm_bindgen]
 pub fn header(source: &str) -> JsValue {
