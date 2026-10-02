@@ -9,7 +9,7 @@ PROBES="$ROOT/probes/usage"
 LANGUAGES=(rust cli swift js wasm python c cpp kotlin wasp)
 export CARGO_TARGET_DIR=${CARGO_TARGET_DIR:-/opt/cargo}
 UNISCRIPT_CLI="$CARGO_TARGET_DIR/release/uniscript"
-WARP=${WARP:-$(command -v warp || echo /opt/cargo/debug/warp)}
+WARP=${WARP:-$(command -v warp || ls -t /opt/cargo/release/warp /opt/cargo/debug/warp 2>/dev/null | head -1)}  # the newest build
 KOTLIN_CLASSES="$ROOT/kotlin/build/classes/kotlin/main:$ROOT/kotlin/build/resources/main"
 cd "$ROOT" || exit 1
 

@@ -599,7 +599,7 @@ warnings errors.
 
 ```wasp probes/usage/wasp/usage.wasp
 use uniscript
-uniscript("<:alpha> <:fracture A>") == "α 𝔄" and unicode_to_uniscript("α 𝔄") == "\\:alpha \\:fracture-A"
+uniscript("\\:alpha <:fracture A/>") == "α 𝔄" and unicode_to_uniscript("α 𝔄") == "\\:alpha \\:fracture-A"
 ```
 
 The online converter at [pannous.com/uniscript](https://pannous.com/uniscript/) is `uniscript.wasp` compiled to
