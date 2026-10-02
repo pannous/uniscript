@@ -45,7 +45,8 @@ class UniscriptAnnotator : Annotator, DumbAware {
 		paint(TextRange(tag.range.startOffset, content.startOffset), MARKER)
 		paint(TextRange(content.endOffset, tag.range.endOffset), MARKER)
 		val text = tag.content
-		if (uniscript.isName(text.replace(' ', '-')) || tag.isShort || codePointValue(text) != null) return paint(content, ENTITY)
+		val hyphenated = text.replace(' ', '-')
+		if (uniscript.isName(hyphenated) || uniscript.isName(hyphenated.lowercase()) || tag.isShort || codePointValue(text) != null) return paint(content, ENTITY)
 		var offset = content.startOffset
 		var operandsStart = offset
 		var metaValueNext = false

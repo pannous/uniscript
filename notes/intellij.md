@@ -26,3 +26,10 @@
   from the environment (skipped without them); without a token publishPlugin fails with "'token' property must be
   specified". The first upload must be done by hand at plugins.jetbrains.com (the API cannot create a plugin).
 - A Gradle wrapper (9.8.0) is checked in: `./gradlew`.
+- Completion (2026-10-02): `completion.contributor language="any"` (unlike annotators, completion's all-languages id is
+  `any`), the caret's tag found by scanning back to `<:`/`\:`; candidates from `EntityIndex.entries(NAMES)` read once,
+  filtered by prefix (ignoring case), shortest 1000 first, `restartCompletionOnAnyPrefixChange` re-asks while typing.
+  A `TypedHandlerDelegate.checkAutoPopup` opens the popup after `<:` and `\:`. In tests `completeBasic()` returns null
+  (empty) when the only match was inserted. Kotlin tests need `-Dorg.gradle.java.installations.paths=<openjdk@21 home>`.
+- Install locally: unzip build/distributions/uniscript-intellij-1.0.0.zip into
+  ~/Library/Application Support/JetBrains/IntelliJIdea2025.3/plugins/ with the IDE closed.

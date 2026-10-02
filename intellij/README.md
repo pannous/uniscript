@@ -8,6 +8,9 @@ plugin depends only on `com.intellij.modules.platform`).
 - **Highlighting in every file type**: markers, entity names, block words (`fracture`, `mirror`, `color`), meta values and
   operands; an unknown entity is an error, a character without a counterpart (`<:greek c>`) a weak warning; hovering a tag
   shows its Unicode.
+- **Completion** inside tags in every file type: entity names after `<:` and `\:` with their character beside them,
+  block words, and after a block word its operands (`<:egyptian seated-m` → `seated-man`). The popup opens by itself
+  after `<:` and `\:`; choosing a name on its own closes the tag with `>`.
 - **Folding**: each tag shows as its Unicode (`<:fracture A>` as 𝔄) and unfolds when the caret enters it.
 
 A tag's content starts with no space and has no brackets, braces, `;`, `=` or quotes, so Scala's `T <: Bound[…]>`

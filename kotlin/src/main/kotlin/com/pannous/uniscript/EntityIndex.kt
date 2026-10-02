@@ -54,6 +54,13 @@ class EntityIndex(private val bytes: ByteArray) {
 	private fun value(table: Table, position: Int) =
 		String(bytes, field(3, table, position).toInt(), field(4, table, position).toInt(), Charsets.UTF_8)
 
+	private fun key(table: Table, position: Int) =
+		String(bytes, field(1, table, position).toInt(), field(2, table, position).toInt(), Charsets.UTF_8)
+
+	/** Every key and value of a table, in index order (by hash) */
+	fun entries(table: Table): Sequence<Pair<String, String>> =
+		(0 until count(table)).asSequence().map { key(table, it) to value(table, it) }
+
 	/** Binary search for the first record of the key's hash, then compare keys (hashes may collide) */
 	operator fun get(table: Table, key: String): String? {
 		val wantedBytes = key.toByteArray(Charsets.UTF_8)
