@@ -107,7 +107,8 @@ def grouped(candidates, prefix):
             continue
         folded = [members[0] + (1,) if len(members) == 1 else (key, summary(members), len(members))
                   for key, members in groups.items()]
-        return sorted(folded, key=lambda entry: (len(entry[0]), entry[0]))[:MAX_COMPLETIONS]
+        # the shortest first, of equal length the one in the case typed (equal before Equal)
+        return sorted(folded, key=lambda entry: (len(entry[0]), not entry[0].startswith(prefix), entry[0]))[:MAX_COMPLETIONS]
 
 
 def typed_tag(line_before_cursor, names):

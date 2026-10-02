@@ -115,7 +115,8 @@ private fun grouped(candidates: List<Pair<String, String>>, prefix: String): Lis
 		return groups.map { (key, members) ->
 			members.singleOrNull()?.let { Completion(it.first, it.second, 1) }
 				?: Completion(key, summary(members), members.size)
-		}.sortedWith(compareBy({ it.name.length }, { it.name })).take(MAX_COMPLETIONS)
+			// the shortest first, of equal length the one in the case typed (equal before Equal)
+		}.sortedWith(compareBy({ it.name.length }, { !it.name.startsWith(prefix) }, { it.name })).take(MAX_COMPLETIONS)
 	}
 }
 

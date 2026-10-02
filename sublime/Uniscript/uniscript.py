@@ -11,7 +11,8 @@ SETTINGS_FILE = "Uniscript.sublime-settings"
 LIVE_SETTING = "convert_while_typing"  # true, false, or "header": only in files starting with <:
 LIVE_IN_UNISCRIPT_FILES = "header"
 TYPED_COMMAND = "insert"
-COMMITTED_COMMANDS = ("commit_completion", "insert_completion")
+BEST_COMPLETION_COMMAND = "uniscript_insert_best_completion"
+COMMITTED_COMMANDS = ("commit_completion", "insert_completion", BEST_COMPLETION_COMMAND)
 TAG_END = ">"
 TAG_OPENERS = ("<:", "\\:")
 CONTINUE_AFTER = ("-", " ")  # a committed group or block word asks for the rest
@@ -124,6 +125,19 @@ class UniscriptWhileTypingListener(sublime_plugin.ViewEventListener):
                 regions.append((line_start + offset, cursor))
         if regions:
             self.view.run_command("uniscript_convert", {"regions": regions, "live": True})
+
+
+class UniscriptInsertBestCompletionCommand(sublime_plugin.TextCommand):
+    """Tab in a tag while the popup is closed (Default.sublime-keymap): the top suggestion, which Sublime's own Tab
+    completion would not pick (it chose equiv over equal); a group or block word then opens the popup for the rest"""
+
+    def run(self, edit):
+        cursor = self.view.sel()[0].b
+        best = cli.best_completion(text_before_cursor(self.view, cursor), self.view.substr(cursor), names())
+        if best is None:
+            return self.view.insert(edit, cursor, "\t")
+        replaced, text = best
+        self.view.replace(edit, sublime.Region(cursor - replaced, cursor), text)
 
 
 class UniscriptCompletionListener(sublime_plugin.EventListener):

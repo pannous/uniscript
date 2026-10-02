@@ -78,7 +78,9 @@ function grouped(candidates: Named[], prefix: string): { name: string; detail: s
 		return [...groups].map(([key, members]) => members.length === 1
 			? { name: members[0][0], detail: members[0][1], size: 1 }
 			: { name: key, detail: summary(members), size: members.length })
-			.sort((a, b) => shortestFirst([a.name, ""], [b.name, ""])).slice(0, MAX_SUGGESTIONS);
+			// the shortest first, of equal length the one in the case typed (equal before Equal)
+			.sort((a, b) => a.name.length - b.name.length || Number(!a.name.startsWith(prefix)) - Number(!b.name.startsWith(prefix))
+				|| shortestFirst([a.name, ""], [b.name, ""])).slice(0, MAX_SUGGESTIONS);
 	}
 }
 

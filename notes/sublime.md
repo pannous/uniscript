@@ -41,3 +41,7 @@
   plugin wraps the other listeners' on_query_completions (instance attribute, marked against double wrapping) to return
   None while a tag is typed; done before its own auto_complete and on every query (a listener running before ours
   this once is caught next time). probes/test_sublime_quiet_completions.py with stubbed modules.
+- Tab with the popup closed runs Sublime's `auto_complete {"mini": true, "commit_single": true}`, whose own ranking
+  picked `equiv` for `\:equ`; Default.sublime-keymap binds Tab in a tag (popup closed) to
+  `uniscript_insert_best_completion`, the top of our list. With the popup open Tab stays `commit_completion`.
+- Order everywhere: shortest first, of equal length the name in the case typed (`equal` before HTML's `Equal` ⩵).
