@@ -27,6 +27,8 @@
 #define CLOSE_SPAN "</span>"
 #define SUFFIX_KEY "*suffix"
 #define GROUP_KEY "*group"
+/* a block whose words split into whole readings (chinese shihan → shi han), not letters and digraphs (greek) */
+#define READINGS_KEY "*readings"
 #define MAX_OPERAND_WORDS 8 /* the most words one operand spans: <:egyptian man with hand to mouth> */
 /* the block control naming the meta a block becomes where it has no suffix control (red *meta → color red) */
 #define META_FALLBACK_KEY "*meta"
@@ -235,17 +237,76 @@ static size_t joiner_at(str text) {
 	return text.n;
 }
 
+static bool form(str block, str operand_text, str *found) {
+	return index_getf(TABLE_NAMES, found, "%.*s %.*s", S(block), S(operand_text));
+}
+
+/* An operand's own entry with the effects' suffixes */
+static void own_form(converter *self, buf *out, str own, strs effects, size_t at) {
+	uint32_t first = first_character(own);
+	/* in an emoji sequence joined by zero width joiners the suffixes style its first character: 👩🏿‍🦰 */
+	size_t base = joiner_at(own);
+	buf_add(out, own.p, base);
+	effect_suffixes(self, out, effects, first == NO_CHARACTER ? ' ' : first, at);
+	buf_add(out, own.p + base, own.n - base);
+}
+
+/* The whole readings a word splits into (shihan → 是 汉): the fewest pieces, of those the longest first piece.
+ * Returns how many character bounds the word has; first_end[k] is the bound ending the best first piece of the word
+ * from bound k, NO_SPLIT where it does not split. */
+#define NO_SPLIT SIZE_MAX
+static size_t readings(str block, str word, size_t **bounds, size_t **first_end) {
+	*bounds = malloc((word.n + 1) * sizeof **bounds);
+	*first_end = malloc((word.n + 1) * sizeof **first_end);
+	size_t *pieces = malloc((word.n + 1) * sizeof *pieces);
+	if (!*bounds || !*first_end || !pieces) abort();
+	size_t last = 0, length;
+	uint32_t character;
+	for (size_t at = 0; (length = utf8_decode(str_from(word, at), &character)); at += length) (*bounds)[last++] = at;
+	(*bounds)[last] = word.n;
+	for (size_t k = 0; k < last; k++) pieces[k] = (*first_end)[k] = NO_SPLIT;
+	pieces[last] = 0;
+	(*first_end)[last] = last;
+	for (size_t start = last; start-- > 0;)
+		for (size_t end = last; end > start; end--) {
+			if (pieces[end] == NO_SPLIT || pieces[end] + 1 >= pieces[start]) continue;
+			if (!form(block, str_slice(word, (*bounds)[start], (*bounds)[end]), NULL)) continue;
+			pieces[start] = pieces[end] + 1;
+			(*first_end)[start] = end;
+		}
+	free(pieces);
+	return last;
+}
+
+/* A word of a *readings block (<:chinese> shihan) as whole readings, never letters (nuli is nu li, not n u l i); a
+ * word that does not split stays, with a warning */
+static void readings_operand(converter *self, buf *out, str block, str token, strs effects, size_t at) {
+	size_t *bounds, *first_end;
+	size_t last = readings(block, token, &bounds, &first_end);
+	if (first_end[0] == NO_SPLIT) {
+		warn(self, at, "no %.*s form of %.*s", S(block), S(token));
+		buf_adds(out, token);
+	} else {
+		str own;
+		for (size_t start = 0; start < last; start = first_end[start]) {
+			form(block, str_slice(token, bounds[start], bounds[first_end[start]]), &own);
+			own_form(self, out, own, effects, at);
+		}
+	}
+	free(bounds);
+	free(first_end);
+}
+
 /* One operand: its own entry (red circle → 🔴, greek eta → η), else each character or pair (greek th → θ) of the
  * operand, or of the entity it names */
 static void operand(converter *self, buf *out, str block, str token, strs effects, size_t at) {
 	str own, named;
-	if (index_getf(TABLE_NAMES, &own, "%.*s %.*s", S(block), S(token))) {
-		uint32_t first = first_character(own);
-		/* in an emoji sequence joined by zero width joiners the suffixes style its first character: 👩🏿‍🦰 */
-		size_t base = joiner_at(own);
-		buf_add(out, own.p, base);
-		effect_suffixes(self, out, effects, first == NO_CHARACTER ? ' ' : first, at);
-		buf_add(out, own.p + base, own.n - base);
+	if (form(block, token, &own)) {
+		own_form(self, out, own, effects, at);
+		return;
+	}
+	if (form(block, str_of(READINGS_KEY), NULL)) {
+		readings_operand(self, out, block, token, effects, at);
 		return;
 	}
 	uint32_t *characters;
@@ -290,10 +351,6 @@ static bool next_word(str *rest, str *word) {
 
 /* A block with a suffix control (mirror, red), which stacks as an effect instead of restyling */
 static bool is_effect(str block) { return index_getf(TABLE_NAMES, NULL, "%.*s " SUFFIX_KEY, S(block)); }
-
-static bool form(str block, str operand_text, str *found) {
-	return index_getf(TABLE_NAMES, found, "%.*s %.*s", S(block), S(operand_text));
-}
 
 /* The next operand of the block (none: the next word) in rest, hyphenated into token: the longest run of words that
  * names one operand (seated man, red crown), else one word */

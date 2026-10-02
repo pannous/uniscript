@@ -112,6 +112,10 @@ static const conversion_case converts[] = {
 	{"\\:cn-yi2", "疑"}, {"<:cn yi2.2/>", "移"}, {"<:cn biang2.2/>", "𰻞"},
 	{"\\:cuneiform-a2", "𒀉"}, {"\\:cu-sha3", "𒊮"}, {"\\:sumerian-dingir", "𒀭"},
 	{"<:<> <::> <<::>", "< : <:"}, {"\\:less:", "<:"},
+	/* a *readings block splits an unknown word into whole readings; greek still spells letters */
+	{"<:chinese> shihan <:/chinese>", "是汉"}, {"<:chinese> woaini <:/chinese>", "我爱你"},
+	{"<:chinese> shi han nuli <:/chinese>", "是 汉 努里"}, {"<:chinese> nu3li4 <:/chinese>", "努力"},
+	{"<:chinese shihan/>", "是汉"}, {"<:greek> metal <:/greek>", "μεταλ"},
 	{HEADER "\n\\:alpha\n", "α\n"}, {HEADER " \\:alpha", " α"}, {"<:uniscript>\\:alpha", "α"},
 	{"<<::>uniscript version=\"https://uniscript.org/v1\">", HEADER}, /* the escaped header is text */
 	{"<:lang ja><:font han-jis78>直", "{<lang ja}{<font han-jis78}直"},
@@ -182,6 +186,8 @@ static const warning_case warns[] = {
 	{"<:fracture A b c>", "𝔄𝔟𝔠", "<:fracture A b c> looks like an opening tag: write \\:fracture-A-b-c or <:fracture A b c/>", 0},
 	{"<:red-haired woman>", "👩\u200D🦰", "<:red-haired woman> looks like an opening tag: write <:red-haired> woman <:/red-haired> or <:red-haired woman/>", 0},
 	{"x <:U+03B1>", "x α", "<:U+03B1> looks like an opening tag: write <:U+03B1/>", 2},
+	{"<:chinese> abcde <:/chinese>", "abcde", "no chinese form of abcde", 11},
+	{"<:chinese> shi qqq <:/chinese>", "是 qqq", "no chinese form of qqq", 11},
 };
 
 /* errors in UNISCRIPT_WARN */

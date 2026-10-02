@@ -32,3 +32,8 @@
   when `tag` added no warning (one warning per tag) and `reads_as_opener`; `explicit_of` (`uniscript_explicit`, CLI
   `--explicit`) rewrites such tags, and `uniscript_to_uniscript` ends with it. The forms only need the next byte after
   `>`: a non-ASCII character is no name character, as in Rust.
+- *readings blocks (c9cd2a1): `operand` checks the block's own entry, then `<block> *readings` (chinese, cuneiform):
+  `readings()` is a DP over the word's character bounds, end tried from the longest piece down and replaced only on
+  strictly fewer pieces (so ties keep the longest first piece); a word that does not split stays with "no <block> form
+  of <word>" at the block text offset. Pieces go through `own_form` (shared with own entries: effect suffixes, ZWJ base).
+  Greek and other blocks keep the letter/digraph path. Shared cases mirrored in c/tests/cases.h (also passes c/ffi).
