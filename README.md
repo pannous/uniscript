@@ -53,7 +53,7 @@ in Intellij / VSCode / Sublime editors
 ![Uniscript examples rendered with Uniscript fonts](docs/demo.png)
 
 Uniscript is a human-readable spelling of Unicode that uses only ASCII:   
-every character has a name (`<:alpha>`,`<:greek small letter alpha>`, `<:dopf>`),  
+every character has at least one name (`<:alpha>`,`<:greek small letter alpha>`, `<:dopf>`),  
   every style is a block type (`<:bold …>`, `<:fracture …>`, `<:upper 2>` → ²),  
 and it converts back: `to_uniscript("α 𝔄")` gives `<:alpha> <:fracture A>`.  
 
