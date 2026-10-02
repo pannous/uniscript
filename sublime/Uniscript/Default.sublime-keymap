@@ -6,5 +6,12 @@
 			{ "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
 			{ "key": "preceding_text", "operator": "regex_contains", "operand": "(<:(?! )[^<>\\[\\]{};=\"]+|\\\\:[A-Za-z0-9_-]+)$", "match_all": true }
 		]
+	},
+	// Tab in a tag while the popup is open: the highlighted entry, as Enter does (not the first one)
+	{ "keys": ["tab"], "command": "commit_completion", "context":
+		[
+			{ "key": "auto_complete_visible", "operand": true },
+			{ "key": "preceding_text", "operator": "regex_contains", "operand": "(<:(?! )[^<>\\[\\]{};=\"]*|\\\\:[A-Za-z0-9_-]*)$", "match_all": true }
+		]
 	}
 ]
