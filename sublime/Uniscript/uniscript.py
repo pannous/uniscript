@@ -1,5 +1,7 @@
 """Sublime Text commands that replace uniscript (<:alpha> <:fracture A>) with Unicode (α 𝔄) and back, and completion of
 names inside <: and \\: tags in every file type."""
+import os
+
 import sublime
 import sublime_plugin
 
@@ -25,6 +27,7 @@ NO_MATCH_SCOPE = "invalid"  # the color scheme's error color
 NO_MATCH_BLINKS = 2
 NO_MATCH_BLINK_MS = 150
 _names = None
+_names_source = None  # (Names class, binary, its build time) the names were loaded with
 
 
 def settings():
@@ -37,15 +40,17 @@ def selected_or_whole(view):
 
 
 def names():
-    """The index's names, from the CLI once per session"""
-    global _names
-    if _names is None:
-        binary = cli.find_binary(settings().get("binary", ""))
+    """The index's names, from the CLI once per build of it and of uniscript_cli.py: Sublime reloads a changed
+    uniscript_cli.py in place, names loaded by its old Names class would keep the old completions until a restart"""
+    global _names, _names_source
+    binary = cli.find_binary(settings().get("binary", ""))
+    source = (cli.Names, binary, os.path.getmtime(binary))
+    if _names is None or _names_source != source:
         stale = cli.stale_build(binary)
         if stale:
             print("uniscript: " + stale)
             sublime.status_message("uniscript: " + stale)
-        _names = cli.load_names(binary)
+        _names, _names_source = cli.load_names(binary), source
     return _names
 
 

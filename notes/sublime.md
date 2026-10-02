@@ -51,3 +51,6 @@
 - Sublime hides a completion identical to the typed word (`\:egyptian-a1` typed whole vanished from its own list); when
   inserting characters that entry is a `command_completion` of `uniscript_finish_tag` (args: the word, re-inserted if
   Sublime erased it), which converts the tag.
+- Cached names are keyed on (cli.Names, binary, its mtime): after an in-place reload of uniscript_cli.py the old cached
+  Names instance kept the old class and its old completions (\:yi2 homophones only after restarting Sublime), and a
+  rebuilt binary brings new names. probes/test_sublime_names_reload.py.
