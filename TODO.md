@@ -136,5 +136,5 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - local `.uniscript` entity files (`virus: 🦠`) are read by the Rust library and CLI only: the native ports (Swift, TypeScript, Python, C, Kotlin, wasp) and the editor plugins (VS Code, Sublime, IntelliJ completion) do not see them yet
 - local `.uniscript` block aliases can only name local blocks: the built-in blocks are not available when the local index is built (`block-aliases { tiniest: "upper" }` finds nothing)
 - TODO: js `npm test` failed once (1 of 29) on 2026-10-02 right after an index rebuild and passed in 4 reruns: find the flaky test (timing?)
-- python: `python3 -m pytest python/native/tests` from the repo root imports the stale pip-installed uniscript (~/Library/Python/3.14/site-packages, 41 failures); run it from python/native or reinstall the package
+- DONE python: `python3 -m pytest python/native/tests` from the repo root imports the stale pip-installed uniscript (~/Library/Python/3.14/site-packages, 41 failures); run it from python/native or reinstall the package
 - DONE: kotlin: `./gradlew test` fails before compiling: "Failed to calculate the value of task ':compileTestJava' property 'javaCompiler'" (JDK toolchain not found)
