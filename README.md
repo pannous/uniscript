@@ -25,9 +25,9 @@ upper A => ᴬ
 
  
 # Why?
-Unicode is a great standard, seriously! But it has some [[shortcommings]] ...
-Finding and entering Unicode through system shortcuts can be slow and cumbersome 
-HTML is a great standard, but not everything is HTML and many modifiers are missing (fracture A => 𝔄  A => 𝔸 ...)
+Unicode is a great standard, seriously! But it has some [shortcomings]([docs/shortcommings.md) ...  
+Finding and entering Unicode through system shortcuts can be slow and cumbersome   
+HTML is a great standard, but not everything is HTML and many modifiers are missing (fracture A => 𝔄  A => 𝔸 ...)  
 
 Auto complete in Intellij / VSCode / Sublime editors
 <!-- TODO all common editors -->
