@@ -15,6 +15,12 @@
   whenever src/lib.rs changes; the Rust binary must be rebuilt first (`CARGO_TARGET_DIR=/opt/cargo cargo build --release`).
 - tests/test_shared_cases.py runs js/test/cases.json (shared by every library).
 - The bundled uniscript/entities.idx is a symlink to data/entities.idx; setuptools copies the target into the wheel.
+- Which `uniscript` the tests import: the only installed one is uniscript-rs (FFI wheel in
+  ~/Library/Python/3.14/lib/python/site-packages/uniscript, from python/ffi/build.sh; uniscript-py is not installed,
+  python/native/uniscript_py.egg-info is an ignored build leftover). python/native/conftest.py puts python/native first
+  on sys.path unless `uniscript` is already imported, so `python3 -m pytest` from the repo root (pytest.ini:
+  testpaths = python/native/tests), from python/native or from its tests/ tests the working tree. The header line
+  `uniscript: <path>` shows which package ran. No editable install needed.
 
 # Python (FFI, python/ffi, package uniscript-rs)
 
@@ -30,6 +36,10 @@
 - `Uniscript<'a>` holds a RefCell → not Sync; the pyclass keeps it in a Mutex. An index from bytes lives in an Arc next
   to the converter that borrows it ('static by an unsafe slice; the converter field drops first).
 - Run tests from python/ffi/tests (`./test.sh`): `python -m pytest` in python/ffi would import the source
-  ./uniscript without the extension. test.sh runs the FFI tests plus all of python/native/tests (201 pass).
+  ./uniscript without the extension. python/ffi/conftest.py drops python/ffi from sys.path and stops the run
+  ("run python/ffi/build.sh") when the installed extension is older than src/, python/ffi/src, the Cargo.tomls or
+  data/entities.idx, so a stale wheel no longer shows up as dozens of failures. Run test.sh, not pytest in python/ffi,
+  for the native cases: test_reference runs `python -m uniscript` in the working directory, where
+  ./uniscript shadows it. test.sh runs the FFI tests plus all of python/native/tests (278 pass).
 - Benchmark (tests/benchmark.py, M-series): convert 37 kB 1.68 ms native vs 0.29 ms ffi (5.9×), to_uniscript 25.5 vs
   4.7 ms (5.4×), a short string 11 vs 4 µs (2.6×), start + import 46 vs 36 ms.
