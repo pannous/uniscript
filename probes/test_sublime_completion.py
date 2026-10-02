@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "sublime" / "Uniscript"))
-from uniscript_cli import completions, load_names  # noqa: E402
+from uniscript_cli import best_completion, completions, load_names  # noqa: E402
 
 names = load_names()
 
@@ -39,6 +39,11 @@ expect(completed("<:nosuchblock x"), {})
 expect(completed("\\:equals-s", word="equals-s")["equals-sign"], ("=", "equals-sign"))
 expect(completed("\\:equals-s", word="s")["equals-sign"], ("=", "sign"))
 expect(completed("\\:equals-s", word="\\:equals-s")["equals-sign"], ("=", "\\:equals-sign"))
+# Tab without the popup: the top suggestion, the shortest name first (equal before equiv)
+expect(best_completion("\\:equ", "", names), (3, "equal"))
+expect(best_completion("x <:alph", "", names), (4, "alpha>"))
+expect(best_completion("<:egyptian seated m", "", names), (8, "seated-man"))
+expect(best_completion("alph", "", names), None)
 groups = completed("\\:al")
 expect(groups["alchemical-"][1], "alchemical-")  # a group: names sharing their next segment
 assert not any(name.startswith("alchemical-symbol") for name in groups), groups

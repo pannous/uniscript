@@ -1,8 +1,8 @@
 
-\:equal-to-or-succeeds
-
 <:uniscript version="https://uniscript.org/v1">
 <:alpha> <:beta> <:gamma>: this file starts with the uniscript marker, so MarkdownPreview converts uniscript in its prose.
+
+\:equal-to-or-succeeds
 
 
 Quick check of **GitHub-flavoured** Markdown: *emphasis*, ~~strikethrough~~, `inline code`, and an autolink https://github.com.

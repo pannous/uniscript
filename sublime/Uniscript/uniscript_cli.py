@@ -110,19 +110,34 @@ def grouped(candidates, prefix):
         return sorted(folded, key=lambda entry: (len(entry[0]), entry[0]))[:MAX_COMPLETIONS]
 
 
-def completions(line_before_cursor, next_character, names, word):
-    """(trigger, annotation, completion) for the tag being typed: entity names, block words, after block words their
-    operands. Sublime replaces `word`, the word before the cursor by the syntax's word_separators ("s" or "equals-s"),
-    so a completion holds the name from where that word starts."""
+def typed_tag(line_before_cursor, names):
+    """(is short, words, how many lead as block words, the name typed after them with "-" for spaces) or None"""
     match = TYPED_TAG.search(line_before_cursor)
     if not match:
-        return []
+        return None
     is_short = match.group(2) is not None
     words = (match.group(2) if is_short else match.group(1)).split(" ")
     leading = 0
     while leading < len(words) - 1 and words[leading] in names.blocks:
         leading += 1
-    prefix = SEGMENT_END.join(words[leading:])
+    return is_short, words, leading, SEGMENT_END.join(words[leading:])
+
+
+def best_completion(line_before_cursor, next_character, names):
+    """(length typed before the cursor to replace, its replacement): the top suggestion, for Tab without the popup"""
+    typed = typed_tag(line_before_cursor, names)
+    entries = typed and completions(line_before_cursor, next_character, names, word=typed[3])
+    return (len(typed[3]), entries[0][2]) if entries else None
+
+
+def completions(line_before_cursor, next_character, names, word):
+    """(trigger, annotation, completion) for the tag being typed: entity names, block words, after block words their
+    operands. Sublime replaces `word`, the word before the cursor by the syntax's word_separators ("s" or "equals-s"),
+    so a completion holds the name from where that word starts."""
+    typed = typed_tag(line_before_cursor, names)
+    if not typed:
+        return []
+    is_short, words, leading, prefix = typed
     candidates = names.operands.get(words[leading - 1], []) if leading else names.entities
     word_start = max(0, len(prefix) - len(word))
     word_head = word[:max(0, len(word) - len(prefix))]  # where the word reaches before the name (\: in its word chars)
