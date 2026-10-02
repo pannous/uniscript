@@ -125,8 +125,15 @@ To support interoperability with xml/html the colon in <:/greek> must NOT be omi
 All spaces surrounding entities are only for visual appeal, are not part of the codepoint stream and will thus not be   rendered in the resulting UTF-8
 representation.    
   
-A full block renders its text as written, every space and line break included:
-`<:greek> filosofia kosmos<:/greek>` ⩵ " φιλοσοφια κοσμοσ", `<:greek> a b g <:/greek>` ⩵ " α β γ ".
+A full block tag eats one whitespace on its inner side: one space, tab or line break (`\r\n` counts as one) right after
+the opener and one right before the closer (`<:/greek>` or `<:>`, not a meta close like `<:/color>`). Everything else
+inside renders as written, spaces and line breaks included:
+`<:greek> athos <:/greek>` ⩵ "αθοσ", `<:greek> a b g <:/greek>` ⩵ "α β γ",
+`<:greek> filosofia kosmos<:/greek>` ⩵ "φιλοσοφια κοσμοσ", and a block spanning lines
+`<:greek>⏎filosofia⏎kosmos⏎<:/greek>` ⩵ "φιλοσοφια⏎κοσμοσ". Two spaces keep one: `<:greek>  athos  <:/greek>` ⩵ " αθοσ ".  
+Why: the padding makes the source readable without adding noise to the output, like LaTeX eating the space after a
+command and CommonMark stripping one space inside a code span. HTML-style collapsing of all whitespace would be wrong
+for plain text, and eating exactly one keeps the rule lossless: padding that should stay is written twice.  
 In an inline tag the spaces only separate the operands and are dropped: `<:greek phi chi>` ⩵ φχ,
 `<:greek th ch ps>` ⩵ θχψ.    
   
@@ -263,7 +270,7 @@ which you can copy, search and paste anywhere.
   plain (`left does not apply to 𓀀`). The fixed combinations are exactly the proliferation criticized in [[#Fonts]].  
 • **Modes**: LaTeX distinguishes text mode and math mode (`\alpha` fails outside `$…$`, text needs `\textalpha`);   uniscript has one mode.  
 • **Scoping**: LaTeX uses `{…}` groups and `\begin`/`\end` environments; uniscript uses `<:type> … <:/type>` blocks,   deliberately close to XML/HTML.  
-• **Spaces**: in LaTeX math mode spaces are also ignored, but in text mode they are significant; uniscript drops the spaces around entities and between the operands of an inline tag, and keeps those inside a full block.  
+• **Spaces**: in LaTeX math mode spaces are also ignored, but in text mode they are significant; uniscript drops the spaces around entities and between the operands of an inline tag, and keeps those inside a full block but for the one each block tag eats on its inner side (like LaTeX eating the space after a command).  
 • **Escaping**: LaTeX reserves ten ASCII characters; uniscript reserves only the pair `<:`, so ordinary prose and code   rarely need escaping.  
 • **Round trip**: uniscript → UTF-8 is a pure transformation and can be reversed by a name lookup; LaTeX → PDF   cannot be recovered to source.  
 • **Weight**: LaTeX needs a TeX distribution and fonts to see anything; uniscript needs only a mapping table and any   Unicode capable display.  
@@ -647,7 +654,8 @@ through C and C++.
   A `<:name>` known in no case as written, and no block either, falls back to lowercase: `<:LATIN CAPITAL LETTER ETH>` → Ð,
   `<:TILDE>` → the entity `tilde`. A name without a lowercase twin is indexed in lowercase too (`<:CAYLEYS>` → `Cayleys` ℭ).
 - `<:type operands>`: a block type applied to space separated operands; `<:double-d>` works too.
-- `<:type> … <:/type>` or `<:type> … <:>`: a block; its text is rendered as written, spaces included. In an inline tag
+- `<:type> … <:/type>` or `<:type> … <:>`: a block; its text is rendered as written, spaces included, but each block tag
+  eats one whitespace on its inner side (`<:greek> athos <:/greek>` → αθοσ). In an inline tag
   `<:type a b>` the spaces only separate operands and are dropped.
 - Effect words stack: `<:mirror red A>` gives A with the red and the mirror control.
 - Style words stack too: the last styles the operands and the others restyle the result. They use the block that

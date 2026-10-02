@@ -69,6 +69,7 @@ circle := <:pi> * r<:upper 2>  // \:infinity <:nosuchthing> <:greek c>
 - `<:fracture> A b c <:>` → <:fracture> A b c <:>
 - `<:greek> a b g d phi<:/greek>` → <:greek> a b g d phi<:/greek>
 - `<:greek> athos <:/greek> <:greek eta Omega>` → <:greek> athos <:/greek> <:greek eta Omega>
+- `|<:greek> athos <:/greek>|<:greek>  athos  <:/greek>|` → |<:greek> athos <:/greek>|<:greek>  athos  <:/greek>| (a block tag eats one space on its inner side)
 - `x<:upper a> X<:upper A>` → x<:upper a> X<:upper A>
 - `<:ligature ae>` → <:ligature ae>
 - `<:red circle> <:brown heart>` → <:red circle> <:brown heart>

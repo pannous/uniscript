@@ -123,7 +123,7 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - case fallback only in `<:…>` tags, not in `\:NAME`; intellij/UniscriptAnnotator.kt isName check does not know it (paints `<:TILDE>` as unknown)
 - suffix names (user idea): `<:SANS-SERIF DIGIT NINE>` for MATHEMATICAL SANS-SERIF DIGIT NINE is unknown and not even unique (DINGBAT CIRCLED SANS-SERIF DIGIT NINE …); unique word-suffix aliases of the Unicode names would add ~42.7k index entries (23.5k when only the first word is dropped)
 - DONE: kotlin tests need Java 21: `JAVA_HOME=$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home ./gradlew test -Dorg.gradle.java.installations.paths=$JAVA_HOME` (gradle found no 21 toolchain; installed openjdk@21 2026-10-02)
-- probes/test_sublime_plugin.py fails against the current CLI: `<:greek> athos <:/greek>\n` now converts to ` αθοσ \n` (full blocks keep their spaces, as js/test/cases.json says); the probe still expects `αθοσ\n` (passed only with the old ~/.cargo/bin/uniscript from 2026-09-30)
+- DONE: probes/test_sublime_plugin.py fails against the current CLI: `<:greek> athos <:/greek>\n` now converts to ` αθοσ \n` (full blocks keep their spaces, as js/test/cases.json says); the probe still expects `αθοσ\n` (passed only with the old ~/.cargo/bin/uniscript from 2026-09-30)
 - Sublime completion glue (uniscript.py: on_query_completions, popup after `<:`/`\:`, commit_completion hooks) is untested in a live Sublime; only uniscript_cli.completions is probed
 - `~/.cargo/bin/uniscript` must be reinstalled (`cargo install --path .`) whenever the CLI gains commands the editor plugins use (`names`)
 - DONE: joined emoji sequences (👩‍🦰 → `<:red-haired woman>`) spell back only in Rust, js and python; the C, Kotlin, Java, Swift and C# `to_uniscript` still read them character by character (`<:woman><:zero-width-joiner><:red emoji-component-hair>`), no shared case checks it
@@ -139,6 +139,9 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - DONE python: `python3 -m pytest python/native/tests` from the repo root imports the stale pip-installed uniscript (~/Library/Python/3.14/site-packages, 41 failures); run it from python/native or reinstall the package
 - DONE: kotlin: `./gradlew test` fails before compiling: "Failed to calculate the value of task ':compileTestJava' property 'javaCompiler'" (JDK toolchain not found)
 - js/test/differential.test.ts compares against /opt/cargo/release/uniscript (UNISCRIPT_RUST): a stale build fails it after an index or converter change; rebuild with CARGO_TARGET_DIR=/opt/cargo cargo build --release (the cause of the "flaky" run above)
-- TODO: probes/test_sublime_plugin.py expects a block to drop its spaces ("αθοσ
+- DONE: probes/test_sublime_plugin.py expects a block to drop its spaces ("αθοσ
 ") but the converter keeps them (" αθοσ 
 ", like the shared case <:egyptian> A1 Aa1 <:/egyptian> → " 𓀀 𓐍 "): the probe or the block-spaces rule needs a decision
+- DONE: block padding (user decision 2026-10-02): a full block tag eats one whitespace on its inner side (`<:greek> athos <:/greek>` → αθοσ, `<:greek>  athos  <:/greek>` → " αθοσ "), in every port; refines 48026c8. probes/test_sublime_plugin.py passes again
+- warp: `if f(1, 2) { … }` passes the tuple `(1, 2)` as the first argument ("f needs an Int for parameter a, got (1, 2)"); assigning `x = f(1, 2)` first works. Repro: probes/wasp_blocks/if_call_repro.wasp (run in a dir with packages/uniscript linked); belongs to warp
+- tests/entity_names_test.rs fails (baseline before the block-padding change, 2026-10-02): 900 of 3227 entity names, e.g. `<:tilde tilde>` → ≈ unknown, `<:double tilde>` gives ~, `<:ocirc>` gives U+030A, `<:oslash>` gives ⊘, `<:CJK UNIFIED IDEOGRAPH-3400>` unknown
