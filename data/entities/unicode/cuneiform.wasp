@@ -929,6 +929,7 @@ blocks {
 	cuneiform {
 		"*rare": ""
 		"*one-way": ""
+		"*readings": ""
 		KAR: "𒆳"
 		sar: "𒈗"
 		"piš": "𒄫"

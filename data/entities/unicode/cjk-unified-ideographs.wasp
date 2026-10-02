@@ -4,6 +4,7 @@ blocks {
 	chinese {
 		"*rare": ""
 		"*one-way": ""
+		"*readings": ""
 		de: "的"
 		yi1: "一"
 		yi: "一"

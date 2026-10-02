@@ -109,6 +109,7 @@ META_FALLBACK_KEY = "*meta"  # "color red": the attached meta a block becomes wh
 RARE_KEY = "*rare"  # a block of a rare script: its names stay out of the web manifest's filter of absent names
 ZERO_WIDTH_JOINER = "\u200d"
 ONE_WAY_KEY = "*one-way"  # a block only for typing: its characters do not spell back as it (口 stays 口, not <:chinese kou>)
+READINGS_KEY = "*readings"  # a word that is no operand splits into whole readings (shihan → shi han), not letters as greek
 # block type 'egyptian': Gardiner numbers (<:egyptian A1>) and descriptions (<:egyptian seated man>) of the hieroglyphs
 EGYPTIAN_BLOCK = "egyptian"
 EGYPTIAN_HIEROGLYPHS_START = 0x13000
@@ -510,7 +511,7 @@ def seed_files():
 	greek = files[block_file("α", blocks)]
 	greek["blocks"] = {"greek": greek_transliteration()}
 	greek["block-aliases"] = dict(GREEK_ALIASES)
-	files.setdefault(block_file("口", blocks), {}).update({"blocks": {CHINESE_BLOCK: {RARE_KEY: "", ONE_WAY_KEY: "", **chinese_block()}}, "block-aliases": dict(CHINESE_ALIASES)})
+	files.setdefault(block_file("口", blocks), {}).update({"blocks": {CHINESE_BLOCK: {RARE_KEY: "", ONE_WAY_KEY: "", READINGS_KEY: "", **chinese_block()}}, "block-aliases": dict(CHINESE_ALIASES)})
 	egyptian = files[block_file(chr(EGYPTIAN_HIEROGLYPHS_START), blocks)]
 	egyptian["blocks"] = {EGYPTIAN_BLOCK: {RARE_KEY: "", **egyptian_block(named)}}
 	egyptian["block-aliases"] = dict(EGYPTIAN_ALIASES)
@@ -518,7 +519,7 @@ def seed_files():
 	anatolian["blocks"] = {ANATOLIAN_BLOCK: {RARE_KEY: "", **anatolian_block(named)}}
 	anatolian["block-aliases"] = dict(ANATOLIAN_ALIASES)
 	cuneiform = files[block_file(chr(CUNEIFORM_START), blocks)]
-	cuneiform["blocks"] = {CUNEIFORM_BLOCK: {RARE_KEY: "", ONE_WAY_KEY: "", **cuneiform_block()}}
+	cuneiform["blocks"] = {CUNEIFORM_BLOCK: {RARE_KEY: "", ONE_WAY_KEY: "", READINGS_KEY: "", **cuneiform_block()}}
 	cuneiform["block-aliases"] = dict(CUNEIFORM_ALIASES)
 	return files
 

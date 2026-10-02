@@ -155,7 +155,13 @@
 		["<:color #ff8800 A/>", "A{attached color #ff8800}"],
 		["<:font han-japanese>直<:/font>", "{open font han-japanese}直{close font}"],
 		["<:uniscript version=\"https://uniscript.org/v1\">\nA", "A"],
-		["<:<> <::>", "< :"]
+		["<:<> <::>", "< :"],
+		["<:chinese> shihan <:/chinese>", "是汉"],
+		["<:chinese> woaini <:/chinese>", "我爱你"],
+		["<:chinese> shi han nuli <:/chinese>", "是 汉 努里"],
+		["<:chinese> nu3li4 <:/chinese>", "努力"],
+		["<:chinese shihan/>", "是汉"],
+		["<:greek> metal <:/greek>", "μεταλ"]
 	],
 	"warnCounts": [
 		["<:double bold A>", "𝐀", 1]
@@ -218,7 +224,9 @@
 		["<:alpha>x", "αx", "<:alpha> looks like an opening tag: write <:alpha/>", 0],
 		["<:fracture A b c>", "𝔄𝔟𝔠", "<:fracture A b c> looks like an opening tag: write \\:fracture-A-b-c or <:fracture A b c/>", 0],
 		["<:red-haired woman>", "👩‍🦰", "<:red-haired woman> looks like an opening tag: write <:red-haired> woman <:/red-haired> or <:red-haired woman/>", 0],
-		["x <:U+03B1>", "x α", "<:U+03B1> looks like an opening tag: write <:U+03B1/>", 2]
+		["x <:U+03B1>", "x α", "<:U+03B1> looks like an opening tag: write <:U+03B1/>", 2],
+		["<:chinese> abcde <:/chinese>", "abcde", "no chinese form of abcde", 11],
+		["<:chinese> shi qqq <:/chinese>", "是 qqq", "no chinese form of qqq", 11]
 	],
 	"errors": [
 		["<:nosuchthing> x", "UnknownEntity", "nosuchthing"],

@@ -61,6 +61,8 @@ const MIN_BARE_HEX_DIGITS: usize = 4;
 /// The most words one operand spans: `<:egyptian man with hand to mouth>`
 const MAX_OPERAND_WORDS: usize = 8;
 const GROUP_KEY: &str = "*group";
+/// a block whose words split into whole readings (chinese shihan → shi han), not letters and digraphs (greek)
+const READINGS_KEY: &str = "*readings";
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Error {
@@ -593,9 +595,19 @@ impl<'a> Uniscript<'a> {
 	/// One operand: its own entry (red circle → 🔴, greek eta → η), else each character or pair (greek th → θ)
 	/// of the operand, or of the entity it names
 	fn operand(&self, block: &str, token: &str, effects: &[&str], at: usize) -> String {
+		let own_form = |own: &str| meta::after_base(own, &self.effect_suffixes(effects, own.chars().next().unwrap_or(' '), at));
 		if let Some(own) = self.name(&format!("{block} {token}")) {
-			let first = own.chars().next().unwrap_or(' ');
-			return meta::after_base(own, &self.effect_suffixes(effects, first, at));
+			return own_form(own);
+		}
+		if self.form(block, READINGS_KEY).is_some() {
+			// <:chinese> shihan: whole readings, never letters (nuli is nu li, not n u l i)
+			return self.readings(block, token).map_or_else(
+				|| {
+					self.warn(format!("no {block} form of {token}"), at);
+					token.to_string()
+				},
+				|pieces| pieces.into_iter().map(own_form).collect(),
+			);
 		}
 		let characters: Vec<char> = match self.name(token) {
 			Some(named) if token.len() > 1 => named.chars().collect(),
@@ -618,6 +630,32 @@ impl<'a> Uniscript<'a> {
 			}
 		}
 		out
+	}
+
+	/// The forms of the whole readings a word splits into (shihan → 是 汉): the fewest pieces, of those the longest first
+	/// piece; None when it does not split
+	fn readings(&self, block: &str, word: &str) -> Option<Vec<&'a str>> {
+		let bounds: Vec<usize> = word.char_indices().map(|(at, _)| at).chain([word.len()]).collect();
+		let last = bounds.len() - 1;
+		// fewest[k]: (pieces, end of the first piece) of the best split of the word from bounds[k]
+		let mut fewest: Vec<Option<(usize, usize)>> = vec![None; last + 1];
+		fewest[last] = Some((0, last));
+		for start in (0..last).rev() {
+			for end in (start + 1..=last).rev() {
+				let Some((pieces, _)) = fewest[end] else { continue };
+				if self.form(block, &word[bounds[start]..bounds[end]]).is_some() && fewest[start].is_none_or(|(best, _)| pieces + 1 < best) {
+					fewest[start] = Some((pieces + 1, end));
+				}
+			}
+		}
+		let mut forms = Vec::new();
+		let mut start = 0;
+		while start < last {
+			let (_, end) = fewest[start]?;
+			forms.push(self.form(block, &word[bounds[start]..bounds[end]])?);
+			start = end;
+		}
+		Some(forms)
 	}
 
 	/// The text inside a full block (`<:greek> filosofia kosmos<:/greek>`) as written: its whitespace stays, each word is an

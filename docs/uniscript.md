@@ -162,6 +162,14 @@ they stay unchanged, with a warning.
 
 Short forms for typing: `gr` (greek), `eg` (egyptian), `cn` (chinese: pinyin with or without tone number, the most
 frequent character wins, `<:cn kou>` ⩵ 口, `<:cn kou4>` ⩵ 扣, ü as v). Chinese is typing only: 口 spells back as 口.
+
+# Readings
+
+A block marked as a readings block (chinese, cuneiform) reads a word that is none of its operands as whole readings,
+the fewest pieces first, without a warning: `<:chinese> woaini <:/chinese>` ⩵ 我爱你, `shihan` ⩵ 是汉. A word that does
+not split stays as written, with a warning. Letter blocks like greek spell letter by letter instead (see Greek).
+Careful: a split is a guess (`nuli` ⩵ 努里, not 努力; a typo like `nihaoo` ⩵ 你好噢 converts too); tones make it exact
+(`nu3li4` ⩵ 努力). Details in notes/footguns.md.
   
 # Stacked styles
   
