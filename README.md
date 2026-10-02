@@ -2,7 +2,7 @@
   
 **Uniscript** is a **human readable and editable** [unicode](https://en.wikipedia.org/wiki/Unicode) encoding format which only uses ASCII characters to describe code points.  
   
-The constituents of uniscript are **entities** (like `\:alpha` for α) and **block types** (like  <:upper A> => ᴬ).    
+The constituents of uniscript are **entities** (like `\:alpha` for α) and **block types** (like  `<:upper A>` => ᴬ).    
 
 ## Block types
   
