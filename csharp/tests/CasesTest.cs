@@ -85,6 +85,12 @@ public class CasesTest
 	}
 
 	[Fact]
+	public void Explicit()
+	{
+		foreach (var row in Section("explicit")) Assert.Equal(Text(row[1]), Uniscript.Explicit(Text(row[0])));
+	}
+
+	[Fact]
 	public void UnicodeRoundTrips()
 	{
 		foreach (var row in Section("unicodeRoundTrips"))
@@ -176,8 +182,9 @@ public class CasesTest
 	[Fact]
 	public void Api()
 	{
-		Assert.Equal("α 𝔄", Uniscript.ToUnicode("<:alpha> <:fracture A>"));
-		Assert.Equal("<:alpha> <:fracture A>", Uniscript.ToUniscript("α 𝔄"));
+		Assert.Equal("α 𝔄", Uniscript.ToUnicode("\\:alpha \\:fracture-A"));
+		Assert.Equal("\\:alpha \\:fracture-A", Uniscript.ToUniscript("α 𝔄"));
+		Assert.Equal("\\:alpha <:color red A/>", Uniscript.Explicit("<:alpha> <:color red A>"));
 		Assert.Equal("color: {}", Uniscript.MetaTemplate("color"));
 		Assert.Null(Uniscript.MetaTemplate("nosuchkey"));
 		Assert.Throws<ArgumentNullException>(() => Uniscript.Convert(null!));

@@ -20,3 +20,5 @@
   .NET 9 runtime on pannous.com, Ubuntu glibc 2.39). osx-x64, linux-arm64 and win-x64 not run (no x64 .NET, no Windows).
 - Publish: `scripts/publish.sh` packs into probes/publish/dist, restores probes/publish/dotnet-consumer from that feed
   (fresh NUGET_PACKAGES) and smoke-tests; `--publish` pushes with NUGET_API_KEY (nuget.org API key, push scope).
+- `Uniscript.Explicit(source)` → `uniscript_explicit`; C++ wrapper `uniscript::explicit_tags` (`explicit` is a keyword).
+  Rebuild the natives (`make -C c/ffi natives`) after src/ changes, else the cases run against the old library.

@@ -60,6 +60,10 @@ public static unsafe class Uniscript
 	public static string ToUniscript(string text) => WithUtf8(text, utf8 => Take(Native.uniscript_to_uniscript(utf8)))
 		?? throw new UniscriptException(UniscriptErrorKind.InvalidInput, "uniscript: invalid input (not UTF-8)", "", 0);
 
+	/// <summary>The source with its opener-like inline tags in explicit form (&lt;:alpha&gt; → \:alpha), which converts alike.</summary>
+	public static string Explicit(string source) => WithUtf8(source, utf8 => Take(Native.uniscript_explicit(utf8)))
+		?? throw new UniscriptException(UniscriptErrorKind.InvalidInput, "uniscript: invalid input (not UTF-8)", "", 0);
+
 	/// <summary>The header &lt;:uniscript version="…"&gt; at the very start of the source, else null.</summary>
 	public static UniscriptHeader? Header(string source) => WithUtf8(source, text =>
 	{
