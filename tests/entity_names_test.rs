@@ -1,4 +1,4 @@
-//! Data-driven: every `name<TAB>character` row of tests/entity_names.tsv (from probes/entity_names_table.py) converts
+//! Data-driven: every `name<TAB>character` row of tests/entity_names.tsv (from tests/entity_names_table.py) converts
 //! `<:name>` to its character, or to one of the alternatives `a|b` (`tilde	˜|~`). Lists all failing rows at once.
 
 use uniscript::to_unicode;

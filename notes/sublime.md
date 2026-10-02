@@ -6,7 +6,7 @@
 - `.python-version` 3.8: ST 4200+ runs such plugins in its Python 3.14 host (3.3 host disabled by default).
 - The CLI always appends a newline: strip it when the input had none.
 - Live conversion hooks `on_post_text_command("insert")`, not `on_modified`, so undo doesn't reconvert.
-- `sublime_plugin` glue is not probed headlessly; `uniscript_cli.py` is (probes/test_sublime_plugin.py).
+- `sublime_plugin` glue is not probed headlessly; `uniscript_cli.py` is (tests/sublime/test_sublime_plugin.py).
 - Conversion never stops on errors: the plugin runs `uniscript --lenient` (unknown entities stay, warnings in the status bar).
 - The header `<:uniscript version=…>` is handled by the library now (session uniscript-04), not by the plugin.
 - Two sessions staging hunks of the same file (git update-index / add -p) share one git index: a commit can pick up the other session's staged blob. Commit shared files one session at a time, and check `git show --stat` after committing.
@@ -26,12 +26,12 @@
   from `git subtree split --prefix sublime/Uniscript -b sublime-uniscript`, pushed as its main, tagged `0.2.0`, with
   `"details": "https://github.com/pannous/sublime-uniscript"` and `"tags": true`.
 - The package needs no entities.idx: it runs the `uniscript` CLI (index compiled in). The zip is 7 files, 8 KB; it imports
-  fine from the zip (`from . import uniscript_cli`), tested by probes/test_sublime_package.py (sublime modules stubbed).
+  fine from the zip (`from . import uniscript_cli`), tested by tests/sublime/test_sublime_package.py (sublime modules stubbed).
 - The price: users must `cargo install` the CLI first. A self-contained package would bundle python/native plus
   entities.idx (3.6 MB); mmap cannot read inside a .sublime-package, so it would load the index with
   `sublime.load_binary_resource` or ship a `.no-sublime-package` marker to be extracted.
 - Completion (2026-10-02): names come from `uniscript names` (every NAMES entry `key<TAB>text`), loaded once per
-  session; `uniscript_cli.completions` (probed by probes/test_sublime_completion.py) returns (trigger, annotation,
+  session; `uniscript_cli.completions` (probed by tests/sublime/test_sublime_completion.py) returns (trigger, annotation,
   completion). Sublime replaces its `prefix`, the word before the cursor by the syntax's word_separators (`s` in plain
   text, `equals-s` where `-` is a word character), so a completion is the name from where that word starts (plus any
   marker the word reaches into). DYNAMIC_COMPLETIONS re-queries per keystroke; the popup is opened by `auto_complete` after `<:`
@@ -40,7 +40,7 @@
   all_callbacks and view_event_listeners); INHIBIT_* flags only drop buffer words and .sublime-completions. So the
   plugin wraps the other listeners' on_query_completions (instance attribute, marked against double wrapping) to return
   None while a tag is typed; done before its own auto_complete and on every query (a listener running before ours
-  this once is caught next time). probes/test_sublime_quiet_completions.py with stubbed modules.
+  this once is caught next time). tests/sublime/test_sublime_quiet_completions.py with stubbed modules.
 - Tab with the popup closed runs Sublime's `auto_complete {"mini": true, "commit_single": true}`, whose own ranking
   picked `equiv` for `\:equ`; Default.sublime-keymap binds Tab in a tag (popup closed) to
   `uniscript_tab_completion`: the only match is inserted (and becomes its character), several open the list, even
@@ -53,10 +53,10 @@
   Sublime erased it), which converts the tag.
 - Cached names are keyed on (cli.Names, binary, its mtime): after an in-place reload of uniscript_cli.py the old cached
   Names instance kept the old class and its old completions (\:yi2 homophones only after restarting Sublime), and a
-  rebuilt binary brings new names. probes/test_sublime_names_reload.py.
+  rebuilt binary brings new names. tests/sublime/test_sublime_names_reload.py.
 - Whole matches first: operands of other blocks equal to the typed name (\:wo → chinese wo 我) follow a whole entity
   name and precede longer names (woman). Sublime re-sorts by its fuzzy score (prefix matches above `chinese wo`), so the
-  list carries INHIBIT_REORDER and our order is final. probes/test_sublime_whole_word_first.py.
+  list carries INHIBIT_REORDER and our order is final. tests/sublime/test_sublime_whole_word_first.py.
 - INHIBIT_REORDER only keeps our order among equal fuzzy scores: a trigger starting with the typed name (wood) still
   beats one holding it as a later word (chinese wo). So an operand of another block is listed operand first
   (`wo  我 chinese`, cli.operand_first). To inspect the running plugin, copy probes/sublime_live_state.py into
@@ -68,3 +68,5 @@
   (`<:greek>`) or a meta span `<:key value>` (`<:font japanese>` → `<:/font>`) opens, `<:>` / `<:/x>` closes the
   innermost. The name is inserted by `uniscript_close_tag`, not `insert`, so live conversion leaves the closer alone.
   Output panels get no ViewEventListeners: run a typed-character test there by calling the command directly.
+- Tests: `tests/sublime/run.sh` runs tests/sublime/test_sublime_*.py (promoted from probes/ on 2026-10-02, append-only);
+  test_sublime_package.py needs the zip and runs in scripts/publish_editor_plugins.sh.

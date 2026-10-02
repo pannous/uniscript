@@ -1,6 +1,6 @@
 """Copies uruk_egypt's cuneiform sign list into data/sources/cuneiform_readings.tsv: reading<TAB>signs, normalized
 (sh/sz/c → š, j/ng/g̃ → ĝ, Ḫ → H, ₂ → 2), without the comments, the commented and TEMPORARY rows and unidentified signs.
-Run: python3 probes/cuneiform_list_import.py [path of cuneiform.list]; rejected rows go to stderr."""
+Run: python3 data/cuneiform_list_import.py [path of cuneiform.list]; rejected rows go to stderr."""
 import re
 import sys
 from pathlib import Path

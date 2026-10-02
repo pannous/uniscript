@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """The Sublime Text plugin's completions inside <: and \\: tags, names from the real uniscript binary:
-python3 probes/test_sublime_completion.py"""
+python3 tests/sublime/test_sublime_completion.py"""
 import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "sublime" / "Uniscript"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "sublime" / "Uniscript"))
 from uniscript_cli import CHOOSE, completions, tab_completion, finished_tag_before_cursor, load_names  # noqa: E402
 
 names = load_names()

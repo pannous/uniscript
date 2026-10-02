@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""The Sublime Text plugin's converter module against the real uniscript binary: python3 probes/test_sublime_plugin.py"""
+"""The Sublime Text plugin's converter module against the real uniscript binary: python3 tests/sublime/test_sublime_plugin.py"""
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "sublime" / "Uniscript"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "sublime" / "Uniscript"))
 from uniscript_cli import convert, is_uniscript_file, tag_before_cursor  # noqa: E402
 
 HEADER_LINE = '<:uniscript version="https://uniscript.org/v1">\n'
@@ -29,7 +29,7 @@ expect(tag_before_cursor("<:alpha> x"), None)
 
 expect(convert(HEADER_LINE + "# <:fracture M/>arkdown \\:alpha\n"), ("# 𝔐arkdown α\n", []))
 
-converted, warnings = convert((Path(__file__).resolve().parent.parent / "sample.md").read_text())
+converted, warnings = convert((Path(__file__).resolve().parents[2] / "sample.md").read_text())
 assert "α β γ" in converted and "𝔐arkdown" in converted and "<:nosuchthing>" in converted, converted[:300]
 assert warnings, "the sample's unknown entities warn"
 print("OK")

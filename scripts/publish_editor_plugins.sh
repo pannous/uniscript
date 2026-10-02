@@ -29,10 +29,10 @@ unzip -p "$DIST/uniscript-kotlin.jar" entities.idx | cmp - "$ROOT/data/entities.
 echo "ok   intellij/build/distributions/uniscript-intellij-$VERSION.zip bundles data/entities.idx"
 
 step "Sublime Text: Uniscript $VERSION"
-python3 "$ROOT/probes/test_sublime_plugin.py"
+python3 "$ROOT/tests/sublime/test_sublime_plugin.py"
 rm -f "$SUBLIME_PACKAGE"
 (cd "$ROOT/sublime/Uniscript" && zip --quiet -r -X "$SUBLIME_PACKAGE" . -x '*__pycache__*' '*.DS_Store' '*.pyc')
-python3 "$ROOT/probes/test_sublime_package.py" "$SUBLIME_PACKAGE"
+python3 "$ROOT/tests/sublime/test_sublime_package.py" "$SUBLIME_PACKAGE"
 
 if ! $PUBLISH; then
 	step "built and checked; run with --publish to upload the IntelliJ plugin"

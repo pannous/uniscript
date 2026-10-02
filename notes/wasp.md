@@ -3,8 +3,8 @@
 Run: build warp (`cd ~/dev/apps/warp && CARGO_TARGET_DIR=/opt/cargo cargo build --release --bin warp`), then from this
 repository `/opt/cargo/release/warp probes/<dir>/<file>.wasp`: `use uniscript` loads the local uniscript.wasp (a local
 `name.wasp` wins over the fetched package). Each run takes ~5 s (compiling uniscript.wasp).
-Probes: probes/wasp_blocks, probes/codepoints/wasp_codepoints.wasp, probes/wasp_inline_tags (explicit.wasp: values;
-warns.sh: warnings, one warp run per case, since warnings go to stderr). The shared cases js/test/cases.json have no wasp
+Tests: `tests/wasp/run.sh` runs every tests/wasp/*.wasp (each must end with 1) and warns.sh (warnings, one warp run
+per case, since warnings go to stderr). The shared cases js/test/cases.json have no wasp
 runner; the port has no meta (TAG sequence) conversion, so most meta cases could not pass anyway.
 warp's own tests/test_uniscript.rs use warp's fetched copy packages/uniscript (stale, f39a7ff), not this checkout.
 

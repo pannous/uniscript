@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Typing <:/ closes the innermost open tag: <:greek> athos <:/ becomes <:greek> athos <:/greek>.
-python3 probes/test_sublime_close_tag.py"""
+python3 tests/sublime/test_sublime_close_tag.py"""
 import sys
 from pathlib import Path
 
-PLUGIN = Path(__file__).resolve().parent.parent / "sublime" / "Uniscript"
+PLUGIN = Path(__file__).resolve().parents[2] / "sublime" / "Uniscript"
 sys.path.insert(0, str(PLUGIN))
 from uniscript_cli import load_names, tag_to_close  # noqa: E402
 

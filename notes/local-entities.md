@@ -8,4 +8,4 @@
   stays `Uniscript<'static>`; built once per program.
 - CLI: `converter()` in `src/main.rs`; a broken file warns and falls back to the built-in entities.
 - Limits: aliases cannot reach built-in blocks; ports and editor plugins do not read the files (TODO.md).
-- Tests: `tests/local_entities_test.rs`, fixtures `probes/local_entities/`.
+- Tests: `tests/local_entities_test.rs`, fixtures `tests/local_entities/`.

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Sublime reloads a changed uniscript_cli.py in place: the plugin's cached names must follow the new code (homophones
-of \\:yi2 appeared only after restarting Sublime). python3 probes/test_sublime_names_reload.py (sublime stubbed)"""
+of \\:yi2 appeared only after restarting Sublime). python3 tests/sublime/test_sublime_names_reload.py (sublime stubbed)"""
 import importlib
 import sys
 from pathlib import Path

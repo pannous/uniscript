@@ -52,7 +52,7 @@
   `eg` shadows the HTML entity `<:eg>` ⪚ (blocks win); the release binary at /opt/cargo/release must be rebuilt for
   js differential tests after any index change.
 - Cuneiform (2026-10-02): `cuneiform` block (aliases `cu` `sumerian` `akkadian`, data/entities/unicode/cuneiform.wasp)
-  from `data/sources/cuneiform_readings.tsv`, made by `probes/cuneiform_list_import.py` from uruk_egypt's
+  from `data/sources/cuneiform_readings.tsv`, made by `data/cuneiform_list_import.py` from uruk_egypt's
   dicts/cuneiform.list: comments, commented and TEMPORARY rows and unidentified signs (¿, ?, ≈, ·) dropped, normalized
   sh/sz/c → š, j/ng/g̃ → ĝ, Ḫ → H, ₂ → 2. Readings as written first (A2, šà, ša3 for šà), then the typed forms of all rows:
   lower case (a2), ASCII (sha3, digir and dingir for diĝir); first row wins. `*one-way` (signs are polyvalent: 𒀭 keeps

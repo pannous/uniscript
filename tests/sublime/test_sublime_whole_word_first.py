@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """A typed name matching a whole name or operand comes first, before longer names it only starts: \\:wo lists chinese wo
-(我) before woman, wood … python3 probes/test_sublime_whole_word_first.py"""
+(我) before woman, wood … python3 tests/sublime/test_sublime_whole_word_first.py"""
 import sys
 from pathlib import Path
 
-PLUGIN = Path(__file__).resolve().parent.parent / "sublime" / "Uniscript"
+PLUGIN = Path(__file__).resolve().parents[2] / "sublime" / "Uniscript"
 sys.path.insert(0, str(PLUGIN))
 from uniscript_cli import completions, load_names, operand_first  # noqa: E402
 

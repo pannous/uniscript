@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Inside <: and \\: tags the other packages' completions (All Autocomplete, LSP, …) are silenced, elsewhere they stay:
-python3 probes/test_sublime_quiet_completions.py (sublime and sublime_plugin stubbed, the plugin imported as a package)"""
+python3 tests/sublime/test_sublime_quiet_completions.py (sublime and sublime_plugin stubbed, the plugin imported as a package)"""
 import importlib
 import sys
 import types
@@ -51,7 +51,7 @@ def expect(actual, expected):
 
 
 sublime_plugin = stub_sublime()
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "sublime"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "sublime"))
 uniscript = importlib.import_module("Uniscript.uniscript")
 
 

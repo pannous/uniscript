@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Completion of \\:block-operand, the short form of <:block operand>, for every block, names from the real uniscript
-binary: python3 probes/test_sublime_short_operands.py"""
+binary: python3 tests/sublime/test_sublime_short_operands.py"""
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "sublime" / "Uniscript"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "sublime" / "Uniscript"))
 from uniscript_cli import completions, load_names  # noqa: E402
 
 names = load_names()

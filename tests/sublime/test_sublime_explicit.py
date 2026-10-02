@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Inline tags warn that they look like opening tags; Sublime's Uniscript: Make Tags Explicit rewrites them, and the
-warning in the status bar names that command. python3 probes/test_sublime_explicit.py"""
+warning in the status bar names that command. python3 tests/sublime/test_sublime_explicit.py"""
 import sys
 from pathlib import Path
 
-PLUGIN = Path(__file__).resolve().parent.parent / "sublime" / "Uniscript"
+PLUGIN = Path(__file__).resolve().parents[2] / "sublime" / "Uniscript"
 sys.path.insert(0, str(PLUGIN))
 from uniscript_cli import convert, with_fix_hint, EXPLICIT_COMMAND_CAPTION  # noqa: E402
 

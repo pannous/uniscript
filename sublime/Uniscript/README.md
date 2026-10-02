@@ -31,5 +31,5 @@ first: `cargo install --git https://github.com/pannous/uniscript`. Then either
   `sublime-*`), or
 - from a checkout: `ln -s "$PWD/sublime/Uniscript" ~/Library/Application\ Support/Sublime\ Text*/Packages/Uniscript`
 
-`python3 probes/test_sublime_completion.py` tests the completions, `python3 probes/test_sublime_plugin.py` `uniscript_cli.py` against the binary; `scripts/publish_editor_plugins.sh`
-also zips the package and imports it from the zip (`probes/test_sublime_package.py`).
+`python3 tests/sublime/test_sublime_completion.py` tests the completions, `python3 tests/sublime/test_sublime_plugin.py` `uniscript_cli.py` against the binary; `scripts/publish_editor_plugins.sh`
+also zips the package and imports it from the zip (`tests/sublime/test_sublime_package.py`).

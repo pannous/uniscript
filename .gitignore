@@ -36,3 +36,4 @@ probes/uniscript-kotlin/
 fonts/dist/
 fonts/sources/
 probes/unihan/
+tests/wasp/case.wasp

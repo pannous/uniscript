@@ -31,7 +31,7 @@ ANATOLIAN_NAMES_LIST = HERE / "sources" / "anatolian_names_list.txt"
 # character → pinyin readings with tone numbers (de/di2/di4), most frequent character first (data/chinese_readings.py):
 # uruk_egypt's frequency list, then every other CJK unified ideograph with a Mandarin reading in Unihan
 CHINESE_READINGS = [HERE / "sources" / "chinese_readings.tsv", HERE / "sources" / "unihan_readings.tsv"]
-# reading → cuneiform signs, normalized from uruk_egypt's cuneiform.list (probes/cuneiform_list_import.py)
+# reading → cuneiform signs, normalized from uruk_egypt's cuneiform.list (data/cuneiform_list_import.py)
 CUNEIFORM_READINGS = HERE / "sources" / "cuneiform_readings.tsv"
 UNICODE_MATH_TABLE = Path("/usr/local/texlive/2026basic/texmf-dist/tex/latex/unicode-math/unicode-math-table.tex")
 

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """The Sublime Text plugin runs from this checkout (Packages/Uniscript links to sublime/Uniscript), so it uses the newest
-cargo build of it, not an older installed release: python3 probes/test_sublime_binary.py"""
+cargo build of it, not an older installed release: python3 tests/sublime/test_sublime_binary.py"""
 import os
 import sys
 from pathlib import Path
 
-CHECKOUT = Path(__file__).resolve().parent.parent
+CHECKOUT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(CHECKOUT / "sublime" / "Uniscript"))
 from uniscript_cli import development_binary, find_binary, stale_build, DEVELOPMENT_BUILDS, BINARY_NAME  # noqa: E402
 

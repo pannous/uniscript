@@ -4,7 +4,7 @@ use std::path::Path;
 use std::process::Command;
 use uniscript::{local_entity_files, Uniscript, WarningMode};
 
-const FIXTURE: &str = "probes/local_entities";
+const FIXTURE: &str = "tests/local_entities";
 
 fn uniscript_in(directory: &str, arguments: &[&str]) -> String {
 	let output = Command::new(env!("CARGO_BIN_EXE_uniscript")).current_dir(directory).args(arguments).output().expect("uniscript runs");

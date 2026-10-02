@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The zipped Sublime package as Package Control installs it: python3 probes/test_sublime_package.py <Uniscript.sublime-package>
+"""The zipped Sublime package as Package Control installs it: python3 tests/sublime/test_sublime_package.py <Uniscript.sublime-package>
 Checks the zip's layout and imports the plugin from inside it (zipimport, as Sublime Text does), with sublime and
 sublime_plugin stubbed: only the glue's import of uniscript_cli is exercised, not the editor API."""
 import sys
