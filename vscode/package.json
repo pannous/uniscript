@@ -1,0 +1,92 @@
+{
+	"name": "uniscript",
+	"displayName": "Uniscript",
+	"description": "Type any Unicode character in plain ASCII: completion of <:alpha> <:fracture A> \\:infinity names in every file, conversion to Unicode and back.",
+	"version": "1.0.0",
+	"publisher": "pannous",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pannous/uniscript.git",
+		"directory": "vscode"
+	},
+	"homepage": "https://pannous.com/uniscript/",
+	"categories": [
+		"Other",
+		"Snippets"
+	],
+	"keywords": [
+		"unicode",
+		"uniscript",
+		"entities",
+		"symbols",
+		"emoji",
+		"math"
+	],
+	"engines": {
+		"vscode": "^1.90.0"
+	},
+	"type": "module",
+	"main": "./dist/extension.cjs",
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"contributes": {
+		"commands": [
+			{
+				"command": "uniscript.toUnicode",
+				"title": "Convert to Unicode",
+				"category": "Uniscript"
+			},
+			{
+				"command": "uniscript.toUniscript",
+				"title": "Convert Unicode to Uniscript",
+				"category": "Uniscript"
+			}
+		],
+		"menus": {
+			"editor/context": [
+				{
+					"command": "uniscript.toUnicode",
+					"group": "1_modification@90"
+				},
+				{
+					"command": "uniscript.toUniscript",
+					"group": "1_modification@91"
+				}
+			]
+		},
+		"configuration": {
+			"title": "Uniscript",
+			"properties": {
+				"uniscript.completionInserts": {
+					"type": "string",
+					"enum": [
+						"character",
+						"name"
+					],
+					"enumDescriptions": [
+						"α in place of the tag",
+						"the uniscript name: <:alpha>"
+					],
+					"default": "character",
+					"description": "What choosing a name in the completion list inserts."
+				}
+			}
+		}
+	},
+	"scripts": {
+		"build": "esbuild src/extension.ts --bundle --platform=node --format=cjs --target=node20 --external:vscode --outfile=dist/extension.cjs",
+		"check": "tsc -p .",
+		"test": "node --test test/",
+		"package": "npm run check && npm test && npm run build && vsce package --no-dependencies",
+		"install-local": "npm run package && code --install-extension uniscript-1.0.0.vsix --force"
+	},
+	"devDependencies": {
+		"@types/node": "^26.6.2",
+		"@types/vscode": "^1.90.0",
+		"@vscode/vsce": "^4.0.0",
+		"esbuild": "^0.28.2",
+		"typescript": "^7.0.2"
+	}
+}
