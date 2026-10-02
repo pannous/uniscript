@@ -71,7 +71,7 @@ fn unsupported_characters_and_combinations_warn() {
 	warns("<:red 𓀀>", &format!("𓀀{red}"), "red on 𓀀 kept as color meta", 0);
 	warns("<:mirror red 狗>", &format!("狗\u{E004D}{red}"), "red on 狗 kept as color meta", 0);
 	warns("<:beside a b>", "ab", "no beside group of a", 0);
-	assert_eq!(convert("<:greek a>", WarningMode::Error), Ok(("α".into(), vec![])));
+	assert_eq!(convert("<:greek a/>", WarningMode::Error), Ok(("α".into(), vec![])));
 }
 
 #[test]
@@ -90,7 +90,7 @@ fn effect_words_stack_on_one_operand() {
 	converts("<:reverse red R>", "R\u{E0072}\u{E004D}"); // reverse is mirror
 	converts("<:mirror red A b>", "A\u{E0072}\u{E004D}b\u{E0072}\u{E004D}");
 	converts("<:mirror red circle>", "🔴\u{E004D}");
-	assert_eq!(to_uniscript("A\u{E0072}\u{E004D} 🔴\u{E004D}"), "<:mirror red A> <:mirror red circle>");
+	assert_eq!(to_uniscript("A\u{E0072}\u{E004D} 🔴\u{E004D}"), "\\:mirror-red-A \\:mirror-red-circle");
 }
 
 #[test]
@@ -109,7 +109,7 @@ fn hieroglyphs_have_gardiner_numbers_and_descriptions() {
 	converts("<:egyptian man-sitting>", "𓀀");
 	converts("<:egyptian> A1 Aa1 <:/egyptian>", "𓀀 𓐍");
 	converts("<:mirror egyptian A1>", "𓀀\u{13440}");
-	assert_eq!(to_uniscript("𓀀 𓐍"), "<:egyptian A1> <:egyptian Aa1>");
+	assert_eq!(to_uniscript("𓀀 𓐍"), "\\:egyptian-A1 \\:egyptian-Aa1");
 }
 
 #[test]
@@ -124,7 +124,7 @@ fn gardiner_numbers_are_short_names_in_lower_case() {
 	converts("\\:egyptian-aa1", "𓐍");
 	converts("<:egyptian-a2>", "𓀁");
 	converts("\\:egyptian-q4a", "\u{F446E}");
-	assert_eq!(to_uniscript("𓀁"), "<:egyptian A2>");
+	assert_eq!(to_uniscript("𓀁"), "\\:egyptian-A2");
 }
 
 #[test]
@@ -157,7 +157,7 @@ fn hieroglyph_looks_in_every_hieroglyphic_script() {
 	converts("<:hieroglyph 1>", "\u{14400}");
 	converts("<:hieroglyph A1>", "𓀀");
 	converts("<:hieroglyph seated man>", "𓀀");
-	assert_eq!(to_uniscript("\u{14400}"), "<:anatolian 1>");
+	assert_eq!(to_uniscript("\u{14400}"), "\\:anatolian-1");
 }
 
 #[test]
@@ -169,7 +169,7 @@ fn anatolian_hieroglyphs_have_their_latin_names_and_syllabic_values() {
 	converts("<:anatolian ta2>", "\u{1441E}");
 	converts("<:anatolian word divider>", "\u{145B5}");
 	converts("<:anatolian> pi ha mi sa <:/anatolian>", "\u{14448} \u{144F7} \u{145BB} \u{145D4}");
-	assert_eq!(to_uniscript("\u{14409}"), "<:anatolian 10>");
+	assert_eq!(to_uniscript("\u{14409}"), "\\:anatolian-10");
 }
 
 #[test]
@@ -183,7 +183,7 @@ fn cuneiform_signs_by_their_readings_and_names() {
 	converts("<:sumerian dingir>", "𒀭");
 	converts("<:akkadian LUGAL>", "𒈗");
 	converts("<:cuneiform> an ki <:/cuneiform>", "𒀭 𒆠");
-	assert_eq!(to_uniscript("𒀭"), "<:cuneiform-sign-an>");
+	assert_eq!(to_uniscript("𒀭"), "\\:cuneiform-sign-an");
 }
 
 #[test]
@@ -235,8 +235,8 @@ fn errors_are_reported() {
 
 #[test]
 fn unicode_spells_back_as_uniscript() {
-	assert_eq!(to_uniscript("α Ω 𝔄 ∞ ℝ"), "<:alpha> <:Omega> <:fracture A> <:infinity> <:double R>");
-	assert_eq!(to_uniscript("A\u{E0072} 🔴 xᵃ"), "<:red A> <:red circle> x<:upper a>");
+	assert_eq!(to_uniscript("α Ω 𝔄 ∞ ℝ"), "\\:alpha \\:Omega \\:fracture-A \\:infinity \\:double-R");
+	assert_eq!(to_uniscript("A\u{E0072} 🔴 xᵃ"), "\\:red-A \\:red-circle x\\:upper-a");
 	assert_eq!(to_uniscript("a <: b \\: c"), "a <<::> b \\<::> c");
 }
 

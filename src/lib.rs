@@ -2,7 +2,7 @@
 //!
 //! ```
 //! assert_eq!(uniscript::to_unicode("<:alpha> <:fracture A> \\:infinity").unwrap(), "α 𝔄 ∞");
-//! assert_eq!(uniscript::to_uniscript("α 𝔄 ∞"), "<:alpha> <:fracture A> <:infinity>");
+//! assert_eq!(uniscript::to_uniscript("α 𝔄 ∞"), "\\:alpha \\:fracture-A \\:infinity");
 //! ```
 //!
 //! Entities (`<:alpha>`, `\:infinity`), block types (`<:fracture A>`, `<:greek> a b <:/greek>`), color and geometry
@@ -129,6 +129,12 @@ pub fn convert(source: &str, mode: WarningMode) -> Result<(String, Vec<Warning>)
 #[cfg(feature = "embedded-index")]
 pub fn to_uniscript(text: &str) -> String {
 	Uniscript::default().to_uniscript(text)
+}
+
+/// The source with its inline tags in their explicit form (`<:alpha>` → `\:alpha`), which converts without warnings
+#[cfg(feature = "embedded-index")]
+pub fn explicit(source: &str) -> String {
+	Uniscript::default().explicit(source)
 }
 
 /// The header `<:uniscript version="https://uniscript.org/v1">` that starts a uniscript file
@@ -278,6 +284,19 @@ fn is_closing(content: &str) -> bool {
 	content.is_empty() || content.starts_with(CLOSING_SLASH)
 }
 
+fn self_closed_form(content: &str) -> String {
+	format!("{TAG_OPEN}{MARKER_COLON}{content}{CLOSING_SLASH}{TAG_CLOSE}")
+}
+
+/// `a, b or c`
+fn either(forms: &[String]) -> String {
+	match forms.split_last() {
+		Some((last, [])) => last.clone(),
+		Some((last, others)) => format!("{} or {last}", others.join(", ")),
+		None => String::new(),
+	}
+}
+
 /// The content of the full tag starting the text: `greek` of `<:greek> athos`
 fn tag_content(text: &str) -> Option<&str> {
 	let content = text.strip_prefix(TAG_OPEN)?.strip_prefix(MARKER_COLON)?;
@@ -325,6 +344,58 @@ impl<'a> Uniscript<'a> {
 
 	fn is_block(&self, name: &str) -> bool {
 		self.name(&format!("{name} ")).is_some()
+	}
+
+	/// `<:font han-japanese>`, `<:font x lang ja>`: meta keys with values only, opening spans
+	fn opens_meta(&self, content: &str) -> bool {
+		let words: Vec<&str> = content.split_whitespace().collect();
+		!words.is_empty() && words.len() % 2 == 0 && words.chunks(2).all(|pair| self.meta_template(pair[0]).is_some())
+	}
+
+	/// An inline tag's content (`<:alpha>`, `<:greek athos>`) looks like it opens something, as `<:greek>` does; not an
+	/// escape (`<:<>`), closer, self-closed tag, block or meta span opener
+	fn reads_as_opener(&self, content: &str) -> bool {
+		content.len() > 1 && !is_closing(content) && !content.ends_with(CLOSING_SLASH) && !self.is_block(content) && !self.opens_meta(content)
+	}
+
+	/// The explicit forms of an inline tag followed by `next`, which convert alike: `\:greek-athos`,
+	/// `<:greek> athos <:/greek>` and `<:greek athos/>`
+	fn explicit_forms(&self, content: &str, next: Option<char>) -> Vec<String> {
+		[self.short_form(content, next), self.block_form(content), Some(self_closed_form(content))].into_iter().flatten().collect()
+	}
+
+	/// `\:greek-athos` of `greek athos` followed by `next`: names only, no name character may follow, hyphens only
+	/// without spaces (\: reads them as spaces: `<:red-haired woman>` is no `\:red-haired-woman`), and no meta key, which
+	/// reads better as a tag (`<:color red A/>`)
+	fn short_form(&self, content: &str, next: Option<char>) -> Option<String> {
+		let names_only = content.chars().all(|character| is_name_character(character) || character == ' ');
+		let starts_meta = content.split_once(' ').is_some_and(|(key, _)| self.meta_template(key).is_some());
+		let fits = names_only && !(content.contains(' ') && content.contains('-')) && !starts_meta && !next.is_some_and(is_name_character);
+		fits.then(|| format!("{SHORT_OPEN}{MARKER_COLON}{}", content.replace(' ', "-")))
+	}
+
+	/// `<:greek> athos <:/greek>` of `greek athos`: a block and one operand (a block keeps the spaces between operands)
+	fn block_form(&self, content: &str) -> Option<String> {
+		let (block, operand) = content.split_once(' ')?;
+		(self.is_block(block) && !operand.contains(' ') && !self.is_block(operand)).then(|| format!("<:{block}> {operand} <:/{block}>"))
+	}
+
+	/// The source with its inline tags in their explicit form: `\:alpha` where it fits, else `<:color #ff8800 A/>`
+	pub fn explicit(&self, source: &str) -> String {
+		let start = header(source).map_or(0, |header| header.length);
+		let (mut out, mut rest) = (source[..start].to_string(), &source[start..]);
+		while let Some(open) = rest.find("<:") {
+			let Some(close) = rest[open + 2..].find(TAG_CLOSE).map(|close| open + 2 + close) else { break };
+			let content = &rest[open + 2..close];
+			out += &rest[..open];
+			if self.reads_as_opener(content) {
+				out += &self.short_form(content, rest[close + 1..].chars().next()).unwrap_or_else(|| self_closed_form(content));
+			} else {
+				out += &rest[open..=close];
+			}
+			rest = &rest[close + 1..];
+		}
+		out + rest
 	}
 
 	/// A font style of the entities: `cuneiform-hittite`, `han-japanese`
@@ -775,7 +846,16 @@ impl<'a> Uniscript<'a> {
 					block = Some(content.to_string());
 					position += padding_length(&rest[close + 1..]);
 				} else {
-					out += &match self.tag(content, position) {
+					let self_closed = content.strip_suffix(CLOSING_SLASH).filter(|inner| !inner.is_empty());
+					let earlier_warnings = self.warnings.borrow().len();
+					let converted = self.tag(self_closed.unwrap_or(content), position);
+					// one warning per tag: <:fracture 7> already says there is no fracture 7
+					let quiet = converted.is_ok() && self.warnings.borrow().len() == earlier_warnings;
+					if self_closed.is_none() && quiet && self.reads_as_opener(content) {
+						let forms = self.explicit_forms(content, rest[close + 1..].chars().next());
+						self.warn(format!("<:{content}> looks like an opening tag: write {}", either(&forms)), position);
+					}
+					out += &match converted {
 						Ok(text) => text,
 						Err(error) => self.kept(error, &rest[..=close], position, mode)?,
 					};
@@ -811,7 +891,8 @@ impl<'a> Uniscript<'a> {
 		meta::joined_prefixes(text).into_iter().find_map(|length| self.index.get(Table::Chars, &text[..length]).map(|form| (form, length)))
 	}
 
-	/// Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A>`
+	/// Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A/>`, the
+	/// other tags their explicit form (`\:alpha`, `<:alpha/>x`)
 	pub fn to_uniscript(&self, text: &str) -> String {
 		let mut out = String::new();
 		let mut rest = text;
@@ -873,6 +954,6 @@ impl<'a> Uniscript<'a> {
 				},
 			};
 		}
-		out
+		self.explicit(&out)
 	}
 }

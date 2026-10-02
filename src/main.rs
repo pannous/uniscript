@@ -1,5 +1,6 @@
 //! uniscript "<:alpha>"        → α
-//! uniscript -r "α"            → <:alpha>        (--strict: unsupported characters are errors; --lenient: no errors)
+//! uniscript -r "α"            → \:alpha         (--strict: unsupported characters are errors; --lenient: no errors)
+//! uniscript --explicit "<:alpha> <:color red A>"   → \:alpha <:color red A/>   (inline tags, which warn, made explicit)
 //! echo "<:alpha>" | uniscript → α (stdin when no text is given)
 //! uniscript [-r] /path/file.txt → the file's content converted (arguments starting with / are files)
 //! uniscript --html "<:font cuneiform-hittite>𒀭<:/font>"   meta information as <span lang style> instead of TAG sequences
@@ -28,8 +29,9 @@ const REVERSE_FLAGS: [&str; 2] = ["-r", "--reverse"];
 const STRICT_FLAG: &str = "--strict";
 const HTML_FLAG: &str = "--html";
 const LENIENT_FLAG: &str = "--lenient";
+const EXPLICIT_FLAG: &str = "--explicit";
 const FILE_PREFIX: char = '/';
-const FLAGS: [&str; 5] = ["-r", "--reverse", STRICT_FLAG, HTML_FLAG, LENIENT_FLAG];
+const FLAGS: [&str; 6] = ["-r", "--reverse", STRICT_FLAG, HTML_FLAG, LENIENT_FLAG, EXPLICIT_FLAG];
 
 fn main() -> ExitCode {
 	let arguments: Vec<String> = std::env::args().skip(1).collect();
@@ -71,6 +73,8 @@ fn convert(arguments: &[String]) -> Result<(), String> {
 	};
 	let converted = if reverse {
 		converter().to_uniscript(&text)
+	} else if flag(EXPLICIT_FLAG) {
+		converter().explicit(&text)
 	} else {
 		let mode = match (strict, flag(LENIENT_FLAG)) {
 			(true, _) => uniscript::WarningMode::Error,

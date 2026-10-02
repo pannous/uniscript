@@ -9,7 +9,7 @@ fn lenient(uniscript: &str) -> (String, Vec<String>) {
 
 #[test]
 fn unknown_entities_stay_and_the_rest_converts() {
-	assert_eq!(lenient("<:alpha> <:nosuchthing> \\:nosuch <:beta>"), ("α <:nosuchthing> \\:nosuch β".into(), vec![
+	assert_eq!(lenient("\\:alpha <:nosuchthing> \\:nosuch \\:beta"), ("α <:nosuchthing> \\:nosuch β".into(), vec![
 		"unknown uniscript entity: nosuchthing".to_string(),
 		"unknown uniscript entity: nosuch".to_string(),
 	]));
@@ -18,7 +18,7 @@ fn unknown_entities_stay_and_the_rest_converts() {
 #[test]
 fn invalid_meta_and_unclosed_tags_stay() {
 	assert_eq!(lenient("<:color red;x A> <:alpha>").0, "<:color red;x A> α");
-	assert_eq!(lenient("<:alpha> a <: b"), ("α a <: b".into(), vec!["unclosed <: at <: b".to_string()]));
+	assert_eq!(lenient("\\:alpha a <: b"), ("α a <: b".into(), vec!["unclosed <: at <: b".to_string()]));
 }
 
 #[test]

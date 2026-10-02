@@ -47,7 +47,7 @@ fn font_styles_come_from_the_entities() {
 #[test]
 fn spans_open_and_close_with_tag_sequences() {
 	let hittite = open("font", "cuneiform-hittite");
-	round_trips("x <:font cuneiform-hittite><:cuneiform-sign-an><:/font> y", &format!("x {hittite}𒀭{} y", close("font")));
+	round_trips("x <:font cuneiform-hittite>\\:cuneiform-sign-an<:/font> y", &format!("x {hittite}𒀭{} y", close("font")));
 	round_trips("<:color #ff8800>ab<:/color>", &format!("{}ab{}", open("color", "#ff8800"), close("color")));
 	assert_eq!(to_unicode("<:lang ja><:font han-jis78>直"), Ok(format!("{}{}直", open("lang", "ja"), open("font", "han-jis78"))));
 }
@@ -56,13 +56,13 @@ fn spans_open_and_close_with_tag_sequences() {
 #[test]
 fn attached_sequences_follow_each_character_and_its_suffixes() {
 	let orange = attached("color", "#ff8800");
-	round_trips("<:color #ff8800 A>", &format!("A{orange}"));
-	round_trips("<:color #ff8800 mirror red A>", &format!("A\u{E0072}\u{E004D}{orange}"));
-	round_trips("<:color #ff8800 angle 90 alpha>", &format!("α{orange}{}", attached("angle", "90")));
+	round_trips("<:color #ff8800 A/>", &format!("A{orange}"));
+	round_trips("<:color #ff8800 mirror red A/>", &format!("A\u{E0072}\u{E004D}{orange}"));
+	round_trips("<:color #ff8800 angle 90 alpha/>", &format!("α{orange}{}", attached("angle", "90")));
 	assert_eq!(to_unicode("<:color #ff8800 A b>"), Ok(format!("A{orange}b{orange}")));
 	assert_eq!(to_unicode("<:color #ff8800 e\u{301}>"), Ok(format!("e\u{301}{orange}")));
 	// the r of "color red" inside the sequence is no red suffix control
-	round_trips("<:color red B>", &format!("B{}", attached("color", "red")));
+	round_trips("<:color red B/>", &format!("B{}", attached("color", "red")));
 }
 
 #[test]

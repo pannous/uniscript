@@ -1,4 +1,4 @@
-//! Any character by its hex code point: `\:1F60D`, `\:U+1F60D`, `\:0x1F60D`, `<:U+1F60D>`, `\U1F60D`
+//! Any character by its hex code point: `\:1F60D`, `\:U+1F60D`, `\:0x1F60D`, `<:U+1F60D/>`, `\U1F60D`
 use uniscript::{code_point_value, convert, to_unicode, to_uniscript, Error, Warning, WarningMode};
 
 fn converts(uniscript: &str, unicode: &str) {
@@ -15,17 +15,17 @@ fn every_form_writes_the_code_point() {
 	for form in ["\\:1F60D", "\\:U1F60D", "\\:0x1F60D", "\\U1F60D", "\\:U+1F60D", "\\:u+1f60d", "\\:0X1F60D", "\\:u1F60D"] {
 		converts(form, "😍");
 	}
-	for form in ["<:U+1F60D>", "<:u+1F60D>", "<:0x1F60D>", "<:1F60D>", "<:U1F60D>", "<:1f60d>"] {
+	for form in ["<:U+1F60D/>", "<:u+1F60D/>", "<:0x1F60D/>", "<:1F60D/>", "<:U1F60D/>", "<:1f60d/>"] {
 		converts(form, "😍");
 	}
 	converts("\\U0001F60D", "😍"); // Python and C
-	converts("\\:U+41 \\:0x42 <:u+43>", "A B C"); // a prefix allows any length
+	converts("\\:U+41 \\:0x42 <:u+43/>", "A B C"); // a prefix allows any length
 	converts("\\:00E9", "é");
 }
 
 #[test]
 fn the_code_point_ends_where_a_name_ends() {
-	converts("\\:1F60D. \\:1F60D x <:1F60D>x", "😍. 😍 x 😍x");
+	converts("\\:1F60D. \\:1F60D x <:1F60D/>x", "😍. 😍 x 😍x");
 	converts("(\\U1F60D)", "(😍)");
 	assert_eq!(to_unicode("\\:1F60Dx"), Err(Error::UnknownEntity("1F60Dx".into())));
 	converts("<:greek> a \\:03B2 <:/greek>", "α β");
@@ -33,7 +33,7 @@ fn the_code_point_ends_where_a_name_ends() {
 
 #[test]
 fn names_win_over_hex() {
-	converts("\\:bed \\:BbbA <:BbbA>", "🛏 𝔸 𝔸");
+	converts("\\:bed \\:BbbA <:BbbA/>", "🛏 𝔸 𝔸");
 	converts("\\:U+BBBA \\:0xBbbA", "뮺 뮺");
 	assert_eq!(to_unicode("\\:ab"), Err(Error::UnknownEntity("ab".into()))); // bare needs 4 digits
 	assert_eq!(code_point_value("ab"), None);

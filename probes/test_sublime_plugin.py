@@ -13,12 +13,12 @@ def expect(actual, expected):
     assert actual == expected, "{!r} != {!r}".format(actual, expected)
 
 
-expect(convert("<:alpha> <:fracture A> \\:infinity"), ("α 𝔄 ∞", []))
+expect(convert("\\:alpha <:fracture A/> \\:infinity"), ("α 𝔄 ∞", []))
 expect(convert("<:greek> athos <:/greek>\n"), ("αθοσ\n", []))
 expect(convert("<:greek>"), ("", []))
-expect(convert("α 𝔄", reverse=True), ("<:alpha> <:fracture A>", []))
+expect(convert("α 𝔄", reverse=True), ("\\:alpha \\:fracture-A", []))
 expect(convert("<:fracture 7>"), ("7", ["uniscript: no fracture form of 7 at byte 0"]))
-expect(convert("<:alpha> <:nosuchthing> <:beta>"), ("α <:nosuchthing> β", ["uniscript: unknown uniscript entity: nosuchthing at byte 9"]))
+expect(convert("\\:alpha <:nosuchthing> \\:beta"), ("α <:nosuchthing> β", ["uniscript: unknown uniscript entity: nosuchthing at byte 8"]))
 expect(is_uniscript_file("<:alpha>"), True)
 expect(is_uniscript_file("# title"), False)
 
@@ -27,7 +27,7 @@ expect(tag_before_cursor("<:greek> a <:beta>"), 11)
 expect(tag_before_cursor("a > b"), None)
 expect(tag_before_cursor("<:alpha> x"), None)
 
-expect(convert(HEADER_LINE + "# <:fracture M>arkdown <:alpha>\n"), ("# 𝔐arkdown α\n", []))
+expect(convert(HEADER_LINE + "# <:fracture M/>arkdown \\:alpha\n"), ("# 𝔐arkdown α\n", []))
 
 converted, warnings = convert((Path(__file__).resolve().parent.parent / "sample.md").read_text())
 assert "α β γ" in converted and "𝔐arkdown" in converted and "<:nosuchthing>" in converted, converted[:300]

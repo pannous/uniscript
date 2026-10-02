@@ -21,7 +21,7 @@ fn local_converter(directory: &str) -> Uniscript<'static> {
 fn a_local_name_converts_both_ways() {
 	let converter = local_converter(FIXTURE);
 	assert_eq!(converter.convert("<:virus> \\:virus <:alpha>", WarningMode::Warn).unwrap().0, "🦠 🦠 α");
-	assert_eq!(converter.to_uniscript("🦠 α"), "<:virus> <:alpha>");
+	assert_eq!(converter.to_uniscript("🦠 α"), "\\:virus \\:alpha");
 }
 
 #[test]
@@ -39,7 +39,7 @@ fn the_nearest_file_wins_and_parents_still_count() {
 fn the_command_line_reads_the_local_files() {
 	let directory = format!("{FIXTURE}/nested");
 	assert_eq!(uniscript_in(&directory, &["<:virus> <:bug>"]), "🦠 🐛\n");
-	assert_eq!(uniscript_in(&directory, &["-r", "🦠"]), "<:virus>\n");
+	assert_eq!(uniscript_in(&directory, &["-r", "🦠"]), "\\:virus\n");
 	assert!(uniscript_in(&directory, &["names"]).contains("virus\t🦠\n"));
 }
 

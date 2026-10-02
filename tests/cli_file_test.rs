@@ -21,5 +21,5 @@ fn file_argument_converts_its_content_to_unicode() {
 #[test]
 fn file_argument_converts_its_content_back_to_uniscript() {
 	let path = write_sample("reverse.txt", "α 𝔄\n");
-	assert_eq!(uniscript(&["-r", &path]), "<:alpha> <:fracture A>\n");
+	assert_eq!(uniscript(&["-r", &path]), "\\:alpha \\:fracture-A\n");
 }
