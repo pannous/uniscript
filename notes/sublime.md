@@ -54,3 +54,6 @@
 - Cached names are keyed on (cli.Names, binary, its mtime): after an in-place reload of uniscript_cli.py the old cached
   Names instance kept the old class and its old completions (\:yi2 homophones only after restarting Sublime), and a
   rebuilt binary brings new names. probes/test_sublime_names_reload.py.
+- Whole matches first: operands of other blocks equal to the typed name (\:wo → chinese wo 我) follow a whole entity
+  name and precede longer names (woman). Sublime re-sorts by its fuzzy score (prefix matches above `chinese wo`), so the
+  list carries INHIBIT_REORDER and our order is final. probes/test_sublime_whole_word_first.py.

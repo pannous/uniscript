@@ -239,9 +239,13 @@ def completions(line_before_cursor, next_character, names, word, close_operands=
         tail = "" if count > 1 or not closes else TAG_END
         entries.append((shown(name), annotation, word_head + name[word_start:] + tail, None))
     if not leading:
+        # operands of other blocks match the typed name whole (chinese wo 我): after a whole name, before longer names
+        whole_names = sum(1 for entry in entries if entry[0].lower() == prefix.lower())
+        whole_operands = []
         for block, operand, text in names.across_blocks(prefix):
             tag = "{}{} {}{}".format(MARKER, block, operand, TAG_END)
-            entries.append(("{} {}".format(block, shown(operand)), text, tag, tag))
+            whole_operands.append(("{} {}".format(block, shown(operand)), text, tag, tag))
+        entries[whole_names:whole_names] = whole_operands
     if not is_short and not leading:
         # a block word is the group of its operands: <:red> shows 🔴🟥🍎… 18 and asks for them when chosen
         entries += [(block, summary(names.operands[block]) if block in names.operands else BLOCK_ANNOTATION, word_head + block[word_start:] + " ", None)

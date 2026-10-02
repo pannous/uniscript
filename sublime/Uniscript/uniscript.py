@@ -257,5 +257,7 @@ class UniscriptCompletionListener(sublime_plugin.EventListener):
         if not entries:
             return None
         items = [completion_item(trigger, annotation, completion, prefix, whole_tag) for trigger, annotation, completion, whole_tag in entries]
-        flags = sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS | sublime.DYNAMIC_COMPLETIONS
+        # our order (whole matches, then the shortest), not Sublime's fuzzy score, which ranks wood above chinese wo
+        flags = (sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS | sublime.DYNAMIC_COMPLETIONS
+                 | sublime.INHIBIT_REORDER)
         return sublime.CompletionList(items, flags)
