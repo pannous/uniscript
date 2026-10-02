@@ -145,3 +145,7 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - DONE: block padding (user decision 2026-10-02): a full block tag eats one whitespace on its inner side (`<:greek> athos <:/greek>` → αθοσ, `<:greek>  athos  <:/greek>` → " αθοσ "), in every port; refines 48026c8. probes/test_sublime_plugin.py passes again
 - DONE: warp: `if f(1, 2) { … }` passes the tuple `(1, 2)` as the first argument ("f needs an Int for parameter a, got (1, 2)"); assigning `x = f(1, 2)` first works. Repro: probes/wasp_blocks/if_call_repro.wasp (run in a dir with packages/uniscript linked); belongs to warp (fixed in warp 2de32067)
 - tests/entity_names_test.rs fails (baseline before the block-padding change, 2026-10-02): 900 of 3227 entity names, e.g. `<:tilde tilde>` → ≈ unknown, `<:double tilde>` gives ~, `<:ocirc>` gives U+030A, `<:oslash>` gives ⊘, `<:CJK UNIFIED IDEOGRAPH-3400>` unknown
+- Inline tags warn (user decision 2026-10-02, 8ed80c0): usage.md, README, sample.md and test.md still write inline tags (`<:alpha> <:fracture A>`, `<:color red 𓀀>`), so their examples print the new warnings; rewrite the inputs to explicit forms (`uniscript --explicit` per language string, minding each language's escaping)?
+- Sublime with "completion_inserts": "name" leaves an inline `<:alpha>`, which now warns: insert `\:alpha` / `<:…/>` instead
+- IntelliJ and VS Code plugins: rebuild against the ports with explicit(), maybe offer "Make Tags Explicit" as a quick fix there too
+- Swift port has no lenient WarningMode, so its new shared-case runner skips the lenient section
