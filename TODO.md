@@ -152,3 +152,4 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - warp: a function with parameters cannot write a global (the assignment becomes a local); uniscript.wasp works around it with a U+FDD0 mark in unsupported() (notes/wasp.md, also: a variable named like a function parses as a call; a text const built from an expression breaks the module's types)
 - warp repo tests/test_uniscript.rs expect the old reverse spelling (spells("α","<:alpha>")); they will break once warp's packages/uniscript copy is updated past ed75f9a: switch them to \:alpha
 - wasp port has no shared cases.json runner (and no meta/TAG sequences)
+- probes/egyptian_baseline_test.py fails test_stacked_group_composes_on_the_descender_too (bottom −0.125, expected −0.17 of Aegyptus): fix, then promote it with egyptian_private_use_test.py (which imports its constants) to tests/fonts/

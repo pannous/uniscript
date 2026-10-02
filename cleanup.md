@@ -9,7 +9,6 @@ append-only (few exceptions). Probes whose details a test now condenses can go.
 |---|---|---|
 | probes/test_sublime_*.py (10) | tests/sublime/ + run.sh | plugin behaviour, all green (package test runs from publish_editor_plugins.sh with the built zip) |
 | probes/wasp_blocks/block_padding.wasp, probes/codepoints/wasp_codepoints.wasp, probes/group_clashes/wasp_groups.wasp, wasp_inner_groups.wasp, probes/wasp_inline_tags/explicit.wasp + warns.sh | tests/wasp/ + run.sh | the wasp port's tests (the shared cases have no wasp runner) |
-| probes/egyptian_private_use_test.py | tests/fonts/ | passes against the built fonts |
 | probes/entity_names_table.py | tests/ (next to the entity_names.tsv it writes) | generator of a test table |
 | probes/local_entities/ | tests/local_entities/ | fixture of tests/local_entities_test.rs; tests must not depend on probes |
 
@@ -40,7 +39,8 @@ homebrew-tap/ (clean clone, nothing unpushed).
 - tools still used or documented: publish/, usage/, page_weight.sh, live_chunk_requests.sh, wasm_vs_ts_speed.mjs,
   render_meta.sh + meta_demo.png (README), sublime_live_state.py, coretext/, font_slices/, chinese/range_server.py +
   web_cost.sh, uniscript-cpp/run_cpp_step.sh, uniscript-packages/run_deb_step.sh, uniscript-hanzi/ (notes/hanzi.md evidence)
-- not working yet: egyptian_baseline_test.py (stacked group bottom −0.125, expected −0.17 → TODO)
+- not working yet: egyptian_baseline_test.py (stacked group bottom −0.125, expected −0.17 → TODO), and
+  egyptian_private_use_test.py, which passes but imports its constants from it: both move to tests/fonts/ once fixed
 - open warp bug repro: group_clashes/warp_not_call.wasp (TODO)
 - download caches: unihan/ (46 MB), finefreq/ (10 MB)
 - ask the user: uniscript-java/ (391 MB untracked: JDK download, dist, gnupg-throwaway)
