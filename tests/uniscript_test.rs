@@ -153,6 +153,20 @@ fn anatolian_hieroglyphs_have_their_latin_names_and_syllabic_values() {
 }
 
 #[test]
+fn cuneiform_signs_by_their_readings_and_names() {
+	converts("<:cuneiform a2>", "𒀉");
+	converts("<:cuneiform A2>", "𒀉");
+	converts("<:cuneiform šà>", "𒊮");
+	converts("<:cu sha3>", "𒊮");
+	converts("<:cu ša>", "𒊭");
+	converts("<:sumerian diĝir>", "𒀭");
+	converts("<:sumerian dingir>", "𒀭");
+	converts("<:akkadian LUGAL>", "𒈗");
+	converts("<:cuneiform> an ki <:/cuneiform>", " 𒀭 𒆠 ");
+	assert_eq!(to_uniscript("𒀭"), "<:cuneiform-sign-an>");
+}
+
+#[test]
 fn short_aliases_type_greek_egyptian_and_chinese_by_pinyin() {
 	converts("<:gr a>", "α");
 	converts("<:eg A1>", "𓀀");

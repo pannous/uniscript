@@ -30,6 +30,8 @@ EXTENDED_SIGN_LIST = HERE / "sources" / "gardiner.full.csv"
 ANATOLIAN_NAMES_LIST = HERE / "sources" / "anatolian_names_list.txt"
 # character → pinyin readings with tone numbers (de/di2/di4), most frequent character first
 CHINESE_READINGS = HERE / "sources" / "chinese_readings.tsv"
+# reading → cuneiform signs, normalized from uruk_egypt's cuneiform.list (probes/cuneiform_list_import.py)
+CUNEIFORM_READINGS = HERE / "sources" / "cuneiform_readings.tsv"
 UNICODE_MATH_TABLE = Path("/usr/local/texlive/2026basic/texmf-dist/tex/latex/unicode-math/unicode-math-table.tex")
 
 MAGIC = b"USX1"
@@ -104,6 +106,7 @@ GROUP_KEY = "*group"    # the block joins its operands (above, beside) instead o
 INFIX_KEY = "*infix"    # "*infix egyptian": goes between the parts of a group (a hieroglyph joiner)
 META_FALLBACK_KEY = "*meta"  # "color red": the attached meta a block becomes where it has no suffix
 RARE_KEY = "*rare"  # a block of a rare script: its names stay out of the web manifest's filter of absent names
+ZERO_WIDTH_JOINER = "\u200d"
 ONE_WAY_KEY = "*one-way"  # a block only for typing: its characters do not spell back as it (口 stays 口, not <:chinese kou>)
 # block type 'egyptian': Gardiner numbers (<:egyptian A1>) and descriptions (<:egyptian seated man>) of the hieroglyphs
 EGYPTIAN_BLOCK = "egyptian"
@@ -122,6 +125,12 @@ EGYPTIAN_ALIASES["eg"] = EGYPTIAN_BLOCK
 CHINESE_BLOCK = "chinese"
 CHINESE_ALIASES = {"cn": CHINESE_BLOCK}
 PINYIN_READING = re.compile(r"^[a-z]+(?:u:)?[a-z]*[1-5]?$")
+# block type 'cuneiform': Sumerian and Akkadian readings and sign names (<:cuneiform a2> 𒀉, <:cuneiform ŠA> 𒊭)
+CUNEIFORM_BLOCK = "cuneiform"
+CUNEIFORM_START = 0x12000
+CUNEIFORM_ALIASES = {"cu": CUNEIFORM_BLOCK, "sumerian": CUNEIFORM_BLOCK, "akkadian": CUNEIFORM_BLOCK}
+# typed forms: š → sh, ĝ → g or ng (diĝir, digir, dingir), the other diacritics fall away (ṣ → s, ḫ → h)
+CUNEIFORM_ASCII = [str.maketrans({"š": "sh", "Š": "SH"}), str.maketrans({"š": "sh", "Š": "SH", "ĝ": "ng", "Ĝ": "NG"})]
 # aliases of NamesList.txt: "= syllabic tá", "= logosyllabic pari", "= caput+scalprum", "= infans, filius, frater"
 NAMES_LIST_ENTRY = re.compile(r"^([0-9A-F]{4,6})\t")
 NAMES_LIST_ALIAS = re.compile(r"^\t= (.+)$")
@@ -446,6 +455,30 @@ def chinese_block():
 	return table
 
 
+def cuneiform_keys(reading):
+	"""ŠA, ša3 or šà: the reading, then its forms for typing: lower case (a2 for A2), ASCII (sha3, ga2 for ĝa2)"""
+	indexed = unicodedata.normalize("NFC", accent_index(reading))
+	exact = [reading, indexed]
+	lower = [key.lower() for key in exact]
+	return exact, lower + [without_marks(key.translate(ascii)) for key in (indexed, indexed.lower()) for ascii in CUNEIFORM_ASCII]
+
+
+def without_marks(text):
+	return "".join(c for c in unicodedata.normalize("NFKD", text) if not unicodedata.combining(c))
+
+
+def cuneiform_block():
+	"""reading → signs; a reading as written before any typed form, the first row wins"""
+	rows = [line.split("\t") for line in CUNEIFORM_READINGS.read_text().splitlines() if not line.startswith("#")]
+	keyed = [(cuneiform_keys(reading), signs) for reading, signs in rows]
+	table = {}
+	for pass_index in (0, 1):
+		for keys, signs in keyed:
+			for key in keys[pass_index]:
+				table.setdefault(key, signs)
+	return table
+
+
 def seed_files():
 	"""file path in entities/ → its sections"""
 	named = [(chr(cp), unicodedata.name(chr(cp))) for cp in range(0x110000) if unicodedata.name(chr(cp), None)]
@@ -487,6 +520,9 @@ def seed_files():
 	anatolian = files[block_file(chr(ANATOLIAN_HIEROGLYPHS_START), blocks)]
 	anatolian["blocks"] = {ANATOLIAN_BLOCK: {RARE_KEY: "", **anatolian_block(named)}}
 	anatolian["block-aliases"] = dict(ANATOLIAN_ALIASES)
+	cuneiform = files[block_file(chr(CUNEIFORM_START), blocks)]
+	cuneiform["blocks"] = {CUNEIFORM_BLOCK: {RARE_KEY: "", ONE_WAY_KEY: "", **cuneiform_block()}}
+	cuneiform["block-aliases"] = dict(CUNEIFORM_ALIASES)
 	return files
 
 
@@ -663,7 +699,7 @@ def reverse_entries(sections):
 	block_forms = {}
 	for block, table in ((b, t) for b, t in sections["blocks"].items() if ONE_WAY_KEY not in t):
 		for operand, text in table.items():
-			if not is_control_key(operand) and len(text) == 1 and text not in chosen:
+			if not is_control_key(operand) and is_one_glyph(text) and text not in chosen:
 				block_forms.setdefault(text, (block, operand))
 				chosen.setdefault(text, "")
 	for name, text in sections.get("names", {}).items():
@@ -671,6 +707,11 @@ def reverse_entries(sections):
 	for text, (block, operand) in block_forms.items():
 		chosen[text] = f"<:{block} {ascii_operand(operand, chosen)}>"
 	return {text: form for text, form in chosen.items() if not text.isascii()}
+
+
+def is_one_glyph(text):
+	"""One character or an emoji sequence joined by zero width joiners: 👩‍🦰"""
+	return len(text) == 1 or ZERO_WIDTH_JOINER in text
 
 
 def ascii_operand(operand, chosen):

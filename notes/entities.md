@@ -35,4 +35,12 @@
   honoured by both builders (Python and src/entities.rs). `*rare` keeps its 1,587 readings out of the web Bloom filter.
   `eg` shadows the HTML entity `<:eg>` ⪚ (blocks win); the release binary at /opt/cargo/release must be rebuilt for
   js differential tests after any index change.
+- Cuneiform (2026-10-02): `cuneiform` block (aliases `cu` `sumerian` `akkadian`, data/entities/unicode/cuneiform.wasp)
+  from `data/sources/cuneiform_readings.tsv`, made by `probes/cuneiform_list_import.py` from uruk_egypt's
+  dicts/cuneiform.list: comments, commented and TEMPORARY rows and unidentified signs (¿, ?, ≈, ·) dropped, normalized
+  sh/sz/c → š, j/ng/g̃ → ĝ, Ḫ → H, ₂ → 2. Readings as written first (A2, šà, ša3 for šà), then the typed forms of all rows:
+  lower case (a2), ASCII (sha3, digir and dingir for diĝir); first row wins. `*one-way` (signs are polyvalent: 𒀭 keeps
+  spelling back as <:cuneiform-sign-an>), `*rare`. ~3700 operands, index 5.2 → 6.1 MB.
+- Both builders must give identical bytes: the Rust hair-style commit (5b42f7a, ZWJ sequences spell back as block forms)
+  had not been ported to Python; `is_one_glyph` now is.
 - Seeding drift: styles.wasp has hand-added `*open/*close egyptian` keys that `seed` does not produce.
