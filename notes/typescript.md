@@ -31,3 +31,10 @@ Direct port of the Rust crate (src/lib.rs, meta.rs, index.rs) to TypeScript; npm
 
 The reference changes while porting (stacked styles bb55df0, spaces in blocks 822678c then replaced by 48026c8: full blocks keep their whitespace verbatim, inline tags drop it; then refined: a block tag eats one whitespace on its inner side):
 re-read `git log -- src/lib.rs` before declaring parity; the differential test catches drift.
+
+## Inline tags warn, `<:…/>`, `explicit()` (Rust 8ed80c0)
+
+- `Uniscript.explicit(source)` / exported `explicit`; `toUniscript` = `explicit(#spelledText(…))`.
+- The opener warning goes only when `#tag` succeeded and added no warning (counted via `#warnings.length` before/after);
+  "longer than 1 byte" is `utf8Length(content) > 1`, the next character is a whole code point (`characterAt`).
+- `explicit` skips the header by its UTF-16 `headerOf(…).end` (Rust uses byte length — same cut).

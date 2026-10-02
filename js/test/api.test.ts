@@ -52,12 +52,12 @@ test("the core converter reads an index loaded from a path", async () => {
 	const converter = new Uniscript(await EntityIndex.load(new URL("../../data/entities.idx", import.meta.url).pathname));
 	assert.equal(converter.convert("<:alpha> <:fracture A>").text, "α 𝔄");
 	assert.equal(converter.index.get(Table.names, "alpha"), "α");
-	assert.equal(standard.toUniscript("α"), "<:alpha>");
+	assert.equal(standard.toUniscript("α"), "\\:alpha");
 });
 
 test("warning offsets are UTF-8 bytes", () => {
 	assert.deepEqual(convert("αβ <:fracture 7>").warnings, [{ message: "no fracture form of 7", at: 5 }]);
-	assert.deepEqual(convert("<:alpha> 𓀀 <:greek> c <:/greek>").warnings, [{ message: "no greek form of c", at: 23 }]);
+	assert.deepEqual(convert("<:alpha/> 𓀀 <:greek> c <:/greek>").warnings, [{ message: "no greek form of c", at: 24 }]);
 });
 
 test("the version and escaping", () => {

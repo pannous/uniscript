@@ -149,6 +149,14 @@ const characterCount = (text: string) => [...text].length;
 /** A tag's content is a closing tag: `<:>` or `<:/greek>` */
 const isClosing = (content: string) => content === "" || content.startsWith(CLOSING_SLASH);
 
+const selfClosedForm = (content: string) => `${TAG_OPEN}${MARKER_COLON}${content}${CLOSING_SLASH}${TAG_CLOSE}`;
+
+/** `a, b or c` */
+const either = (forms: string[]) => (forms.length > 1 ? `${forms.slice(0, -1).join(", ")} or ${forms.at(-1)}` : forms[0] ?? "");
+
+/** The code point at `position`, if any */
+const characterAt = (text: string, position: number) => (position < text.length ? String.fromCodePoint(text.codePointAt(position)!) : undefined);
+
 /** Characters of the one whitespace a block opener eats after `at` */
 const openingPaddingLength = (text: string, at: number) => BLOCK_PADDING.find((padding) => text.startsWith(padding, at))?.length ?? 0;
 
@@ -206,6 +214,59 @@ export class Uniscript {
 
 	#isBlock(name: string): boolean {
 		return this.#name(`${name} `) !== undefined;
+	}
+
+	/** `<:font han-japanese>`, `<:font x lang ja>`: meta keys with values only, opening spans */
+	#opensMeta(content: string): boolean {
+		const parts = content.split(/\s+/).filter((word) => word.length > 0);
+		return parts.length > 0 && parts.length % 2 === 0 && parts.every((word, at) => at % 2 === 1 || this.metaTemplate(word) !== undefined);
+	}
+
+	/** An inline tag's content (`<:alpha>`, `<:greek athos>`) looks like it opens something, as `<:greek>` does; not an
+	 * escape (`<:<>`), closer, self-closed tag, block or meta span opener */
+	#readsAsOpener(content: string): boolean {
+		return utf8Length(content) > 1 && !isClosing(content) && !content.endsWith(CLOSING_SLASH) && !this.#isBlock(content) && !this.#opensMeta(content);
+	}
+
+	/** The explicit forms of an inline tag followed by `next`, which convert alike: `\:greek-athos`,
+	 * `<:greek> athos <:/greek>` and `<:greek athos/>` */
+	#explicitForms(content: string, next: string | undefined): string[] {
+		return [this.#shortForm(content, next), this.#blockForm(content), selfClosedForm(content)].filter((form) => form !== undefined);
+	}
+
+	/** `\:greek-athos` of `greek athos` followed by `next`: names only, no name character may follow, hyphens only
+	 * without spaces (\: reads them as spaces: `<:red-haired woman>` is no `\:red-haired-woman`), and no meta key, which
+	 * reads better as a tag (`<:color red A/>`) */
+	#shortForm(content: string, next: string | undefined): string | undefined {
+		const namesOnly = [...content].every((character) => isNameCharacter(character) || character === " ");
+		const key = splitOnce(content, " ")?.[0];
+		const startsMeta = key !== undefined && this.metaTemplate(key) !== undefined;
+		const fits = namesOnly && !(content.includes(" ") && content.includes("-")) && !startsMeta && !(next !== undefined && isNameCharacter(next));
+		return fits ? `${SHORT_OPEN}${MARKER_COLON}${content.replaceAll(" ", "-")}` : undefined;
+	}
+
+	/** `<:greek> athos <:/greek>` of `greek athos`: a block and one operand (a block keeps the spaces between operands) */
+	#blockForm(content: string): string | undefined {
+		const split = splitOnce(content, " ");
+		if (!split) return undefined;
+		const [block, operand] = split;
+		return this.#isBlock(block) && !operand.includes(" ") && !this.#isBlock(operand) ? `<:${block}> ${operand} <:/${block}>` : undefined;
+	}
+
+	/** The source with its inline tags in their explicit form: `\:alpha` where it fits, else `<:color #ff8800 A/>` */
+	explicit(source: string): string {
+		const start = headerOf(source)?.end ?? 0;
+		let out = source.slice(0, start);
+		let position = start;
+		for (let open = source.indexOf("<:", position); open >= 0; open = source.indexOf("<:", position)) {
+			const close = source.indexOf(TAG_CLOSE, open + 2);
+			if (close < 0) break;
+			const content = source.slice(open + 2, close);
+			out += source.slice(position, open);
+			out += this.#readsAsOpener(content) ? this.#shortForm(content, characterAt(source, close + 1)) ?? selfClosedForm(content) : source.slice(open, close + 1);
+			position = close + 1;
+		}
+		return out + source.slice(position);
 	}
 
 	/** A font style of the entities: `cuneiform-hittite`, `han-japanese` */
@@ -614,8 +675,16 @@ export class Uniscript {
 				block = content;
 				after += openingPaddingLength(source, after);
 			} else {
+				const selfClosed = content.endsWith(CLOSING_SLASH) && content.length > 1 ? content.slice(0, -1) : undefined;
+				const earlierWarnings = this.#warnings.length;
 				try {
-					out += this.#tag(content, bytes);
+					const converted = this.#tag(selfClosed ?? content, bytes);
+					// one warning per tag: <:fracture 7> already says there is no fracture 7
+					if (selfClosed === undefined && this.#warnings.length === earlierWarnings && this.#readsAsOpener(content)) {
+						const forms = this.#explicitForms(content, characterAt(source, close + 1));
+						this.#warn(`<:${content}> looks like an opening tag: write ${either(forms)}`, bytes);
+					}
+					out += converted;
 				} catch (error) {
 					if (!(error instanceof UniscriptError)) throw error;
 					out += this.#kept(error, source.slice(position, close + 1), bytes, mode);
@@ -667,8 +736,13 @@ export class Uniscript {
 		return undefined;
 	}
 
-	/** Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A>` */
+	/** Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A/>`, the
+	 * other tags their explicit form (`\:alpha`, `<:alpha/>x`) */
 	toUniscript(text: string): string {
+		return this.explicit(this.#spelledText(text));
+	}
+
+	#spelledText(text: string): string {
 		let out = "";
 		let position = 0;
 		while (position < text.length) {

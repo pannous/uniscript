@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { Meta, UniscriptError, convert, font, header, html, metaRuns, toUniscript, toUnicode } from "../src/index.ts";
+import { Meta, UniscriptError, convert, explicit, font, header, html, metaRuns, toUniscript, toUnicode } from "../src/index.ts";
 import type { Warning } from "../src/index.ts";
 
 const EXPANSION = /\{(U\+([0-9A-Fa-f]+)|open (\S+) (\S+)|close (\S+)|attached (\S+) (\S+))\}/g;
@@ -59,6 +59,10 @@ test("roundTrips", () => {
 
 test("toUniscript", () => {
 	for (const [unicode, uniscript] of section("toUniscript")) assert.equal(toUniscript(unicode), uniscript);
+});
+
+test("explicit", () => {
+	for (const [source, rewritten] of section("explicit")) assert.equal(explicit(source), rewritten, source);
 });
 
 test("unicodeRoundTrips", () => {

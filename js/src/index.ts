@@ -23,6 +23,7 @@ export const convert = (source: string, mode: WarningMode = "warn") => standard.
 
 /** Unicode → uniscript with the built-in entities; `toUnicode` gives the text back */
 export const toUniscript = (text: string) => standard.toUniscript(text);
+export const explicit = (source: string) => standard.explicit(source);
 export const font = (name: string) => standard.font(name);
 export const metaTemplate = (key: string) => standard.metaTemplate(key);
 export const metaRuns = (tagged: string) => standard.metaRuns(tagged);
