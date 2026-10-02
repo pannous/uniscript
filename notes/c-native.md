@@ -14,11 +14,11 @@
   lexicographic order of the sorted parts, which `next_permutation` reproduces; `sort_by_key` is stable (insertion sorts).
 - A macro that evaluates its argument twice (`ADVANCE(enclosing[--depth]->end)`) popped two runs; UBSan caught it as a
   pointer overflow.
-- Tests: `make -C c/native test` runs the shared cases (C 353, C++ 303) plain and under
+- Tests: `make -C c/native test` runs the shared cases (C 641, C++ 530 checks) plain and under
   `-fsanitize=address,undefined`, plus `tests/test_native.c` (every index record is sorted, has the right hash and
   resolves), then `leaks --atExit` on macOS (ASan's leak check does not run on macOS arm64).
   `make -C c/native differential` compares the native CLI with the Rust CLI in every mode (warn, strict, lenient, html,
-  reverse, reverse of the converted) on the repo's markdown and a random corpus (`tests/fuzz_corpus.py`); line by line
+  reverse, reverse of the converted, explicit) on the repo's markdown and a random corpus (`tests/fuzz_corpus.py`); line by line
   for the first 400 corpus lines, because an error stops a whole file. Run it after reference changes: it caught the
   spaces rule of 822678c before the shared cases had it (since replaced by 48026c8: blocks keep text as written, inline tags drop spaces; then refined: a block tag eats one whitespace on its inner side).
 - Invalid UTF-8 in UNISCRIPT_LENIENT (agreed with c/ffi, cases in c/tests/cases.h): `repaired()` replaces each maximal
@@ -28,3 +28,7 @@
   CLI rejects invalid stdin, so differential.sh cannot cover this; tests/test_native.c does.
 - Header versions: every `https://uniscript.org/v<digits>` (and an empty version) is read without warning, as Rust `reads_version`; anything else warns "unsupported uniscript version …".
 - Color fallback (707e858): an effect without a suffix control for a character (red on 𓀀) becomes the attached meta of its `block *meta` entry (`color red`), after all suffix controls of the character, with the warning "red on 𓀀 kept as color meta".
+- Inline tags (8ed80c0): `inline_tag` converts `<:alpha/>` like `<:alpha>`, and warns "looks like an opening tag" only
+  when `tag` added no warning (one warning per tag) and `reads_as_opener`; `explicit_of` (`uniscript_explicit`, CLI
+  `--explicit`) rewrites such tags, and `uniscript_to_uniscript` ends with it. The forms only need the next byte after
+  `>`: a non-ASCII character is no name character, as in Rust.

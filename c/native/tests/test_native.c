@@ -42,7 +42,7 @@ static void index_is_sorted_and_every_key_resolves(void) {
 /* Many conversions in a row reuse no state: the same input gives the same output */
 static void conversions_are_repeatable(void) {
 	for (int i = 0; i < 3; i++) {
-		uniscript_result result = uniscript_convert("<:mirror red A> <:greek> athos <:/greek> <:nosuch>", UNISCRIPT_LENIENT);
+		uniscript_result result = uniscript_convert("\\:mirror-red-A <:greek> athos <:/greek> <:nosuch>", UNISCRIPT_LENIENT);
 		check(result.text && strcmp(result.text, "A\xF3\xA0\x81\xB2\xF3\xA0\x81\x8D \xCE\xB1\xCE\xB8\xCE\xBF\xCF\x83 <:nosuch>") == 0, "repeatable lenient conversion");
 		check(result.warning_count == 1, "one warning");
 		uniscript_result_free(&result);
@@ -63,8 +63,8 @@ static void lenient_input(const char *source, const char *text, size_t warning_c
 
 /* LENIENT repairs invalid UTF-8 like Rust's from_utf8_lossy: each maximal invalid subpart becomes one U+FFFD */
 static void lenient_mode_repairs_invalid_input(void) {
-	lenient_input("a\xFF" "b<:alpha>", "a\xEF\xBF\xBD" "b\xCE\xB1", 1, 1, "stray byte");
-	lenient_input("\xE2\x82<:beta>", "\xEF\xBF\xBD\xCE\xB2", 1, 0, "truncated sequence is one subpart");
+	lenient_input("a\xFF" "b\\:alpha", "a\xEF\xBF\xBD" "b\xCE\xB1", 1, 1, "stray byte");
+	lenient_input("\xE2\x82\\:beta", "\xEF\xBF\xBD\xCE\xB2", 1, 0, "truncated sequence is one subpart");
 	lenient_input("\xC0\x80", "\xEF\xBF\xBD\xEF\xBF\xBD", 2, 0, "overlong: two subparts");
 	lenient_input("\xED\xA0\x80", "\xEF\xBF\xBD\xEF\xBF\xBD\xEF\xBF\xBD", 3, 0, "surrogate: three subparts");
 	lenient_input("x\xF4\x90", "x\xEF\xBF\xBD\xEF\xBF\xBD", 2, 1, "above U+10FFFF");

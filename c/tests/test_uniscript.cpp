@@ -56,6 +56,10 @@ void test_spells(const conversion_case &c) {
 	check_equal("to_uniscript", c.unicode, uniscript::to_uniscript(expanded(c.unicode)), std::string(c.uniscript));
 }
 
+void test_explicit(const explicit_case &c) {
+	check_equal("explicit", c.source, uniscript::explicit_tags(c.source), std::string(c.rewritten));
+}
+
 void test_restores(const char *text) {
 	std::string unicode = expanded(text);
 	check_equal("round trip", text, uniscript::to_unicode(uniscript::to_uniscript(unicode)), unicode);
@@ -161,6 +165,7 @@ int main() {
 	each(round_trips, test_spells);
 	each(converts, test_converts);
 	each(spells_back, test_spells);
+	each(explicits, test_explicit);
 	each(restores, test_restores);
 	each(warns, test_warns);
 	each(errors, test_fails);

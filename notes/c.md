@@ -15,3 +15,8 @@
   `-lpthread -ldl`.
 - Tests are clean under `leaks --atExit` and `-fsanitize=address,undefined`.
 - `-Wextra` complains about the tables' omitted trailing fields: cases.h silences it with a pragma.
+- Inline tags (8ed80c0): cases.h spells every quiet inline tag explicitly (`\\:alpha`, `<:color red A/>`), rewritten
+  per tag with the Rust CLI: a tag was replaced by `uniscript --explicit` only where converting the tag plus its next
+  character gave exactly the "looks like an opening tag" warning (a blanket `--explicit` also rewrites `<:nosuch>` and
+  doubles C escapes like `\\n`); the shared-cases ones as in js/test/cases.json (`/>` for stacked styles and code points).
+  `explicits` checks `uniscript_explicit` / `uniscript::explicit_tags` (`explicit` is a C++ keyword).

@@ -57,86 +57,98 @@ typedef struct { const char *name, *lang, *first_family, *first_feature; } font_
 
 /* uniscript → Unicode without warnings, and back to the same uniscript */
 static const conversion_case round_trips[] = {
-	{"<:bold Alpha>", "𝚨"}, {"<:bold alpha>", "𝛂"}, {"<:bold-italic Alpha>", "𝜜"}, {"<:bold-italic alpha>", "𝜶"},
-	{"<:sans-bold Alpha>", "𝝖"}, {"<:sans-bold alpha>", "𝝰"}, {"<:sans-bold-italic Alpha>", "𝞐"},
-	{"<:sans-bold-italic alpha>", "𝞪"}, {"<:double gamma>", "ℽ"},
-	{"<:bold-script B>", "𝓑"}, {"<:bold A>", "𝐀"}, {"<:upper minus>", "⁻"},
-	{"x <:font cuneiform-hittite><:cuneiform-sign-an><:/font> y", "x {<font cuneiform-hittite}𒀭{</font} y"},
+	{"\\:bold-Alpha", "𝚨"}, {"\\:bold-alpha", "𝛂"}, {"<:bold-italic Alpha/>", "𝜜"}, {"<:bold-italic alpha/>", "𝜶"},
+	{"<:sans-bold Alpha/>", "𝝖"}, {"<:sans-bold alpha/>", "𝝰"}, {"<:sans-bold-italic Alpha/>", "𝞐"},
+	{"<:sans-bold-italic alpha/>", "𝞪"}, {"\\:double-gamma", "ℽ"},
+	{"<:bold-script B/>", "𝓑"}, {"\\:bold-A", "𝐀"}, {"\\:upper-minus", "⁻"},
+	{"x <:font cuneiform-hittite>\\:cuneiform-sign-an<:/font> y", "x {<font cuneiform-hittite}𒀭{</font} y"},
 	{"<:color #ff8800>ab<:/color>", "{<color #ff8800}ab{</color}"},
-	{"<:color #ff8800 A>", "A{:color #ff8800}"},
-	{"<:color #ff8800 mirror red A>", "A\U000E0072\U000E004D{:color #ff8800}"},
-	{"<:color #ff8800 angle 90 alpha>", "α{:color #ff8800}{:angle 90}"},
-	{"<:color red B>", "B{:color red}"}, /* the r of "color red" is no red suffix control */
-	{"<:red-haired woman>", "👩\u200D🦰"}, {"<:dark-skinned woman>", "👩🏿"},
+	{"<:color #ff8800 A/>", "A{:color #ff8800}"},
+	{"<:color #ff8800 mirror red A/>", "A\U000E0072\U000E004D{:color #ff8800}"},
+	{"<:color #ff8800 angle 90 alpha/>", "α{:color #ff8800}{:angle 90}"},
+	{"<:color red B/>", "B{:color red}"}, /* the r of "color red" is no red suffix control */
+	{"<:red-haired woman/>", "👩\u200D🦰"}, {"<:dark-skinned woman/>", "👩🏿"},
 };
 
 /* uniscript → Unicode without warnings */
 static const conversion_case converts[] = {
-	{"<:bold ϑ>", "𝛝"}, {"<:italic ω>", "𝜔"},
-	{"<:bold italic alpha>", "𝜶"}, {"<:italic bold A>", "𝑨"}, {"<:sans bold italic alpha>", "𝞪"}, /* stacked styles */
-	{"<:bold sans italic Alpha>", "𝞐"}, {"<:bold fracture A>", "𝕬"}, {"<:fraktur bold A>", "𝕬"},
-	{"<:bold script B>", "𝓑"}, {"<:mirror bold italic A>", "𝑨\U000E004D"},
-	{"<:greek bold a>", "𝛂"}, {"<:bold greek a>", "𝛂"}, {"<:greek bold alpha>", "𝛂"},
-	{"<:alpha>", "α"}, {"\\:infinity", "∞"}, {"<:greek small letter alpha>", "α"}, {"<:dopf>", "𝕕"},
-	{"<:LATIN CAPITAL LETTER ETH>", "Ð"}, {"<:GREEK SMALL LETTER ALPHA>", "α"},
-	{"<:alpha> > <:beta>", "α > β"}, {"<:forall> x <:in> <:double R>", "∀ x ∈ ℝ"},
-	{"<:fracture A>", "𝔄"}, {"<:fracture A b c >", "𝔄𝔟𝔠"}, {"<:fracture> A b c <:>", "𝔄 𝔟 𝔠"},
-	{"<:greek> a b g d <:/greek>", "α β γ δ"}, {"<:double d>", "𝕕"}, {"<:double-d>", "𝕕"}, {"x<:upper a>", "xᵃ"},
-	{"<:ligature ae>", "æ"}, {"<:reverseInPlace e>", "ɘ"}, {"<:iconic ⚠>", "⚠\uFE0F"},
-	{"<:greek> athos <:/greek>", "αθοσ"}, {"<:greek th ch ps>", "θχψ"}, {"<:greek eta Omega lambda>", "ηΩλ"},
-	{"<:greek a>", "α"},
-	{"<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμοσ"}, {"<:greek a kosmos>", "ακοσμοσ"}, /* spaces next to a word stay */
-	{"<:greek phi chi>", "φχ"}, {"<:greek>\nkosmos\t<:/greek>", "κοσμοσ"}, {"<:greek>  athos  <:/greek>", " αθοσ "},
+	{"<:bold ϑ/>", "𝛝"}, {"<:italic ω/>", "𝜔"},
+	{"<:bold italic alpha/>", "𝜶"}, {"<:italic bold A/>", "𝑨"}, {"<:sans bold italic alpha/>", "𝞪"}, /* stacked styles */
+	{"<:bold sans italic Alpha/>", "𝞐"}, {"<:bold fracture A/>", "𝕬"}, {"<:fraktur bold A/>", "𝕬"},
+	{"<:bold script B/>", "𝓑"}, {"<:mirror bold italic A/>", "𝑨\U000E004D"},
+	{"<:greek bold a/>", "𝛂"}, {"<:bold greek a/>", "𝛂"}, {"<:greek bold alpha/>", "𝛂"},
+	{"\\:alpha", "α"}, {"\\:infinity", "∞"}, {"\\:greek-small-letter-alpha", "α"}, {"\\:dopf", "𝕕"},
+	{"\\:LATIN-CAPITAL-LETTER-ETH", "Ð"}, {"\\:GREEK-SMALL-LETTER-ALPHA", "α"},
+	{"\\:alpha > \\:beta", "α > β"}, {"\\:forall x \\:in \\:double-R", "∀ x ∈ ℝ"},
+	{"\\:fracture-A", "𝔄"}, {"\\:fracture-A-b-c-", "𝔄𝔟𝔠"}, {"<:fracture> A b c <:>", "𝔄 𝔟 𝔠"},
+	{"<:greek> a b g d <:/greek>", "α β γ δ"}, {"\\:double-d", "𝕕"}, {"\\:double-d", "𝕕"}, {"x\\:upper-a", "xᵃ"},
+	{"\\:ligature-ae", "æ"}, {"\\:reverseInPlace-e", "ɘ"}, {"<:iconic ⚠/>", "⚠\uFE0F"},
+	{"<:greek> athos <:/greek>", "αθοσ"}, {"\\:greek-th-ch-ps", "θχψ"}, {"\\:greek-eta-Omega-lambda", "ηΩλ"},
+	{"\\:greek-a", "α"},
+	{"<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμοσ"}, {"\\:greek-a-kosmos", "ακοσμοσ"}, /* spaces next to a word stay */
+	{"\\:greek-phi-chi", "φχ"}, {"<:greek>\nkosmos\t<:/greek>", "κοσμοσ"}, {"<:greek>  athos  <:/greek>", " αθοσ "},
 	{"<:greek>\r\nkosmos\r\n<:/greek>", "κοσμοσ"}, {"<:greek>\nfilosofia\nkosmos\n<:/greek>", "φιλοσοφια\nκοσμοσ"},
-	{"<:red circle>", "🔴"}, {"<:brown heart>", "🤎"}, {"<:red A>", "A\U000E0072"}, {"<:mirror e>", "e\U000E004D"},
-	{"<:mirror 𓀀>", "𓀀\U00013440"},
-	{"<:mirror red A>", "A\U000E0072\U000E004D"}, {"<:red mirror A>", "A\U000E004D\U000E0072"},
-	{"<:reverse red R>", "R\U000E0072\U000E004D"},
-	{"<:mirror red A b>", "A\U000E0072\U000E004Db\U000E0072\U000E004D"}, {"<:mirror red circle>", "🔴\U000E004D"},
-	{"<:above 𓀀 𓁐>", "𓀀\U00013430𓁐"}, {"<:beside 犭 句>", "⿰犭句"},
-	{"<:egyptian A1>", "𓀀"}, {"<:gardiner A1>", "𓀀"}, {"<:hieroglyph A1>", "𓀀"}, {"<:egyptian seated man>", "𓀀"},
-	{"<:egyptian man sitting>", "𓀀"}, {"<:egyptian man-sitting>", "𓀀"},
+	{"\\:red-circle", "🔴"}, {"\\:brown-heart", "🤎"}, {"\\:red-A", "A\U000E0072"}, {"\\:mirror-e", "e\U000E004D"},
+	{"<:mirror 𓀀/>", "𓀀\U00013440"},
+	{"\\:mirror-red-A", "A\U000E0072\U000E004D"}, {"\\:red-mirror-A", "A\U000E004D\U000E0072"},
+	{"\\:reverse-red-R", "R\U000E0072\U000E004D"},
+	{"\\:mirror-red-A-b", "A\U000E0072\U000E004Db\U000E0072\U000E004D"}, {"\\:mirror-red-circle", "🔴\U000E004D"},
+	{"<:above 𓀀 𓁐/>", "𓀀\U00013430𓁐"}, {"<:beside 犭 句/>", "⿰犭句"},
+	{"\\:egyptian-A1", "𓀀"}, {"\\:gardiner-A1", "𓀀"}, {"\\:hieroglyph-A1", "𓀀"}, {"\\:egyptian-seated-man", "𓀀"},
+	{"\\:egyptian-man-sitting", "𓀀"}, {"<:egyptian man-sitting/>", "𓀀"},
 	{"\\:egyptian-a2", "𓀁"}, {"\\:egyptian-seated-man", "𓀀"}, {"\\:fracture-A", "𝔄"},
-	{"\\:mirror-red-A", "A\U000E0072\U000E004D"}, {"<:anatolian caput>", "\U00014409"},
-	{"<:egyptian> A1 Aa1 <:/egyptian>", "𓀀 𓐍"}, {"<:mirror egyptian A1>", "𓀀\U00013440"},
-	{"<:egyptian red crown>", "𓋔"}, {"<:egyptian A1 red crown>", "𓀀𓋔"}, {"<:egyptian red crown A1>", "𓋔𓀀"},
-	{"<:egyptian above A1 A2>", "𓀀\U00013430𓀁"}, {"<:above egyptian A1 A2>", "𓀀\U00013430𓀁"},
-	{"<:egyptian beside sun red crown>", "𓇳\U00013431𓋔"}, {"<:egyptian above 𓀀 A2>", "𓀀\U00013430𓀁"},
-	{"<:above 宀 beside 电 电>", "⿱宀⿰电电"}, {"<:beside 电 above 电 电>", "⿰电⿱电电"},
-	{"<:above 宀 beside 女 above 子 子>", "⿱宀⿰女⿱子子"},
-	{"<:egyptian above A1 beside A2 A3>", "𓀀\U00013430\U00013437𓀁\U00013431𓀂\U00013438"},
-	{"<:anatolian 1>", "\U00014400"}, {"<:luwian 10A>", "\U0001440A"}, {"<:hieroglyph 1>", "\U00014400"},
-	{"<:anatolian CAPUT>", "\U00014409"}, {"<:anatolian ta2>", "\U0001441E"}, {"<:hieroglyph SCRIBA>", "\U0001456D"},
-	{"<:gr a>", "α"}, {"<:eg A1>", "𓀀"}, {"<:cn kou>", "口"}, {"<:cn kou4>", "扣"},
+	{"\\:mirror-red-A", "A\U000E0072\U000E004D"}, {"\\:anatolian-caput", "\U00014409"},
+	{"<:egyptian> A1 Aa1 <:/egyptian>", "𓀀 𓐍"}, {"\\:mirror-egyptian-A1", "𓀀\U00013440"},
+	{"\\:egyptian-red-crown", "𓋔"}, {"\\:egyptian-A1-red-crown", "𓀀𓋔"}, {"\\:egyptian-red-crown-A1", "𓋔𓀀"},
+	{"\\:egyptian-above-A1-A2", "𓀀\U00013430𓀁"}, {"\\:above-egyptian-A1-A2", "𓀀\U00013430𓀁"},
+	{"\\:egyptian-beside-sun-red-crown", "𓇳\U00013431𓋔"}, {"<:egyptian above 𓀀 A2/>", "𓀀\U00013430𓀁"},
+	{"<:above 宀 beside 电 电/>", "⿱宀⿰电电"}, {"<:beside 电 above 电 电/>", "⿰电⿱电电"},
+	{"<:above 宀 beside 女 above 子 子/>", "⿱宀⿰女⿱子子"},
+	{"\\:egyptian-above-A1-beside-A2-A3", "𓀀\U00013430\U00013437𓀁\U00013431𓀂\U00013438"},
+	{"\\:anatolian-1", "\U00014400"}, {"\\:luwian-10A", "\U0001440A"}, {"\\:hieroglyph-1", "\U00014400"},
+	{"\\:anatolian-CAPUT", "\U00014409"}, {"\\:anatolian-ta2", "\U0001441E"}, {"\\:hieroglyph-SCRIBA", "\U0001456D"},
+	{"\\:gr-a", "α"}, {"\\:eg-A1", "𓀀"}, {"\\:cn-kou", "口"}, {"\\:cn-kou4", "扣"},
 	{"<:chinese> wo3 ai4 ni3 <:/chinese>", "我 爱 你"},
-	{"<:cn yi2>", "疑"}, {"<:cn yi2.2>", "移"}, {"<:cn biang2.2>", "𰻞"},
-	{"<:cuneiform a2>", "𒀉"}, {"<:cu sha3>", "𒊮"}, {"<:sumerian dingir>", "𒀭"},
-	{"<:<> <::> <<::>", "< : <:"}, {"<:less>:", "<:"},
-	{HEADER "\n<:alpha>\n", "α\n"}, {HEADER " <:alpha>", " α"}, {"<:uniscript><:alpha>", "α"},
+	{"\\:cn-yi2", "疑"}, {"<:cn yi2.2/>", "移"}, {"<:cn biang2.2/>", "𰻞"},
+	{"\\:cuneiform-a2", "𒀉"}, {"\\:cu-sha3", "𒊮"}, {"\\:sumerian-dingir", "𒀭"},
+	{"<:<> <::> <<::>", "< : <:"}, {"\\:less:", "<:"},
+	{HEADER "\n\\:alpha\n", "α\n"}, {HEADER " \\:alpha", " α"}, {"<:uniscript>\\:alpha", "α"},
 	{"<<::>uniscript version=\"https://uniscript.org/v1\">", HEADER}, /* the escaped header is text */
 	{"<:lang ja><:font han-jis78>直", "{<lang ja}{<font han-jis78}直"},
-	{"<:color #ff8800 A b>", "A{:color #ff8800}b{:color #ff8800}"},
-	{"<:color #ff8800 e\u0301>", "e\u0301{:color #ff8800}"},
-	{"<:angle>", "∠"}, {"<:angle with s inside>", "⦞"}, {"<:angle 90 A>", "A{:angle 90}"}, /* entity names win */
+	{"<:color #ff8800 A b/>", "A{:color #ff8800}b{:color #ff8800}"},
+	{"<:color #ff8800 e\u0301/>", "e\u0301{:color #ff8800}"},
+	{"\\:angle", "∠"}, {"<:angle with s inside/>", "⦞"}, {"<:angle 90 A/>", "A{:angle 90}"}, /* entity names win */
 	{SCOTLAND, SCOTLAND},
 	/* code points: prefixed U+ U 0x (1–8 digits), bare (4–8), \U without the colon; names win */
 	{"\\:1F60D", "😍"}, {"\\:U1F60D", "😍"}, {"\\:0x1F60D", "😍"}, {"\\U1F60D", "😍"}, {"\\:U+1F60D", "😍"},
-	{"\\:u+1f60d", "😍"}, {"<:U+1F60D>", "😍"}, {"<:0x1F60D>", "😍"}, {"<:1F60D>", "😍"}, {"<:u1f60d>", "😍"},
-	{"\\U0001F60D", "😍"}, {"\\:U+41 \\:0x42 <:u+43>", "A B C"}, {"\\:1F60D. <:1F60D>x (\\U1F60D)", "😍. 😍x (😍)"},
+	{"\\:u+1f60d", "😍"}, {"<:U+1F60D/>", "😍"}, {"<:0x1F60D/>", "😍"}, {"<:1F60D/>", "😍"}, {"<:u1f60d/>", "😍"},
+	{"\\U0001F60D", "😍"}, {"\\:U+41 \\:0x42 <:u+43/>", "A B C"}, {"\\:1F60D. <:1F60D/>x (\\U1F60D)", "😍. 😍x (😍)"},
 	{"<:greek> a \\:03B2 <:/greek>", "α β"}, {"\\:bed \\:BbbA \\:U+BBBA", "🛏 𝔸 뮺"},
 	{"C:\\Users\\U1F60Dx \\UABC \\u00e9", "C:\\Users\\U1F60Dx \\UABC \\u00e9"}, {"\\<:U>1F60D", "\\U1F60D"},
-	{"<:dark-skinned red-haired woman>", "👩🏿\u200D🦰"}, {"<:woman><:red-hair>", "👩\u200D🦰"},
+	{"<:dark-skinned red-haired woman/>", "👩🏿\u200D🦰"}, {"\\:woman\\:red-hair", "👩\u200D🦰"},
+	/* explicit forms of inline tags convert without the opener warning */
+	{"<:alpha/>", "α"}, {"<:greek athos/>", "αθοσ"}, {"\\:greek-athos", "αθοσ"}, {"<:fracture A b c/>", "𝔄𝔟𝔠"},
+	{"<:font han-japanese>直<:/font>", "{<font han-japanese}直{</font}"}, {HEADER "\nA", "A"},
 };
 
 /* Unicode → uniscript */
 static const conversion_case spells_back[] = {
-	{"<:mirror red A> <:mirror red circle>", "A\U000E0072\U000E004D 🔴\U000E004D"},
-	{"<:egyptian A1> <:egyptian Aa1>", "𓀀 𓐍"},
-	{"<:alpha> <:Omega> <:fracture A> <:infinity> <:double R>", "α Ω 𝔄 ∞ ℝ"},
-	{"<:red A> <:red circle> x<:upper a>", "A\U000E0072 🔴 xᵃ"},
+	{"\\:mirror-red-A \\:mirror-red-circle", "A\U000E0072\U000E004D 🔴\U000E004D"},
+	{"\\:egyptian-A1 \\:egyptian-Aa1", "𓀀 𓐍"},
+	{"\\:alpha \\:Omega \\:fracture-A \\:infinity \\:double-R", "α Ω 𝔄 ∞ ℝ"},
+	{"\\:red-A \\:red-circle x\\:upper-a", "A\U000E0072 🔴 xᵃ"},
 	{"a <<::> b \\<::> c", "a <: b \\: c"},
-	{"<:dark-skinned woman><:red-hair>", "👩🏿\u200D🦰"},
+	{"<:dark-skinned woman/>\\:red-hair", "👩🏿\u200D🦰"},
 	{"print(\"\\<:U>0001F60D\") \\Users", "print(\"\\U0001F60D\") \\Users"}, /* a literal \U code point is escaped */
+};
+
+/* uniscript_explicit: the inline tags, which warn, in their explicit form; everything else stays */
+typedef struct { const char *source, *rewritten; } explicit_case;
+static const explicit_case explicits[] = {
+	{HEADER "\n<:alpha> <:greek> athos <:/greek> <:alpha>x <:color #ff8800 A> <:font han-japanese>直<:/font> <<::>alpha>",
+	 HEADER "\n\\:alpha <:greek> athos <:/greek> <:alpha/>x <:color #ff8800 A/> <:font han-japanese>直<:/font> <<::>alpha>"},
+	{"<:greek athos> <:red-haired woman> <:color red A> <:fracture 7>", "\\:greek-athos <:red-haired woman/> <:color red A/> \\:fracture-7"},
+	{"\\:alpha <:alpha/> <:/greek> <:>", "\\:alpha <:alpha/> <:/greek> <:>"},
 };
 
 /* Unicode → uniscript → the same Unicode */
@@ -162,6 +174,14 @@ static const warning_case warns[] = {
 	{"\\:D800", "\\:D800", "invalid code point U+D800", 0},
 	{"x <:U+110000>", "x <:U+110000>", "invalid code point U+110000", 2},
 	{"\\UDFFF", "\\UDFFF", "invalid code point U+DFFF", 0},
+	/* an inline tag reads as an opening tag: it warns with its explicit forms */
+	{"<:alpha>", "α", "<:alpha> looks like an opening tag: write \\:alpha or <:alpha/>", 0},
+	{"<:greek athos>", "αθοσ", "<:greek athos> looks like an opening tag: write \\:greek-athos, <:greek> athos <:/greek> or <:greek athos/>", 0},
+	{"<:color #ff8800 A>", "A{:color #ff8800}", "<:color #ff8800 A> looks like an opening tag: write <:color #ff8800 A/>", 0},
+	{"<:alpha>x", "αx", "<:alpha> looks like an opening tag: write <:alpha/>", 0},
+	{"<:fracture A b c>", "𝔄𝔟𝔠", "<:fracture A b c> looks like an opening tag: write \\:fracture-A-b-c or <:fracture A b c/>", 0},
+	{"<:red-haired woman>", "👩\u200D🦰", "<:red-haired woman> looks like an opening tag: write <:red-haired> woman <:/red-haired> or <:red-haired woman/>", 0},
+	{"x <:U+03B1>", "x α", "<:U+03B1> looks like an opening tag: write <:U+03B1/>", 2},
 };
 
 /* errors in UNISCRIPT_WARN */
@@ -175,17 +195,17 @@ static const error_case errors[] = {
 };
 
 static const lenient_case lenients[] = {
-	{"<:alpha> <:nosuchthing> \\:nosuch <:beta>", "α <:nosuchthing> \\:nosuch β",
+	{"\\:alpha <:nosuchthing> \\:nosuch \\:beta", "α <:nosuchthing> \\:nosuch β",
 	 {"unknown uniscript entity: nosuchthing", "unknown uniscript entity: nosuch"}},
-	{"<:color red;x A> <:alpha>", "<:color red;x A> α", {"invalid meta value in <:color red;x A>"}},
-	{"<:alpha> a <: b", "α a <: b", {"unclosed <: at <: b"}},
+	{"<:color red;x A> \\:alpha", "<:color red;x A> α", {"invalid meta value in <:color red;x A>"}},
+	{"\\:alpha a <: b", "α a <: b", {"unclosed <: at <: b"}},
 	{"<:fracture 7>", "7", {"no fracture form of 7"}},
 	{"<:uniscript version=\"https://uniscript.org/v2\">A", "A", {NULL}}, /* backwards compatible: any uniscript.org/vN */
 };
 
 static const repair_case repairs[] = {
-	{"a\xFF" "b<:alpha>", "a\uFFFDbα", {{"invalid UTF-8 byte 0xFF replaced by U+FFFD", 1}}},
-	{"\xE2\x82<:beta>", "\uFFFDβ", {{"invalid UTF-8 byte 0xE2 replaced by U+FFFD", 0}}}, /* truncated: one U+FFFD */
+	{"a\xFF" "b\\:alpha", "a\uFFFDbα", {{"invalid UTF-8 byte 0xFF replaced by U+FFFD", 1}}},
+	{"\xE2\x82\\:beta", "\uFFFDβ", {{"invalid UTF-8 byte 0xE2 replaced by U+FFFD", 0}}}, /* truncated: one U+FFFD */
 	{"\xC0\x80", "\uFFFD\uFFFD", {{"invalid UTF-8 byte 0xC0 replaced by U+FFFD", 0}, {"invalid UTF-8 byte 0x80 replaced by U+FFFD", 1}}},
 	{"\xED\xA0\x80", "\uFFFD\uFFFD\uFFFD", /* a surrogate */
 	 {{"invalid UTF-8 byte 0xED replaced by U+FFFD", 0}, {"invalid UTF-8 byte 0xA0 replaced by U+FFFD", 1},

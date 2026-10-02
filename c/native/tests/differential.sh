@@ -30,13 +30,14 @@ for file in "$@"; do
 	compare forward "$file" --lenient
 	compare html "$file" --lenient --html
 	compare reverse "$file" -r
+	compare explicit "$file" --explicit
 	unicode=$("$reference" --lenient < "$file" 2>/dev/null)
 	printf '%s' "$unicode" > "$here/build/differential.txt"
 	compare "reverse of the converted" "$here/build/differential.txt" -r
 done
 # errors stop a conversion: line by line, so each line's error is compared
 head -n "${FUZZ_LINES:-400}" "$here/build/fuzz.txt" | while IFS= read -r line; do
-	for mode in "" --strict --lenient -r; do
+	for mode in "" --strict --lenient -r --explicit; do
 		expected=$("$reference" $mode "$line" 2>&1)
 		got=$("$native" $mode "$line" 2>&1)
 		[ "$expected" = "$got" ] || printf 'DIFFERS %s %s\n  expected %s\n  got      %s\n' "$mode" "$line" "$expected" "$got"

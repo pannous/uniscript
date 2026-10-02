@@ -1,5 +1,6 @@
 /* uniscript "<:alpha>"        → α
- * uniscript -r "α"            → <:alpha>        (--strict: unsupported characters are errors; --lenient: no errors)
+ * uniscript -r "α"            → \:alpha         (--strict: unsupported characters are errors; --lenient: no errors)
+ * uniscript --explicit "<:alpha> <:color red A>"   → \:alpha <:color red A/>   (inline tags, which warn, made explicit)
  * echo "<:alpha>" | uniscript → α (stdin when no text is given)
  * uniscript --html "<:font cuneiform-hittite>𒀭<:/font>"   meta information as <span lang style> instead of TAG sequences
  * The command line of the Rust crate (src/main.rs) over the native C library */
@@ -9,7 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static const char *const FLAGS[] = { "-r", "--reverse", "--strict", "--html", "--lenient" };
+static const char *const FLAGS[] = { "-r", "--reverse", "--strict", "--html", "--lenient", "--explicit" };
 #define FLAG_COUNT (sizeof FLAGS / sizeof *FLAGS)
 
 static int has_flag(int argc, char **argv, const char *wanted) {
@@ -64,12 +65,13 @@ static int print_line(char *text) {
 
 int main(int argc, char **argv) {
 	if (argc > 1 && (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help"))) {
-		puts("uniscript \"<:alpha>\" → α; -r reverse; --strict, --lenient, --html; stdin when no text is given");
+		puts("uniscript \"<:alpha>\" → α; -r reverse; --explicit; --strict, --lenient, --html; stdin when no text is given");
 		return 0;
 	}
 	char *text = input_text(argc, argv);
-	if (has_flag(argc, argv, "-r") || has_flag(argc, argv, "--reverse")) {
-		char *converted = uniscript_to_uniscript(text);
+	int reverse = has_flag(argc, argv, "-r") || has_flag(argc, argv, "--reverse");
+	if (reverse || has_flag(argc, argv, "--explicit")) {
+		char *converted = reverse ? uniscript_to_uniscript(text) : uniscript_explicit(text);
 		free(text);
 		if (!converted) return fputs("uniscript: invalid UTF-8\n", stderr), 1;
 		return print_line(converted);

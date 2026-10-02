@@ -55,6 +55,12 @@ static void test_spells(const conversion_case *c) {
 	free(unicode);
 }
 
+static void test_explicit(const explicit_case *c) {
+	char *rewritten = uniscript_explicit(c->source);
+	check_text("explicit", c->source, rewritten, c->rewritten);
+	uniscript_free(rewritten);
+}
+
 static void test_restores(const char *text) {
 	char *unicode = expand_tags(text), *spelled = uniscript_to_uniscript(unicode), *back = uniscript_to_unicode(spelled);
 	check_text("round trip", text, back, unicode);
@@ -192,6 +198,7 @@ static void edges(void) {
 	uniscript_result_free(&invalid);
 	uniscript_result_free(NULL);
 	uniscript_free(NULL);
+	check(uniscript_explicit(NULL) == NULL, "explicit(NULL)", "NULL", NULL, NULL);
 	check(uniscript_to_uniscript(NULL) == NULL, "to_uniscript(NULL)", "NULL", NULL, NULL);
 	check_text("version", "UNISCRIPT_VERSION", UNISCRIPT_VERSION, "https://uniscript.org/v1");
 }
@@ -203,6 +210,7 @@ int main(void) {
 	EACH(round_trips, test_spells);
 	EACH(converts, test_converts);
 	EACH(spells_back, test_spells);
+	EACH(explicits, test_explicit);
 	for (size_t i = 0; i < COUNT(restores); i++) test_restores(restores[i]);
 	EACH(warns, test_warns);
 	EACH(errors, test_fails);

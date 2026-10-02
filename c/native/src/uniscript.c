@@ -722,6 +722,98 @@ static size_t header_length(converter *self, const char *source) {
 	return length;
 }
 
+/* <:font han-japanese>, <:font x lang ja>: meta keys with values only, opening spans */
+static bool opens_meta(str content) {
+	str key, value;
+	size_t words = 0;
+	while (next_word(&content, &key)) {
+		if (!meta_template(key, NULL) || !next_word(&content, &value)) return false;
+		words += 2;
+	}
+	return words > 0;
+}
+
+/* An inline tag's content (<:alpha>, <:greek athos>) looks like it opens something, as <:greek> does; not an escape
+ * (<:<>), closer, self-closed tag, block or meta span opener */
+static bool reads_as_opener(str content) {
+	return content.n > 1 && content.p[0] != '/' && content.p[content.n - 1] != '/' && !is_block(content) && !opens_meta(content);
+}
+
+/* \:greek-athos of "greek athos" followed by next: names only, no name character may follow, hyphens only without
+ * spaces (\: reads them as spaces: <:red-haired woman> is no \:red-haired-woman), and no meta key, which reads better
+ * as a tag (<:color red A/>) */
+static bool short_form(buf *out, str content, char next) {
+	bool has_space = false, has_hyphen = false;
+	for (size_t i = 0; i < content.n; i++) {
+		if (!is_name_character(content.p[i]) && content.p[i] != ' ') return false;
+		has_space |= content.p[i] == ' ';
+		has_hyphen |= content.p[i] == '-';
+	}
+	str key, rest;
+	if ((has_space && has_hyphen) || is_name_character(next) || (split_once(content, ' ', &key, &rest) && meta_template(key, NULL)))
+		return false;
+	buf_addz(out, "\\:");
+	for (size_t i = 0; i < content.n; i++) buf_add(out, content.p[i] == ' ' ? "-" : content.p + i, 1);
+	return true;
+}
+
+/* <:greek> athos <:/greek> of "greek athos": a block and one operand (a block keeps the spaces between operands) */
+static bool block_form(buf *out, str content) {
+	str block, operand;
+	if (!split_once(content, ' ', &block, &operand) || !is_block(block) || str_find(operand, ' ') < operand.n || is_block(operand))
+		return false;
+	buf_addf(out, "<:%.*s> %.*s <:/%.*s>", S(block), S(operand), S(block));
+	return true;
+}
+
+static void self_closed_form(buf *out, str content) { buf_addf(out, "<:%.*s/>", S(content)); }
+
+/* The opener warning of an inline tag followed by next, its explicit forms as "a, b or c": \:greek-athos,
+ * <:greek> athos <:/greek> and <:greek athos/> */
+static void warn_opener(converter *self, str content, char next, size_t at) {
+	buf forms[3] = { 0 }, message = { 0 };
+	size_t count = 0;
+	if (short_form(&forms[count], content, next)) count++;
+	if (block_form(&forms[count], content)) count++;
+	self_closed_form(&forms[count++], content);
+	for (size_t i = 0; i < count; i++) {
+		if (i) buf_addz(&message, i + 1 == count ? " or " : ", ");
+		buf_adds(&message, buf_str(&forms[i]));
+		buf_free(&forms[i]);
+	}
+	warn(self, at, "<:%.*s> looks like an opening tag: write %s", S(content), message.p);
+	buf_free(&message);
+}
+
+/* The source with its inline tags in their explicit form: \:alpha where it fits, else <:color #ff8800 A/> */
+static char *explicit_of(const char *source) {
+	size_t start = 0;
+	uniscript_header(source, NULL, NULL, &start);
+	buf out = { 0 };
+	str rest = str_of(source);
+	buf_adds(&out, str_slice(rest, 0, start));
+	rest = str_from(rest, start);
+	for (size_t open; (open = str_find(rest, '<')) < rest.n;) {
+		str after_open = str_from(rest, open + 1);
+		if (!str_starts(after_open, ":")) {
+			buf_adds(&out, str_slice(rest, 0, open + 1));
+			rest = after_open;
+			continue;
+		}
+		size_t close = open + 2 + str_find(str_from(rest, open + 2), '>');
+		if (close >= rest.n) break;
+		str content = str_slice(rest, open + 2, close);
+		buf_adds(&out, str_slice(rest, 0, open));
+		if (!reads_as_opener(content))
+			buf_adds(&out, str_slice(rest, open, close + 1));
+		else if (!short_form(&out, content, close + 1 < rest.n ? rest.p[close + 1] : 0))
+			self_closed_form(&out, content);
+		rest = str_from(rest, close + 1);
+	}
+	buf_adds(&out, rest);
+	return buf_take(&out);
+}
+
 /* The start of the next <:, \: or \U1F60D marker, or the end */
 static size_t marker_in(str rest) {
 	for (size_t at = 0; at + 1 < rest.n; at++) {
@@ -754,6 +846,17 @@ static size_t opening_padding_length(str text) {
 static str without_closing_padding(str text) {
 	if (text.n >= 2 && text.p[text.n - 2] == '\r' && text.p[text.n - 1] == '\n') return str_slice(text, 0, text.n - 2);
 	return text.n && is_padding(text.p[text.n - 1]) ? str_slice(text, 0, text.n - 1) : text;
+}
+
+/* An inline tag before rest: <:alpha/> self-closes, <:alpha> warns that it looks like an opening tag unless the tag
+ * already warned (<:fracture 7> says there is no fracture 7) */
+static bool inline_tag(converter *self, buf *out, str content, str rest, size_t at) {
+	bool self_closed = content.n > 1 && content.p[content.n - 1] == '/';
+	size_t earlier_warnings = self->warning_count;
+	if (!tag(self, out, self_closed ? str_slice(content, 0, content.n - 1) : content, at)) return false;
+	if (!self_closed && self->warning_count == earlier_warnings && reads_as_opener(content))
+		warn_opener(self, content, rest.n ? rest.p[0] : 0, at);
+	return true;
 }
 
 static bool unicode_of(converter *self, buf *out, const char *text, uniscript_mode mode) {
@@ -800,7 +903,7 @@ static bool unicode_of(converter *self, buf *out, const char *text, uniscript_mo
 		else if (is_block(content)) {
 			block = content;
 			after += opening_padding_length(str_from(rest, after));
-		} else if (!tag(self, out, content, position) && !kept(self, out, str_slice(rest, 0, close + 1), position, mode))
+		} else if (!inline_tag(self, out, content, str_from(rest, after), position) && !kept(self, out, str_slice(rest, 0, close + 1), position, mode))
 			return false;
 		position += after;
 	}
@@ -864,6 +967,8 @@ uniscript_result uniscript_convert(const char *source, uniscript_mode mode) {
 	free(lenient_source);
 	return result;
 }
+
+char *uniscript_explicit(const char *source) { return invalid(source) ? NULL : explicit_of(source); }
 
 char *uniscript_to_unicode(const char *source) {
 	uniscript_result result = uniscript_convert(source, UNISCRIPT_WARN);
@@ -1004,7 +1109,9 @@ char *uniscript_to_uniscript(const char *text) {
 	free(suffixes.items);
 	buf_free(&attached);
 	buf_free(&form);
-	return buf_take(&out);
+	char *explicit = explicit_of(buf_str(&out).p);
+	buf_free(&out);
+	return explicit;
 }
 
 char *uniscript_meta_template(const char *key) {
