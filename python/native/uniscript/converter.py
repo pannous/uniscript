@@ -406,6 +406,10 @@ class Uniscript:
             # <:bold italic A>: the other style words restyle the operands of the last
             return "".join(self._restyled(styles, character, at) + self._effect_suffixes(effects, character, at)
                            for character in self._operands(block, rest, [], at))
+        # the case fallback, after the blocks: <:LATIN CAPITAL LETTER ETH> is latin-capital-letter-eth, <:TILDE> tilde
+        text = self._name(content.encode().lower().decode().replace(" ", "-"))
+        if text is not None:
+            return text
         raise UnknownEntity(content)
 
     def _meta_tag(self, content: str, at: int):

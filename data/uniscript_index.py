@@ -617,12 +617,18 @@ def block_types(sections):
 	return blocks
 
 
+def ascii_lowercase(text):
+	return text.encode().lower().decode()
+
+
 def forward_entries(sections):
 	"""name → text; a block entry is 'block operand' (or 'block *suffix'…), the block itself 'block ' → """""
 	entries = {}
 	for section in ENTITY_SECTIONS:
 		for name, text in sections.get(section, {}).items():
 			entries.setdefault(name, text)
+	for name, text in list(entries.items()):
+		entries.setdefault(ascii_lowercase(name), text)  # the case fallback: a name without a lowercase twin is found in lowercase
 	for block, table in block_types(sections).items():
 		entries[block + " "] = ""
 		for operand, text in table.items():

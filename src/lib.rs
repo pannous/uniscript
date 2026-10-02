@@ -619,6 +619,10 @@ impl<'a> Uniscript<'a> {
 				return Ok(restyled.collect());
 			}
 		}
+		// the case fallback, after the blocks: `<:LATIN CAPITAL LETTER ETH>` is latin-capital-letter-eth, `<:TILDE>` tilde
+		if let Some(text) = self.name(&content.to_ascii_lowercase().replace(' ', "-")) {
+			return Ok(text.to_string());
+		}
 		Err(Error::UnknownEntity(content.to_string()))
 	}
 

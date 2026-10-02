@@ -474,6 +474,9 @@ export class Uniscript {
 				.map((character) => this.#restyled(styles, character, at) + this.#effectSuffixes(effects, character, at))
 				.join("");
 		}
+		// the case fallback, after the blocks: <:LATIN CAPITAL LETTER ETH> is latin-capital-letter-eth, <:TILDE> tilde
+		const lowercased = this.#name(content.replace(/[A-Z]/g, (capital) => capital.toLowerCase()).replaceAll(" ", "-"));
+		if (lowercased !== undefined) return lowercased;
 		throw new UniscriptError("UnknownEntity", content);
 	}
 

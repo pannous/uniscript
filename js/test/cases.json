@@ -22,6 +22,8 @@
 		["\\:infinity", "∞"],
 		["<:greek small letter alpha>", "α"],
 		["<:dopf>", "𝕕"],
+		["<:LATIN CAPITAL LETTER ETH>", "Ð"],
+		["<:GREEK SMALL LETTER ALPHA>", "α"],
 		["<:alpha> > <:beta>", "α > β"],
 		["<:forall> x <:in> <:double R>", "∀ x ∈ ℝ"],
 		["<:fracture A>", "𝔄"],

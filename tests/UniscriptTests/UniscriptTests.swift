@@ -18,6 +18,7 @@ final class UniscriptTests: XCTestCase {
 		converts("\\:infinity", "∞")
 		converts("<:greek small letter alpha>", "α")
 		converts("<:dopf>", "𝕕") // HTML name, backwards compatible
+		converts("<:LATIN CAPITAL LETTER ETH>", "Ð") // official Unicode spelling: all capitals fall back to the lowercase name
 		converts("<:alpha> > <:beta>", "α > β")
 		converts("<:forall> x <:in> <:double R>", "∀ x ∈ ℝ")
 	}

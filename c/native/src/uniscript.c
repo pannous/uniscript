@@ -560,23 +560,28 @@ static bool code_point(converter *self, buf *out, str token, str written, size_t
 	return true;
 }
 
+/* The name spelled with spaces for hyphens (<:greek small letter alpha>), in lowercase when `lowercase` */
+static bool spelled_name(buf *out, str content, bool lowercase) {
+	buf spelled = { 0 };
+	buf_adds(&spelled, content);
+	for (size_t i = 0; i < spelled.n; i++) {
+		if (spelled.p[i] == ' ') spelled.p[i] = '-';
+		else if (lowercase && spelled.p[i] >= 'A' && spelled.p[i] <= 'Z') spelled.p[i] += 'a' - 'A';
+	}
+	str text;
+	bool named = name(buf_str(&spelled), &text);
+	buf_free(&spelled);
+	if (named) buf_adds(out, text);
+	return named;
+}
+
 /* The text of <:content> at byte `at` that is no block opener or closer */
 static bool tag(converter *self, buf *out, str content, size_t at) {
 	if (content.n == 1) { /* <:<> <::> escape the marker */
 		buf_adds(out, content);
 		return true;
 	}
-	buf hyphenated = { 0 };
-	buf_adds(&hyphenated, content);
-	for (size_t i = 0; i < hyphenated.n; i++)
-		if (hyphenated.p[i] == ' ') hyphenated.p[i] = '-';
-	str text;
-	bool named = name(buf_str(&hyphenated), &text);
-	buf_free(&hyphenated);
-	if (named) {
-		buf_adds(out, text);
-		return true;
-	}
+	if (spelled_name(out, content, false)) return true;
 	buf written = { 0 };
 	buf_addf(&written, "<:%.*s>", S(content));
 	bool coded = code_point(self, out, content, buf_str(&written), at);
@@ -631,6 +636,8 @@ static bool tag(converter *self, buf *out, str content, size_t at) {
 		free(styles.items);
 		return true;
 	}
+	/* the case fallback, after the blocks: <:LATIN CAPITAL LETTER ETH> is latin-capital-letter-eth, <:TILDE> tilde */
+	if (spelled_name(out, content, true)) return true;
 	return fail(self, UNISCRIPT_UNKNOWN_ENTITY, content);
 }
 

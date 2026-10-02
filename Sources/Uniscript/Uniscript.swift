@@ -560,6 +560,10 @@ private final class Conversion {
 				restyled(styles, $0, at) + effectSuffixes(effects, $0, at)
 			}.joined()
 		}
+		// the case fallback, after the blocks: <:LATIN CAPITAL LETTER ETH> is latin-capital-letter-eth, <:TILDE> tilde
+		if let text = name(asciiLowercased(content).replacingOccurrences(of: " ", with: "-")) {
+			return text
+		}
 		throw UniscriptError.unknownEntity(content)
 	}
 
@@ -636,6 +640,10 @@ private func isNameByte(_ byte: UInt8) -> Bool {
 	case "a"..."z", "A"..."Z", "0"..."9", "-", "_": return true
 	default: return false
 	}
+}
+
+private func asciiLowercased(_ text: String) -> String {
+	String(decoding: text.utf8.map { (65...90).contains($0) ? $0 + 32 : $0 }, as: UTF8.self)
 }
 
 private func isHexByte(_ byte: UInt8) -> Bool {

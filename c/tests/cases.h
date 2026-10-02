@@ -77,6 +77,7 @@ static const conversion_case converts[] = {
 	{"<:bold script B>", "𝓑"}, {"<:mirror bold italic A>", "𝑨\U000E004D"},
 	{"<:greek bold a>", "𝛂"}, {"<:bold greek a>", "𝛂"}, {"<:greek bold alpha>", "𝛂"},
 	{"<:alpha>", "α"}, {"\\:infinity", "∞"}, {"<:greek small letter alpha>", "α"}, {"<:dopf>", "𝕕"},
+	{"<:LATIN CAPITAL LETTER ETH>", "Ð"}, {"<:GREEK SMALL LETTER ALPHA>", "α"},
 	{"<:alpha> > <:beta>", "α > β"}, {"<:forall> x <:in> <:double R>", "∀ x ∈ ℝ"},
 	{"<:fracture A>", "𝔄"}, {"<:fracture A b c >", "𝔄𝔟𝔠"}, {"<:fracture> A b c <:>", " 𝔄 𝔟 𝔠 "},
 	{"<:greek> a b g d <:/greek>", " α β γ δ "}, {"<:double d>", "𝕕"}, {"<:double-d>", "𝕕"}, {"x<:upper a>", "xᵃ"},

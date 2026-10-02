@@ -95,6 +95,17 @@ offset_of(text:text, byte, start) := {
 	i
 }
 
+ascii_lowercased(name:text) := {
+	out = ""
+	i = 0
+	while i < name.bytes {
+		b = byte_at(name, i)
+		if b >= 65 and b <= 90 { out += byte_slice("abcdefghijklmnopqrstuvwxyz", b - 65, b - 64) } else { out += byte_slice(name, i, i + 1) }
+		i++
+	}
+	out
+}
+
 // spaces become hyphens: <:greek small letter alpha> names greek-small-letter-alpha
 hyphenated(name:text) := {
 	out = ""
@@ -350,6 +361,9 @@ tag(content:text, at) := {
 			return operands(block, rest, effects, at)
 		}
 	}
+	// the case fallback, after the blocks: <:LATIN CAPITAL LETTER ETH> is latin-capital-letter-eth, <:TILDE> tilde
+	record = find(names_table, hyphenated(ascii_lowercased(content)))
+	if record >= 0 { return value_of(record) }
 	error("unknown uniscript entity: " + content)
 }
 

@@ -210,6 +210,9 @@ impl Entities {
 				entries.set_default(name, text);
 			}
 		}
+		for (name, text) in entries.entries.clone() {
+			entries.set_default(&name.to_ascii_lowercase(), &text); // the case fallback: a name without a lowercase twin is found in lowercase
+		}
 		for (block, table) in self.block_types() {
 			entries.set(&format!("{block} "), "");
 			for (operand, text) in table.texts() {

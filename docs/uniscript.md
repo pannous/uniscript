@@ -639,6 +639,8 @@ through C and C++.
 ## Syntax
 
 - `<:name>` or `\:name`: an entity. Names are case sensitive; spaces may replace hyphens (`<:greek small letter alpha>`).
+  A `<:name>` known in no case as written, and no block either, falls back to lowercase: `<:LATIN CAPITAL LETTER ETH>` → Ð,
+  `<:TILDE>` → the entity `tilde`. A name without a lowercase twin is indexed in lowercase too (`<:CAYLEYS>` → `Cayleys` ℭ).
 - `<:type operands>`: a block type applied to space separated operands; `<:double-d>` works too.
 - `<:type> … <:/type>` or `<:type> … <:>`: a block; its text is rendered as written, spaces included. In an inline tag
   `<:type a b>` the spaces only separate operands and are dropped.

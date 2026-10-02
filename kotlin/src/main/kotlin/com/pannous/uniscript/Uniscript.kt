@@ -428,14 +428,19 @@ private class Conversion(val index: EntityIndex, val source: String, val lenient
 		}
 	}
 
+	/** After the blocks: `<:LATIN CAPITAL LETTER ETH>` is latin-capital-letter-eth, `<:TILDE>` tilde */
+	private fun caseFallback(content: String): String =
+		name(content.map { if (it in 'A'..'Z') it.lowercaseChar() else it }.joinToString("").replace(' ', '-'))
+			?: throw UniscriptError.UnknownEntity(content)
+
 	/** The text of `<:content>` at `at` that is no block opener or closer */
 	private fun tag(content: String, at: Int): String {
 		if (content.utf8Size == 1) return content // <:<> <::> escape the marker
 		name(content.replace(' ', '-'))?.let { return it }
 		codePoint(content, "<:$content>", at)?.let { return it }
 		metaTag(content, at)?.let { return it }
-		val (first, afterFirst) = splitOnce(content, ' ') ?: splitOnce(content, '-') ?: throw UniscriptError.UnknownEntity(content)
-		if (!isBlock(first)) throw UniscriptError.UnknownEntity(content)
+		val (first, afterFirst) = splitOnce(content, ' ') ?: splitOnce(content, '-') ?: return caseFallback(content)
+		if (!isBlock(first)) return caseFallback(content)
 		// <:mirror red A>: effect words stack, the last takes the operands, the others add their suffixes; a word that starts
 		// an operand of the block before it is no block (<:egyptian red crown>)
 		val words = mutableListOf(first)
