@@ -8,6 +8,12 @@ BINARY_NAME = "uniscript"
 # GUI apps on macOS don't inherit the shell's PATH, so look where `cargo install` puts binaries
 FALLBACK_DIRECTORIES = ("~/.cargo/bin", "/opt/homebrew/bin", "/usr/local/bin")
 INSTALL_HINT = "cargo install --git https://github.com/pannous/uniscript"
+# run from a checkout (Packages/Uniscript links to sublime/Uniscript): the newest cargo build of it wins over releases;
+# the shared target directories of ~/.cargo/config.toml, else the checkout's own target/
+CHECKOUT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+CARGO_MANIFEST = "Cargo.toml"
+DEVELOPMENT_BUILDS = ("~/.cargo/shared-target/release", "/opt/cargo/release", "target/release")
+CHECKOUT_INDEX = os.path.join("data", "entities.idx")  # compiled into the binary
 REVERSE_FLAG = "--reverse"
 LENIENT_FLAG = "--lenient"  # unknown entities stay as written, with a warning, instead of failing the conversion
 WARNING_PREFIX = "warning: "
@@ -31,9 +37,28 @@ class UniscriptError(Exception):
     pass
 
 
+def development_binary(checkout=CHECKOUT):
+    """The newest uniscript built from the checkout, None outside one"""
+    if not os.path.isfile(os.path.join(checkout, CARGO_MANIFEST)):
+        return None
+    builds = [os.path.join(checkout, os.path.expanduser(directory), BINARY_NAME) for directory in DEVELOPMENT_BUILDS]
+    return max((build for build in builds if os.path.isfile(build)), key=os.path.getmtime, default=None)
+
+
+def stale_build(binary, checkout=CHECKOUT):
+    """A warning when the checkout's index changed after the binary was built: it still has the old names"""
+    index = os.path.join(checkout, CHECKOUT_INDEX)
+    if os.path.isfile(index) and os.path.getmtime(index) > os.path.getmtime(binary):
+        return "{} is older than {}: run cargo build --release in {}".format(binary, CHECKOUT_INDEX, checkout)
+    return None
+
+
 def find_binary(configured=""):
     if configured:
         return os.path.expanduser(configured)
+    development = development_binary()
+    if development:
+        return development
     directories = [os.environ.get("PATH", "")] + [os.path.expanduser(directory) for directory in FALLBACK_DIRECTORIES]
     found = shutil.which(BINARY_NAME, path=os.pathsep.join(directories))
     if not found:

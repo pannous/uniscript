@@ -40,7 +40,12 @@ def names():
     """The index's names, from the CLI once per session"""
     global _names
     if _names is None:
-        _names = cli.load_names(settings().get("binary", ""))
+        binary = cli.find_binary(settings().get("binary", ""))
+        stale = cli.stale_build(binary)
+        if stale:
+            print("uniscript: " + stale)
+            sublime.status_message("uniscript: " + stale)
+        _names = cli.load_names(binary)
     return _names
 
 

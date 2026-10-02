@@ -1,5 +1,6 @@
 {
-	// path of the uniscript converter; empty: search PATH and ~/.cargo/bin
+	// path of the uniscript converter; empty: the newest cargo build when the package links into a checkout, else
+	// search PATH and ~/.cargo/bin
 	// (cargo install --git https://github.com/pannous/uniscript)
 	"binary": "",
 
