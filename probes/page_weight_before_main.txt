@@ -1,7 +1,0 @@
-     3 KB  /uniscript/
-     3 KB  /uniscript/uniscript.js
-   560 KB  /uniscript/fonts/UniscriptSans-Regular.woff2
-     9 KB  /uniscript/uniscript.wasm
-  1183 KB  /uniscript/packages/uniscript/data/entities.idx
-    15 KB  /favicon.ico
-  1773 KB  total, 6 requests
