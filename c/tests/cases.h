@@ -95,6 +95,8 @@ static const conversion_case converts[] = {
 	{"<:above 𓀀 𓁐>", "𓀀\U00013430𓁐"}, {"<:beside 犭 句>", "⿰犭句"},
 	{"<:egyptian A1>", "𓀀"}, {"<:gardiner A1>", "𓀀"}, {"<:hieroglyph A1>", "𓀀"}, {"<:egyptian seated man>", "𓀀"},
 	{"<:egyptian man sitting>", "𓀀"}, {"<:egyptian man-sitting>", "𓀀"},
+	{"\\:egyptian-a2", "𓀁"}, {"\\:egyptian-seated-man", "𓀀"}, {"\\:fracture-A", "𝔄"},
+	{"\\:mirror-red-A", "A\U000E0072\U000E004D"}, {"<:anatolian caput>", "\U00014409"},
 	{"<:egyptian> A1 Aa1 <:/egyptian>", " 𓀀 𓐍 "}, {"<:mirror egyptian A1>", "𓀀\U00013440"},
 	{"<:egyptian red crown>", "𓋔"}, {"<:egyptian A1 red crown>", "𓀀𓋔"}, {"<:egyptian red crown A1>", "𓋔𓀀"},
 	{"<:egyptian above A1 A2>", "𓀀\U00013430𓀁"}, {"<:above egyptian A1 A2>", "𓀀\U00013430𓀁"},

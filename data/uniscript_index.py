@@ -369,14 +369,6 @@ def egyptian_block(named):
 	return table
 
 
-def egyptian_names(egyptian):
-	"""The operands of the egyptian block as short names: \\:egyptian-a2 is <:egyptian A2>, \\:egyptian-seated-man <:egyptian seated man>"""
-	names = {}
-	for key, character in egyptian.items():
-		names.setdefault(f"{EGYPTIAN_BLOCK}-{key.lower()}", character)
-	return names
-
-
 def names_list_aliases(path):
 	"""character → its aliases in a section of NamesList.txt, in order"""
 	aliases, character = {}, None
@@ -520,10 +512,7 @@ def seed_files():
 	greek["block-aliases"] = dict(GREEK_ALIASES)
 	files.setdefault(block_file("口", blocks), {}).update({"blocks": {CHINESE_BLOCK: {RARE_KEY: "", ONE_WAY_KEY: "", **chinese_block()}}, "block-aliases": dict(CHINESE_ALIASES)})
 	egyptian = files[block_file(chr(EGYPTIAN_HIEROGLYPHS_START), blocks)]
-	egyptian_table = egyptian_block(named)
-	egyptian["blocks"] = {EGYPTIAN_BLOCK: {RARE_KEY: "", **egyptian_table}}
-	for name, character in egyptian_names(egyptian_table).items():
-		egyptian["names"].setdefault(name, character)
+	egyptian["blocks"] = {EGYPTIAN_BLOCK: {RARE_KEY: "", **egyptian_block(named)}}
 	egyptian["block-aliases"] = dict(EGYPTIAN_ALIASES)
 	anatolian = files[block_file(chr(ANATOLIAN_HIEROGLYPHS_START), blocks)]
 	anatolian["blocks"] = {ANATOLIAN_BLOCK: {RARE_KEY: "", **anatolian_block(named)}}
@@ -688,6 +677,10 @@ def forward_entries(sections):
 		entries[block + " "] = ""
 		for operand, text in table.items():
 			entries[f"{block} {operand}"] = text
+		# the case fallback of operands: A2 is also a2, CAPUT caput; a single letter keeps its case (fracture a ≠ A)
+		for operand, text in table.items():
+			if len(operand) > 1:
+				entries.setdefault(f"{block} {ascii_lowercase(operand)}", text)
 	return entries
 
 

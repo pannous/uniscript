@@ -230,6 +230,10 @@ impl Entities {
 			for (operand, text) in table.texts() {
 				entries.set(&format!("{block} {operand}"), text);
 			}
+			// the case fallback of operands: A2 is also a2, CAPUT caput; a single letter keeps its case (fracture a ≠ A)
+			for (operand, text) in table.texts().filter(|(operand, _)| operand.chars().count() > 1) {
+				entries.set_default(&format!("{block} {}", operand.to_ascii_lowercase()), text);
+			}
 		}
 		entries.entries
 	}

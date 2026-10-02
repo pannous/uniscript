@@ -8,8 +8,10 @@
   `cargo run -- build`. Multi-word operands are stored hyphenated (`seated-man`); `<:egyptian seated man>` finds them.
 - Gardiner numbers come from the Unicode names (A001 → A1, AA001 → Aa1, A014A → A14A); descriptions from Wikipedia's
   Template:List_of_hieroglyphs (`data/sources/list_of_hieroglyphs.wiki`). Unikemet's kEH_Desc is too long for names.
-- Every operand of the egyptian block is also a lowercase name: `egyptian-a2`, `egyptian-seated-man` (`egyptian_names`,
-  ~8000 names, +270 KB index): `\:` takes only names, and a name works the same in all ports without code; the block form still wins when spelling back.
+- `\:block-operand` (`\:egyptian-seated-man`, `\:fracture-A`) is read as the tag with hyphens as spaces when it is no
+  name (every port: Rust, js, python/native, c/native, Swift, Kotlin). Lowercase twins of block operands of 2+ characters
+  (`egyptian a2`) live in the index (forward_entries, Rust and Python): ~30k keys, +700 KB, mostly the egyptian aliases
+  gardiner/hieroglyph/eg, which each hold all its operands. An earlier per-name approach (8000 `egyptian-…` names) was dropped.
 - Anatolian: Laroche numbers from the Unicode names (A010A → 10A); logogram names and syllabic values from the aliases
   of Unicode's NamesList.txt (`data/sources/anatolian_names_list.txt`, the block's section of NamesList-16.0.0):
   logograms in capitals (CAPUT, (DEUS)VIA+TERRA), syllables lower case with the ASCII index (tá = ta2, tà = ta3),

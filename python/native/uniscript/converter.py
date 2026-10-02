@@ -370,6 +370,12 @@ class Uniscript:
             parts.append((affix("*open") or "") + grouped + (affix("*close") or ""))
         return (prefix or "") + (infix or "").join(parts)
 
+    def _tag_or_none(self, content: str, at: int):
+        try:
+            return self._tag(content, at)
+        except UniscriptError:
+            return None
+
     def _tag(self, content: str, at: int) -> str:
         """The text of `<:content>` at byte `at` that is no block opener or closer"""
         if utf8_length(content) == 1:
@@ -502,6 +508,8 @@ class Uniscript:
                 text = self._name(name)
                 if text is None:
                     text = self._code_point(name, rest[:name_end], byte_position)
+                if text is None:  # not a name: read as the tag with hyphens as spaces, \:egyptian-seated-man
+                    text = self._tag_or_none(name.replace("-", " "), byte_position)
                 out.append(text if text is not None else self._kept(UnknownEntity(name), rest[:name_end], byte_position, mode))
                 advance(name_end)
                 continue

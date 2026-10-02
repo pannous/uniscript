@@ -131,6 +131,23 @@ fn hieroglyph_descriptions_are_short_names() {
 }
 
 #[test]
+fn short_tags_read_as_tags_with_hyphens_as_spaces() {
+	converts("\\:fracture-A", "𝔄");
+	converts("\\:greek-a", "α");
+	converts("\\:cn-kou", "口");
+	converts("\\:mirror-red-A", "A\u{E0072}\u{E004D}");
+	converts("\\:fracture-a", "𝔞");
+}
+
+#[test]
+fn block_operands_of_several_letters_are_found_in_lower_case() {
+	converts("<:egyptian a2>", "𓀁");
+	converts("<:egyptian aa1>", "𓐍");
+	converts("<:anatolian caput>", "\u{14409}");
+	converts("\\:egyptian-q4a", "\u{F446E}");
+}
+
+#[test]
 fn hieroglyph_looks_in_every_hieroglyphic_script() {
 	converts("<:anatolian 1>", "\u{14400}");
 	converts("<:luwian 10A>", "\u{1440A}");

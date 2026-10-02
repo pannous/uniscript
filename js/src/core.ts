@@ -439,6 +439,15 @@ export class Uniscript {
 	}
 
 	/** The text of `<:content>` at byte `at` that is no block opener or closer */
+	#tagOrUndefined(content: string, at: number): string | undefined {
+		try {
+			return this.#tag(content, at);
+		} catch (error) {
+			if (!(error instanceof UniscriptError)) throw error;
+			return undefined;
+		}
+	}
+
 	#tag(content: string, at: number): string {
 		if (utf8Length(content) === 1) return content; // <:<> <::> escape the marker
 		const text = this.#name(content.replaceAll(" ", "-"));
@@ -571,7 +580,9 @@ export class Uniscript {
 				const nameEnd = position + 2 + matchAt(NAME_TOKEN, source, position + 2)![0].length;
 				const name = source.slice(position + 2, nameEnd);
 				const written = source.slice(position, nameEnd);
-				out += this.#name(name) ?? this.#codePoint(name, written, bytes) ?? this.#kept(new UniscriptError("UnknownEntity", name), written, bytes, mode);
+				// not a name: read as the tag with hyphens as spaces, \:egyptian-seated-man is <:egyptian seated man>
+				out += this.#name(name) ?? this.#codePoint(name, written, bytes) ?? this.#tagOrUndefined(name.replaceAll("-", " "), bytes)
+					?? this.#kept(new UniscriptError("UnknownEntity", name), written, bytes, mode);
 				advance(nameEnd);
 				continue;
 			}

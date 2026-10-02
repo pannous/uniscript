@@ -726,9 +726,11 @@ impl<'a> Uniscript<'a> {
 			} else if rest.starts_with(SHORT_OPEN) {
 				let name_end = 2 + token_length(&rest[2..]);
 				let name = &rest[2..name_end];
-				out += &match self.name(name).map(str::to_string).or_else(|| self.code_point(name, &rest[..name_end], position)) {
-					Some(text) => text,
-					None => self.kept(Error::UnknownEntity(name.to_string()), &rest[..name_end], position, mode)?,
+				// not a name: read as the tag with hyphens as spaces, \:egyptian-seated-man is <:egyptian seated man>
+				let named = self.name(name).map(str::to_string).or_else(|| self.code_point(name, &rest[..name_end], position));
+				out += &match named.map_or_else(|| self.tag(&name.replace('-', " "), position), Ok) {
+					Ok(text) => text,
+					Err(_) => self.kept(Error::UnknownEntity(name.to_string()), &rest[..name_end], position, mode)?,
 				};
 				position += name_end;
 			} else {

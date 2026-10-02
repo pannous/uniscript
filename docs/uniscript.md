@@ -36,6 +36,11 @@ Simple entities can be represented as `\:` followed by the entity name:
   
 `\:infinity == ∞`    
   
+A short name that is no entity reads as the tag with its hyphens as spaces, so every block works short too:
+`\:fracture-A` ⩵ `<:fracture A>` ⩵ 𝔄, `\:mirror-red-A` ⩵ `<:mirror red A>`, `\:egyptian-seated-man` ⩵ 𓀀.
+Block operands of several letters are also found in lowercase: `\:egyptian-a2` ⩵ `<:egyptian A2>` ⩵ 𓀁; a single
+letter keeps its case (`<:fracture a>` ⩵ 𝔞).    
+  
 The essential marker for the beginning of complex uniscript elements is "<:".    
   
 Enties are wrapped either in a single bracket of the form  

@@ -135,6 +135,7 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - swift: build and test with `xcrun swift test` (Xcode toolchain); the swiftly `swift` on PATH cannot build Foundation against the Xcode SDK
 - local `.uniscript` entity files (`virus: 🦠`) are read by the Rust library and CLI only: the native ports (Swift, TypeScript, Python, C, Kotlin, wasp) and the editor plugins (VS Code, Sublime, IntelliJ completion) do not see them yet
 - local `.uniscript` block aliases can only name local blocks: the built-in blocks are not available when the local index is built (`block-aliases { tiniest: "upper" }` finds nothing)
-- TODO: js `npm test` failed once (1 of 29) on 2026-10-02 right after an index rebuild and passed in 4 reruns: find the flaky test (timing?)
+- DONE: js `npm test` failed once (1 of 29) on 2026-10-02 right after an index rebuild and passed in 4 reruns: find the flaky test (timing?)
 - DONE python: `python3 -m pytest python/native/tests` from the repo root imports the stale pip-installed uniscript (~/Library/Python/3.14/site-packages, 41 failures); run it from python/native or reinstall the package
 - DONE: kotlin: `./gradlew test` fails before compiling: "Failed to calculate the value of task ':compileTestJava' property 'javaCompiler'" (JDK toolchain not found)
+- js/test/differential.test.ts compares against /opt/cargo/release/uniscript (UNISCRIPT_RUST): a stale build fails it after an index or converter change; rebuild with CARGO_TARGET_DIR=/opt/cargo cargo build --release (the cause of the "flaky" run above)

@@ -656,6 +656,19 @@ static bool tag(converter *self, buf *out, str content, size_t at) {
 }
 
 /* The source text of an error, with a warning, in UNISCRIPT_LENIENT; else the error */
+/* \:name that is no name: the tag with hyphens as spaces, \:egyptian-seated-man is <:egyptian seated man> */
+static bool short_tag(converter *self, buf *out, str name, size_t at) {
+	char *spaced = copy_of(name);
+	for (char *c = spaced; *c; c++)
+		if (*c == '-') *c = ' ';
+	buf text = { 0 };
+	bool found = tag(self, &text, str_of(spaced), at);
+	if (found) buf_adds(out, buf_str(&text));
+	buf_free(&text);
+	free(spaced);
+	return found || fail(self, UNISCRIPT_UNKNOWN_ENTITY, name);
+}
+
 static bool kept(converter *self, buf *out, str source, size_t at, uniscript_mode mode) {
 	if (mode != UNISCRIPT_LENIENT) return false;
 	buf message = { 0 };
@@ -740,7 +753,7 @@ static bool unicode_of(converter *self, buf *out, const char *text, uniscript_mo
 			str entity = str_slice(rest, 2, name_end), found, written = str_slice(rest, 0, name_end);
 			if (name(entity, &found))
 				buf_adds(out, found);
-			else if (!code_point(self, out, entity, written, position) && !(fail(self, UNISCRIPT_UNKNOWN_ENTITY, entity), kept(self, out, written, position, mode)))
+			else if (!code_point(self, out, entity, written, position) && !short_tag(self, out, entity, position) && !kept(self, out, written, position, mode))
 				return false;
 			position += name_end;
 			continue;
