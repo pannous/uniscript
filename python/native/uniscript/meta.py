@@ -17,6 +17,7 @@ ATTACH_SIGIL = ":"
 # besides ASCII letters and digits; no spaces, quotes, `;` or brackets, so values stay safe inside CSS and HTML
 VALUE_PUNCTUATION = "#.%+-_,()/"
 ZERO_WIDTH_JOINER = "‍"
+EMOJI_PRESENTATION = "\uFE0F"
 EGYPTIAN_JOINERS = range(0x13430, 0x13437)
 EXTENDING_RANGES = [(0x0300, 0x036F), (0x1AB0, 0x1AFF), (0x1DC0, 0x1DFF), (0x20D0, 0x20FF), (0xFE00, 0xFE0F),
                     (0xFE20, 0xFE2F), (0x200D, 0x200D), (0x13430, 0x1345F), (0x1F3FB, 0x1F3FF), (0xE0000, 0xE007F),
@@ -100,6 +101,22 @@ def meta_at(text: str, start: int = 0):
     found = tag_sequence_at(text, start)
     meta = found and Meta.parse(found[0])
     return (meta, found[1]) if meta else None
+
+
+def joined_prefixes(text: str, start: int = 0) -> list:
+    """The lengths of the joined emoji prefixes at `start`, longest first: 👩‍🦰 → [👩‍🦰]; ‍🦰 → [‍🦰]"""
+    ends, at = [], start
+    joined = text.startswith(ZERO_WIDTH_JOINER, at)
+    at += joined
+    while at < len(text) and text[at] != ZERO_WIDTH_JOINER:
+        at += 1 + text.startswith(EMOJI_PRESENTATION, at + 1)
+        if joined:
+            ends.append(at - start)
+        joined = text.startswith(ZERO_WIDTH_JOINER, at)
+        if not joined:
+            break
+        at += 1
+    return ends[::-1]
 
 
 def emoji_tags_at(text: str, start: int = 0):

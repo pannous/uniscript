@@ -5,7 +5,7 @@
 
 import { EntityIndex, Table } from "./entityIndex.ts";
 import type { Lookup } from "./entityIndex.ts";
-import { Meta, Styled, attach, emojiTagsAt, escapeHTML, isMetaValue, list, metaAt, utf8Length } from "./meta.ts";
+import { Meta, Styled, attach, emojiTagsAt, escapeHTML, isMetaValue, joinedPrefixes, list, metaAt, utf8Length } from "./meta.ts";
 import type { Font, MetaRun, Warning } from "./meta.ts";
 
 const MARKER_COLON = ":";
@@ -623,6 +623,15 @@ export class Uniscript {
 		return found && this.metaTemplate(found.meta.key) !== undefined ? found : undefined;
 	}
 
+	/** The spelling of the longest known emoji sequence joined at `position`: 👩‍🦰 → <:red-haired woman> */
+	#joinedForm(text: string, position: number): { form: string; length: number } | undefined {
+		for (const length of joinedPrefixes(text, position)) {
+			const form = this.index.get(Table.chars, text.slice(position, position + length));
+			if (form !== undefined) return { form, length };
+		}
+		return undefined;
+	}
+
 	/** Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A>` */
 	toUniscript(text: string): string {
 		let out = "";
@@ -632,6 +641,12 @@ export class Uniscript {
 			if (span && span.meta.kind !== "attached") {
 				out += span.meta.uniscript();
 				position += span.length;
+				continue;
+			}
+			const joined = this.#joinedForm(text, position);
+			if (joined) {
+				out += joined.form;
+				position += joined.length;
 				continue;
 			}
 			const character = String.fromCodePoint(text.codePointAt(position)!);

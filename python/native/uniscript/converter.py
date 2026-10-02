@@ -547,6 +547,14 @@ class Uniscript:
         found = meta.meta_at(text, position)
         return found if found and self.meta_template(found[0].key) is not None else None
 
+    def _joined_form(self, text: str, position: int):
+        """The spelling of the longest known emoji sequence joined at `position`: 👩‍🦰 → <:red-haired woman>"""
+        for length in meta.joined_prefixes(text, position):
+            form = self.index.get(Table.CHARS, text[position:position + length])
+            if form is not None:
+                return form, length
+        return None
+
     def to_uniscript(self, text: str) -> str:
         """Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A>`"""
         out, position = [], 0
@@ -555,6 +563,11 @@ class Uniscript:
             if found and found[0].kind != meta.ATTACHED:
                 out.append(found[0].uniscript())
                 position += found[1]
+                continue
+            joined = self._joined_form(text, position)
+            if joined:
+                out.append(joined[0])
+                position += joined[1]
                 continue
             character = text[position]
             position += 1

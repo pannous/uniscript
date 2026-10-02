@@ -13,6 +13,7 @@ const ATTACH_SIGIL = ":";
 /** besides ASCII letters and digits; no spaces, quotes, `;` or brackets, so values stay safe inside CSS and HTML */
 const VALUE_PUNCTUATION = "#.%+-_,()/";
 const ZERO_WIDTH_JOINER = 0x200d;
+const EMOJI_PRESENTATION = 0xfe0f;
 const EXTENDING_RANGES: readonly [number, number][] = [
 	[0x0300, 0x036f], [0x1ab0, 0x1aff], [0x1dc0, 0x1dff], [0x20d0, 0x20ff], [0xfe00, 0xfe0f], [0xfe20, 0xfe2f],
 	[0x200d, 0x200d], [0x13430, 0x1345f], [0x1f3fb, 0x1f3ff], [0xe0000, 0xe007f], [0xe0100, 0xe01ef],
@@ -134,6 +135,26 @@ export function metaAt(text: string, position = 0): { meta: Meta; length: number
 export function emojiTagsAt(text: string, position = 0): number | undefined {
 	const sequence = tagSequenceAt(text, position);
 	return sequence && [...sequence.spelled].every(isAsciiAlphanumeric) ? sequence.length : undefined;
+}
+
+/** The UTF-16 lengths of the joined emoji prefixes at `position`, longest first: 👩‍🦰 → [👩‍🦰]; ‍🦰 → [‍🦰] */
+export function joinedPrefixes(text: string, position = 0): number[] {
+	const ends: number[] = [];
+	let at = position;
+	const takes = (wanted: (code: number) => boolean) => {
+		const code = text.codePointAt(at);
+		if (code === undefined || !wanted(code)) return false;
+		at += code > 0xffff ? 2 : 1;
+		return true;
+	};
+	let joined = takes((code) => code === ZERO_WIDTH_JOINER);
+	while (takes((code) => code !== ZERO_WIDTH_JOINER)) {
+		takes((code) => code === EMOJI_PRESENTATION);
+		if (joined) ends.push(at - position);
+		joined = takes((code) => code === ZERO_WIDTH_JOINER);
+		if (!joined) break;
+	}
+	return ends.reverse();
 }
 
 /** Whether the character belongs to the character before it: marks, joiners, variation selectors, TAG characters */
