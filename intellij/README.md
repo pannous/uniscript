@@ -9,8 +9,11 @@ plugin depends only on `com.intellij.modules.platform`).
   operands; an unknown entity is an error, a character without a counterpart (`<:greek c>`) a weak warning; hovering a tag
   shows its Unicode.
 - **Completion** inside tags in every file type: entity names after `<:` and `\:` with their character beside them,
-  block words, and after a block word its operands (`<:egyptian seated-m` → `seated-man`). The popup opens by itself
-  after `<:` and `\:`; choosing a name on its own closes the tag with `>`.
+  block words, and after block words their operands (`<:egyptian seated m` → `seated-man`). Names sharing their next
+  segment fold into one group (`alchemical-` 🝟🜥🜙… 116) that asks for the rest when chosen. The popup opens by itself
+  after `<:` and `\:`. **Enter** puts the character in place of the tag (`<:alph` → α), **Tab** keeps the name
+  (`<:alpha>`).
+- **Alt+Enter** on a tag: *Replace with α*.
 - **Folding**: each tag shows as its Unicode (`<:fracture A>` as 𝔄) and unfolds when the caret enters it.
 
 A tag's content starts with no space and has no brackets, braces, `;`, `=` or quotes, so Scala's `T <: Bound[…]>`

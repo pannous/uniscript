@@ -8,7 +8,9 @@
 		<li>Uniscript tags are highlighted in every file type; unknown entities are errors, characters without a
 			Unicode counterpart warnings.</li>
 		<li>Completion of entity names, block words and block operands inside tags, opening by itself after
-			<code>&lt;:</code> and <code>\:</code>; the character is shown beside each name.</li>
+			<code>&lt;:</code> and <code>\:</code>; the character is shown beside each name, names sharing a prefix fold into
+			one group. Enter inserts the character, Tab the name.</li>
+		<li>Alt+Enter on a tag: <b>Replace with α</b>.</li>
 		<li>Each tag folds to its Unicode (<code>&lt;:fracture A&gt;</code> shows 𝔄) and unfolds under the caret.</li>
 	</ul>
 	]]></description>
@@ -21,6 +23,10 @@
 		<lang.foldingBuilder language="" implementationClass="com.pannous.uniscript.ide.UniscriptFoldingBuilder"/>
 		<completion.contributor language="any" implementationClass="com.pannous.uniscript.ide.UniscriptCompletionContributor"/>
 		<typedHandler implementation="com.pannous.uniscript.ide.UniscriptTypedHandler"/>
+		<intentionAction>
+			<className>com.pannous.uniscript.ide.UniscriptToUnicodeIntention</className>
+			<category>Uniscript</category>
+		</intentionAction>
 	</extensions>
 
 	<actions>
