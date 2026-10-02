@@ -195,6 +195,10 @@ class UniscriptTabCompletionCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         cursor = self.view.sel()[0].b
+        closing = cli.closing_completion(self.view.substr(sublime.Region(0, cursor)), names())
+        if closing:  # <:/ch → <:/chinese>
+            typed, rest = closing
+            return self.view.replace(edit, sublime.Region(cursor - typed, cursor), rest)
         line = text_before_cursor(self.view, cursor)
         best = cli.tab_completion(line, self.view.substr(cursor), names(), inserts_characters())
         if best == cli.CHOOSE:
@@ -265,6 +269,11 @@ class UniscriptCompletionListener(sublime_plugin.EventListener):
         if not any(opener in line for opener in TAG_OPENERS):
             return None
         silence_other_completions(view)
+        closing = cli.closing_completion(view.substr(sublime.Region(0, cursor)), names())
+        if closing:  # the open tag to close: <:/ch lists chinese
+            typed, rest = closing  # Sublime replaces its prefix word, which may reach before the typed name
+            item = sublime.CompletionItem(rest[:-len(TAG_END)], annotation="close", completion=prefix[:len(prefix) - typed] + rest)
+            return sublime.CompletionList([item], sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS)
         try:
             entries = cli.completions(line, view.substr(cursor), names(), prefix, inserts_characters())
         except cli.UniscriptError as error:

@@ -33,6 +33,7 @@ TYPED_TAG = re.compile(r"(?:<:(?! )([^<>\n\[\]{};=\"]*)|\\:([A-Za-z0-9_-]*))$")
 TAG = re.compile(r"<:([^<>\n]*)>")
 CLOSING_SLASH = "/"
 CLOSING_MARKER = MARKER + CLOSING_SLASH
+CLOSING_TYPED = re.compile(r"<:/([A-Za-z0-9_ -]*)$")  # a closing tag typed up to the cursor: <:/ch
 META_SPAN_WORDS = 2  # <:key value> opens a span closed by <:/key>
 NAMES_COMMAND = "names"
 HOMOPHONE = re.compile(r"^(.+)\.(\d+)$")  # chinese yi2.2: the second most frequent character read yi2
@@ -159,6 +160,18 @@ def tag_to_close(text_before_cursor, names):
         elif opened:
             open_names.append(opened)
     return open_names[-1] if open_names else None
+
+
+def closing_completion(text_before_cursor, names):
+    """A closing tag being typed (<:/ch) completed to the innermost open tag: (length typed after the slash, the rest
+    of the tag: "chinese>"), None when it closes nothing open by that name"""
+    typed = CLOSING_TYPED.search(text_before_cursor)
+    if not typed:
+        return None
+    name = tag_to_close(text_before_cursor[:typed.start()] + CLOSING_MARKER, names)
+    if not name or not name.startswith(typed.group(1)):
+        return None
+    return len(typed.group(1)), name + TAG_END
 
 
 def operand_first(trigger, annotation):
