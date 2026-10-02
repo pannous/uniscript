@@ -321,7 +321,7 @@ private class Conversion(val index: EntityIndex, val source: String, val lenient
 	/** One operand: its own entry (red circle → 🔴, greek eta → η), else each character or pair (greek th → θ)
 	 *  of the operand, or of the entity it names */
 	private fun operand(block: String, token: String, effects: List<String>, at: Int): String {
-		name("$block $token")?.let { own -> return own + effectSuffixes(effects, own.firstCodePoint() ?: ' '.code, at) }
+		name("$block $token")?.let { own -> return afterBase(own, effectSuffixes(effects, own.firstCodePoint() ?: ' '.code, at)) }
 		val characters = ((if (token.utf8Size > 1) name(token) else null) ?: token).codePoints().toArray()
 		val out = StringBuilder()
 		var position = 0
@@ -574,3 +574,9 @@ private fun Int.asText() = String(Character.toChars(this))
 private fun String.firstCodePoint() = if (isEmpty()) null else codePointAt(0)
 
 private val String.utf8Size get() = toByteArray(Charsets.UTF_8).size
+
+/** Suffixes after text; in an emoji sequence joined by zero width joiners they style its first character: 👩🏿‍🦰 */
+internal fun afterBase(text: String, suffixes: String): String {
+	val joiner = text.indexOf('\u200D')
+	return if (joiner < 0) text + suffixes else text.substring(0, joiner) + suffixes + text.substring(joiner)
+}

@@ -30,6 +30,7 @@
 /* the block control naming the meta a block becomes where it has no suffix control (red *meta → color red) */
 #define META_FALLBACK_KEY "*meta"
 #define REPLACEMENT_CHARACTER 0xFFFDu
+#define ZERO_WIDTH_JOINER "\xE2\x80\x8D"
 
 typedef struct { str *items; size_t n, cap; } strs;
 
@@ -223,14 +224,25 @@ static size_t characters_of(str text, uint32_t **characters) {
 	return count;
 }
 
+/* Where the first zero width joiner starts, or the end */
+static size_t joiner_at(str text) {
+	size_t length = strlen(ZERO_WIDTH_JOINER);
+	for (size_t at = 0; at + length <= text.n; at++)
+		if (!memcmp(text.p + at, ZERO_WIDTH_JOINER, length)) return at;
+	return text.n;
+}
+
 /* One operand: its own entry (red circle → 🔴, greek eta → η), else each character or pair (greek th → θ) of the
  * operand, or of the entity it names */
 static void operand(converter *self, buf *out, str block, str token, strs effects, size_t at) {
 	str own, named;
 	if (index_getf(TABLE_NAMES, &own, "%.*s %.*s", S(block), S(token))) {
 		uint32_t first = first_character(own);
-		buf_adds(out, own);
+		/* in an emoji sequence joined by zero width joiners the suffixes style its first character: 👩🏿‍🦰 */
+		size_t base = joiner_at(own);
+		buf_add(out, own.p, base);
 		effect_suffixes(self, out, effects, first == NO_CHARACTER ? ' ' : first, at);
+		buf_add(out, own.p + base, own.n - base);
 		return;
 	}
 	uint32_t *characters;
