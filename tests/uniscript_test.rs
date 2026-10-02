@@ -116,6 +116,15 @@ fn gardiner_numbers_beyond_unicode_use_the_aegyptus_private_use_signs() {
 }
 
 #[test]
+fn gardiner_numbers_are_short_names_in_lower_case() {
+	converts("\\:egyptian-a2", "𓀁");
+	converts("\\:egyptian-aa1", "𓐍");
+	converts("<:egyptian-a2>", "𓀁");
+	converts("\\:egyptian-q4a", "\u{F446E}");
+	assert_eq!(to_uniscript("𓀁"), "<:egyptian A2>");
+}
+
+#[test]
 fn hieroglyph_looks_in_every_hieroglyphic_script() {
 	converts("<:anatolian 1>", "\u{14400}");
 	converts("<:luwian 10A>", "\u{1440A}");
