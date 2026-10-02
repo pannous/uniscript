@@ -11,7 +11,7 @@ build those from a checkout.
 
 Each section shows the same five things:
 
-- **round trip**: `<:alpha> <:fracture A>` ⇄ `α 𝔄`
+- **round trip**: `\:alpha \:fracture-A` ⇄ `α 𝔄`
 - **tag forms**: `\:alpha`, full Unicode names with spaces for hyphens (`<:greek small letter alpha>`), `<:double-R>`,
   stacked styles (`<:bold italic alpha>` → 𝜶), blocks closed by `<:/greek>` or `<:>` (`<:greek>athos<:>` → αθοσ) and
   the escape `<<::>` (`<<::>alpha>` → `<:alpha>`)
@@ -65,7 +65,7 @@ use uniscript::{Error, Uniscript, WarningMode};
 fn main() -> Result<(), Error> {
 	// round trip; to_unicode prints warnings to stderr
 	assert_eq!(uniscript::to_unicode("<:alpha> <:fracture A>")?, "α 𝔄");
-	assert_eq!(uniscript::to_uniscript("α 𝔄"), "<:alpha> <:fracture A>");
+	assert_eq!(uniscript::to_uniscript("α 𝔄"), "\\:alpha \\:fracture-A");
 
 	// every tag form
 	for (source, unicode) in [
@@ -117,7 +117,7 @@ cargo install uniscript               # or: brew install pannous/tap/uniscript
 
 ```sh probes/usage/cli/usage.sh
 uniscript "<:alpha> <:fracture A>"          # α 𝔄
-uniscript -r "α 𝔄"                          # <:alpha> <:fracture A>
+uniscript -r "α 𝔄"                          # \:alpha \:fracture-A
 uniscript '\:alpha <:greek small letter alpha> <:double-R> <:bold italic alpha>'   # α α ℝ 𝜶
 uniscript '<:greek>athos<:/greek> <:greek>athos<:> <<::>alpha>'   # αθοσ αθοσ <:alpha>
 uniscript '\:U+1F60D <:0x1F60D> \U1F60D \:bed'   # 😍 😍 😍 🛏 (code points; names win)
@@ -174,7 +174,7 @@ import Uniscript
 // round trip; toUnicode prints warnings to stderr
 let unicode = try Uniscript.toUnicode("<:alpha> <:fracture A>")
 precondition(unicode == "α 𝔄")
-precondition(Uniscript.toUniscript("α 𝔄") == "<:alpha> <:fracture A>")
+precondition(Uniscript.toUniscript("α 𝔄") == "\\:alpha \\:fracture-A")
 
 // every tag form
 for (source, unicode) in [
@@ -237,7 +237,7 @@ import { toUnicode, toUniscript, convert, header, readsVersion, metaRuns, html, 
 
 // round trip; toUnicode prints warnings to the console
 assert.equal(toUnicode("<:alpha> <:fracture A>"), "α 𝔄");
-assert.equal(toUniscript("α 𝔄"), "<:alpha> <:fracture A>");
+assert.equal(toUniscript("α 𝔄"), "\\:alpha \\:fracture-A");
 
 // every tag form
 for (const [source, unicode] of [
@@ -279,7 +279,7 @@ import { EntityIndex, Uniscript } from "@pannous/uniscript/core";
 const bytes = await readFile(createRequire(import.meta.url).resolve("@pannous/uniscript/entities.idx"));
 const converter = new Uniscript(new EntityIndex(bytes));   // or: await EntityIndex.load(url)
 assert.equal(converter.convert("<:alpha> <:fracture A>").text, "α 𝔄");
-assert.equal(converter.toUniscript("α 𝔄"), "<:alpha> <:fracture A>");
+assert.equal(converter.toUniscript("α 𝔄"), "\\:alpha \\:fracture-A");
 console.log("js core: ok");
 ```
 
@@ -317,7 +317,7 @@ import init, { toUnicode, toUniscript, convert, header, metaRuns, html, ensure, 
 
 await init();   // the .wasm and entities.idx next to the module; init(bytes or URL) takes another index
 assert.equal(toUnicode("<:alpha> <:fracture A>"), "α 𝔄");
-assert.equal(toUniscript("α 𝔄"), "<:alpha> <:fracture A>");
+assert.equal(toUniscript("α 𝔄"), "\\:alpha \\:fracture-A");
 
 assert.deepEqual(convert("<:fracture 7>"), { text: "7", warnings: [{ message: "no fracture form of 7", at: 0 }] });
 assert.throws(() => convert("<:fracture 7>", "error"), { name: "UniscriptError", kind: "Unsupported" });
@@ -358,7 +358,7 @@ from uniscript import WarningMode, Warning
 
 # round trip; to_unicode prints warnings to stderr
 assert uniscript.to_unicode("<:alpha> <:fracture A>") == "α 𝔄"
-assert uniscript.to_uniscript("α 𝔄") == "<:alpha> <:fracture A>"
+assert uniscript.to_uniscript("α 𝔄") == "\\:alpha \\:fracture-A"
 
 # every tag form
 for source, unicode in [
@@ -427,7 +427,7 @@ int main(void) {
 	/* round trip; uniscript_to_unicode prints warnings to stderr and returns NULL on an error */
 	char *unicode = uniscript_to_unicode("<:alpha> <:fracture A>");
 	char *spelled = uniscript_to_uniscript("α 𝔄");
-	assert(strcmp(unicode, "α 𝔄") == 0 && strcmp(spelled, "<:alpha> <:fracture A>") == 0);
+	assert(strcmp(unicode, "α 𝔄") == 0 && strcmp(spelled, "\\:alpha \\:fracture-A") == 0);
 	uniscript_free(unicode);
 	uniscript_free(spelled);
 
@@ -503,7 +503,7 @@ c++ -std=c++17 -I c app.cpp c/ffi/build/libuniscript.a -lm
 int main() {
 	// round trip; to_unicode prints warnings to stderr and throws uniscript::Error
 	assert(uniscript::to_unicode("<:alpha> <:fracture A>") == "α 𝔄");
-	assert(uniscript::to_uniscript("α 𝔄") == "<:alpha> <:fracture A>");
+	assert(uniscript::to_uniscript("α 𝔄") == "\\:alpha \\:fracture-A");
 
 	// every tag form
 	for (auto [source, unicode] : {std::pair{"\\:alpha", "α"}, {"<:greek small letter alpha>", "α"}, {"<:double-R>", "ℝ"},
@@ -565,7 +565,7 @@ import com.pannous.uniscript.header
 fun main() {
 	val converter = Uniscript()
 	check(converter.toUnicode("<:alpha> <:fracture A>") == "α 𝔄")
-	check(converter.toUniscript("α 𝔄") == "<:alpha> <:fracture A>")
+	check(converter.toUniscript("α 𝔄") == "\\:alpha \\:fracture-A")
 	listOf(
 		"\\:alpha" to "α", "<:greek small letter alpha>" to "α", "<:double-R>" to "ℝ", "<:bold italic alpha>" to "𝜶",
 		"<:greek>athos<:/greek>" to "αθοσ", "<:greek>athos<:>" to "αθοσ", "<<::>alpha>" to "<:alpha>",
@@ -599,7 +599,7 @@ warnings errors.
 
 ```wasp probes/usage/wasp/usage.wasp
 use uniscript
-uniscript("<:alpha> <:fracture A>") == "α 𝔄" and unicode_to_uniscript("α 𝔄") == "<:alpha> <:fracture A>"
+uniscript("<:alpha> <:fracture A>") == "α 𝔄" and unicode_to_uniscript("α 𝔄") == "\\:alpha \\:fracture-A"
 ```
 
 The online converter at [pannous.com/uniscript](https://pannous.com/uniscript/) is `uniscript.wasp` compiled to

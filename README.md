@@ -56,7 +56,7 @@ in Intellij / VSCode / Sublime editors
 Uniscript is a human-readable spelling of Unicode that uses only ASCII:   
 every character has at least one name (`<:alpha>`,`<:greek small letter alpha>`, `<:dopf>`),  
   every style is a block type (`<:bold …>`, `<:fracture …>`, `<:upper 2>` → ²),  
-and it converts back: `to_uniscript("α 𝔄")` gives `<:alpha> <:fracture A>`.  
+and it converts back: `to_uniscript("α 𝔄")` gives `\:alpha \:fracture-A`.  
 
 Unicode has no characters for a mirrored R or a red A, so uniscript adds them as invisible **suffix controls**: the letter
 followed by TAG characters (U+E0020…E007E). Basic fonts shows the plain letter. Special HTML or Markdown renderers, or **Uniscript fonts** show the effect:
@@ -125,7 +125,7 @@ python -m uniscript "<:alpha> <:fracture A>"     # α 𝔄
 ```sh
 cargo install uniscript               # or: cargo install --git https://github.com/pannous/uniscript
 uniscript "<:alpha> <:fracture A>"     # α 𝔄
-uniscript -r "α 𝔄"                     # <:alpha> <:fracture A>
+uniscript -r "α 𝔄"                     # \:alpha \:fracture-A
 uniscript /path/notes.txt               # the file's content converted (-r: back to uniscript)
 echo "<:beside 犭 句>" | uniscript      # ⿰犭句 (狗 in the Uniscript CJK font)
 ```
@@ -173,13 +173,13 @@ See [[usage.md]] For examples in all programming languages
 
 ```rust
 assert_eq!(uniscript::to_unicode("<:alpha> <:fracture A>")?, "α 𝔄");
-assert_eq!(uniscript::to_uniscript("α 𝔄"), "<:alpha> <:fracture A>");
+assert_eq!(uniscript::to_uniscript("α 𝔄"), "\\:alpha \\:fracture-A");
 ```
 
 ```python
 import uniscript
 assert uniscript.to_unicode("<:alpha> <:fracture A>") == "α 𝔄"
-assert uniscript.to_uniscript("α 𝔄") == "<:alpha> <:fracture A>"
+assert uniscript.to_uniscript("α 𝔄") == "\\:alpha \\:fracture-A"
 ```
 
 `to_uniscript` followed by `to_unicode` gives the original text back.

@@ -120,6 +120,22 @@ blocks are closed by repeating the opening type plus a slash:
   
 To support interoperability with xml/html the colon in <:/greek> must NOT be omitted!    
   
+# Inline tags
+
+`<:greek>` opens a block, so an inline tag like `<:alpha>`, `<:greek athos>` or `<:color #ff8800 A>` looks like an
+opening tag to the reader (the HTML ambiguity). It still converts, with a warning naming the explicit forms that say
+the same:
+
+`\:alpha` (names only; `\:` reads hyphens as spaces: `\:greek-athos`), `<:greek> athos <:/greek>` (a block and one
+operand) and the self-closed `<:color #ff8800 A/>`, which always works.
+
+`<:greek athos>` ⩵ αθοσ (warning: `<:greek athos> looks like an opening tag: write \:greek-athos, <:greek> athos <:/greek> or <:greek athos/>`)
+
+Not inline, so no warning: blocks and their closers (`<:greek>`, `<:/greek>`, `<:>`), meta spans (`<:font han-japanese>`),
+the header and the escapes `<:<>` `<::>`. A tag that already warns (`<:fracture 7>`) gets no second warning.
+Reverse conversion writes the explicit form (α → `\:alpha`, αx → `<:alpha/>x`), and `uniscript --explicit` (Sublime:
+*Uniscript: Make Tags Explicit*) rewrites a file's inline tags.
+  
 # Spaces
   
 All spaces surrounding entities are only for visual appeal, are not part of the codepoint stream and will thus not be   rendered in the resulting UTF-8
@@ -549,7 +565,7 @@ import Uniscript
 try Uniscript.toUnicode("<:alpha> <:fracture A>")   // "α 𝔄", throws UniscriptError.unknownEntity / .unclosed; warnings to stderr
 try Uniscript.convert("<:greek c>")                 // ("c", [Warning(message: "no greek form of c", at: 0)])
 try Uniscript.convert("<:greek c>", mode: .error)   // throws UniscriptError.unsupported(warning)
-Uniscript.toUniscript("α 𝔄")                       // "<:alpha> <:fracture A>"
+Uniscript.toUniscript("α 𝔄")                       // "\\:alpha \\:fracture-A"
 let (styled, warnings) = Uniscript.standard.metaRuns(tagged)   // meta information, as in Rust
 Uniscript.standard.html(styled)
 ```
@@ -570,7 +586,7 @@ val uniscript = Uniscript()
 uniscript.toUnicode("<:alpha> <:fracture A>")         // "α 𝔄", throws UniscriptError.UnknownEntity / Unclosed / InvalidMeta
 uniscript.convert("<:greek c>")                        // Converted("c", [Warning("no greek form of c", 0)])
 uniscript.convert("<:greek c>", WarningMode.ERROR)     // throws UniscriptError.Unsupported(warning); LENIENT never throws
-uniscript.toUniscript("α 𝔄")                          // "<:alpha> <:fracture A>"
+uniscript.toUniscript("α 𝔄")                          // "\\:alpha \\:fracture-A"
 val (styled, warnings) = uniscript.metaRuns(tagged)    // meta information, as in Rust
 uniscript.html(styled)
 ```
@@ -589,7 +605,7 @@ using Pannous;
 Uniscript.ToUnicode("<:alpha> <:fracture A>");            // "α 𝔄", throws UniscriptException (Kind: UnknownEntity, Unclosed, InvalidMeta)
 Uniscript.Convert("<:greek c>");                          // Conversion("c", [("no greek form of c", 0)])
 Uniscript.Convert("<:greek c>", UniscriptMode.Error);     // throws UniscriptException, Kind Unsupported; Lenient never throws
-Uniscript.ToUniscript("α 𝔄");                             // "<:alpha> <:fracture A>"
+Uniscript.ToUniscript("α 𝔄");                             // "\\:alpha \\:fracture-A"
 Uniscript.Html(tagged);                                    // meta information as <span>s; MetaRuns(tagged), Font(name)
 ```
 
@@ -609,7 +625,7 @@ JDK's restricted-method warning.
 // pom.xml: <dependency><groupId>com.pannous</groupId><artifactId>uniscript</artifactId><version>1.0.0</version></dependency>
 import com.pannous.uniscript.ffi.Uniscript;               // package .ffi: com.pannous:uniscript-kotlin owns com.pannous.uniscript.Uniscript
 Uniscript.toUnicode("<:alpha> <:fracture A>");              // "α 𝔄", leniently: faulty uniscript stays, warnings are logged (logger com.pannous.uniscript.ffi)
-Uniscript.toUniscript("α 𝔄");                              // "<:alpha> <:fracture A>"
+Uniscript.toUniscript("α 𝔄");                              // "\\:alpha \\:fracture-A"
 Uniscript.convert("<:greek c>", Uniscript.Mode.WARN);       // Result[text=c, warnings=[uniscript: no greek form of c at byte 0]]
 Uniscript.convert("<:nosuchthing>", Uniscript.Mode.WARN);   // throws UniscriptException (kind() UNKNOWN_ENTITY, detail() "nosuchthing")
 Uniscript.html(Uniscript.convert("<:font han-japanese>直").text()).text();  // <span lang="ja" …>直</span>
@@ -641,7 +657,7 @@ target_link_libraries(app PRIVATE uniscript::uniscript)   # C: <uniscript.h>, C+
 uniscript::to_unicode("<:alpha> <:fracture A>");                // "α 𝔄", throws uniscript::Error; warnings to stderr
 auto [text, warnings] = uniscript::convert("<:greek c>");       // "c", {{"no greek form of c", 0}}
 uniscript::convert("<:nosuch>", uniscript::Mode::Lenient).text;  // "<:nosuch>", with a warning
-uniscript::to_uniscript("α 𝔄");                                // "<:alpha> <:fracture A>"
+uniscript::to_uniscript("α 𝔄");                                // "\\:alpha \\:fracture-A"
 uniscript::html(tagged).text;                                   // meta information as <span>s with CSS
 ```
 
@@ -650,7 +666,7 @@ through C and C++.
 
 ## Syntax
 
-- `<:name>` or `\:name`: an entity. Names are case sensitive; spaces may replace hyphens (`<:greek small letter alpha>`).
+- `\:name`, `<:name/>` or (with a warning, see Inline tags) `<:name>`: an entity. Names are case sensitive; spaces may replace hyphens (`<:greek small letter alpha>`).
   A `<:name>` known in no case as written, and no block either, falls back to lowercase: `<:LATIN CAPITAL LETTER ETH>` → Ð,
   `<:TILDE>` → the entity `tilde`. A name without a lowercase twin is indexed in lowercase too (`<:CAYLEYS>` → `Cayleys` ℭ).
 - `<:type operands>`: a block type applied to space separated operands; `<:double-d>` works too.
