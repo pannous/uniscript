@@ -22,3 +22,9 @@ warp's own tests/test_uniscript.rs use warp's fetched copy packages/uniscript (s
 - A text const built by an expression (`const m = "" + (64976 as char)`) used in a module function gave
   "error + text" type errors for the whole module; an int const with the expression inline works.
 - A zero-argument function call `f()` in a module was read as an undefined variable.
+
+## *readings blocks split words into whole readings (Rust c9cd2a1)
+- readings() is the DP over character boundaries with three parallel lists (bounds, fewest, first_end), filled
+  backwards. warp lists: `list = list + [x]` grows a list, `list += [x]` fails WASM validation (type mismatch i64 vs
+  ref); `list[i] = v` works (warp hints to prefer 1-based `list#i+1`, harmless).
+- A word that does not split warns via unsupported() at the block's `at` (11 in `<:chinese> abcde <:/chinese>`).

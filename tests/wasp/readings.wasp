@@ -1,0 +1,13 @@
+use uniscript
+// a *readings block (chinese, cuneiform) splits an unknown word into whole readings: the fewest, the longest first
+ok = uniscript("<:chinese> shihan <:/chinese>") == "是汉"
+ok = ok and uniscript("<:chinese> nuli <:/chinese>") == "努里"
+ok = ok and uniscript("<:chinese> woaini <:/chinese>") == "我爱你"
+ok = ok and uniscript("<:chinese> shi han nuli <:/chinese>") == "是 汉 努里"
+ok = ok and uniscript("<:chinese> nu3li4 <:/chinese>") == "努力"
+ok = ok and uniscript("<:chinese shihan/>") == "是汉"
+// a word that does not split stays as written (warns.sh checks its warning); letter blocks still spell letters
+ok = ok and uniscript("<:chinese> abcde <:/chinese>") == "abcde"
+ok = ok and uniscript("<:chinese> shi qqq <:/chinese>") == "是 qqq"
+ok = ok and uniscript("<:greek> metal <:/greek>") == "μεταλ"
+ok

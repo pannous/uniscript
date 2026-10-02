@@ -26,6 +26,7 @@ const last_surrogate = 57343      // DFFF
 const hex_digits = "0123456789ABCDEF"
 const max_operand_words = 8      // the most words one operand spans: <:egyptian man with hand to mouth>
 const warned_code_point = 64976  // U+FDD0, a noncharacter: the mark unsupported() leaves in converted text
+const readings_key = "*readings" // a block whose words split into whole readings (chinese shihan → shi han), not letters
 
 // ---- the index -------------------------------------------------------------------------------------------------
 
@@ -219,11 +220,59 @@ prefix_width(block:text, characters:text, i) := {
 	width
 }
 
+// an entry of a block followed by the suffixes of the stacked effects
+own_form(own:text, effects:text, at) := own + effect_suffixes(effects, own, at)
+
+// the forms of the whole readings a word splits into (shihan → 是汉): the fewest pieces, of those the longest first
+// piece; "" when it does not split
+readings(block:text, word:text, effects:text, at) := {
+	// bounds: the character boundaries; fewest, first_end: pieces of the best split from a boundary (-1: none), the
+	// boundary its first piece ends at
+	bounds = [0]
+	fewest = [-1]
+	first_end = [0]
+	i = 0
+	while i < word.bytes {
+		i += utf8_width(byte_at(word, i))
+		bounds = bounds + [i]
+		fewest = fewest + [-1]
+		first_end = first_end + [0]
+	}
+	last = bounds.count - 1
+	fewest[last] = 0
+	start = last - 1
+	while start >= 0 {
+		end = last
+		while end > start {
+			if fewest[end] >= 0 and (fewest[start] < 0 or fewest[end] + 1 < fewest[start]) and find(names_table, block + " " + byte_slice(word, bounds[start], bounds[end])) >= 0 {
+				fewest[start] = fewest[end] + 1
+				first_end[start] = end
+			}
+			end--
+		}
+		start--
+	}
+	if fewest[0] < 0 { return "" }
+	out = ""
+	start = 0
+	while start < last {
+		out += own_form(entry(block + " " + byte_slice(word, bounds[start], bounds[first_end[start]])), effects, at)
+		start = first_end[start]
+	}
+	out
+}
+
 // one operand in a block: its own entry (red circle → 🔴, greek eta → η), else each character (or pair: th) of the
 // operand, or of the entity it names
 operand(block:text, token:text, effects:text, at) := {
 	own = find(names_table, block + " " + token)
-	if own >= 0 { return value_of(own) + effect_suffixes(effects, value_of(own), at) }
+	if own >= 0 { return own_form(value_of(own), effects, at) }
+	if find(names_table, block + " " + readings_key) >= 0 {
+		// <:chinese> shihan: whole readings, never letters (nuli is nu li, not n u l i)
+		split = readings(block, token, effects, at)
+		if split.bytes > 0 { return split }
+		return unsupported("no " + block + " form of " + token, at) + token
+	}
 	characters = token
 	named = find(names_table, token)
 	if named >= 0 and token.bytes > 1 { characters = value_of(named) }
