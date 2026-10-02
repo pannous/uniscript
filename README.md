@@ -75,6 +75,8 @@ followed by TAG characters (U+E0020…E007E). Basic fonts shows the plain letter
   invisible TAG sequences and rendered by `--html` as spans with CSS.
 - **Honest**: an unknown name is an error. A character without a counterpart (`<:fracture 7>`) stays plain with a
   warning that can be made an error (`--strict`).
+- **Locally extendable**: a `.uniscript` file (here, in a parent folder or in your home) adds or overrides names, like
+  `virus: 🦠`, and even block types ([usage.md](usage.md#local-entities)); Rust library and command line so far.
 - **Many languages, one data file**: the Rust crate (the reference) with native ports in Swift, TypeScript, Python, C,
   Kotlin and [wasp](https://github.com/pannous/warp), and the Rust core wrapped for Java, C#, C++, Python, C and
   WebAssembly. All of them read `data/entities.idx` and pass the same shared cases. In wasp, `use uniscript` fetches this

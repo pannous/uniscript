@@ -130,6 +130,27 @@ uniscript --html "<:color red 𓀀>"          # <span style="color: red">𓀀</s
 echo "<:beside 犭 句>" | uniscript           # ⿰犭句 (狗 in the Uniscript CJK font)
 ```
 
+### Local entities
+
+A `.uniscript` file in the working directory, any parent directory or the home directory adds or overrides names, the
+nearest file winning. It has the format of `data/entities/`; a bare `name: text` is an own name, which wins both ways:
+
+```
+virus: 🦠
+blocks {
+	tiny {
+		a: "ᵃ"
+	}
+}
+```
+
+```sh
+uniscript "<:virus> <:tiny a>"              # 🦠 ᵃ
+uniscript -r "🦠"                           # <:virus> (without the file: <:microbe>)
+```
+
+A broken file only warns. In Rust: `Uniscript::with_local_entities(&uniscript::local_entity_files(&directory))`.
+
 `uniscript build`, `uniscript check` and `uniscript chunks` rebuild the index from `data/entities/`, check it and cut it
 into chunks for the web (see [TypeScript](#typescript--javascript)). Editors: the Sublime Text package
 (`sublime/Uniscript`, Package Control *Add Repository*
