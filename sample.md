@@ -42,26 +42,23 @@ circle := <:pi> * r<:upper 2>  // \:infinity <:nosuchthing> <:greek c>
 
 ## Wiki examples
 
-- `\:infinity` → \:infinity
-- `<:fracture A>` → <:fracture A>
-- `<:fracture A b c >` → <:fracture A b c >
-- `<:fracture> A b c <:>` → <:fracture> A b c <:>
-- `<:greek> a b g d phi<:/greek>` → <:greek> a b g d phi<:/greek>
-- `<:greek> athos <:/greek> <:greek eta Omega>` → <:greek> athos <:/greek> <:greek eta Omega>
-- `x<:upper a> X<:upper A>` → x<:upper a> X<:upper A>
-- `<:ligature ae>` → <:ligature ae>
-- `<:red circle> <:brown heart>` → <:red circle> <:brown heart>
-- `<:reverseInPlace e>` → <:reverseInPlace e>
-- `<:iconic ⚠>` → <:iconic ⚠>
-- `<:mirror red A>` → <:mirror red A>
-- `<:forall> x <:in> <:double R>` → <:forall> x <:in> <:double R>
-- `<:beside 犭 句>` → <:beside 犭 句>
-- `<:above 𓀀 𓁐>  <:reverse 𓀀 𓁐>` → <:above 𓀀 𓁐>  <:reverse 𓀀 𓁐>
-- `<:above 󳀃 𓁐>  <:reverse 󳀃 𓁐>` → <:above 󳀃 𓁐>  <:reverse 󳀃 𓁐>
-- `a literal <<::> marker` → a literal <<::> marker
-<:woman><:zwj><:emoji-component-red-hair>
-<:woman><:zwj><:emoji-component-red-hair>
-
+• `\:infinity` → \:infinity
+• `<:fracture A>` → <:fracture A>
+• `<:fracture A b c >` → <:fracture A b c >
+• `<:fracture> A b c <:>` → <:fracture> A b c <:>
+• `<:greek> a b g d phi<:/greek>` → <:greek> a b g d phi<:/greek>
+• `<:greek> athos <:/greek> <:greek eta Omega>` → <:greek> athos <:/greek> <:greek eta Omega>
+• `x<:upper a> X<:upper A>` → x<:upper a> X<:upper A>
+• `<:ligature ae>` → <:ligature ae>
+• `<:red circle> <:brown heart>` → <:red circle> <:brown heart>
+• `<:reverseInPlace e>` → <:reverseInPlace e>
+• `<:iconic ⚠>` → <:iconic ⚠>
+• `<:mirror red A>` → <:mirror red A>
+• `<:forall> x <:in> <:double R>` → <:forall> x <:in> <:double R>
+• `<:beside 犭 句>` → <:beside 犭 句>
+• `<:above 𓀀 𓁐>  <:reverse 𓀀 𓁐>` → <:above 𓀀 𓁐>  <:reverse 𓀀 𓁐>
+• `<:above 󳀃 𓁐>  <:reverse 󳀃 𓁐>` → <:above 󳀃 𓁐>  <:reverse 󳀃 𓁐>
+• `<:red-haired woman>` <:red-haired woman>
 
 **Bold <:alpha>**, *italic <:Omega>* and a [link to <:infinity>](https://example.com).
 
