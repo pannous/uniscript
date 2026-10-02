@@ -28,8 +28,9 @@ HIEROGLYPH_DESCRIPTIONS = HERE / "sources" / "list_of_hieroglyphs.wiki"
 EXTENDED_SIGN_LIST = HERE / "sources" / "gardiner.full.csv"
 # the Anatolian Hieroglyphs section of Unicode's NamesList.txt: Latin logogram names and Luwian syllabic values as aliases
 ANATOLIAN_NAMES_LIST = HERE / "sources" / "anatolian_names_list.txt"
-# character → pinyin readings with tone numbers (de/di2/di4), most frequent character first
-CHINESE_READINGS = HERE / "sources" / "chinese_readings.tsv"
+# character → pinyin readings with tone numbers (de/di2/di4), most frequent character first (data/chinese_readings.py):
+# uruk_egypt's frequency list, then every other CJK unified ideograph with a Mandarin reading in Unihan
+CHINESE_READINGS = [HERE / "sources" / "chinese_readings.tsv", HERE / "sources" / "unihan_readings.tsv"]
 # reading → cuneiform signs, normalized from uruk_egypt's cuneiform.list (probes/cuneiform_list_import.py)
 CUNEIFORM_READINGS = HERE / "sources" / "cuneiform_readings.tsv"
 UNICODE_MATH_TABLE = Path("/usr/local/texlive/2026basic/texmf-dist/tex/latex/unicode-math/unicode-math-table.tex")
@@ -121,10 +122,11 @@ ANATOLIAN_ALIASES = {"luwian": ANATOLIAN_BLOCK}
 # short aliases for typing: <:gr a>, <:eg A1>, <:cn kou>
 GREEK_ALIASES = {"gr": "greek"}
 EGYPTIAN_ALIASES["eg"] = EGYPTIAN_BLOCK
-# block type 'chinese': pinyin → hanzi, the most frequent character of a reading wins, with tone (kou4 扣) and without (kou 口)
+# block type 'chinese': pinyin → hanzi, the most frequent character of a reading wins, with tone (kou4 扣) and without (kou 口);
+# the other characters of a reading are numbered in order (kou4.2 寇), so every character can be typed
 CHINESE_BLOCK = "chinese"
+HOMOPHONE_SEPARATOR = "."
 CHINESE_ALIASES = {"cn": CHINESE_BLOCK}
-PINYIN_READING = re.compile(r"^[a-z]+(?:u:)?[a-z]*[1-5]?$")
 # block type 'cuneiform': Sumerian and Akkadian readings and sign names (<:cuneiform a2> 𒀉, <:cuneiform ŠA> 𒊭)
 CUNEIFORM_BLOCK = "cuneiform"
 CUNEIFORM_START = 0x12000
@@ -434,25 +436,31 @@ def anatolian_block(named):
 	return table
 
 
-def pinyin_keys(reading):
-	"""lu:3 → lv3, lv: with tone and without"""
-	toned = reading.lower().replace("u:", "v")
-	return [toned, toned.rstrip("12345")]
+def ranked_readings(source):
+	"""(character, reading) of a readings file: every character's first reading before the second ones, most frequent first"""
+	rows = [line.split("\t") for line in source.read_text().splitlines() if not line.startswith("#")]
+	readings = [(character, spellings.split("/")) for character, spellings in rows]
+	return [(c, s[position]) for position in range(max(len(s) for _, s in readings)) for c, s in readings if position < len(s)]
 
 
 def chinese_block():
-	"""reading → the most frequent character with it; every character's first reading before the others"""
-	readings = []
-	for line in CHINESE_READINGS.read_text().splitlines():
-		character, _, spellings = line.partition("\t")
-		if not line.startswith("#") and len(character) == 1:
-			readings.append((character, [r for r in re.split(r"[/,\s]+", spellings.strip().lower()) if PINYIN_READING.match(r)]))
+	"""reading → its characters in order, with tone (kou4 扣, kou4.2 寇) and the first without (kou 口)"""
 	table = {}
-	for position in range(max(len(spellings) for _, spellings in readings)):
-		for character, spellings in readings:
-			for key in pinyin_keys(spellings[position]) if position < len(spellings) else []:
-				table.setdefault(key, character)
+	holders = {}
+	for character, reading in dict.fromkeys(pair for source in CHINESE_READINGS for pair in ranked_readings(source)):
+		count = holders.get(reading, 0) + 1
+		while homophone(reading, count) in table:  # a neutral tone's reading taken without tone: fan (反 fan3) → fan.2
+			count += 1
+		holders[reading] = count
+		table[homophone(reading, count)] = character
+		for spelling in dict.fromkeys([reading, reading.replace("ve", "ue")]):  # lüè: lve4 and lue4
+			table.setdefault(spelling, character)
+			table.setdefault(spelling.rstrip("12345"), character)
 	return table
+
+
+def homophone(reading, count):
+	return reading if count == 1 else f"{reading}{HOMOPHONE_SEPARATOR}{count}"
 
 
 def cuneiform_keys(reading):

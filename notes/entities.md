@@ -32,7 +32,20 @@
   first; the personal columns stay out of this public repo). Every character's first reading is placed before second
   readings, first wins, each with and without tone (kou → 口, kou4 → 扣, di → 第 not 的). `lu:3` → `lv3`.
   `"*one-way"` keeps a block out of the reverse table (else to_uniscript would spell every hanzi as <:chinese …>);
-  honoured by both builders (Python and src/entities.rs). `*rare` keeps its 1,587 readings out of the web Bloom filter.
+  honoured by both builders (Python and src/entities.rs). `*rare` keeps its readings out of the web Bloom filter.
+- Complete chinese block (2026-10-02): `data/chinese_readings.py` writes both sources. chinese_readings.tsv is now
+  sorted by the rank column (the uruk file is grouped by pinyin after row ~65, so `fan` was 烦 instead of 反), merges
+  characters listed twice (和), keeps 冷 (`冷 (!)`), drops personal `*notes`, turns tone marks into numbers (háng →
+  hang2) and lue4 into Unihan's lve4: 4333 characters, all reachable. unihan_readings.tsv: every ideograph with a
+  Mandarin reading in Unihan 18 (44,364; kMandarin, kHanyuPinlu, kTGHZ2013, kXHC1983, else kHanyuPinyin), ordered by
+  kHanyuPinlu counts, kGradeLevel, the 2013 standard table, code point. The frequency list's readings go first, so
+  the common character keeps the plain reading (yi2 疑); the other characters of a reading are numbered in frequency
+  order (yi2.2 移, yi2.3 遗); without tone only the first (yi 一). lve4 is also lue4. 46,743 keys (×2 with `cn`).
+  Rejected: numbering toneless readings too (fan.2): 91k keys, index 12 MB.
+- Size: entities.idx 6.12 → 9.19 MB (gzip 2.05 → 3.04 MB), which the IntelliJ/VS Code/Sublime plugins bundle. Web: the
+  names of rare blocks go in 8 KB chunks (index::RARE_CHUNK_FACTOR): manifest 36,576 → 37,068 bytes (4 KB chunks: 46 KB,
+  16 KB chunks: 32.6 KB); demo page unchanged (308 KB, 13 requests, probes/chinese/web_cost.sh, local range server);
+  `<:cn> wo3 ai4 ni3 zhong1 guo2 yi2 yi2.2` fetches 56 KB of chunks (40 KB with 4 KB chunks, 105 KB with 16 KB).
   `eg` shadows the HTML entity `<:eg>` ⪚ (blocks win); the release binary at /opt/cargo/release must be rebuilt for
   js differential tests after any index change.
 - Cuneiform (2026-10-02): `cuneiform` block (aliases `cu` `sumerian` `akkadian`, data/entities/unicode/cuneiform.wasp)

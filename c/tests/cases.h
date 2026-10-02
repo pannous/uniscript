@@ -106,6 +106,7 @@ static const conversion_case converts[] = {
 	{"<:anatolian CAPUT>", "\U00014409"}, {"<:anatolian ta2>", "\U0001441E"}, {"<:hieroglyph SCRIBA>", "\U0001456D"},
 	{"<:gr a>", "α"}, {"<:eg A1>", "𓀀"}, {"<:cn kou>", "口"}, {"<:cn kou4>", "扣"},
 	{"<:chinese> wo3 ai4 ni3 <:/chinese>", " 我 爱 你 "},
+	{"<:cn yi2>", "疑"}, {"<:cn yi2.2>", "移"}, {"<:cn biang2.2>", "𰻞"},
 	{"<:cuneiform a2>", "𒀉"}, {"<:cu sha3>", "𒊮"}, {"<:sumerian dingir>", "𒀭"},
 	{"<:<> <::> <<::>", "< : <:"}, {"<:less>:", "<:"},
 	{HEADER "\n<:alpha>\n", "α\n"}, {HEADER " <:alpha>", " α"}, {"<:uniscript><:alpha>", "α"},
