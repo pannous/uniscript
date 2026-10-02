@@ -220,8 +220,9 @@ class UniscriptReplaceTagCommand(sublime_plugin.TextCommand):
 def completion_item(trigger, annotation, completion, typed_word, whole_tag=None):
     """Sublime hides a completion that would leave the typed word as it is (\\:egyptian-a1 typed whole): inserting
     characters, that one finishes the tag by a command instead, so it is listed and chosen like the others. An
-    operand of another block replaces the whole typed tag, also by a command"""
+    operand of another block replaces the whole typed tag, also by a command, listed with the operand first"""
     if whole_tag:
+        trigger, annotation = cli.operand_first(trigger, annotation)
         return sublime.CompletionItem.command_completion(trigger, REPLACE_TAG_COMMAND, {"tag": whole_tag}, annotation=annotation)
     if completion == typed_word and inserts_characters():
         return sublime.CompletionItem.command_completion(trigger, FINISH_TAG_COMMAND, {"word": typed_word}, annotation=annotation)

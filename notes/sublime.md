@@ -57,3 +57,7 @@
 - Whole matches first: operands of other blocks equal to the typed name (\:wo → chinese wo 我) follow a whole entity
   name and precede longer names (woman). Sublime re-sorts by its fuzzy score (prefix matches above `chinese wo`), so the
   list carries INHIBIT_REORDER and our order is final. probes/test_sublime_whole_word_first.py.
+- INHIBIT_REORDER only keeps our order among equal fuzzy scores: a trigger starting with the typed name (wood) still
+  beats one holding it as a later word (chinese wo). So an operand of another block is listed operand first
+  (`wo  我 chinese`, cli.operand_first). To inspect the running plugin, copy probes/sublime_live_state.py into
+  Packages/User (it dumps state to probes/sublime_live_state.json on load).

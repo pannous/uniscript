@@ -107,6 +107,13 @@ def shown(name):
     return homophone.group(1) if homophone else name
 
 
+def operand_first(trigger, annotation):
+    """An operand of another block as Sublime lists it: chinese wo 我 as wo 我 chinese. Sublime ranks a trigger starting
+    with the typed name above one holding it as a later word (wood above chinese wo), whatever order it was given"""
+    block, _, operand = trigger.rpartition(" ")
+    return operand, "{} {}".format(annotation, block)
+
+
 class Names:
     """The index's names: entities with their text, block words, and each block's operands"""
 
