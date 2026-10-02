@@ -26,8 +26,8 @@ final class UniscriptTests: XCTestCase {
 	func testBlockTypesStyleTheirOperands() {
 		converts("<:fracture A>", "𝔄")
 		converts("<:fracture A b c >", "𝔄𝔟𝔠")
-		converts("<:fracture> A b c <:>", " 𝔄 𝔟 𝔠 ")
-		converts("<:greek> a b g d <:/greek>", " α β γ δ ")
+		converts("<:fracture> A b c <:>", "𝔄 𝔟 𝔠")
+		converts("<:greek> a b g d <:/greek>", "α β γ δ")
 		converts("<:double d>", "𝕕")
 		converts("<:double-d>", "𝕕")
 		converts("x<:upper a>", "xᵃ")
@@ -37,7 +37,7 @@ final class UniscriptTests: XCTestCase {
 	}
 
 	func testGreekIsTransliteratedPhonetically() {
-		converts("<:greek> athos <:/greek>", " αθοσ ") // th is one letter
+		converts("<:greek> athos <:/greek>", "αθοσ") // th is one letter
 		converts("<:greek th ch ps>", "θχψ")
 		converts("<:greek eta Omega lambda>", "ηΩλ")
 	}
@@ -127,7 +127,7 @@ final class UniscriptTests: XCTestCase {
 		converts("<:egyptian seated man>", "𓀀")
 		converts("<:egyptian man sitting>", "𓀀")
 		converts("<:egyptian man-sitting>", "𓀀")
-		converts("<:egyptian> A1 Aa1 <:/egyptian>", " 𓀀 𓐍 ")
+		converts("<:egyptian> A1 Aa1 <:/egyptian>", "𓀀 𓐍")
 		converts("<:mirror egyptian A1>", "𓀀\u{13440}")
 		XCTAssertEqual(Uniscript.toUniscript("𓀀 𓐍"), "<:egyptian A1> <:egyptian Aa1>")
 	}
@@ -137,11 +137,14 @@ final class UniscriptTests: XCTestCase {
 		converts("<:less>:", "<:")
 	}
 
-	func testFullBlocksKeepTheirSpaces() throws {
-		converts("<:greek> filosofia kosmos<:/greek>", " φιλοσοφια κοσμοσ")
+	func testFullBlocksEatOneSpaceOfPadding() throws {
+		converts("<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμοσ")
 		converts("<:greek a kosmos>", "ακοσμοσ")
 		converts("<:greek phi chi>", "φχ")
-		XCTAssertEqual(try Uniscript.convert("<:greek>\nkosmos\t<:/greek>", mode: .error).text, "\nκοσμοσ\t")
+		XCTAssertEqual(try Uniscript.convert("<:greek>\nkosmos\t<:/greek>", mode: .error).text, "κοσμοσ")
+		converts("<:greek>  athos  <:/greek>", " αθοσ ")
+		converts("<:greek>\r\nkosmos\r\n<:/greek>", "κοσμοσ")
+		converts("<:greek>\nfilosofia\nkosmos\n<:/greek>", "φιλοσοφια\nκοσμοσ")
 	}
 
 	func testTheHeaderDeclaresUniscriptAndItsVersion() throws {

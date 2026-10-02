@@ -12,6 +12,9 @@ private let shortOpen = UInt8(ascii: "\\")
 private let tagClose = UInt8(ascii: ">")
 private let closingSlash: Unicode.Scalar = "/"
 private let escapedColon = "<::>"
+/// A block tag eats one of these on its inner side: `<:greek> athos <:/greek>` is `αθοσ`; `\r\n` counts as one
+private let padding: Set<UInt8> = [UInt8(ascii: " "), UInt8(ascii: "\t"), UInt8(ascii: "\n"), UInt8(ascii: "\r")]
+private let crlf: [UInt8] = [UInt8(ascii: "\r"), UInt8(ascii: "\n")]
 /// `\U1F60D`: the only marker without a colon, a code point in the notation of Python and C
 private let unicodeEscape = UInt8(ascii: "U")
 private let escapedUnicode = "<:U>"
@@ -601,6 +604,11 @@ private final class Conversion {
 		return header.length
 	}
 
+	/// A tag's content closes a block: `<:>` or `<:/greek>`, not a meta close like `<:/color>`
+	private func closesBlock(_ content: String) -> Bool {
+		isClosing(content) && (content.isEmpty || index.get(.meta, String(content.dropFirst())) == nil)
+	}
+
 	func unicode(of source: String) throws -> String {
 		let bytes = Array(source.utf8)
 		func text(_ range: Range<Int>) -> String { String(decoding: bytes[range], as: UTF8.self) }
@@ -611,13 +619,22 @@ private final class Conversion {
 			let colon = at + 1 < bytes.count && bytes[at + 1] == markerColon && (bytes[at] == tagOpen || bytes[at] == shortOpen)
 			return colon || (bytes[at] == shortOpen && unicodeEscapeLength(bytes, after: at) != nil)
 		}
+		func markerClosesBlock(_ marker: Int) -> Bool {
+			guard marker + 1 < bytes.count, bytes[marker] == tagOpen, bytes[marker + 1] == markerColon,
+				let close = firstIndex(from: marker + 2, where: { bytes[$0] == tagClose }) else { return false }
+			return closesBlock(text(marker + 2..<close))
+		}
 		var out = ""
 		var block: String?
 		var position = headerLength(source)
 		while position < bytes.count {
 			let marker = firstIndex(from: position, where: isMarker) ?? bytes.count
-			let run = text(position..<marker)
-			if let block { out += blockText(block, run, position) } else { out += run }
+			if let block {
+				let end = markerClosesBlock(marker) ? marker - closingPaddingLength(bytes[position..<marker]) : marker
+				out += blockText(block, text(position..<end), position)
+			} else {
+				out += text(position..<marker)
+			}
 			position = marker
 			if position == bytes.count { break }
 			if let length = unicodeEscapeLength(bytes, after: position) {
@@ -639,16 +656,18 @@ private final class Conversion {
 					throw UniscriptError.unclosed(text(position..<bytes.count))
 				}
 				let content = text(position + 2..<close)
-				if content.hasPrefix("/"), index.get(.meta, String(content.dropFirst())) != nil {
-					out += Meta.close(key: String(content.dropFirst())).tags
-				} else if isClosing(content) {
+				var after = close + 1
+				if closesBlock(content) {
 					block = nil
+				} else if content.hasPrefix("/") {
+					out += Meta.close(key: String(content.dropFirst())).tags
 				} else if isBlock(content) {
 					block = content
+					after += openingPaddingLength(bytes[after...])
 				} else {
 					out += try tag(content, position)
 				}
-				position = close + 1
+				position = after
 			}
 		}
 		return out
@@ -710,6 +729,16 @@ private func unicodeEscapeLength(_ bytes: [UInt8], after backslash: Int) -> Int?
 	guard start < bytes.count, bytes[start] == unicodeEscape else { return nil }
 	let length = tokenLength(bytes, from: start + 1)
 	return hexValue(String(decoding: bytes[start + 1..<start + 1 + length], as: UTF8.self), minimum: minBareHexDigits).map { _ in 1 + length }
+}
+
+/// Bytes of the one whitespace a block opener eats after it
+private func openingPaddingLength(_ text: ArraySlice<UInt8>) -> Int {
+	text.starts(with: crlf) ? crlf.count : text.first.map { padding.contains($0) ? 1 : 0 } ?? 0
+}
+
+/// Bytes of the one whitespace a block's closer eats before it
+private func closingPaddingLength(_ text: ArraySlice<UInt8>) -> Int {
+	text.reversed().starts(with: crlf.reversed()) ? crlf.count : text.last.map { padding.contains($0) ? 1 : 0 } ?? 0
 }
 
 /// A tag's content is a closing tag: `<:>` or `<:/greek>`
