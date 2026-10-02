@@ -14,6 +14,14 @@
   block × sample operands: this caught the stacked-style change (bb55df0) landing in the reference mid-port. Rerun it
   whenever src/lib.rs changes; the Rust binary must be rebuilt first (`CARGO_TARGET_DIR=/opt/cargo cargo build --release`).
 - tests/test_shared_cases.py runs js/test/cases.json (shared by every library).
+- Inline tags (8ed80c0): an opener-like `<:content>` that converted without other warnings warns with its explicit
+  forms; `_tag` raises instead of returning a Result, so convert catches the error first, counts warnings, warns, then
+  hands the error to `_kept`. `content.len() > 1` is bytes again (utf8_length). `explicit()` skips the header by its
+  CHARACTER length (`_header_span`), not `Header.length` (bytes). to_uniscript ends in `self.explicit(...)`. The
+  port-specific test literals were rewritten with the port's own explicit() (round_trips/to_uniscript expectations),
+  but converts_quietly and quiet ERROR cases use `<:…/>` like the Rust tests, and unknown tags (`<:nosuchthing>`)
+  stay: explicit() rewrites them too but the tests are about keeping them. tests/test_inline_tags.py ports
+  tests/inline_tags_test.rs.
 - The bundled uniscript/entities.idx is a symlink to data/entities.idx; setuptools copies the target into the wheel.
 - Which `uniscript` the tests import: the only installed one is uniscript-rs (FFI wheel in
   ~/Library/Python/3.14/lib/python/site-packages/uniscript, from python/ffi/build.sh; uniscript-py is not installed,
