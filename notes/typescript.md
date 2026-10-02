@@ -38,3 +38,10 @@ re-read `git log -- src/lib.rs` before declaring parity; the differential test c
 - The opener warning goes only when `#tag` succeeded and added no warning (counted via `#warnings.length` before/after);
   "longer than 1 byte" is `utf8Length(content) > 1`, the next character is a whole code point (`characterAt`).
 - `explicit` skips the header by its UTF-16 `headerOf(…).end` (Rust uses byte length — same cut).
+
+## `*readings` blocks (Rust c9cd2a1)
+
+- `#operand`: a block with the `*readings` control (chinese, cuneiform) splits an unknown word into whole readings via
+  `#readings` (DP over code points, fewest pieces, longest first piece on ties — iterate `end` downwards and replace only
+  on strictly fewer); no split → token kept with one `no <block> form of <word>` warning. Greek keeps letters/digraphs.
+- Split on `[...word]` (code points), matching Rust's `char_indices` boundaries.

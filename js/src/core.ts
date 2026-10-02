@@ -17,6 +17,8 @@ const ESCAPED_COLON = "<::>";
 const ESCAPED_UNICODE = "<:U>";
 const SUFFIX_KEY = "*suffix";
 const GROUP_KEY = "*group";
+/** a block whose words split into whole readings (chinese shihan → shi han), not letters and digraphs (greek) */
+const READINGS_KEY = "*readings";
 /** The most words one operand spans: `<:egyptian man with hand to mouth>` */
 const MAX_OPERAND_WORDS = 8;
 /** The block control naming the meta a block becomes where it has no suffix control (`red *meta` → `color red`) */
@@ -430,8 +432,16 @@ export class Uniscript {
 	/** One operand: its own entry (red circle → 🔴, greek eta → η), else each character or pair (greek th → θ)
 	 * of the operand, or of the entity it names */
 	#operand(block: string, token: string, effects: string[], at: number): string {
+		const ownForm = (own: string) => afterBase(own, this.#effectSuffixes(effects, firstCharacter(own) || " ", at));
 		const own = this.#name(`${block} ${token}`);
-		if (own !== undefined) return afterBase(own, this.#effectSuffixes(effects, firstCharacter(own) || " ", at));
+		if (own !== undefined) return ownForm(own);
+		if (this.#form(block, READINGS_KEY) !== undefined) {
+			// <:chinese> shihan: whole readings, never letters (nuli is nu li, not n u l i)
+			const pieces = this.#readings(block, token);
+			if (pieces) return pieces.map(ownForm).join("");
+			this.#warn(`no ${block} form of ${token}`, at);
+			return token;
+		}
 		const named = this.#name(token);
 		const characters = [...(named !== undefined && utf8Length(token) > 1 ? named : token)];
 		let out = "";
@@ -447,6 +457,33 @@ export class Uniscript {
 			}
 		}
 		return out;
+	}
+
+	/** The forms of the whole readings a word splits into (shihan → 是 汉): the fewest pieces, of those the longest first
+	 * piece; undefined when it does not split */
+	#readings(block: string, word: string): string[] | undefined {
+		const characters = [...word];
+		const last = characters.length;
+		const piece = (start: number, end: number) => this.#form(block, characters.slice(start, end).join(""));
+		// fewest[k]: [pieces, end of the first piece] of the best split of the word from character k
+		const fewest: ([number, number] | undefined)[] = new Array(last + 1).fill(undefined);
+		fewest[last] = [0, last];
+		for (let start = last - 1; start >= 0; start--) {
+			for (let end = last; end > start; end--) {
+				const rest = fewest[end];
+				if (rest === undefined || piece(start, end) === undefined) continue;
+				const best = fewest[start];
+				if (best === undefined || rest[0] + 1 < best[0]) fewest[start] = [rest[0] + 1, end];
+			}
+		}
+		const forms: string[] = [];
+		for (let start = 0; start < last; ) {
+			const split = fewest[start];
+			if (split === undefined) return undefined;
+			forms.push(piece(start, split[1])!);
+			start = split[1];
+		}
+		return forms;
 	}
 
 	/** The text inside a full block (`<:greek> filosofia kosmos<:/greek>`) as written: its whitespace stays, each word is an
