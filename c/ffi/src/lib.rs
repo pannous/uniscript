@@ -199,6 +199,11 @@ pub unsafe extern "C" fn uniscript_to_uniscript(text_pointer: *const c_char) -> 
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn uniscript_explicit(source: *const c_char) -> *mut c_char {
+	text(source).map_or(null_mut(), |source| owned(&CONVERTER.with(|converter| converter.explicit(source))))
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn uniscript_header(source: *const c_char, version: *mut *const c_char, version_length: *mut usize, length: *mut usize) -> c_int {
 	let Some(header) = text(source).and_then(uniscript::header) else { return 0 };
 	if !version.is_null() {

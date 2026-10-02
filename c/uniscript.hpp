@@ -3,7 +3,7 @@
 //   uniscript::to_unicode("<:alpha> <:fracture A>")           // "α 𝔄", throws uniscript::Error; warnings to stderr
 //   uniscript::convert("<:greek c>")                          // {"c", {{"no greek form of c", 0}}}
 //   uniscript::convert("<:greek c>", uniscript::Mode::Error)  // throws uniscript::Error, kind Unsupported
-//   uniscript::to_uniscript("α 𝔄")                           // "<:alpha> <:fracture A>"
+//   uniscript::to_uniscript("α 𝔄")                           // "\\:alpha \\:fracture-A"
 //   uniscript::html(tagged)                                   // meta information as <span>s with CSS
 #ifndef UNISCRIPT_HPP
 #define UNISCRIPT_HPP
@@ -129,6 +129,13 @@ inline std::string to_uniscript(const std::string &text) {
 	char *spelled = uniscript_to_uniscript(text.c_str());
 	if (!spelled) throw Error(ErrorKind::InvalidInput, "uniscript: invalid input (not UTF-8)", "", 0);
 	return detail::take(spelled);
+}
+
+/// The source with its opener-like inline tags in explicit form (<:alpha> → \:alpha); `explicit` is a C++ keyword
+inline std::string explicit_tags(const std::string &source) {
+	char *rewritten = uniscript_explicit(source.c_str());
+	if (!rewritten) throw Error(ErrorKind::InvalidInput, "uniscript: invalid input (not UTF-8)", "", 0);
+	return detail::take(rewritten);
 }
 
 /// The header <:uniscript version="…"> at the start of the source; it is no header anywhere else

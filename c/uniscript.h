@@ -87,6 +87,10 @@ char *uniscript_to_unicode(const char *source);
 /* Unicode → uniscript; uniscript_to_unicode gives the text back. NULL only for NULL or invalid UTF-8 */
 char *uniscript_to_uniscript(const char *text);
 
+/* The source with its opener-like inline tags in explicit form (<:alpha> → \:alpha, <:color red A> → <:color red A/>),
+ * which converts alike without warnings; the header and everything else stay. NULL only for NULL or invalid UTF-8 */
+char *uniscript_explicit(const char *source);
+
 /* 1 if the source starts with the header <:uniscript …>: version points into the source (version_length bytes, 0
  * when it names none), length: bytes of the header and the line break after it. 0 otherwise. Out pointers may be
  * NULL. */
