@@ -21,6 +21,10 @@ INSERTS_SETTING = "completion_inserts"  # "character": a chosen name becomes its
 INSERTS_CHARACTERS = "character"
 QUERY_CALLBACK = "on_query_completions"
 QUIETED_MARK = "_uniscript_quieted"
+NO_MATCH_REGION = "uniscript_no_match"
+NO_MATCH_SCOPE = "invalid"  # the color scheme's error color
+NO_MATCH_BLINKS = 2
+NO_MATCH_BLINK_MS = 150
 _names = None
 
 
@@ -137,15 +141,26 @@ class UniscriptWhileTypingListener(sublime_plugin.ViewEventListener):
             self.view.run_command("uniscript_convert", {"regions": regions, "live": True})
 
 
+def blink(view, region, times=NO_MATCH_BLINKS):
+    """Flashes the region in the error color: the editor's way to say no (Sublime has no bell)"""
+    view.add_regions(NO_MATCH_REGION, [region], NO_MATCH_SCOPE)
+    sublime.set_timeout(lambda: view.erase_regions(NO_MATCH_REGION), NO_MATCH_BLINK_MS)
+    if times > 1:
+        sublime.set_timeout(lambda: blink(view, region, times - 1), 2 * NO_MATCH_BLINK_MS)
+
+
 class UniscriptInsertBestCompletionCommand(sublime_plugin.TextCommand):
     """Tab in a tag while the popup is closed (Default.sublime-keymap): the top suggestion, which Sublime's own Tab
     completion would not pick (it chose equiv over equal); a group or block word then opens the popup for the rest"""
 
     def run(self, edit):
         cursor = self.view.sel()[0].b
-        best = cli.best_completion(text_before_cursor(self.view, cursor), self.view.substr(cursor), names(), inserts_characters())
-        if best is None:
-            return self.view.insert(edit, cursor, "\t")
+        line = text_before_cursor(self.view, cursor)
+        best = cli.best_completion(line, self.view.substr(cursor), names(), inserts_characters())
+        if best is None:  # nothing to complete: no tab either, the name blinks
+            typed = cli.typed_tag(line, names())[3]
+            blink(self.view, sublime.Region(cursor - len(typed), cursor))
+            return self.view.window().status_message("uniscript: no name starts with {}".format(typed))
         replaced, text = best
         self.view.replace(edit, sublime.Region(cursor - replaced, cursor), text)
 

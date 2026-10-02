@@ -44,6 +44,7 @@ expect(best_completion("\\:equ", "", names), (3, "equal"))
 expect(best_completion("x <:alph", "", names), (4, "alpha>"))
 expect(best_completion("<:egyptian seated m", "", names), (8, "seated-man"))
 expect(best_completion("alph", "", names), None)
+expect(best_completion("\\:a2", "", names), None)  # no match: Tab inserts nothing, the name blinks
 # inserting characters: operands close their tag too, and a finished tag is found for its conversion
 entries = {trigger: text for trigger, _, text in completions("<:red c", "", names, "c", close_operands=True)}
 expect(entries["circle"], "circle>")
