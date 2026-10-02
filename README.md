@@ -29,10 +29,6 @@ Unicode is a great standard, seriously! But it has some [shortcomings](docs/shor
 Finding and entering Unicode through system shortcuts can be slow and cumbersome   
 HTML is a great standard, but not everything is HTML and many modifiers are missing (fracture A => 𝔄  A => 𝔸 ...)  
 
-Auto complete in Intellij / VSCode / Sublime editors
-<!-- TODO all common editors -->
-![Auto complete](https://private-user-images.githubusercontent.com/516118/663829667-b70659ac-33ca-4044-a28e-7e4015c4b682.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3OTA5Mjk4MTEsIm5iZiI6MTc5MDkyOTUxMSwicGF0aCI6Ii81MTYxMTgvNjYzODI5NjY3LWI3MDY1OWFjLTMzY2EtNDA0NC1hMjhlLTdlNDAxNWM0YjY4Mi5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYxMDAyJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MTAwMlQwODI1MTFaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0wZDZlZDA3ZWU4Njk0N2U1YTRjZWUwOTVlZTZhMDZlMTI2MWU3ZDlmYmVhM2Y4NGEwYTc4MGQ4OTM3NjdjYzVjJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZyZXNwb25zZS1jb250ZW50LXR5cGU9aW1hZ2UlMkZwbmcifQ.BjzJ3jPeuab9IpDgfitMZKKfDbf1JivBLCMuULBeGLg)
-
 # uniscript
 
 **Type any Unicode character in plain ASCII, and style it: mirrored, rotated, colored.**
@@ -45,6 +41,13 @@ Auto complete in Intellij / VSCode / Sublime editors
 \:infinity → ∞
 ```
 <!-- <:mirror red R>                                     →   a mirrored red R  (if renderer supports it) -->
+
+
+### Auto complete 
+in Intellij / VSCode / Sublime editors
+<!-- TODO all common editors -->
+![Auto complete](https://private-user-images.githubusercontent.com/516118/663829667-b70659ac-33ca-4044-a28e-7e4015c4b682.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3OTA5Mjk4MTEsIm5iZiI6MTc5MDkyOTUxMSwicGF0aCI6Ii81MTYxMTgvNjYzODI5NjY3LWI3MDY1OWFjLTMzY2EtNDA0NC1hMjhlLTdlNDAxNWM0YjY4Mi5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYxMDAyJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MTAwMlQwODI1MTFaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0wZDZlZDA3ZWU4Njk0N2U1YTRjZWUwOTVlZTZhMDZlMTI2MWU3ZDlmYmVhM2Y4NGEwYTc4MGQ4OTM3NjdjYzVjJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZyZXNwb25zZS1jb250ZW50LXR5cGU9aW1hZ2UlMkZwbmcifQ.BjzJ3jPeuab9IpDgfitMZKKfDbf1JivBLCMuULBeGLg)
+
 
 ![Uniscript examples rendered with Uniscript fonts](docs/demo.png)
 
