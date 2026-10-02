@@ -97,6 +97,14 @@ final class UniscriptTests: XCTestCase {
 		converts("<:mirror red A>", "A\u{E0072}\u{E004D}")
 	}
 
+	func testShortTagsReadAsTagsWithHyphensAsSpaces() {
+		converts("\\:egyptian-seated-man", "𓀀")
+		converts("\\:egyptian-a2", "𓀁")
+		converts("\\:fracture-A", "𝔄")
+		converts("\\:mirror-red-A", "A\u{E0072}\u{E004D}")
+		converts("<:anatolian caput>", "\u{14409}")
+	}
+
 	func testGroupsReadOperandsByTheNamesOfABlock() {
 		converts("<:egyptian above A1 A2>", "𓀀\u{13430}𓀁")
 		converts("<:above egyptian A1 A2>", "𓀀\u{13430}𓀁")

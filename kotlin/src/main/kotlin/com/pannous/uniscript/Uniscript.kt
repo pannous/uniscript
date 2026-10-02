@@ -531,7 +531,9 @@ private class Conversion(val index: EntityIndex, val source: String, val lenient
 				val nameEnd = NAME_TOKEN.matchAt(source, position + 2)!!.range.last + 1
 				val entity = source.substring(position + 2, nameEnd)
 				val written = source.substring(position, nameEnd)
-				out.append(name(entity) ?: codePoint(entity, written, position) ?: kept(UniscriptError.UnknownEntity(entity), written, position))
+				// not a name: read as the tag with hyphens as spaces, \:egyptian-seated-man is <:egyptian seated man>
+				val asTag = { try { tag(entity.replace('-', ' '), position) } catch (_: UniscriptError) { null } }
+				out.append(name(entity) ?: codePoint(entity, written, position) ?: asTag() ?: kept(UniscriptError.UnknownEntity(entity), written, position))
 				position = nameEnd
 			} else {
 				val close = firstIndex(position + 2) { source[it] == TAG_CLOSE }

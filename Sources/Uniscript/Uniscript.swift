@@ -627,7 +627,9 @@ private final class Conversion {
 			} else if bytes[position] == shortOpen {
 				let nameEnd = position + 2 + tokenLength(bytes, from: position + 2)
 				let entity = text(position + 2..<nameEnd)
-				guard let found = name(entity) ?? codePoint(entity, written: text(position..<nameEnd), position) else {
+				// not a name: read as the tag with hyphens as spaces, \:egyptian-seated-man is <:egyptian seated man>
+				let spaced = entity.replacingOccurrences(of: "-", with: " ")
+				guard let found = name(entity) ?? codePoint(entity, written: text(position..<nameEnd), position) ?? (try? tag(spaced, position)) else {
 					throw UniscriptError.unknownEntity(entity)
 				}
 				out += found
