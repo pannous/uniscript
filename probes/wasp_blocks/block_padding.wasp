@@ -1,0 +1,12 @@
+use uniscript
+ok = uniscript("<:greek> athos <:/greek>") == "αθοσ"
+ok = ok and uniscript("<:greek> a b g d <:/greek>") == "α β γ δ"
+ok = ok and uniscript("<:fracture> A b c <:>") == "𝔄 𝔟 𝔠"
+ok = ok and uniscript("<:greek> filosofia kosmos<:/greek>") == "φιλοσοφια κοσμοσ"
+ok = ok and uniscript("<:greek>\nkosmos\t<:/greek>") == "κοσμοσ"
+ok = ok and uniscript("<:greek> a \\:03B2 <:/greek>") == "α β"
+ok = ok and uniscript("<:greek>  athos  <:/greek>") == " αθοσ "
+ok = ok and uniscript("<:greek>\r\nkosmos\r\n<:/greek>") == "κοσμοσ"
+ok = ok and uniscript("<:greek>\nfilosofia\nkosmos\n<:/greek>") == "φιλοσοφια\nκοσμοσ"
+ok = ok and uniscript("x <:greek> a <:/greek> y") == "x α y"
+ok

@@ -202,8 +202,28 @@ operand(block:text, token:text, effects:text, at) := {
 	out
 }
 
-// whitespace, which a full block keeps as written
+// whitespace, which a full block keeps as written but for one on each inner side of its tags
 is_space(b) := b == 32 or b == 9 or b == 10 or b == 13
+
+// bytes of the one whitespace a block opener eats after it, at byte at (<:greek> athos <:/greek> is αθοσ); \r\n is one
+opening_padding(source:text, at) := {
+	if at + 1 < source.bytes and byte_at(source, at) == 13 and byte_at(source, at + 1) == 10 { return 2 }
+	if at < source.bytes and is_space(byte_at(source, at)) { return 1 }
+	0
+}
+
+// bytes of the one whitespace a block's closer eats before it, at the end of run
+closing_padding(run:text) := {
+	if run.bytes >= 2 and byte_at(run, run.bytes - 2) == 13 and byte_at(run, run.bytes - 1) == 10 { return 2 }
+	if run.bytes >= 1 and is_space(byte_at(run, run.bytes - 1)) { return 1 }
+	0
+}
+
+// whether a block closer (<:> or <:/greek>) starts at byte at
+closes_block_at(source:text, at) := {
+	if at + 2 >= source.bytes or byte_at(source, at) != 60 or byte_at(source, at + 1) != 58 { return false }
+	byte_at(source, at + 2) == 62 or byte_at(source, at + 2) == 47
+}
 
 // the text inside a full block (<:greek> filosofia kosmos<:/greek>) as written: its whitespace stays, each word is an
 // operand; a group block joins its parts
@@ -483,7 +503,11 @@ uniscript(source:text) := {
 		next = next_marker(source, i)
 		if next > i {
 			run = byte_slice(source, i, next)
-			if block.bytes > 0 { out += block_text(block, run, i) } else { out += run }
+			if block.bytes > 0 {
+				closing = closes_block_at(source, next)
+				if closing { run = byte_slice(run, 0, run.bytes - closing_padding(run)) }
+				out += block_text(block, run, i)
+			} else { out += run }
 			i = next
 		} else {
 			escape = unicode_escape_end(source, i)
@@ -505,10 +529,13 @@ uniscript(source:text) := {
 				if close == source.bytes { return error("unclosed <: at byte " + byte_slice(source, i, source.bytes)) }
 				content = byte_slice(source, i + 2, close)
 				text = tag(content, i)
-				if content.bytes == 0 or byte_at(content, 0) == 47 { block = "" } else {
-					if is_block(content) { block = content } else { out += text }
-				}
 				i = close + 1
+				if content.bytes == 0 or byte_at(content, 0) == 47 { block = "" } else {
+					if is_block(content) {
+						block = content
+						i += opening_padding(source, i)
+					} else { out += text }
+				}
 			} }
 		}
 	}
