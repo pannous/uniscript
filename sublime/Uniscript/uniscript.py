@@ -165,8 +165,8 @@ def blink(view, region, times=NO_MATCH_BLINKS):
 
 class UniscriptTabCompletionCommand(sublime_plugin.TextCommand):
     """Tab in a tag while the popup is closed (Default.sublime-keymap), instead of Sublime's own Tab completion, which
-    picks one by its own ranking (equiv over equal): a whole name or the only match is inserted, several open the
-    list, none blink"""
+    picks one by its own ranking (equiv over equal): the only match is inserted, several open the list (then Tab
+    commits its top, the whole name if typed), none blink"""
 
     def run(self, edit):
         cursor = self.view.sel()[0].b

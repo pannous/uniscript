@@ -134,16 +134,13 @@ def typed_tag(line_before_cursor, names):
 
 
 def tab_completion(line_before_cursor, next_character, names, close_operands=False):
-    """Tab without the popup: (length typed before the cursor to replace, its replacement) when the typed name is whole
-    or the only match, CHOOSE when there are several to choose from, None when nothing matches"""
+    """Tab without the popup: (length typed before the cursor to replace, its replacement) for the only match, CHOOSE
+    when there are several (the list is shown once, even when the typed name is whole), None when nothing matches"""
     typed = typed_tag(line_before_cursor, names)
     entries = typed and completions(line_before_cursor, next_character, names, typed[3], close_operands)
     if not entries:
         return None
-    whole = [entry for entry in entries if entry[0] == typed[3]]
-    if len(entries) > 1 and not whole:
-        return CHOOSE
-    return len(typed[3]), (whole or entries)[0][2]
+    return CHOOSE if len(entries) > 1 else (len(typed[3]), entries[0][2])
 
 
 def completions(line_before_cursor, next_character, names, word, close_operands=False):

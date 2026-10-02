@@ -39,9 +39,10 @@ expect(completed("<:nosuchblock x"), {})
 expect(completed("\\:equals-s", word="equals-s")["equals-sign"], ("=", "equals-sign"))
 expect(completed("\\:equals-s", word="s")["equals-sign"], ("=", "sign"))
 expect(completed("\\:equals-s", word="\\:equals-s")["equals-sign"], ("=", "\\:equals-sign"))
-# Tab without the popup: a whole name or the only match is inserted, several open the list, none blink
+# Tab without the popup: the only match is inserted, several open the list (once, even for a whole name), none blink
 expect(tab_completion("\\:equal-to-by-definition", "", names), (22, "equal-to-by-definition"))
-expect(tab_completion("x <:alpha", "", names), (5, "alpha>"))  # Alpha matches too, but alpha is typed whole
+expect(tab_completion("\\:egyptian-a1", "", names), CHOOSE)  # a whole name, but egyptian-a10 … too
+expect(tab_completion("x <:alpha", "", names), CHOOSE)  # alpha, Alpha
 expect(tab_completion("\\:egyptian-", "", names), CHOOSE)
 expect(tab_completion("\\:equ", "", names), CHOOSE)
 expect(tab_completion("alph", "", names), None)

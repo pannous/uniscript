@@ -43,8 +43,8 @@
   this once is caught next time). probes/test_sublime_quiet_completions.py with stubbed modules.
 - Tab with the popup closed runs Sublime's `auto_complete {"mini": true, "commit_single": true}`, whose own ranking
   picked `equiv` for `\:equ`; Default.sublime-keymap binds Tab in a tag (popup closed) to
-  `uniscript_tab_completion`: a whole name or the only match is inserted (and becomes its character), several open
-  the list (`\:egyptian-`), none blink. With the popup open Tab stays `commit_completion`. The command converts what
+  `uniscript_tab_completion`: the only match is inserted (and becomes its character), several open the list, even
+  for a whole name (`\:egyptian-a1`: a10 … match too; the user wants the list seen once), none blink. With the popup open Tab stays `commit_completion`. The command converts what
   it inserted itself (`finish_completion`): treating it as a commit in on_post_text_command also converted after
   merely opening the list.
 - Order everywhere: shortest first, of equal length the name in the case typed (`equal` before HTML's `Equal` ⩵).
