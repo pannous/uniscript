@@ -6,5 +6,13 @@
 			{ "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
 			{ "key": "preceding_text", "operator": "regex_contains", "operand": "(<:(?! )[^<>\\[\\]{};=\"]+|\\\\:[A-Za-z0-9_-]+)$", "match_all": true }
 		]
+	},
+	// Tab after a plain word in the text of an open block (<:chinese> shi): the block's operands, homophones by frequency
+	{ "keys": ["tab"], "command": "uniscript_tab_completion", "context":
+		[
+			{ "key": "auto_complete_visible", "operand": false },
+			{ "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },
+			{ "key": "uniscript_block_word", "operand": true }
+		]
 	}
 ]

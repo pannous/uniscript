@@ -77,3 +77,7 @@
   warp 7a1d9456). The plugin also takes only builds whose dep-info (`uniscript.d`) lists this checkout's src/, and a name
   list without blocks is an error (tests/sublime/test_sublime_binary_origin.py). If it happens again: cargo may call the
   build fresh and compile src/main.rs against the foreign rlib, so `cargo clean -p uniscript --release && cargo build --release`.
+- In block text (`<:chinese> shi|`) Tab and the list complete the word to the open block's operands (cli.block_word_completions):
+  the whole reading and its homophones by frequency first (shi 是, shi.2 匙 …), then longer readings (shi1 …). Tab only
+  binds there through the keymap context `uniscript_block_word` (EventListener.on_query_context); text_up_to returns ""
+  without any `<:` in the buffer, so ordinary files pay nothing per keystroke. tests/sublime/test_sublime_block_words.py.

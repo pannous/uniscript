@@ -14,6 +14,7 @@ LIVE_SETTING = "convert_while_typing"  # true, false, or "header": only in files
 LIVE_IN_UNISCRIPT_FILES = "header"
 TYPED_COMMAND = "insert"
 CLOSE_TAG_COMMAND = "uniscript_close_tag"  # after <:/ is typed
+BLOCK_WORD_CONTEXT = "uniscript_block_word"  # keymap context: Tab after a word in block text
 COMMITTED_COMMANDS = ("commit_completion", "insert_completion")
 TAG_END = ">"
 TAG_OPENERS = ("<:", "\\:")
@@ -62,6 +63,18 @@ def inserts_characters():
 def text_before_cursor(view, cursor, length=None):
     start = view.line(cursor).begin() if length is None else max(0, cursor - length)
     return view.substr(sublime.Region(start, cursor))
+
+
+def text_up_to(view, cursor):
+    """The buffer before the cursor, where tags open blocks; "" without any tag (most files, every keystroke)"""
+    if view.find(cli.MARKER, 0, sublime.LITERAL).begin() < 0:
+        return ""
+    return view.substr(sublime.Region(0, cursor))
+
+
+def block_words(view):
+    """The operands for the plain word typed in the text of an open block (<:chinese> shi: shi 是, shi.2 匙 …)"""
+    return cli.block_word_completions(text_up_to(view, view.sel()[0].b), names())
 
 
 def is_typing_tag(view, point):
@@ -195,10 +208,16 @@ class UniscriptTabCompletionCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         cursor = self.view.sel()[0].b
-        closing = cli.closing_completion(self.view.substr(sublime.Region(0, cursor)), names())
+        closing = cli.closing_completion(text_up_to(self.view, cursor), names())
         if closing:  # <:/ch → <:/chinese>
             typed, rest = closing
             return self.view.replace(edit, sublime.Region(cursor - typed, cursor), rest)
+        operands = block_words(self.view)
+        if len(operands) > 1:  # <:chinese> shi: 是 匙 …
+            return open_completions(self.view)
+        if operands:
+            typed = cli.BLOCK_WORD.search(text_before_cursor(self.view, cursor)).group(1)
+            return self.view.replace(edit, sublime.Region(cursor - len(typed), cursor), operands[0][2])
         line = text_before_cursor(self.view, cursor)
         best = cli.tab_completion(line, self.view.substr(cursor), names(), inserts_characters())
         if best == cli.CHOOSE:
@@ -261,15 +280,27 @@ class UniscriptFinishTagCommand(sublime_plugin.TextCommand):
 
 class UniscriptCompletionListener(sublime_plugin.EventListener):
     """Inside <: and \\: tags in any file: entity names with their character, block words, after block words their
-    operands; names sharing their next segment fold into one group (alchemical-)"""
+    operands; names sharing their next segment fold into one group (alchemical-). In block text a word's operands"""
+
+    def on_query_context(self, view, key, operator, operand, match_all):
+        """uniscript_block_word (Default.sublime-keymap): a plain word in block text has operands to complete"""
+        if key != BLOCK_WORD_CONTEXT:
+            return None
+        return bool(block_words(view)) == bool(operand)
 
     def on_query_completions(self, view, prefix, locations):
         cursor = locations[0]
+        operands = block_words(view)
+        if operands:  # a word in block text: the block's operands, homophones by frequency
+            silence_other_completions(view)
+            items = [sublime.CompletionItem(trigger, annotation=annotation, completion=operand) for trigger, annotation, operand in operands]
+            return sublime.CompletionList(items, sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS
+                                          | sublime.DYNAMIC_COMPLETIONS | sublime.INHIBIT_REORDER)
         line = text_before_cursor(view, cursor)
         if not any(opener in line for opener in TAG_OPENERS):
             return None
         silence_other_completions(view)
-        closing = cli.closing_completion(view.substr(sublime.Region(0, cursor)), names())
+        closing = cli.closing_completion(text_up_to(view, cursor), names())
         if closing:  # the open tag to close: <:/ch lists chinese
             typed, rest = closing  # Sublime replaces its prefix word, which may reach before the typed name
             item = sublime.CompletionItem(rest[:-len(TAG_END)], annotation="close", completion=prefix[:len(prefix) - typed] + rest)

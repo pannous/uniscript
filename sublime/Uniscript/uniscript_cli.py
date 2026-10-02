@@ -37,6 +37,8 @@ CLOSING_TYPED = re.compile(r"<:/([A-Za-z0-9_ -]*)$")  # a closing tag typed up t
 META_SPAN_WORDS = 2  # <:key value> opens a span closed by <:/key>
 NAMES_COMMAND = "names"
 HOMOPHONE = re.compile(r"^(.+)\.(\d+)$")  # chinese yi2.2: the second most frequent character read yi2
+HOMOPHONE_SEPARATOR = "."
+BLOCK_WORD = re.compile(r"(?:^|[\s>])([A-Za-z][A-Za-z0-9]*)$")  # a plain word typed in block text: <:chinese> shi
 MAX_COMPLETIONS = 1000  # the shortest first
 CHOOSE = "choose"  # tab_completion: several names to choose from
 GROUP_SAMPLES = 3  # characters shown beside a group of names
@@ -172,6 +174,23 @@ def closing_completion(text_before_cursor, names):
     if not name or not name.startswith(typed.group(1)):
         return None
     return len(typed.group(1)), name + TAG_END
+
+
+def block_word_completions(text_before_cursor, names):
+    """(trigger, annotation, completion) for a plain word typed in the text of an open block (<:chinese> shi): the
+    block's operands starting with it, the whole reading and its homophones by frequency first (shi 是, shi.2 匙 …),
+    then longer readings; [] when the cursor is in a tag, outside blocks or after no word"""
+    word = BLOCK_WORD.search(text_before_cursor)
+    if not word or TYPED_TAG.search(text_before_cursor):
+        return []
+    block = tag_to_close(text_before_cursor[:word.start()] + CLOSING_MARKER, names)
+    typed = word.group(1).lower()
+    matching = [(operand, text) for operand, text in names.operands.get(block, []) if operand.lower().startswith(typed)]
+
+    def by_reading(operand_and_text):
+        reading, _, number = operand_and_text[0].partition(HOMOPHONE_SEPARATOR)
+        return len(reading), reading, int(number or 1)
+    return [(shown(operand), text, operand) for operand, text in sorted(matching, key=by_reading)][:MAX_COMPLETIONS]
 
 
 def operand_first(trigger, annotation):
