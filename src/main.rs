@@ -3,6 +3,7 @@
 //! echo "<:alpha>" | uniscript → α (stdin when no text is given)
 //! uniscript [-r] /path/file.txt → the file's content converted (arguments starting with / are files)
 //! uniscript --html "<:font cuneiform-hittite>𒀭<:/font>"   meta information as <span lang style> instead of TAG sequences
+//! uniscript names              every name with its text, tab separated (`alpha	α`, blocks `fracture `, `fracture A	𝔄`)
 //! uniscript build [entities/] [entities.idx]   rebuild the index from the readable files
 //! uniscript check [entities/] [entities.idx]   verify both agree
 //! uniscript chunks [entities.idx] [chunks/]    cut the index into chunks loaded on demand (manifest.usxc, <n>.idx)
@@ -34,9 +35,10 @@ fn main() -> ExitCode {
 	let result = match arguments.first().map(String::as_str) {
 		Some("build") => build(path_argument(&arguments, 1, DEFAULT_ENTITIES), path_argument(&arguments, 2, DEFAULT_INDEX)),
 		Some("check") => check(path_argument(&arguments, 1, DEFAULT_ENTITIES), path_argument(&arguments, 2, DEFAULT_INDEX)),
+		Some("names") => names(),
 		Some("chunks") => chunks(path_argument(&arguments, 1, DEFAULT_INDEX), path_argument(&arguments, 2, DEFAULT_CHUNKS)),
 		Some("-h" | "--help") => {
-			include_str!("main.rs").lines().take(6).for_each(|line| println!("{}", &line[4..]));
+			include_str!("main.rs").lines().take(7).for_each(|line| println!("{}", &line[4..]));
 			Ok(())
 		}
 		_ => convert(&arguments),
@@ -118,6 +120,17 @@ fn check(entities_path: &str, index_path: &str) -> Result<(), String> {
 	} else {
 		Err(failures.into_iter().take(20).collect::<Vec<_>>().join("\n"))
 	}
+}
+
+/// For editors' completion: names whose text is on one line
+fn names() -> Result<(), String> {
+	let converter = uniscript::Uniscript::default();
+	let mut out = String::new();
+	for (name, text) in converter.index().entries(index::Table::Names).filter(|(_, text)| !text.contains(['\n', '\t'])) {
+		out += &format!("{name}\t{text}\n");
+	}
+	print!("{out}");
+	Ok(())
 }
 
 fn chunks(index_path: &str, directory: &str) -> Result<(), String> {
