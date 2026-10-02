@@ -15,21 +15,21 @@ final class CodePointsTests: XCTestCase {
 
 	func testEveryFormWritesTheCodePoint() {
 		for form in ["\\:1F60D", "\\:U1F60D", "\\:0x1F60D", "\\U1F60D", "\\:U+1F60D", "\\:u+1f60d", "\\:0X1F60D", "\\:u1F60D",
-			"<:U+1F60D>", "<:u+1F60D>", "<:0x1F60D>", "<:1F60D>", "<:U1F60D>", "<:1f60d>", "\\U0001F60D"] {
+			"<:U+1F60D/>", "<:u+1F60D/>", "<:0x1F60D/>", "<:1F60D/>", "<:U1F60D/>", "<:1f60d/>", "\\U0001F60D"] {
 			converts(form, "😍")
 		}
-		converts("\\:U+41 \\:0x42 <:u+43>", "A B C")
+		converts("\\:U+41 \\:0x42 <:u+43/>", "A B C")
 		converts("\\:00E9", "é")
 	}
 
 	func testTheCodePointEndsWhereANameEnds() {
-		converts("\\:1F60D. \\:1F60D x <:1F60D>x (\\U1F60D)", "😍. 😍 x 😍x (😍)")
+		converts("\\:1F60D. \\:1F60D x <:1F60D/>x (\\U1F60D)", "😍. 😍 x 😍x (😍)")
 		XCTAssertThrowsError(try Uniscript.toUnicode("\\:1F60Dx")) { XCTAssertEqual($0 as? UniscriptError, .unknownEntity("1F60Dx")) }
 		converts("<:greek> a \\:03B2 <:/greek>", "α β")
 	}
 
 	func testNamesWinOverHex() {
-		converts("\\:bed \\:BbbA <:BbbA> \\:U+BBBA \\:0xBbbA", "🛏 𝔸 𝔸 뮺 뮺")
+		converts("\\:bed \\:BbbA <:BbbA/> \\:U+BBBA \\:0xBbbA", "🛏 𝔸 𝔸 뮺 뮺")
 		XCTAssertThrowsError(try Uniscript.toUnicode("\\:ab")) { XCTAssertEqual($0 as? UniscriptError, .unknownEntity("ab")) }
 		XCTAssertNil(codePointValue("ab"))
 		XCTAssertEqual(codePointValue("U+ab"), 0xAB)

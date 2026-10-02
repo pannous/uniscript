@@ -32,10 +32,10 @@ final class MetaTests: XCTestCase {
 
 	func testSpansAndAttachedSequencesRoundTrip() {
 		let hittite = Meta.open(key: "font", value: "cuneiform-hittite").tags
-		roundTrips("x <:font cuneiform-hittite><:cuneiform-sign-an><:/font> y", "x \(hittite)𒀭\(Meta.close(key: "font").tags) y")
-		roundTrips("<:color #ff8800 A>", "A\(orange)")
-		roundTrips("<:color #ff8800 mirror red A>", "A\u{E0072}\u{E004D}\(orange)")
-		roundTrips("<:color red B>", "B\(Meta.attached(key: "color", value: "red").tags)")
+		roundTrips("x <:font cuneiform-hittite>\\:cuneiform-sign-an<:/font> y", "x \(hittite)𒀭\(Meta.close(key: "font").tags) y")
+		roundTrips("<:color #ff8800 A/>", "A\(orange)")
+		roundTrips("<:color #ff8800 mirror red A/>", "A\u{E0072}\u{E004D}\(orange)")
+		roundTrips("<:color red B/>", "B\(Meta.attached(key: "color", value: "red").tags)")
 		XCTAssertEqual(try Uniscript.toUnicode("<:color #ff8800 A b>"), "A\(orange)b\(orange)")
 		XCTAssertEqual(try Uniscript.toUnicode("<:color #ff8800 e\u{301}>"), "e\u{301}\(orange)")
 		XCTAssertEqual(try Uniscript.toUnicode("<:angle with s inside>"), "⦞")

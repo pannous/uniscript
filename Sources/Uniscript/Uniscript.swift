@@ -1,7 +1,7 @@
 // Uniscript: a human readable, ASCII-only spelling of Unicode text; a port of the Rust crate in src/lib.rs.
 //
 //     try Uniscript.toUnicode("<:alpha> <:fracture A> \\:infinity")  // "α 𝔄 ∞"
-//     Uniscript.toUniscript("α 𝔄 ∞")                                // "<:alpha> <:fracture A> <:infinity>"
+//     Uniscript.toUniscript("α 𝔄 ∞")                                // "\\:alpha \\:fracture-A \\:infinity"
 //
 // Rust `char` is a Unicode scalar, so the converter works on unicode scalars and UTF-8 bytes, never on Characters.
 import Foundation
@@ -142,6 +142,32 @@ public struct Uniscript: Sendable {
 		standard.toUniscript(text)
 	}
 
+	/// The source with its inline tags in their explicit form (`<:alpha>` → `\:alpha`), which converts without warnings
+	public static func explicit(_ source: String) -> String {
+		standard.explicit(source)
+	}
+
+	/// The source with its inline tags in their explicit form: `\:alpha` where it fits, else `<:color #ff8800 A/>`
+	public func explicit(_ source: String) -> String {
+		let bytes = Array(source.utf8)
+		func text(_ range: Range<Int>) -> String { String(decoding: bytes[range], as: UTF8.self) }
+		let start = Header(of: source)?.length ?? 0
+		var out = text(0..<start)
+		var position = start
+		while let open = (position..<max(position, bytes.count - 1)).first(where: { bytes[$0] == tagOpen && bytes[$0 + 1] == markerColon }),
+		      let close = bytes[(open + 2)...].firstIndex(of: tagClose) {
+			let content = text(open + 2..<close)
+			out += text(position..<open)
+			if index.readsAsOpener(content) {
+				out += index.shortForm(content, next: bytes.dropFirst(close + 1).first) ?? selfClosedForm(content)
+			} else {
+				out += text(open..<close + 1)
+			}
+			position = close + 1
+		}
+		return out + text(position..<bytes.count)
+	}
+
 	public func convert(_ source: String, mode: WarningMode = .warn) throws -> (text: String, warnings: [Warning]) {
 		let conversion = Conversion(index: index)
 		let text = try conversion.unicode(of: source)
@@ -206,7 +232,6 @@ public struct Uniscript: Sendable {
 		return "<:\(blocks.joined(separator: " ")) \(inner)>"
 	}
 
-	/// Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A>`
 	/// The spelling of the longest known emoji sequence joined at `position` and its length in scalars:
 	/// 👩‍🦰 → <:red-haired woman>; a zero width joiner may come first: ‍🦰 → <:red-hair>
 	private func joinedForm(_ characters: [Unicode.Scalar], at position: Int) -> (form: String, length: Int)? {
@@ -229,6 +254,8 @@ public struct Uniscript: Sendable {
 		return nil
 	}
 
+	/// Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A/>`, the
+	/// other tags their explicit form (`\:alpha`, `<:alpha/>x`)
 	public func toUniscript(_ text: String) -> String {
 		let characters = Array(text.unicodeScalars)
 		func knownMeta(at position: Int) -> (meta: Meta, length: Int)? {
@@ -292,7 +319,7 @@ public struct Uniscript: Sendable {
 				out += "<:\(attached.joined(separator: " ")) \(form)>"
 			}
 		}
-		return out
+		return explicit(out)
 	}
 }
 
@@ -310,7 +337,7 @@ private final class Conversion {
 	}
 
 	private func isBlock(_ name: String) -> Bool {
-		self.name(name + " ") != nil
+		index.isBlock(name)
 	}
 
 	/// The character of a code point token (`U+1F60D`, `1F60D`); an invalid one (surrogate, above 10FFFF) warns and stays
@@ -665,13 +692,72 @@ private final class Conversion {
 					block = content
 					after += openingPaddingLength(bytes[after...])
 				} else {
-					out += try tag(content, position)
+					let selfClosed = content.hasSuffix("/") && content.utf8.count > 1 ? String(content.dropLast()) : nil
+					let earlierWarnings = warnings.count
+					out += try tag(selfClosed ?? content, position)
+					// one warning per tag: <:fracture 7> already says there is no fracture 7
+					if selfClosed == nil && warnings.count == earlierWarnings && index.readsAsOpener(content) {
+						let forms = index.explicitForms(content, next: bytes.dropFirst(after).first)
+						warn("<:\(content)> looks like an opening tag: write \(either(forms))", position)
+					}
 				}
 				position = after
 			}
 		}
 		return out
 	}
+}
+
+/// The judgement of inline tags (`<:alpha>`, `<:greek athos>`), which read like opening tags, and their explicit forms
+extension EntityIndex {
+	func isBlock(_ name: String) -> Bool {
+		get(.names, name + " ") != nil
+	}
+
+	/// `<:font han-japanese>`, `<:font x lang ja>`: meta keys with values only, opening spans
+	func opensMeta(_ content: String) -> Bool {
+		let words = content.split(whereSeparator: \.isWhitespace).map(String.init)
+		return !words.isEmpty && words.count % 2 == 0 && stride(from: 0, to: words.count, by: 2).allSatisfy { get(.meta, words[$0]) != nil }
+	}
+
+	/// An inline tag's content (`<:alpha>`, `<:greek athos>`) looks like it opens something, as `<:greek>` does; not an
+	/// escape (`<:<>`), closer, self-closed tag, block or meta span opener
+	func readsAsOpener(_ content: String) -> Bool {
+		content.utf8.count > 1 && !isClosing(content) && !content.hasSuffix("/") && !isBlock(content) && !opensMeta(content)
+	}
+
+	/// The explicit forms of an inline tag followed by the byte `next`, which convert alike: `\:greek-athos`,
+	/// `<:greek> athos <:/greek>` and `<:greek athos/>`
+	func explicitForms(_ content: String, next: UInt8?) -> [String] {
+		[shortForm(content, next: next), blockForm(content), selfClosedForm(content)].compactMap { $0 }
+	}
+
+	/// `\:greek-athos` of `greek athos` followed by `next`: names only, no name character may follow, hyphens only
+	/// without spaces (\: reads them as spaces: `<:red-haired woman>` is no `\:red-haired-woman`), and no meta key, which
+	/// reads better as a tag (`<:color red A/>`)
+	func shortForm(_ content: String, next: UInt8?) -> String? {
+		let namesOnly = content.utf8.allSatisfy { isNameByte($0) || $0 == UInt8(ascii: " ") }
+		let startsMeta = splitOnce(content, " ").map { get(.meta, $0.0) != nil } ?? false
+		let mixesHyphensAndSpaces = content.contains(" ") && content.contains("-")
+		guard namesOnly && !mixesHyphensAndSpaces && !startsMeta && !(next.map(isNameByte) ?? false) else { return nil }
+		return "\\:" + content.replacingOccurrences(of: " ", with: "-")
+	}
+
+	/// `<:greek> athos <:/greek>` of `greek athos`: a block and one operand (a block keeps the spaces between operands)
+	func blockForm(_ content: String) -> String? {
+		guard let (block, operand) = splitOnce(content, " "), isBlock(block), !operand.contains(" "), !isBlock(operand) else { return nil }
+		return "<:\(block)> \(operand) <:/\(block)>"
+	}
+}
+
+private func selfClosedForm(_ content: String) -> String {
+	"<:\(content)/>"
+}
+
+/// `a, b or c`
+private func either(_ forms: [String]) -> String {
+	guard let last = forms.last else { return "" }
+	return forms.count == 1 ? last : forms.dropLast().joined(separator: ", ") + " or " + last
 }
 
 /// The script a character needs its own controls for: hieroglyphs, and CJK ideographs, radicals and strokes

@@ -13,3 +13,12 @@
 - Tag v0.1.0 (lightweight, pushed) points at 9cd9659, before Meta.swift / styles / chunks: stale. Don't move a pushed
   tag (SwiftPM caches resolved revisions; Package.resolved pins break); release a new one.
 - CocoaPods: not done. Trunk turns read-only (Dec 2026 per CocoaPods announcement), and SwiftPM covers iOS/macOS.
+
+# Inline tags (port of Rust 8ed80c0)
+
+- `extension EntityIndex` in Uniscript.swift holds the inline-tag judgement (`readsAsOpener`, `explicitForms`,
+  `shortForm`, `blockForm`), shared by `Conversion` (the opener warning) and `Uniscript.explicit` (static and instance).
+- The opener warning fires only when `tag()` added no warning; in `.error` mode it throws like any warning, so port tests
+  converting bare `<:alpha>` in `.error` mode must spell `<:alpha/>`.
+- `tests/UniscriptTests/CasesTests.swift` runs js/test/cases.json (path via `#filePath`) — every section except
+  `lenient`: the Swift port has no lenient mode.

@@ -62,7 +62,7 @@ final class UniscriptTests: XCTestCase {
 		try warns("<:red 𓀀>", "𓀀\(red)", "red on 𓀀 kept as color meta", at: 0)
 		try warns("<:mirror red 狗>", "狗\u{E004D}\(red)", "red on 狗 kept as color meta", at: 0)
 		try warns("<:beside a b>", "ab", "no beside group of a", at: 0)
-		let (text, warnings) = try Uniscript.convert("<:greek a>", mode: .error)
+		let (text, warnings) = try Uniscript.convert("<:greek a/>", mode: .error)
 		XCTAssertEqual(text, "α")
 		XCTAssertEqual(warnings, [])
 	}
@@ -81,7 +81,7 @@ final class UniscriptTests: XCTestCase {
 		converts("<:reverse red R>", "R\u{E0072}\u{E004D}") // reverse is mirror
 		converts("<:mirror red A b>", "A\u{E0072}\u{E004D}b\u{E0072}\u{E004D}")
 		converts("<:mirror red circle>", "🔴\u{E004D}")
-		XCTAssertEqual(Uniscript.toUniscript("A\u{E0072}\u{E004D} 🔴\u{E004D}"), "<:mirror red A> <:mirror red circle>")
+		XCTAssertEqual(Uniscript.toUniscript("A\u{E0072}\u{E004D} 🔴\u{E004D}"), "\\:mirror-red-A \\:mirror-red-circle")
 	}
 
 	func testGroupsJoinHieroglyphsAndComposeIdeographs() {
@@ -129,7 +129,7 @@ final class UniscriptTests: XCTestCase {
 		converts("<:egyptian man-sitting>", "𓀀")
 		converts("<:egyptian> A1 Aa1 <:/egyptian>", "𓀀 𓐍")
 		converts("<:mirror egyptian A1>", "𓀀\u{13440}")
-		XCTAssertEqual(Uniscript.toUniscript("𓀀 𓐍"), "<:egyptian A1> <:egyptian Aa1>")
+		XCTAssertEqual(Uniscript.toUniscript("𓀀 𓐍"), "\\:egyptian-A1 \\:egyptian-Aa1")
 	}
 
 	func testTheMarkerIsEscapedBySingleCharacterEntities() {
@@ -171,8 +171,8 @@ final class UniscriptTests: XCTestCase {
 	}
 
 	func testUnicodeSpellsBackAsUniscript() {
-		XCTAssertEqual(Uniscript.toUniscript("α Ω 𝔄 ∞ ℝ"), "<:alpha> <:Omega> <:fracture A> <:infinity> <:double R>")
-		XCTAssertEqual(Uniscript.toUniscript("A\u{E0072} 🔴 xᵃ"), "<:red A> <:red circle> x<:upper a>")
+		XCTAssertEqual(Uniscript.toUniscript("α Ω 𝔄 ∞ ℝ"), "\\:alpha \\:Omega \\:fracture-A \\:infinity \\:double-R")
+		XCTAssertEqual(Uniscript.toUniscript("A\u{E0072} 🔴 xᵃ"), "\\:red-A \\:red-circle x\\:upper-a")
 		XCTAssertEqual(Uniscript.toUniscript("a <: b \\: c"), "a <<::> b \\<::> c")
 	}
 
