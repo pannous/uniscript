@@ -18,3 +18,5 @@
   (pannous.com, Ubuntu glibc 2.39, a portable JDK 25 in ~/uniscript-java-probe, removed after). linux-arm64 and
   win-x64 not run (docker daemon down, podman machine fails to start: vfkit exit 1; no Windows host).
 - Tests: `cd java && ./gradlew test`: 186 shared cases (dynamic tests from js/test/cases.json) + 5 API tests.
+- `Uniscript.explicit(source)` calls the C ABI `uniscript_explicit` (added to c/uniscript.h for Java/C#); the shared-case
+  runner has an `explicit` factory. A new C ABI function needs `make -C c/ffi natives` before `./gradlew test` sees it.

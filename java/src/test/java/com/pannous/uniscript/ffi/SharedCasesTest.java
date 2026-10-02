@@ -111,6 +111,11 @@ class SharedCasesTest {
 	}
 
 	@TestFactory
+	Stream<DynamicTest> explicit() {
+		return cases("explicit", c -> assertEquals(text(c, 1), Uniscript.explicit(text(c, 0))));
+	}
+
+	@TestFactory
 	Stream<DynamicTest> unicodeRoundTrips() {
 		return cases("unicodeRoundTrips", c -> assertEquals(text(c, 0), Uniscript.toUnicode(Uniscript.toUniscript(text(c, 0)))));
 	}

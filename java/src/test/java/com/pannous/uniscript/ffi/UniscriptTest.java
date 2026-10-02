@@ -9,8 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class UniscriptTest {
 	@Test
 	void convertsBothWays() {
-		assertEquals("α 𝔄", Uniscript.toUnicode("<:alpha> <:fracture A>"));
-		assertEquals("<:alpha> <:fracture A>", Uniscript.toUniscript("α 𝔄"));
+		assertEquals("α 𝔄", Uniscript.toUnicode("\\:alpha \\:fracture-A"));
+		assertEquals("\\:alpha \\:fracture-A", Uniscript.toUniscript("α 𝔄"));
+		assertEquals("\\:alpha <:color red A/>", Uniscript.explicit("<:alpha> <:color red A>"));
 	}
 
 	@Test

@@ -52,6 +52,7 @@ final class NativeLibrary {
 
 	static final MethodHandle CONVERT = function("uniscript_convert", FunctionDescriptor.of(RESULT, POINTER, JAVA_INT));
 	static final MethodHandle TO_UNISCRIPT = function("uniscript_to_uniscript", FunctionDescriptor.of(POINTER, POINTER));
+	static final MethodHandle EXPLICIT = function("uniscript_explicit", FunctionDescriptor.of(POINTER, POINTER));
 	static final MethodHandle HEADER = function("uniscript_header",
 			FunctionDescriptor.of(JAVA_INT, POINTER, POINTER, POINTER, POINTER));
 	static final MethodHandle META_RUNS = function("uniscript_meta_runs", FunctionDescriptor.of(STYLED, POINTER));

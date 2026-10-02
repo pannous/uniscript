@@ -24,8 +24,8 @@ import static java.lang.foreign.ValueLayout.JAVA_INT;
 import static java.lang.foreign.ValueLayout.JAVA_LONG;
 
 /**
- * ASCII names for Unicode text and back: {@code Uniscript.toUnicode("<:alpha> <:fracture A>")} is "α 𝔄",
- * {@code Uniscript.toUniscript("α 𝔄")} is "&lt;:alpha&gt; &lt;:fracture A&gt;". Backed by the Rust core through the
+ * ASCII names for Unicode text and back: {@code Uniscript.toUnicode("\\:alpha \\:fracture-A")} is "α 𝔄",
+ * {@code Uniscript.toUniscript("α 𝔄")} is "\\:alpha \\:fracture-A". Backed by the Rust core through the
  * C ABI of c/uniscript.h. All offsets (at, start, end, length) are UTF-8 byte offsets. Thread-safe.
  */
 public final class Uniscript {
@@ -74,6 +74,11 @@ public final class Uniscript {
 	/** Unicode → uniscript; {@link #toUnicode} gives the text back */
 	public static String toUniscript(String text) {
 		return takeString(call(NativeLibrary.TO_UNISCRIPT, text));
+	}
+
+	/** The source with its opener-like inline tags in explicit form ({@code <:alpha>} → {@code \:alpha}), which converts alike */
+	public static String explicit(String source) {
+		return takeString(call(NativeLibrary.EXPLICIT, source));
 	}
 
 	/** Uniscript → Unicode (meta information as TAG sequences) and the warnings, leniently */
