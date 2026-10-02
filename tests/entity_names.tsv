@@ -8,1309 +8,2556 @@ double tilde	≈
 E with tilde below	Ḛ
 arrow above tilde	⥴
 arrow above bold tilde	⭌
+alpha	α
+infinity	∞
+forall	∀
+greek small letter alpha	α
+fracture A	𝔄
+double R	ℝ
+upper 2	²
+lower 2	₂
+bold alpha	𝛂
+bold italic alpha	𝜶
+sans bold A	𝗔
+ligature ae	æ
+red circle	🔴
+# HTML5 entities, differing only in case
+Aacute	Á
+aacute	á
+AElig	Æ
+aelig	æ
+Amacr	Ā
+amacr	ā
+apE	⩰
+ape	≊
+Auml	Ä
+auml	ä
+Bfr	𝔅
+bfr	𝔟
+boxDR	╔
+boxDr	╓
+boxdR	╒
+boxdr	┌
+boxUL	╝
+boxUl	╜
+boxuL	╛
+boxul	┘
+boxVL	╣
+boxVl	╢
+boxvL	╡
+boxvl	┤
+Bumpeq	≎
+bumpeq	≏
+Ccedil	Ç
+ccedil	ç
+CHcy	Ч
+chcy	ч
+Colone	⩴
+colone	≔
+Cscr	𝒞
+cscr	𝒸
+Darr	↡
+dArr	⇓
+darr	↓
+DD	ⅅ
+dd	ⅆ
+Dopf	𝔻
+dopf	𝕕
+DScy	Ѕ
+dscy	ѕ
+Ecaron	Ě
+ecaron	ě
+Efr	𝔈
+efr	𝔢
+Eogon	Ę
+eogon	ę
+Esim	⩳
+esim	≂
+Fcy	Ф
+fcy	ф
+Gamma	Γ
+gamma	γ
+Gcy	Г
+gcy	г
+Gfr	𝔊
+gfr	𝔤
+Gopf	𝔾
+gopf	𝕘
+hArr	⇔
+harr	↔
+Hscr	ℋ
+hscr	𝒽
+Icy	И
+icy	и
+IJlig	Ĳ
+ijlig	ĳ
+Iogon	Į
+iogon	į
+Itilde	Ĩ
+itilde	ĩ
+Jcy	Й
+jcy	й
+Jsercy	Ј
+jsercy	ј
+Kcy	К
+kcy	к
+Kopf	𝕂
+kopf	𝕜
+Lang	⟪
+lang	⟨
+Lcaron	Ľ
+lcaron	ľ
+LeftArrow	←
+Leftarrow	⇐
+leftarrow	←
+LJcy	Љ
+ljcy	љ
+LongLeftArrow	⟵
+Longleftarrow	⟸
+longleftarrow	⟵
+Lscr	ℒ
+lscr	𝓁
+Mcy	М
+mcy	м
+Mu	Μ
+mu	μ
+Ncy	Н
+ncy	н
+nGt	≫⃒
+ngt	≯
+nlE	≦̸
+nle	≰
+Nopf	ℕ
+nopf	𝕟
+Nscr	𝒩
+nscr	𝓃
+Nu	Ν
+nu	ν
+Ocirc	Ô
+ocirc	ô
+Ofr	𝔒
+ofr	𝔬
+Omicron	Ο
+omicron	ο
+Oslash	Ø
+oslash	ø
+Pcy	П
+pcy	п
+Popf	ℙ
+popf	𝕡
+Pscr	𝒫
+pscr	𝓅
+Qscr	𝒬
+qscr	𝓆
+Rarrtl	⤖
+rarrtl	↣
+Rcedil	Ŗ
+rcedil	ŗ
+RightArrow	→
+Rightarrow	⇒
+rightarrow	→
+Sc	⪼
+sc	≻
+Scirc	Ŝ
+scirc	ŝ
+SHCHcy	Щ
+shchcy	щ
+Sopf	𝕊
+sopf	𝕤
+subE	⫅
+sube	⊆
+supE	⫆
+supe	⊇
+Tau	Τ
+tau	τ
+Tfr	𝔗
+tfr	𝔱
+Topf	𝕋
+topf	𝕥
+Tstrok	Ŧ
+tstrok	ŧ
+Ubreve	Ŭ
+ubreve	ŭ
+Ufr	𝔘
+ufr	𝔲
+Uopf	𝕌
+uopf	𝕦
+Upsilon	Υ
+upsilon	υ
+Uuml	Ü
+uuml	ü
+VDash	⊫
+Vdash	⊩
+vDash	⊨
+vdash	⊢
+Vfr	𝔙
+vfr	𝔳
+vsupnE	⫌︀
+vsupne	⊋︀
+Wopf	𝕎
+wopf	𝕨
+Xi	Ξ
+xi	ξ
+Xscr	𝒳
+xscr	𝓍
+Ycy	Ы
+ycy	ы
+Yscr	𝒴
+yscr	𝓎
+Zcaron	Ž
+zcaron	ž
+Zfr	ℨ
+zfr	𝔷
+# HTML5 entities
+ac	∾
+angmsdad	⦫
+asymp	≈
+bepsi	϶
+blacksquare	▪
+Breve	˘
+Cayleys	ℭ
+CircleDot	⊙
+complexes	ℂ
+cularr	↶
+cylcty	⌭
+DiacriticalTilde	˜
+dotminus	∸
+DownBreve	̑
+duarr	⇵
+emptyset	∅
+EqualTilde	≂
+filig	ﬁ
+frac25	⅖
+gesdotol	⪄
+GreaterSlantEqual	⩾
+hairsp	 
+hslash	ℏ
+imof	⊷
+isindot	⋵
+larrhk	↩
+ldrushar	⥋
+LeftTeeArrow	↤
+lesg	⋚︀
+lharu	↼
+looparrowright	↬
+Lsh	↰
+lvertneqq	≨︀
+midast	*
+napid	≋̸
+NegativeThinSpace	​
+nis	⋼
+NotElement	∉
+NotLeftTriangleBar	⧏̸
+NotRightTriangleEqual	⋭
+nparsl	⫽⃥
+nsmid	∤
+num	#
+odash	⊝
+operp	⦹
+par	∥
+plus	+
+Precedes	≺
+Proportional	∝
+rarrap	⥵
+rdca	⤷
+rharul	⥬
+RightTeeVector	⥛
+roarr	⇾
+rtrif	▸
+seswar	⤩
+simgE	⪠
+spadesuit	♠
+SquareSuperset	⊐
+SubsetEqual	⊆
+sung	♪
+supsup	⫖
+thksim	∼
+trianglelefteq	⊴
+uharl	↿
+UpperLeftArrow	↖
+varpi	ϖ
+VeryThinSpace	 
+xodot	⨀
 # Basic Latin
 SPACE	 
+space	 
 LATIN CAPITAL LETTER O	O
-TILDE	~
+latin capital letter o	O
 # Latin-1 Supplement
 NO-BREAK SPACE	 
+no-break space	 
 LATIN CAPITAL LETTER ETH	Ð
+latin capital letter eth	Ð
 LATIN SMALL LETTER Y WITH DIAERESIS	ÿ
+latin small letter y with diaeresis	ÿ
 # Latin Extended-A
 LATIN CAPITAL LETTER A WITH MACRON	Ā
+latin capital letter a with macron	Ā
 LATIN SMALL LETTER L WITH MIDDLE DOT	ŀ
+latin small letter l with middle dot	ŀ
 LATIN SMALL LETTER LONG S	ſ
+latin small letter long s	ſ
 # Latin Extended-B
 LATIN SMALL LETTER B WITH STROKE	ƀ
+latin small letter b with stroke	ƀ
 LATIN CAPITAL LETTER K WITH CARON	Ǩ
+latin capital letter k with caron	Ǩ
 LATIN SMALL LETTER Y WITH STROKE	ɏ
+latin small letter y with stroke	ɏ
 # IPA Extensions
 LATIN SMALL LETTER TURNED A	ɐ
+latin small letter turned a	ɐ
 LATIN LETTER SMALL CAPITAL R	ʀ
+latin letter small capital r	ʀ
 LATIN SMALL LETTER TURNED H WITH FISHHOOK AND TAIL	ʯ
+latin small letter turned h with fishhook and tail	ʯ
 # Spacing Modifier Letters
 MODIFIER LETTER SMALL H	ʰ
+modifier letter small h	ʰ
 BREVE	˘
+breve	˘
 MODIFIER LETTER LOW LEFT ARROW	˿
+modifier letter low left arrow	˿
 # Combining Diacritical Marks
 COMBINING GRAVE ACCENT	̀
+combining grave accent	̀
 COMBINING LONG SOLIDUS OVERLAY	̸
+combining long solidus overlay	̸
 COMBINING LATIN SMALL LETTER X	ͯ
+combining latin small letter x	ͯ
 # Greek and Coptic
 GREEK CAPITAL LETTER HETA	Ͱ
+greek capital letter heta	Ͱ
 GREEK SMALL LETTER MU	μ
+greek small letter mu	μ
 GREEK CAPITAL REVERSED DOTTED LUNATE SIGMA SYMBOL	Ͽ
+greek capital reversed dotted lunate sigma symbol	Ͽ
 # Cyrillic
 CYRILLIC CAPITAL LETTER IE WITH GRAVE	Ѐ
+cyrillic capital letter ie with grave	Ѐ
 CYRILLIC CAPITAL LETTER KOPPA	Ҁ
+cyrillic capital letter koppa	Ҁ
 CYRILLIC SMALL LETTER HA WITH STROKE	ӿ
+cyrillic small letter ha with stroke	ӿ
 # Cyrillic Supplement
 CYRILLIC CAPITAL LETTER KOMI DE	Ԁ
+cyrillic capital letter komi de	Ԁ
 CYRILLIC CAPITAL LETTER YAE	Ԙ
+cyrillic capital letter yae	Ԙ
 CYRILLIC SMALL LETTER EL WITH DESCENDER	ԯ
+cyrillic small letter el with descender	ԯ
 # Armenian
 ARMENIAN CAPITAL LETTER AYB	Ա
+armenian capital letter ayb	Ա
 ARMENIAN SMALL LETTER TURNED AYB	ՠ
+armenian small letter turned ayb	ՠ
 ARMENIAN DRAM SIGN	֏
+armenian dram sign	֏
 # Hebrew
 HEBREW ACCENT ETNAHTA	֑
+hebrew accent etnahta	֑
 HEBREW POINT METEG	ֽ
+hebrew point meteg	ֽ
 HEBREW PUNCTUATION GERSHAYIM	״
+hebrew punctuation gershayim	״
 # Arabic
 ARABIC NUMBER SIGN	؀
+arabic number sign	؀
 ARABIC LETTER BEHEH	ڀ
+arabic letter beheh	ڀ
 ARABIC LETTER HEH WITH INVERTED V	ۿ
+arabic letter heh with inverted v	ۿ
 # Syriac
 SYRIAC END OF PARAGRAPH	܀
+syriac end of paragraph	܀
 SYRIAC LETTER REVERSED PE	ܧ
+syriac letter reversed pe	ܧ
 SYRIAC LETTER SOGDIAN FE	ݏ
+syriac letter sogdian fe	ݏ
 # Arabic Supplement
 ARABIC LETTER BEH WITH THREE DOTS HORIZONTALLY BELOW	ݐ
+arabic letter beh with three dots horizontally below	ݐ
 ARABIC LETTER NOON WITH SMALL TAH	ݨ
+arabic letter noon with small tah	ݨ
 ARABIC LETTER KAF WITH TWO DOTS ABOVE	ݿ
+arabic letter kaf with two dots above	ݿ
 # Thaana
 THAANA LETTER HAA	ހ
+thaana letter haa	ހ
 THAANA LETTER TTAA	ޘ
+thaana letter ttaa	ޘ
 THAANA LETTER NAA	ޱ
+thaana letter naa	ޱ
 # NKo
 NKO DIGIT ZERO	߀
+nko digit zero	߀
 NKO LETTER KA	ߞ
+nko letter ka	ߞ
 NKO TAMAN SIGN	߿
+nko taman sign	߿
 # Samaritan
 SAMARITAN LETTER ALAF	ࠀ
+samaritan letter alaf	ࠀ
 SAMARITAN VOWEL SIGN OVERLONG AA	ࠞ
+samaritan vowel sign overlong aa	ࠞ
 SAMARITAN PUNCTUATION ANNAAU	࠾
+samaritan punctuation annaau	࠾
 # Mandaic
 MANDAIC LETTER HALQA	ࡀ
+mandaic letter halqa	ࡀ
 MANDAIC LETTER AS	ࡎ
+mandaic letter as	ࡎ
 MANDAIC PUNCTUATION	࡞
+mandaic punctuation	࡞
 # Syriac Supplement
 SYRIAC LETTER MALAYALAM NGA	ࡠ
+syriac letter malayalam nga	ࡠ
 SYRIAC LETTER MALAYALAM NNNA	ࡥ
+syriac letter malayalam nnna	ࡥ
 SYRIAC LETTER MALAYALAM SSA	ࡪ
+syriac letter malayalam ssa	ࡪ
 # Arabic Extended-B
 ARABIC LETTER ALEF WITH ATTACHED FATHA	ࡰ
+arabic letter alef with attached fatha	ࡰ
 ARABIC TATWEEL WITH OVERSTRUCK WAW	ࢄ
+arabic tatweel with overstruck waw	ࢄ
 ARABIC HALF MADDA OVER MADDA	࢟
+arabic half madda over madda	࢟
 # Arabic Extended-A
 ARABIC LETTER BEH WITH SMALL V BELOW	ࢠ
+arabic letter beh with small v below	ࢠ
 ARABIC SUKUN BELOW	࣐
+arabic sukun below	࣐
 ARABIC MARK SIDEWAYS NOON GHUNNA	ࣿ
+arabic mark sideways noon ghunna	ࣿ
 # Devanagari
 DEVANAGARI SIGN INVERTED CANDRABINDU	ऀ
+devanagari sign inverted candrabindu	ऀ
 DEVANAGARI VOWEL SIGN II	ी
+devanagari vowel sign ii	ी
 DEVANAGARI LETTER BBA	ॿ
+devanagari letter bba	ॿ
 # Bengali
 BENGALI ANJI	ঀ
+bengali anji	ঀ
 BENGALI SIGN NUKTA	়
+bengali sign nukta	়
 BENGALI SANDHI MARK	৾
+bengali sandhi mark	৾
 # Gurmukhi
 GURMUKHI SIGN ADAK BINDI	ਁ
+gurmukhi sign adak bindi	ਁ
 GURMUKHI LETTER LA	ਲ
+gurmukhi letter la	ਲ
 GURMUKHI ABBREVIATION SIGN	੶
+gurmukhi abbreviation sign	੶
 # Gujarati
 GUJARATI SIGN CANDRABINDU	ઁ
+gujarati sign candrabindu	ઁ
 GUJARATI LETTER LLA	ળ
+gujarati letter lla	ળ
 GUJARATI SIGN TWO-CIRCLE NUKTA ABOVE	૿
+gujarati sign two-circle nukta above	૿
 # Oriya
 ORIYA SIGN CANDRABINDU	ଁ
+oriya sign candrabindu	ଁ
 ORIYA LETTER SHA	ଶ
+oriya letter sha	ଶ
 ORIYA FRACTION THREE SIXTEENTHS	୷
+oriya fraction three sixteenths	୷
 # Tamil
 TAMIL SIGN ANUSVARA	ஂ
+tamil sign anusvara	ஂ
 TAMIL LETTER HA	ஹ
+tamil letter ha	ஹ
 TAMIL NUMBER SIGN	௺
+tamil number sign	௺
 # Telugu
 TELUGU SIGN COMBINING CANDRABINDU ABOVE	ఀ
+telugu sign combining candrabindu above	ఀ
 TELUGU LETTER VA	వ
+telugu letter va	వ
 TELUGU SIGN TUUMU	౿
+telugu sign tuumu	౿
 # Kannada
 KANNADA SIGN SPACING CANDRABINDU	ಀ
+kannada sign spacing candrabindu	ಀ
 KANNADA LETTER RA	ರ
+kannada letter ra	ರ
 KANNADA SIGN COMBINING ANUSVARA ABOVE RIGHT	ೳ
+kannada sign combining anusvara above right	ೳ
 # Malayalam
 MALAYALAM SIGN COMBINING ANUSVARA ABOVE	ഀ
+malayalam sign combining anusvara above	ഀ
 MALAYALAM SIGN CIRCULAR VIRAMA	഼
+malayalam sign circular virama	഼
 MALAYALAM LETTER CHILLU K	ൿ
+malayalam letter chillu k	ൿ
 # Sinhala
 SINHALA SIGN CANDRABINDU	ඁ
+sinhala sign candrabindu	ඁ
 SINHALA LETTER SANYAKA DAYANNA	ඳ
+sinhala letter sanyaka dayanna	ඳ
 SINHALA PUNCTUATION KUNDDALIYA	෴
+sinhala punctuation kunddaliya	෴
 # Thai
 THAI CHARACTER KO KAI	ก
+thai character ko kai	ก
 THAI CHARACTER LO CHULA	ฬ
+thai character lo chula	ฬ
 THAI CHARACTER KHOMUT	๛
+thai character khomut	๛
 # Lao
 LAO LETTER KO	ກ
+lao letter ko	ກ
 LAO ELLIPSIS	ຯ
+lao ellipsis	ຯ
 LAO LETTER KHMU NYO	ໟ
+lao letter khmu nyo	ໟ
 # Tibetan
 TIBETAN SYLLABLE OM	ༀ
+tibetan syllable om	ༀ
 TIBETAN LETTER FIXED-FORM RA	ཪ
+tibetan letter fixed-form ra	ཪ
 TIBETAN MARK TRAILING MCHAN RTAGS	࿚
+tibetan mark trailing mchan rtags	࿚
 # Myanmar
 MYANMAR LETTER KA	က
+myanmar letter ka	က
 MYANMAR LETTER SHA	ၐ
+myanmar letter sha	ၐ
 MYANMAR SYMBOL SHAN EXCLAMATION	႟
+myanmar symbol shan exclamation	႟
 # Georgian
 GEORGIAN CAPITAL LETTER AN	Ⴀ
+georgian capital letter an	Ⴀ
 GEORGIAN LETTER EN	ე
+georgian letter en	ე
 GEORGIAN LETTER LABIAL SIGN	ჿ
+georgian letter labial sign	ჿ
 # Hangul Jamo
 HANGUL CHOSEONG KIYEOK	ᄀ
+hangul choseong kiyeok	ᄀ
 HANGUL JUNGSEONG O-E	ᆀ
+hangul jungseong o-e	ᆀ
 HANGUL JONGSEONG SSANGNIEUN	ᇿ
+hangul jongseong ssangnieun	ᇿ
 # Ethiopic
 ETHIOPIC SYLLABLE HA	ሀ
+ethiopic syllable ha	ሀ
 ETHIOPIC SYLLABLE KXWA	ዀ
+ethiopic syllable kxwa	ዀ
 ETHIOPIC NUMBER TEN THOUSAND	፼
+ethiopic number ten thousand	፼
 # Ethiopic Supplement
 ETHIOPIC SYLLABLE SEBATBEIT MWA	ᎀ
+ethiopic syllable sebatbeit mwa	ᎀ
 ETHIOPIC SYLLABLE SEBATBEIT PWA	ᎌ
+ethiopic syllable sebatbeit pwa	ᎌ
 ETHIOPIC TONAL MARK KURT	᎙
+ethiopic tonal mark kurt	᎙
 # Cherokee
 CHEROKEE LETTER A	Ꭰ
+cherokee letter a	Ꭰ
 CHEROKEE LETTER SE	Ꮞ
+cherokee letter se	Ꮞ
 CHEROKEE SMALL LETTER MV	ᏽ
+cherokee small letter mv	ᏽ
 # Unified Canadian Aboriginal Syllabics
 CANADIAN SYLLABICS HYPHEN	᐀
+canadian syllabics hyphen	᐀
 CANADIAN SYLLABICS WEST-CREE Y	ᕀ
+canadian syllabics west-cree y	ᕀ
 CANADIAN SYLLABICS BLACKFOOT W	ᙿ
+canadian syllabics blackfoot w	ᙿ
 # Ogham
 OGHAM SPACE MARK	 
+ogham space mark	 
 OGHAM LETTER STRAIF	ᚎ
+ogham letter straif	ᚎ
 OGHAM REVERSED FEATHER MARK	᚜
+ogham reversed feather mark	᚜
 # Runic
 RUNIC LETTER FEHU FEOH FE F	ᚠ
+runic letter fehu feoh fe f	ᚠ
 RUNIC LETTER SHORT-TWIG-SOL S	ᛌ
+runic letter short-twig-sol s	ᛌ
 RUNIC LETTER FRANKS CASKET AESC	ᛸ
+runic letter franks casket aesc	ᛸ
 # Tagalog
 TAGALOG LETTER A	ᜀ
+tagalog letter a	ᜀ
 TAGALOG LETTER MA	ᜋ
+tagalog letter ma	ᜋ
 TAGALOG LETTER ARCHAIC RA	ᜟ
+tagalog letter archaic ra	ᜟ
 # Hanunoo
 HANUNOO LETTER A	ᜠ
+hanunoo letter a	ᜠ
 HANUNOO LETTER MA	ᜫ
+hanunoo letter ma	ᜫ
 PHILIPPINE DOUBLE PUNCTUATION	᜶
+philippine double punctuation	᜶
 # Buhid
 BUHID LETTER A	ᝀ
+buhid letter a	ᝀ
 BUHID LETTER BA	ᝊ
+buhid letter ba	ᝊ
 BUHID VOWEL SIGN U	ᝓ
+buhid vowel sign u	ᝓ
 # Tagbanwa
 TAGBANWA LETTER A	ᝠ
+tagbanwa letter a	ᝠ
 TAGBANWA LETTER NA	ᝨ
+tagbanwa letter na	ᝨ
 TAGBANWA VOWEL SIGN U	ᝳ
+tagbanwa vowel sign u	ᝳ
 # Khmer
 KHMER LETTER KA	ក
+khmer letter ka	ក
 KHMER VOWEL SIGN II	ី
+khmer vowel sign ii	ី
 KHMER SYMBOL LEK ATTAK PRAM-BUON	៹
+khmer symbol lek attak pram-buon	៹
 # Mongolian
 MONGOLIAN BIRGA	᠀
+mongolian birga	᠀
 MONGOLIAN LETTER TODO TSA	ᡔ
+mongolian letter todo tsa	ᡔ
 MONGOLIAN LETTER MANCHU ALI GALI LHA	ᢪ
+mongolian letter manchu ali gali lha	ᢪ
 # Unified Canadian Aboriginal Syllabics Extended
 CANADIAN SYLLABICS OY	ᢰ
+canadian syllabics oy	ᢰ
 CANADIAN SYLLABICS RWOO	ᣒ
+canadian syllabics rwoo	ᣒ
 CANADIAN SYLLABICS CARRIER DENTAL S	ᣵ
+canadian syllabics carrier dental s	ᣵ
 # Limbu
 LIMBU VOWEL-CARRIER LETTER	ᤀ
+limbu vowel-carrier letter	ᤀ
 LIMBU VOWEL SIGN EE	ᤣ
+limbu vowel sign ee	ᤣ
 LIMBU DIGIT NINE	᥏
+limbu digit nine	᥏
 # Tai Le
 TAI LE LETTER KA	ᥐ
+tai le letter ka	ᥐ
 TAI LE LETTER TSHA	ᥡ
+tai le letter tsha	ᥡ
 TAI LE LETTER TONE-6	ᥴ
+tai le letter tone-6	ᥴ
 # New Tai Lue
 NEW TAI LUE LETTER HIGH QA	ᦀ
+new tai lue letter high qa	ᦀ
 NEW TAI LUE LETTER LOW XVA	ᦩ
+new tai lue letter low xva	ᦩ
 NEW TAI LUE SIGN LAEV	᧟
+new tai lue sign laev	᧟
 # Khmer Symbols
 KHMER SYMBOL PATHAMASAT	᧠
+khmer symbol pathamasat	᧠
 KHMER SYMBOL TUTEYASAT	᧰
+khmer symbol tuteyasat	᧰
 KHMER SYMBOL DAP-PRAM ROC	᧿
+khmer symbol dap-pram roc	᧿
 # Buginese
 BUGINESE LETTER KA	ᨀ
+buginese letter ka	ᨀ
 BUGINESE LETTER NYA	ᨎ
+buginese letter nya	ᨎ
 BUGINESE END OF SECTION	᨟
+buginese end of section	᨟
 # Tai Tham
 TAI THAM LETTER HIGH KA	ᨠ
+tai tham letter high ka	ᨠ
 TAI THAM SIGN SAKOT	᩠
+tai tham sign sakot	᩠
 TAI THAM SIGN CAANG	᪭
+tai tham sign caang	᪭
 # Combining Diacritical Marks Extended
 COMBINING DOUBLED CIRCUMFLEX ACCENT	᪰
+combining doubled circumflex accent	᪰
 COMBINING LATIN SMALL LETTER W BELOW	ᪿ
+combining latin small letter w below	ᪿ
 COMBINING LATIN SMALL LETTER INSULAR T	ᫎ
+combining latin small letter insular t	ᫎ
 # Balinese
 BALINESE SIGN ULU RICEM	ᬀ
+balinese sign ulu ricem	ᬀ
 BALINESE VOWEL SIGN TALING REPA	ᬿ
+balinese vowel sign taling repa	ᬿ
 BALINESE PANTI BAWAK	᭿
+balinese panti bawak	᭿
 # Sundanese
 SUNDANESE SIGN PANYECEK	ᮀ
+sundanese sign panyecek	ᮀ
 SUNDANESE LETTER HA	ᮠ
+sundanese letter ha	ᮠ
 SUNDANESE LETTER FINAL M	ᮿ
+sundanese letter final m	ᮿ
 # Batak
 BATAK LETTER A	ᯀ
+batak letter a	ᯀ
 BATAK LETTER SIMALUNGUN YA	ᯜ
+batak letter simalungun ya	ᯜ
 BATAK SYMBOL BINDU PANGOLAT	᯿
+batak symbol bindu pangolat	᯿
 # Lepcha
 LEPCHA LETTER KA	ᰀ
+lepcha letter ka	ᰀ
 LEPCHA SUBJOINED LETTER YA	ᰤ
+lepcha subjoined letter ya	ᰤ
 LEPCHA LETTER DDA	ᱏ
+lepcha letter dda	ᱏ
 # Ol Chiki
 OL CHIKI DIGIT ZERO	᱐
+ol chiki digit zero	᱐
 OL CHIKI LETTER IR	ᱨ
+ol chiki letter ir	ᱨ
 OL CHIKI PUNCTUATION DOUBLE MUCAAD	᱿
+ol chiki punctuation double mucaad	᱿
 # Cyrillic Extended-C
 CYRILLIC SMALL LETTER ROUNDED VE	ᲀ
+cyrillic small letter rounded ve	ᲀ
 CYRILLIC SMALL LETTER THREE-LEGGED TE	ᲅ
+cyrillic small letter three-legged te	ᲅ
 CYRILLIC SMALL LETTER TJE	ᲊ
+cyrillic small letter tje	ᲊ
 # Georgian Extended
 GEORGIAN MTAVRULI CAPITAL LETTER AN	Ა
+georgian mtavruli capital letter an	Ა
 GEORGIAN MTAVRULI CAPITAL LETTER GHAN	Ღ
+georgian mtavruli capital letter ghan	Ღ
 GEORGIAN MTAVRULI CAPITAL LETTER LABIAL SIGN	Ჿ
+georgian mtavruli capital letter labial sign	Ჿ
 # Sundanese Supplement
 SUNDANESE PUNCTUATION BINDU SURYA	᳀
+sundanese punctuation bindu surya	᳀
 SUNDANESE PUNCTUATION BINDU LEU SATANGA	᳄
+sundanese punctuation bindu leu satanga	᳄
 SUNDANESE PUNCTUATION BINDU BA SATANGA	᳇
+sundanese punctuation bindu ba satanga	᳇
 # Vedic Extensions
 VEDIC TONE KARSHANA	᳐
+vedic tone karshana	᳐
 VEDIC SIGN VISARGA ANUDATTA	᳥
+vedic sign visarga anudatta	᳥
 VEDIC SIGN DOUBLE ANUSVARA ANTARGOMUKHA	ᳺ
+vedic sign double anusvara antargomukha	ᳺ
 # Phonetic Extensions
 LATIN LETTER SMALL CAPITAL A	ᴀ
+latin letter small capital a	ᴀ
 MODIFIER LETTER CAPITAL T	ᵀ
+modifier letter capital t	ᵀ
 LATIN SMALL LETTER UPSILON WITH STROKE	ᵿ
+latin small letter upsilon with stroke	ᵿ
 # Phonetic Extensions Supplement
 LATIN SMALL LETTER B WITH PALATAL HOOK	ᶀ
+latin small letter b with palatal hook	ᶀ
 MODIFIER LETTER SMALL F	ᶠ
+modifier letter small f	ᶠ
 MODIFIER LETTER SMALL THETA	ᶿ
+modifier letter small theta	ᶿ
 # Combining Diacritical Marks Supplement
 COMBINING DOTTED GRAVE ACCENT	᷀
+combining dotted grave accent	᷀
 COMBINING LATIN SMALL LETTER N	ᷠ
+combining latin small letter n	ᷠ
 COMBINING RIGHT ARROWHEAD AND DOWN ARROWHEAD BELOW	᷿
+combining right arrowhead and down arrowhead below	᷿
 # Latin Extended Additional
 LATIN CAPITAL LETTER A WITH RING BELOW	Ḁ
+latin capital letter a with ring below	Ḁ
 LATIN CAPITAL LETTER W WITH GRAVE	Ẁ
+latin capital letter w with grave	Ẁ
 LATIN SMALL LETTER Y WITH LOOP	ỿ
+latin small letter y with loop	ỿ
 # Greek Extended
 GREEK SMALL LETTER ALPHA WITH PSILI	ἀ
+greek small letter alpha with psili	ἀ
 GREEK SMALL LETTER ALPHA WITH PSILI AND VARIA AND YPOGEGRAMMENI	ᾂ
+greek small letter alpha with psili and varia and ypogegrammeni	ᾂ
 GREEK DASIA	῾
+greek dasia	῾
 # General Punctuation
 EN QUAD	 
+en quad	 
 REVERSED TRIPLE PRIME	‷
+reversed triple prime	‷
 NOMINAL DIGIT SHAPES	⁯
+nominal digit shapes	⁯
 # Superscripts and Subscripts
 SUPERSCRIPT ZERO	⁰
+superscript zero	⁰
 SUBSCRIPT SIX	₆
+subscript six	₆
 LATIN SUBSCRIPT SMALL LETTER T	ₜ
+latin subscript small letter t	ₜ
 # Currency Symbols
 EURO-CURRENCY SIGN	₠
+euro-currency sign	₠
 GERMAN PENNY SIGN	₰
+german penny sign	₰
 SOM SIGN	⃀
+som sign	⃀
 # Combining Diacritical Marks for Symbols
 COMBINING LEFT HARPOON ABOVE	⃐
+combining left harpoon above	⃐
 COMBINING ENCLOSING CIRCLE BACKSLASH	⃠
+combining enclosing circle backslash	⃠
 COMBINING ASTERISK ABOVE	⃰
+combining asterisk above	⃰
 # Letterlike Symbols
 ACCOUNT OF	℀
+account of	℀
 BLACK-LETTER CAPITAL Z	ℨ
+black-letter capital z	ℨ
 SYMBOL FOR SAMARITAN SOURCE	⅏
+symbol for samaritan source	⅏
 # Number Forms
 VULGAR FRACTION ONE SEVENTH	⅐
+vulgar fraction one seventh	⅐
 ROMAN NUMERAL FIVE HUNDRED	Ⅾ
+roman numeral five hundred	Ⅾ
 TURNED DIGIT THREE	↋
+turned digit three	↋
 # Arrows
 LEFTWARDS ARROW	←
+leftwards arrow	←
 UPWARDS PAIRED ARROWS	⇈
+upwards paired arrows	⇈
 LEFT RIGHT OPEN-HEADED ARROW	⇿
+left right open-headed arrow	⇿
 # Mathematical Operators
 FOR ALL	∀
+for all	∀
 DOES NOT PRECEDE	⊀
+does not precede	⊀
 Z NOTATION BAG MEMBERSHIP	⋿
+z notation bag membership	⋿
 # Miscellaneous Technical
 DIAMETER SIGN	⌀
+diameter sign	⌀
 INSERTION SYMBOL	⎀
+insertion symbol	⎀
 OBSERVER EYE SYMBOL	⏿
+observer eye symbol	⏿
 # Control Pictures
 SYMBOL FOR NULL	␀
+symbol for null	␀
 SYMBOL FOR DEVICE CONTROL FOUR	␔
+symbol for device control four	␔
 SYMBOL FOR DELETE MEDIUM SHADE FORM	␩
+symbol for delete medium shade form	␩
 # Optical Character Recognition
 OCR HOOK	⑀
+ocr hook	⑀
 OCR BOW TIE	⑅
+ocr bow tie	⑅
 OCR DOUBLE BACKSLASH	⑊
+ocr double backslash	⑊
 # Enclosed Alphanumerics
 CIRCLED DIGIT ONE	①
+circled digit one	①
 PARENTHESIZED LATIN SMALL LETTER U	⒰
+parenthesized latin small letter u	⒰
 NEGATIVE CIRCLED DIGIT ZERO	⓿
+negative circled digit zero	⓿
 # Box Drawing
 BOX DRAWINGS LIGHT HORIZONTAL	─
+box drawings light horizontal	─
 BOX DRAWINGS UP HEAVY AND DOWN HORIZONTAL LIGHT	╀
+box drawings up heavy and down horizontal light	╀
 BOX DRAWINGS HEAVY UP AND LIGHT DOWN	╿
+box drawings heavy up and light down	╿
 # Block Elements
 UPPER HALF BLOCK	▀
+upper half block	▀
 RIGHT HALF BLOCK	▐
+right half block	▐
 QUADRANT UPPER RIGHT AND LOWER LEFT AND LOWER RIGHT	▟
+quadrant upper right and lower left and lower right	▟
 # Geometric Shapes
 BLACK SQUARE	■
+black square	■
 CIRCLE WITH LEFT HALF BLACK	◐
+circle with left half black	◐
 LOWER RIGHT TRIANGLE	◿
+lower right triangle	◿
 # Miscellaneous Symbols
 BLACK SUN WITH RAYS	☀
+black sun with rays	☀
 DIE FACE-1	⚀
+die face-1	⚀
 WHITE FLAG WITH HORIZONTAL MIDDLE BLACK STRIPE	⛿
+white flag with horizontal middle black stripe	⛿
 # Dingbats
 BLACK SAFETY SCISSORS	✀
+black safety scissors	✀
 HEAVY LOW DOUBLE COMMA QUOTATION MARK ORNAMENT	❠
+heavy low double comma quotation mark ornament	❠
 DOUBLE CURLY LOOP	➿
+double curly loop	➿
 # Miscellaneous Mathematical Symbols-A
 THREE DIMENSIONAL ANGLE	⟀
+three dimensional angle	⟀
 LARGE UP TACK	⟘
+large up tack	⟘
 MATHEMATICAL RIGHT FLATTENED PARENTHESIS	⟯
+mathematical right flattened parenthesis	⟯
 # Supplemental Arrows-A
 UPWARDS QUADRUPLE ARROW	⟰
+upwards quadruple arrow	⟰
 LONG LEFTWARDS DOUBLE ARROW	⟸
+long leftwards double arrow	⟸
 LONG RIGHTWARDS SQUIGGLE ARROW	⟿
+long rightwards squiggle arrow	⟿
 # Braille Patterns
 BRAILLE PATTERN BLANK	⠀
+braille pattern blank	⠀
 BRAILLE PATTERN DOTS-8	⢀
+braille pattern dots-8	⢀
 BRAILLE PATTERN DOTS-12345678	⣿
+braille pattern dots-12345678	⣿
 # Supplemental Arrows-B
 RIGHTWARDS TWO-HEADED ARROW WITH VERTICAL STROKE	⤀
+rightwards two-headed arrow with vertical stroke	⤀
 ANTICLOCKWISE CLOSED CIRCLE ARROW	⥀
+anticlockwise closed circle arrow	⥀
 DOWN FISH TAIL	⥿
+down fish tail	⥿
 # Miscellaneous Mathematical Symbols-B
 TRIPLE VERTICAL BAR DELIMITER	⦀
+triple vertical bar delimiter	⦀
 CIRCLED LESS-THAN	⧀
+circled less-than	⧀
 MINY	⧿
+miny	⧿
 # Supplemental Mathematical Operators
 N-ARY CIRCLED DOT OPERATOR	⨀
+n-ary circled dot operator	⨀
 GREATER-THAN OR SLANTED EQUAL TO WITH DOT INSIDE	⪀
+greater-than or slanted equal to with dot inside	⪀
 N-ARY WHITE VERTICAL BAR	⫿
+n-ary white vertical bar	⫿
 # Miscellaneous Symbols and Arrows
 NORTH EAST WHITE ARROW	⬀
+north east white arrow	⬀
 LEFTWARDS TRIANGLE-HEADED ARROW OVER RIGHTWARDS TRIANGLE-HEADED ARROW	⮀
+leftwards triangle-headed arrow over rightwards triangle-headed arrow	⮀
 HELLSCHREIBER PAUSE SYMBOL	⯿
+hellschreiber pause symbol	⯿
 # Glagolitic
 GLAGOLITIC CAPITAL LETTER AZU	Ⰰ
+glagolitic capital letter azu	Ⰰ
 GLAGOLITIC SMALL LETTER AZU	ⰰ
+glagolitic small letter azu	ⰰ
 GLAGOLITIC SMALL LETTER CAUDATE CHRIVI	ⱟ
+glagolitic small letter caudate chrivi	ⱟ
 # Latin Extended-C
 LATIN CAPITAL LETTER L WITH DOUBLE BAR	Ⱡ
+latin capital letter l with double bar	Ⱡ
 LATIN CAPITAL LETTER TURNED ALPHA	Ɒ
+latin capital letter turned alpha	Ɒ
 LATIN CAPITAL LETTER Z WITH SWASH TAIL	Ɀ
+latin capital letter z with swash tail	Ɀ
 # Coptic
 COPTIC CAPITAL LETTER ALFA	Ⲁ
+coptic capital letter alfa	Ⲁ
 COPTIC SMALL LETTER CRYPTOGRAMMIC NI	ⲽ
+coptic small letter cryptogrammic ni	ⲽ
 COPTIC MORPHOLOGICAL DIVIDER	⳿
+coptic morphological divider	⳿
 # Georgian Supplement
 GEORGIAN SMALL LETTER AN	ⴀ
+georgian small letter an	ⴀ
 GEORGIAN SMALL LETTER PHAR	ⴔ
+georgian small letter phar	ⴔ
 GEORGIAN SMALL LETTER AEN	ⴭ
+georgian small letter aen	ⴭ
 # Tifinagh
 TIFINAGH LETTER YA	ⴰ
+tifinagh letter ya	ⴰ
 TIFINAGH LETTER YAL	ⵍ
+tifinagh letter yal	ⵍ
 TIFINAGH CONSONANT JOINER	⵿
+tifinagh consonant joiner	⵿
 # Ethiopic Extended
 ETHIOPIC SYLLABLE LOA	ⶀ
+ethiopic syllable loa	ⶀ
 ETHIOPIC SYLLABLE ZZI	ⶲ
+ethiopic syllable zzi	ⶲ
 ETHIOPIC SYLLABLE GYO	ⷞ
+ethiopic syllable gyo	ⷞ
 # Cyrillic Extended-A
 COMBINING CYRILLIC LETTER BE	ⷠ
+combining cyrillic letter be	ⷠ
 COMBINING CYRILLIC LETTER TSE	ⷰ
+combining cyrillic letter tse	ⷰ
 COMBINING CYRILLIC LETTER IOTIFIED BIG YUS	ⷿ
+combining cyrillic letter iotified big yus	ⷿ
 # Supplemental Punctuation
 RIGHT ANGLE SUBSTITUTION MARKER	⸀
+right angle substitution marker	⸀
 REVERSED QUESTION MARK	⸮
+reversed question mark	⸮
 OBLIQUE HYPHEN	⹝
+oblique hyphen	⹝
 # CJK Radicals Supplement
 CJK RADICAL REPEAT	⺀
+cjk radical repeat	⺀
 CJK RADICAL BRUSH ONE	⺺
+cjk radical brush one	⺺
 CJK RADICAL C-SIMPLIFIED TURTLE	⻳
+cjk radical c-simplified turtle	⻳
 # Kangxi Radicals
 KANGXI RADICAL ONE	⼀
+kangxi radical one	⼀
 KANGXI RADICAL SKIN	⽪
+kangxi radical skin	⽪
 KANGXI RADICAL FLUTE	⿕
+kangxi radical flute	⿕
 # Ideographic Description Characters
 IDEOGRAPHIC DESCRIPTION CHARACTER LEFT TO RIGHT	⿰
+ideographic description character left to right	⿰
 IDEOGRAPHIC DESCRIPTION CHARACTER SURROUND FROM UPPER LEFT	⿸
+ideographic description character surround from upper left	⿸
 IDEOGRAPHIC DESCRIPTION CHARACTER ROTATION	⿿
+ideographic description character rotation	⿿
 # CJK Symbols and Punctuation
 IDEOGRAPHIC SPACE	　
+ideographic space	　
 POSTAL MARK FACE	〠
+postal mark face	〠
 IDEOGRAPHIC HALF FILL SPACE	〿
+ideographic half fill space	〿
 # Hiragana
 HIRAGANA LETTER SMALL A	ぁ
+hiragana letter small a	ぁ
 HIRAGANA LETTER HA	は
+hiragana letter ha	は
 HIRAGANA DIGRAPH YORI	ゟ
+hiragana digraph yori	ゟ
 # Katakana
 KATAKANA-HIRAGANA DOUBLE HYPHEN	゠
+katakana-hiragana double hyphen	゠
 KATAKANA LETTER BA	バ
+katakana letter ba	バ
 KATAKANA DIGRAPH KOTO	ヿ
+katakana digraph koto	ヿ
 # Bopomofo
 BOPOMOFO LETTER B	ㄅ
+bopomofo letter b	ㄅ
 BOPOMOFO LETTER A	ㄚ
+bopomofo letter a	ㄚ
 BOPOMOFO LETTER NN	ㄯ
+bopomofo letter nn	ㄯ
 # Hangul Compatibility Jamo
 HANGUL LETTER KIYEOK	ㄱ
+hangul letter kiyeok	ㄱ
 HANGUL LETTER WI	ㅟ
+hangul letter wi	ㅟ
 HANGUL LETTER ARAEAE	ㆎ
+hangul letter araeae	ㆎ
 # Kanbun
 IDEOGRAPHIC ANNOTATION LINKING MARK	㆐
+ideographic annotation linking mark	㆐
 IDEOGRAPHIC ANNOTATION BOTTOM MARK	㆘
+ideographic annotation bottom mark	㆘
 IDEOGRAPHIC ANNOTATION MAN MARK	㆟
+ideographic annotation man mark	㆟
 # Bopomofo Extended
 BOPOMOFO LETTER BU	ㆠ
+bopomofo letter bu	ㆠ
 BOPOMOFO LETTER AM	ㆰ
+bopomofo letter am	ㆰ
 BOPOMOFO LETTER AH	ㆿ
+bopomofo letter ah	ㆿ
 # CJK Strokes
 CJK STROKE T	㇀
+cjk stroke t	㇀
 CJK STROKE SP	㇓
+cjk stroke sp	㇓
 IDEOGRAPHIC DESCRIPTION CHARACTER SUBTRACTION	㇯
+ideographic description character subtraction	㇯
 # Katakana Phonetic Extensions
 KATAKANA LETTER SMALL KU	ㇰ
+katakana letter small ku	ㇰ
 KATAKANA LETTER SMALL HE	ㇸ
+katakana letter small he	ㇸ
 KATAKANA LETTER SMALL RO	ㇿ
+katakana letter small ro	ㇿ
 # Enclosed CJK Letters and Months
 PARENTHESIZED HANGUL KIYEOK	㈀
+parenthesized hangul kiyeok	㈀
 CIRCLED IDEOGRAPH ONE	㊀
+circled ideograph one	㊀
 SQUARE ERA NAME REIWA	㋿
+square era name reiwa	㋿
 # CJK Compatibility
 SQUARE APAATO	㌀
+square apaato	㌀
 SQUARE PA AMPS	㎀
+square pa amps	㎀
 SQUARE GAL	㏿
+square gal	㏿
 # CJK Unified Ideographs Extension A
 CJK UNIFIED IDEOGRAPH-3400	㐀
+cjk unified ideograph-3400	㐀
 CJK UNIFIED IDEOGRAPH-40E0	䃠
+cjk unified ideograph-40e0	䃠
 CJK UNIFIED IDEOGRAPH-4DBF	䶿
+cjk unified ideograph-4dbf	䶿
 # Yijing Hexagram Symbols
 HEXAGRAM FOR THE CREATIVE HEAVEN	䷀
+hexagram for the creative heaven	䷀
 HEXAGRAM FOR RETREAT	䷠
+hexagram for retreat	䷠
 HEXAGRAM FOR BEFORE COMPLETION	䷿
+hexagram for before completion	䷿
 # CJK Unified Ideographs
 CJK UNIFIED IDEOGRAPH-4E00	一
+cjk unified ideograph-4e00	一
 CJK UNIFIED IDEOGRAPH-7700	眀
+cjk unified ideograph-7700	眀
 CJK UNIFIED IDEOGRAPH-9FFF	鿿
+cjk unified ideograph-9fff	鿿
 # Yi Syllables
 YI SYLLABLE IT	ꀀ
+yi syllable it	ꀀ
 YI SYLLABLE HXIT	ꉆ
+yi syllable hxit	ꉆ
 YI SYLLABLE YYR	ꒌ
+yi syllable yyr	ꒌ
 # Yi Radicals
 YI RADICAL QOT	꒐
+yi radical qot	꒐
 YI RADICAL ZOT	꒫
+yi radical zot	꒫
 YI RADICAL KE	꓆
+yi radical ke	꓆
 # Lisu
 LISU LETTER BA	ꓐ
+lisu letter ba	ꓐ
 LISU LETTER HHA	ꓨ
+lisu letter hha	ꓨ
 LISU PUNCTUATION FULL STOP	꓿
+lisu punctuation full stop	꓿
 # Vai
 VAI SYLLABLE EE	ꔀ
+vai syllable ee	ꔀ
 VAI SYLLABLE UN	ꖖ
+vai syllable un	ꖖ
 VAI SYLLABLE NDOLE DO	ꘫ
+vai syllable ndole do	ꘫ
 # Cyrillic Extended-B
 CYRILLIC CAPITAL LETTER ZEMLYA	Ꙁ
+cyrillic capital letter zemlya	Ꙁ
 COMBINING CYRILLIC TEN MILLIONS SIGN	꙰
+combining cyrillic ten millions sign	꙰
 COMBINING CYRILLIC LETTER IOTIFIED E	ꚟ
+combining cyrillic letter iotified e	ꚟ
 # Bamum
 BAMUM LETTER A	ꚠ
+bamum letter a	ꚠ
 BAMUM LETTER RU	ꛌ
+bamum letter ru	ꛌ
 BAMUM QUESTION MARK	꛷
+bamum question mark	꛷
 # Modifier Tone Letters
 MODIFIER LETTER CHINESE TONE YIN PING	꜀
+modifier letter chinese tone yin ping	꜀
 MODIFIER LETTER LOW DOTTED LEFT-STEM TONE BAR	꜐
+modifier letter low dotted left-stem tone bar	꜐
 MODIFIER LETTER LOW INVERTED EXCLAMATION MARK	ꜟ
+modifier letter low inverted exclamation mark	ꜟ
 # Latin Extended-D
 MODIFIER LETTER STRESS AND HIGH TONE	꜠
+modifier letter stress and high tone	꜠
 LATIN SMALL LETTER INSULAR R	ꞃ
+latin small letter insular r	ꞃ
 LATIN EPIGRAPHIC LETTER ARCHAIC M	ꟿ
+latin epigraphic letter archaic m	ꟿ
 # Syloti Nagri
 SYLOTI NAGRI LETTER A	ꠀ
+syloti nagri letter a	ꠀ
 SYLOTI NAGRI LETTER DO	ꠖ
+syloti nagri letter do	ꠖ
 SYLOTI NAGRI SIGN ALTERNATE HASANTA	꠬
+syloti nagri sign alternate hasanta	꠬
 # Common Indic Number Forms
 NORTH INDIC FRACTION ONE QUARTER	꠰
+north indic fraction one quarter	꠰
 NORTH INDIC FRACTION ONE EIGHTH	꠴
+north indic fraction one eighth	꠴
 NORTH INDIC QUANTITY MARK	꠹
+north indic quantity mark	꠹
 # Phags-pa
 PHAGS-PA LETTER KA	ꡀ
+phags-pa letter ka	ꡀ
 PHAGS-PA LETTER HA	ꡜ
+phags-pa letter ha	ꡜ
 PHAGS-PA MARK DOUBLE SHAD	꡷
+phags-pa mark double shad	꡷
 # Saurashtra
 SAURASHTRA SIGN ANUSVARA	ꢀ
+saurashtra sign anusvara	ꢀ
 SAURASHTRA LETTER BA	ꢨ
+saurashtra letter ba	ꢨ
 SAURASHTRA DIGIT NINE	꣙
+saurashtra digit nine	꣙
 # Devanagari Extended
 COMBINING DEVANAGARI DIGIT ZERO	꣠
+combining devanagari digit zero	꣠
 COMBINING DEVANAGARI LETTER VI	꣰
+combining devanagari letter vi	꣰
 DEVANAGARI VOWEL SIGN AY	ꣿ
+devanagari vowel sign ay	ꣿ
 # Kayah Li
 KAYAH LI DIGIT ZERO	꤀
+kayah li digit zero	꤀
 KAYAH LI LETTER DA	ꤘ
+kayah li letter da	ꤘ
 KAYAH LI SIGN SHYA	꤯
+kayah li sign shya	꤯
 # Rejang
 REJANG LETTER KA	ꤰ
+rejang letter ka	ꤰ
 REJANG LETTER MBA	ꥂ
+rejang letter mba	ꥂ
 REJANG SECTION MARK	꥟
+rejang section mark	꥟
 # Hangul Jamo Extended-A
 HANGUL CHOSEONG TIKEUT-MIEUM	ꥠ
+hangul choseong tikeut-mieum	ꥠ
 HANGUL CHOSEONG RIEUL-KHIEUKH	ꥮ
+hangul choseong rieul-khieukh	ꥮ
 HANGUL CHOSEONG SSANGYEORINHIEUH	ꥼ
+hangul choseong ssangyeorinhieuh	ꥼ
 # Javanese
 JAVANESE SIGN PANYANGGA	ꦀ
+javanese sign panyangga	ꦀ
 JAVANESE LETTER LA	ꦭ
+javanese letter la	ꦭ
 JAVANESE PADA ISEN-ISEN	꧟
+javanese pada isen-isen	꧟
 # Myanmar Extended-B
 MYANMAR LETTER SHAN GHA	ꧠ
+myanmar letter shan gha	ꧠ
 MYANMAR LETTER TAI LAING NNA	ꧯ
+myanmar letter tai laing nna	ꧯ
 MYANMAR LETTER TAI LAING BHA	ꧾ
+myanmar letter tai laing bha	ꧾ
 # Cham
 CHAM LETTER A	ꨀ
+cham letter a	ꨀ
 CHAM VOWEL SIGN AA	ꨩ
+cham vowel sign aa	ꨩ
 CHAM PUNCTUATION TRIPLE DANDA	꩟
+cham punctuation triple danda	꩟
 # Myanmar Extended-A
 MYANMAR LETTER KHAMTI GA	ꩠ
+myanmar letter khamti ga	ꩠ
 MYANMAR MODIFIER LETTER KHAMTI REDUPLICATION	ꩰ
+myanmar modifier letter khamti reduplication	ꩰ
 MYANMAR LETTER SHWE PALAUNG SHA	ꩿ
+myanmar letter shwe palaung sha	ꩿ
 # Tai Viet
 TAI VIET LETTER LOW KO	ꪀ
+tai viet letter low ko	ꪀ
 TAI VIET LETTER LOW YO	ꪤ
+tai viet letter low yo	ꪤ
 TAI VIET SYMBOL KOI KOI	꫟
+tai viet symbol koi koi	꫟
 # Meetei Mayek Extensions
 MEETEI MAYEK LETTER E	ꫠ
+meetei mayek letter e	ꫠ
 MEETEI MAYEK VOWEL SIGN II	ꫫ
+meetei mayek vowel sign ii	ꫫ
 MEETEI MAYEK VIRAMA	꫶
+meetei mayek virama	꫶
 # Ethiopic Extended-A
 ETHIOPIC SYLLABLE TTHU	ꬁ
+ethiopic syllable tthu	ꬁ
 ETHIOPIC SYLLABLE DZE	ꬕ
+ethiopic syllable dze	ꬕ
 ETHIOPIC SYLLABLE BBO	ꬮ
+ethiopic syllable bbo	ꬮ
 # Latin Extended-E
 LATIN SMALL LETTER BARRED ALPHA	ꬰ
+latin small letter barred alpha	ꬰ
 LATIN SMALL LETTER U WITH SHORT RIGHT LEG	ꭎ
+latin small letter u with short right leg	ꭎ
 MODIFIER LETTER RIGHT TACK	꭫
+modifier letter right tack	꭫
 # Cherokee Supplement
 CHEROKEE SMALL LETTER A	ꭰ
+cherokee small letter a	ꭰ
 CHEROKEE SMALL LETTER QUI	ꮘ
+cherokee small letter qui	ꮘ
 CHEROKEE SMALL LETTER YA	ꮿ
+cherokee small letter ya	ꮿ
 # Meetei Mayek
 MEETEI MAYEK LETTER KOK	ꯀ
+meetei mayek letter kok	ꯀ
 MEETEI MAYEK LETTER LAI LONSUM	ꯜ
+meetei mayek letter lai lonsum	ꯜ
 MEETEI MAYEK DIGIT NINE	꯹
+meetei mayek digit nine	꯹
 # Hangul Syllables
 HANGUL SYLLABLE GA	가
+hangul syllable ga	가
 HANGUL SYLLABLE SWAELP	쇒
+hangul syllable swaelp	쇒
 HANGUL SYLLABLE HIH	힣
+hangul syllable hih	힣
 # Hangul Jamo Extended-B
 HANGUL JUNGSEONG O-YEO	ힰ
+hangul jungseong o-yeo	ힰ
 HANGUL JONGSEONG RIEUL-MIEUM-HIEUH	ퟘ
+hangul jongseong rieul-mieum-hieuh	ퟘ
 HANGUL JONGSEONG PHIEUPH-THIEUTH	ퟻ
+hangul jongseong phieuph-thieuth	ퟻ
 # CJK Compatibility Ideographs
 CJK COMPATIBILITY IDEOGRAPH-F900	豈
+cjk compatibility ideograph-f900	豈
 CJK COMPATIBILITY IDEOGRAPH-F9EC	溺
+cjk compatibility ideograph-f9ec	溺
 CJK COMPATIBILITY IDEOGRAPH-FAD9	龎
+cjk compatibility ideograph-fad9	龎
 # Alphabetic Presentation Forms
 LATIN SMALL LIGATURE FF	ﬀ
+latin small ligature ff	ﬀ
 HEBREW LETTER SHIN WITH DAGESH AND SIN DOT	שּׂ
+hebrew letter shin with dagesh and sin dot	שּׂ
 HEBREW LIGATURE ALEF LAMED	ﭏ
+hebrew ligature alef lamed	ﭏ
 # Arabic Presentation Forms-A
 ARABIC LETTER ALEF WASLA ISOLATED FORM	ﭐ
+arabic letter alef wasla isolated form	ﭐ
 ARABIC LIGATURE YEH WITH HAMZA ABOVE WITH HEH INITIAL FORM	ﲛ
+arabic ligature yeh with hamza above with heh initial form	ﲛ
 ARABIC LIGATURE AZZA WA JALL	﷿
+arabic ligature azza wa jall	﷿
 # Vertical Forms
 PRESENTATION FORM FOR VERTICAL COMMA	︐
+presentation form for vertical comma	︐
 PRESENTATION FORM FOR VERTICAL SEMICOLON	︔
+presentation form for vertical semicolon	︔
 PRESENTATION FORM FOR VERTICAL HORIZONTAL ELLIPSIS	︙
+presentation form for vertical horizontal ellipsis	︙
 # Combining Half Marks
 COMBINING LIGATURE LEFT HALF	︠
+combining ligature left half	︠
 COMBINING LIGATURE RIGHT HALF BELOW	︨
+combining ligature right half below	︨
 COMBINING CYRILLIC TITLO RIGHT HALF	︯
+combining cyrillic titlo right half	︯
 # CJK Compatibility Forms
 PRESENTATION FORM FOR VERTICAL TWO DOT LEADER	︰
+presentation form for vertical two dot leader	︰
 PRESENTATION FORM FOR VERTICAL RIGHT ANGLE BRACKET	﹀
+presentation form for vertical right angle bracket	﹀
 WAVY LOW LINE	﹏
+wavy low line	﹏
 # Small Form Variants
 SMALL COMMA	﹐
+small comma	﹐
 SMALL LEFT TORTOISE SHELL BRACKET	﹝
+small left tortoise shell bracket	﹝
 SMALL COMMERCIAL AT	﹫
+small commercial at	﹫
 # Arabic Presentation Forms-B
 ARABIC FATHATAN ISOLATED FORM	ﹰ
+arabic fathatan isolated form	ﹰ
 ARABIC LETTER SHEEN INITIAL FORM	ﺷ
+arabic letter sheen initial form	ﺷ
 ZERO WIDTH NO-BREAK SPACE	﻿
+zero width no-break space	﻿
 # Halfwidth and Fullwidth Forms
 FULLWIDTH EXCLAMATION MARK	！
+fullwidth exclamation mark	！
 HALFWIDTH KATAKANA LETTER A	ｱ
+halfwidth katakana letter a	ｱ
 HALFWIDTH WHITE CIRCLE	￮
+halfwidth white circle	￮
 # Specials
 INTERLINEAR ANNOTATION ANCHOR	￹
+interlinear annotation anchor	￹
 INTERLINEAR ANNOTATION TERMINATOR	￻
+interlinear annotation terminator	￻
 REPLACEMENT CHARACTER	�
+replacement character	�
 # Linear B Syllabary
 LINEAR B SYLLABLE B008 A	𐀀
+linear b syllable b008 a	𐀀
 LINEAR B SYLLABLE B009 SE	𐀮
+linear b syllable b009 se	𐀮
 LINEAR B SYMBOL B089	𐁝
+linear b symbol b089	𐁝
 # Linear B Ideograms
 LINEAR B IDEOGRAM B100 MAN	𐂀
+linear b ideogram b100 man	𐂀
 LINEAR B IDEOGRAM B182	𐂽
+linear b ideogram b182	𐂽
 LINEAR B IDEOGRAM VESSEL B305	𐃺
+linear b ideogram vessel b305	𐃺
 # Aegean Numbers
 AEGEAN WORD SEPARATOR LINE	𐄀
+aegean word separator line	𐄀
 AEGEAN NUMBER EIGHT HUNDRED	𐄠
+aegean number eight hundred	𐄠
 AEGEAN MEASURE THIRD SUBUNIT	𐄿
+aegean measure third subunit	𐄿
 # Ancient Greek Numbers
 GREEK ACROPHONIC ATTIC ONE QUARTER	𐅀
+greek acrophonic attic one quarter	𐅀
 GREEK ACROPHONIC TROEZENIAN FIFTY ALTERNATE FORM	𐅧
+greek acrophonic troezenian fifty alternate form	𐅧
 NOMISMA SIGN	𐆎
+nomisma sign	𐆎
 # Ancient Symbols
 ROMAN SEXTANS SIGN	𐆐
+roman sextans sign	𐆐
 ROMAN DENARIUS SIGN	𐆖
+roman denarius sign	𐆖
 GREEK SYMBOL TAU RHO	𐆠
+greek symbol tau rho	𐆠
 # Phaistos Disc
 PHAISTOS DISC SIGN PEDESTRIAN	𐇐
+phaistos disc sign pedestrian	𐇐
 PHAISTOS DISC SIGN COLUMN	𐇦
+phaistos disc sign column	𐇦
 PHAISTOS DISC SIGN COMBINING OBLIQUE STROKE	𐇽
+phaistos disc sign combining oblique stroke	𐇽
 # Lycian
 LYCIAN LETTER A	𐊀
+lycian letter a	𐊀
 LYCIAN LETTER M	𐊎
+lycian letter m	𐊎
 LYCIAN LETTER X	𐊜
+lycian letter x	𐊜
 # Carian
 CARIAN LETTER A	𐊠
+carian letter a	𐊠
 CARIAN LETTER SS	𐊸
+carian letter ss	𐊸
 CARIAN LETTER UUU3	𐋐
+carian letter uuu3	𐋐
 # Coptic Epact Numbers
 COPTIC EPACT THOUSANDS MARK	𐋠
+coptic epact thousands mark	𐋠
 COPTIC EPACT NUMBER FIFTY	𐋮
+coptic epact number fifty	𐋮
 COPTIC EPACT NUMBER NINE HUNDRED	𐋻
+coptic epact number nine hundred	𐋻
 # Old Italic
 OLD ITALIC LETTER A	𐌀
+old italic letter a	𐌀
 OLD ITALIC LETTER ER	𐌓
+old italic letter er	𐌓
 OLD ITALIC LETTER SOUTHERN TSE	𐌯
+old italic letter southern tse	𐌯
 # Gothic
 GOTHIC LETTER AHSA	𐌰
+gothic letter ahsa	𐌰
 GOTHIC LETTER NAUTHS	𐌽
+gothic letter nauths	𐌽
 GOTHIC LETTER NINE HUNDRED	𐍊
+gothic letter nine hundred	𐍊
 # Old Permic
 OLD PERMIC LETTER AN	𐍐
+old permic letter an	𐍐
 OLD PERMIC LETTER SHOOI	𐍥
+old permic letter shooi	𐍥
 COMBINING OLD PERMIC LETTER SII	𐍺
+combining old permic letter sii	𐍺
 # Ugaritic
 UGARITIC LETTER ALPA	𐎀
+ugaritic letter alpa	𐎀
 UGARITIC LETTER DHAL	𐎏
+ugaritic letter dhal	𐎏
 UGARITIC WORD DIVIDER	𐎟
+ugaritic word divider	𐎟
 # Old Persian
 OLD PERSIAN SIGN A	𐎠
+old persian sign a	𐎠
 OLD PERSIAN SIGN MU	𐎸
+old persian sign mu	𐎸
 OLD PERSIAN NUMBER HUNDRED	𐏕
+old persian number hundred	𐏕
 # Deseret
 DESERET CAPITAL LETTER LONG I	𐐀
+deseret capital letter long i	𐐀
 DESERET SMALL LETTER LONG I	𐐨
+deseret small letter long i	𐐨
 DESERET SMALL LETTER EW	𐑏
+deseret small letter ew	𐑏
 # Shavian
 SHAVIAN LETTER PEEP	𐑐
+shavian letter peep	𐑐
 SHAVIAN LETTER ASH	𐑨
+shavian letter ash	𐑨
 SHAVIAN LETTER YEW	𐑿
+shavian letter yew	𐑿
 # Osmanya
 OSMANYA LETTER ALEF	𐒀
+osmanya letter alef	𐒀
 OSMANYA LETTER HA	𐒔
+osmanya letter ha	𐒔
 OSMANYA DIGIT NINE	𐒩
+osmanya digit nine	𐒩
 # Osage
 OSAGE CAPITAL LETTER A	𐒰
+osage capital letter a	𐒰
 OSAGE SMALL LETTER A	𐓘
+osage small letter a	𐓘
 OSAGE SMALL LETTER ZHA	𐓻
+osage small letter zha	𐓻
 # Elbasan
 ELBASAN LETTER A	𐔀
+elbasan letter a	𐔀
 ELBASAN LETTER NA	𐔔
+elbasan letter na	𐔔
 ELBASAN LETTER KHE	𐔧
+elbasan letter khe	𐔧
 # Caucasian Albanian
 CAUCASIAN ALBANIAN LETTER ALT	𐔰
+caucasian albanian letter alt	𐔰
 CAUCASIAN ALBANIAN LETTER CHI	𐕊
+caucasian albanian letter chi	𐕊
 CAUCASIAN ALBANIAN CITATION MARK	𐕯
+caucasian albanian citation mark	𐕯
 # Vithkuqi
 VITHKUQI CAPITAL LETTER A	𐕰
+vithkuqi capital letter a	𐕰
 VITHKUQI CAPITAL LETTER ZE	𐖕
+vithkuqi capital letter ze	𐖕
 VITHKUQI SMALL LETTER ZE	𐖼
+vithkuqi small letter ze	𐖼
 # Todhri
 TODHRI LETTER A	𐗀
+todhri letter a	𐗀
 TODHRI LETTER O	𐗚
+todhri letter o	𐗚
 TODHRI LETTER OO	𐗳
+todhri letter oo	𐗳
 # Linear A
 LINEAR A SIGN AB001	𐘀
+linear a sign ab001	𐘀
 LINEAR A SIGN A410-VAS	𐚪
+linear a sign a410-vas	𐚪
 LINEAR A SIGN A807	𐝧
+linear a sign a807	𐝧
 # Latin Extended-F
 MODIFIER LETTER SMALL CAPITAL AA	𐞀
+modifier letter small capital aa	𐞀
 MODIFIER LETTER SMALL L WITH RETROFLEX HOOK AND BELT	𐞝
+modifier letter small l with retroflex hook and belt	𐞝
 MODIFIER LETTER SMALL S WITH CURL	𐞺
+modifier letter small s with curl	𐞺
 # Cypriot Syllabary
 CYPRIOT SYLLABLE A	𐠀
+cypriot syllable a	𐠀
 CYPRIOT SYLLABLE PA	𐠞
+cypriot syllable pa	𐠞
 CYPRIOT SYLLABLE ZO	𐠿
+cypriot syllable zo	𐠿
 # Imperial Aramaic
 IMPERIAL ARAMAIC LETTER ALEPH	𐡀
+imperial aramaic letter aleph	𐡀
 IMPERIAL ARAMAIC LETTER AYIN	𐡏
+imperial aramaic letter ayin	𐡏
 IMPERIAL ARAMAIC NUMBER TEN THOUSAND	𐡟
+imperial aramaic number ten thousand	𐡟
 # Palmyrene
 PALMYRENE LETTER ALEPH	𐡠
+palmyrene letter aleph	𐡠
 PALMYRENE LETTER AYIN	𐡰
+palmyrene letter ayin	𐡰
 PALMYRENE NUMBER TWENTY	𐡿
+palmyrene number twenty	𐡿
 # Nabataean
 NABATAEAN LETTER FINAL ALEPH	𐢀
+nabataean letter final aleph	𐢀
 NABATAEAN LETTER FINAL NUN	𐢔
+nabataean letter final nun	𐢔
 NABATAEAN NUMBER ONE HUNDRED	𐢯
+nabataean number one hundred	𐢯
 # Hatran
 HATRAN LETTER ALEPH	𐣠
+hatran letter aleph	𐣠
 HATRAN LETTER MEM	𐣬
+hatran letter mem	𐣬
 HATRAN NUMBER ONE HUNDRED	𐣿
+hatran number one hundred	𐣿
 # Phoenician
 PHOENICIAN LETTER ALF	𐤀
+phoenician letter alf	𐤀
 PHOENICIAN LETTER SEMK	𐤎
+phoenician letter semk	𐤎
 PHOENICIAN WORD SEPARATOR	𐤟
+phoenician word separator	𐤟
 # Lydian
 LYDIAN LETTER A	𐤠
+lydian letter a	𐤠
 LYDIAN LETTER R	𐤭
+lydian letter r	𐤭
 LYDIAN TRIANGULAR MARK	𐤿
+lydian triangular mark	𐤿
 # Meroitic Hieroglyphs
 MEROITIC HIEROGLYPHIC LETTER A	𐦀
+meroitic hieroglyphic letter a	𐦀
 MEROITIC HIEROGLYPHIC LETTER LA	𐦐
+meroitic hieroglyphic letter la	𐦐
 MEROITIC HIEROGLYPHIC SYMBOL VIDJ-2	𐦟
+meroitic hieroglyphic symbol vidj-2	𐦟
 # Meroitic Cursive
 MEROITIC CURSIVE LETTER A	𐦠
+meroitic cursive letter a	𐦠
 MEROITIC CURSIVE NUMBER ONE HUNDRED	𐧒
+meroitic cursive number one hundred	𐧒
 MEROITIC CURSIVE FRACTION TEN TWELFTHS	𐧿
+meroitic cursive fraction ten twelfths	𐧿
 # Kharoshthi
 KHAROSHTHI LETTER A	𐨀
+kharoshthi letter a	𐨀
 KHAROSHTHI LETTER RA	𐨪
+kharoshthi letter ra	𐨪
 KHAROSHTHI PUNCTUATION LINES	𐩘
+kharoshthi punctuation lines	𐩘
 # Old South Arabian
 OLD SOUTH ARABIAN LETTER HE	𐩠
+old south arabian letter he	𐩠
 OLD SOUTH ARABIAN LETTER FE	𐩰
+old south arabian letter fe	𐩰
 OLD SOUTH ARABIAN NUMERIC INDICATOR	𐩿
+old south arabian numeric indicator	𐩿
 # Old North Arabian
 OLD NORTH ARABIAN LETTER HEH	𐪀
+old north arabian letter heh	𐪀
 OLD NORTH ARABIAN LETTER FEH	𐪐
+old north arabian letter feh	𐪐
 OLD NORTH ARABIAN NUMBER TWENTY	𐪟
+old north arabian number twenty	𐪟
 # Manichaean
 MANICHAEAN LETTER ALEPH	𐫀
+manichaean letter aleph	𐫀
 MANICHAEAN LETTER AYIN	𐫙
+manichaean letter ayin	𐫙
 MANICHAEAN PUNCTUATION LINE FILLER	𐫶
+manichaean punctuation line filler	𐫶
 # Avestan
 AVESTAN LETTER A	𐬀
+avestan letter a	𐬀
 AVESTAN LETTER PE	𐬞
+avestan letter pe	𐬞
 LARGE ONE RING OVER TWO RINGS PUNCTUATION	𐬿
+large one ring over two rings punctuation	𐬿
 # Inscriptional Parthian
 INSCRIPTIONAL PARTHIAN LETTER ALEPH	𐭀
+inscriptional parthian letter aleph	𐭀
 INSCRIPTIONAL PARTHIAN LETTER SAMEKH	𐭎
+inscriptional parthian letter samekh	𐭎
 INSCRIPTIONAL PARTHIAN NUMBER ONE THOUSAND	𐭟
+inscriptional parthian number one thousand	𐭟
 # Inscriptional Pahlavi
 INSCRIPTIONAL PAHLAVI LETTER ALEPH	𐭠
+inscriptional pahlavi letter aleph	𐭠
 INSCRIPTIONAL PAHLAVI LETTER NUN	𐭭
+inscriptional pahlavi letter nun	𐭭
 INSCRIPTIONAL PAHLAVI NUMBER ONE THOUSAND	𐭿
+inscriptional pahlavi number one thousand	𐭿
 # Psalter Pahlavi
 PSALTER PAHLAVI LETTER ALEPH	𐮀
+psalter pahlavi letter aleph	𐮀
 PSALTER PAHLAVI LETTER PE	𐮎
+psalter pahlavi letter pe	𐮎
 PSALTER PAHLAVI NUMBER ONE HUNDRED	𐮯
+psalter pahlavi number one hundred	𐮯
 # Old Turkic
 OLD TURKIC LETTER ORKHON A	𐰀
+old turkic letter orkhon a	𐰀
 OLD TURKIC LETTER ORKHON AEN	𐰤
+old turkic letter orkhon aen	𐰤
 OLD TURKIC LETTER ORKHON BASH	𐱈
+old turkic letter orkhon bash	𐱈
 # Old Hungarian
 OLD HUNGARIAN CAPITAL LETTER A	𐲀
+old hungarian capital letter a	𐲀
 OLD HUNGARIAN SMALL LETTER AMB	𐳃
+old hungarian small letter amb	𐳃
 OLD HUNGARIAN NUMBER ONE THOUSAND	𐳿
+old hungarian number one thousand	𐳿
 # Hanifi Rohingya
 HANIFI ROHINGYA LETTER A	𐴀
+hanifi rohingya letter a	𐴀
 HANIFI ROHINGYA LETTER YA	𐴘
+hanifi rohingya letter ya	𐴘
 HANIFI ROHINGYA DIGIT NINE	𐴹
+hanifi rohingya digit nine	𐴹
 # Garay
 GARAY DIGIT ZERO	𐵀
+garay digit zero	𐵀
 GARAY CAPITAL LETTER PA	𐵢
+garay capital letter pa	𐵢
 GARAY MINUS SIGN	𐶏
+garay minus sign	𐶏
 # Rumi Numeral Symbols
 RUMI DIGIT ONE	𐹠
+rumi digit one	𐹠
 RUMI NUMBER SEVENTY	𐹯
+rumi number seventy	𐹯
 RUMI FRACTION TWO THIRDS	𐹾
+rumi fraction two thirds	𐹾
 # Yezidi
 YEZIDI LETTER ELIF	𐺀
+yezidi letter elif	𐺀
 YEZIDI LETTER EYN	𐺗
+yezidi letter eyn	𐺗
 YEZIDI LETTER YOT WITH CIRCUMFLEX ABOVE	𐺱
+yezidi letter yot with circumflex above	𐺱
 # Arabic Extended-C
 ARABIC LETTER DAL WITH TWO DOTS VERTICALLY BELOW	𐻂
+arabic letter dal with two dots vertically below	𐻂
 ARABIC COMBINING ALEF OVERLAY	𐻼
+arabic combining alef overlay	𐻼
 ARABIC SMALL LOW WORD MADDA	𐻿
+arabic small low word madda	𐻿
 # Old Sogdian
 OLD SOGDIAN LETTER ALEPH	𐼀
+old sogdian letter aleph	𐼀
 OLD SOGDIAN LETTER PE	𐼔
+old sogdian letter pe	𐼔
 OLD SOGDIAN LIGATURE AYIN-DALETH	𐼧
+old sogdian ligature ayin-daleth	𐼧
 # Sogdian
 SOGDIAN LETTER ALEPH	𐼰
+sogdian letter aleph	𐼰
 SOGDIAN LETTER LESH	𐽄
+sogdian letter lesh	𐽄
 SOGDIAN PUNCTUATION HALF CIRCLE WITH DOT	𐽙
+sogdian punctuation half circle with dot	𐽙
 # Old Uyghur
 OLD UYGHUR LETTER ALEPH	𐽰
+old uyghur letter aleph	𐽰
 OLD UYGHUR LETTER PE	𐽼
+old uyghur letter pe	𐽼
 OLD UYGHUR PUNCTUATION FOUR DOTS	𐾉
+old uyghur punctuation four dots	𐾉
 # Chorasmian
 CHORASMIAN LETTER ALEPH	𐾰
+chorasmian letter aleph	𐾰
 CHORASMIAN LETTER NUN	𐾾
+chorasmian letter nun	𐾾
 CHORASMIAN NUMBER ONE HUNDRED	𐿋
+chorasmian number one hundred	𐿋
 # Elymaic
 ELYMAIC LETTER ALEPH	𐿠
+elymaic letter aleph	𐿠
 ELYMAIC LETTER LAMEDH	𐿫
+elymaic letter lamedh	𐿫
 ELYMAIC LIGATURE ZAYIN-YODH	𐿶
+elymaic ligature zayin-yodh	𐿶
 # Brahmi
 BRAHMI SIGN CANDRABINDU	𑀀
+brahmi sign candrabindu	𑀀
 BRAHMI VOWEL SIGN BHATTIPROLU AA	𑀹
+brahmi vowel sign bhattiprolu aa	𑀹
 BRAHMI NUMBER JOINER	𑁿
+brahmi number joiner	𑁿
 # Kaithi
 KAITHI SIGN CANDRABINDU	𑂀
+kaithi sign candrabindu	𑂀
 KAITHI LETTER NA	𑂢
+kaithi letter na	𑂢
 KAITHI NUMBER SIGN ABOVE	𑃍
+kaithi number sign above	𑃍
 # Sora Sompeng
 SORA SOMPENG LETTER SAH	𑃐
+sora sompeng letter sah	𑃐
 SORA SOMPENG LETTER NYAH	𑃡
+sora sompeng letter nyah	𑃡
 SORA SOMPENG DIGIT NINE	𑃹
+sora sompeng digit nine	𑃹
 # Chakma
 CHAKMA SIGN CANDRABINDU	𑄀
+chakma sign candrabindu	𑄀
 CHAKMA LETTER LAA	𑄣
+chakma letter laa	𑄣
 CHAKMA LETTER VAA	𑅇
+chakma letter vaa	𑅇
 # Mahajani
 MAHAJANI LETTER A	𑅐
+mahajani letter a	𑅐
 MAHAJANI LETTER TA	𑅣
+mahajani letter ta	𑅣
 MAHAJANI LIGATURE SHRI	𑅶
+mahajani ligature shri	𑅶
 # Sharada
 SHARADA SIGN CANDRABINDU	𑆀
+sharada sign candrabindu	𑆀
 SHARADA LETTER SSA	𑆰
+sharada letter ssa	𑆰
 SHARADA SECTION MARK-2	𑇟
+sharada section mark-2	𑇟
 # Sinhala Archaic Numbers
 SINHALA ARCHAIC DIGIT ONE	𑇡
+sinhala archaic digit one	𑇡
 SINHALA ARCHAIC NUMBER TWENTY	𑇫
+sinhala archaic number twenty	𑇫
 SINHALA ARCHAIC NUMBER ONE THOUSAND	𑇴
+sinhala archaic number one thousand	𑇴
 # Khojki
 KHOJKI LETTER A	𑈀
+khojki letter a	𑈀
 KHOJKI LETTER BA	𑈡
+khojki letter ba	𑈡
 KHOJKI VOWEL SIGN VOCALIC R	𑉁
+khojki vowel sign vocalic r	𑉁
 # Multani
 MULTANI LETTER A	𑊀
+multani letter a	𑊀
 MULTANI LETTER NNA	𑊕
+multani letter nna	𑊕
 MULTANI SECTION MARK	𑊩
+multani section mark	𑊩
 # Khudawadi
 KHUDAWADI LETTER A	𑊰
+khudawadi letter a	𑊰
 KHUDAWADI LETTER PA	𑋒
+khudawadi letter pa	𑋒
 KHUDAWADI DIGIT NINE	𑋹
+khudawadi digit nine	𑋹
 # Grantha
 GRANTHA SIGN COMBINING ANUSVARA ABOVE	𑌀
+grantha sign combining anusvara above	𑌀
 GRANTHA LETTER RA	𑌰
+grantha letter ra	𑌰
 COMBINING GRANTHA LETTER PA	𑍴
+combining grantha letter pa	𑍴
 # Tulu-Tigalari
 TULU-TIGALARI LETTER A	𑎀
+tulu-tigalari letter a	𑎀
 TULU-TIGALARI LETTER RA	𑎬
+tulu-tigalari letter ra	𑎬
 TULU-TIGALARI VEDIC TONE ANUDATTA	𑏢
+tulu-tigalari vedic tone anudatta	𑏢
 # Newa
 NEWA LETTER A	𑐀
+newa letter a	𑐀
 NEWA LETTER WA	𑐰
+newa letter wa	𑐰
 NEWA SIGN UPADHMANIYA	𑑡
+newa sign upadhmaniya	𑑡
 # Tirhuta
 TIRHUTA ANJI	𑒀
+tirhuta anji	𑒀
 TIRHUTA LETTER YA	𑒨
+tirhuta letter ya	𑒨
 TIRHUTA DIGIT NINE	𑓙
+tirhuta digit nine	𑓙
 # Siddham
 SIDDHAM LETTER A	𑖀
+siddham letter a	𑖀
 SIDDHAM LETTER HA	𑖮
+siddham letter ha	𑖮
 SIDDHAM VOWEL SIGN ALTERNATE UU	𑗝
+siddham vowel sign alternate uu	𑗝
 # Modi
 MODI LETTER A	𑘀
+modi letter a	𑘀
 MODI LETTER YA	𑘧
+modi letter ya	𑘧
 MODI DIGIT NINE	𑙙
+modi digit nine	𑙙
 # Mongolian Supplement
 MONGOLIAN BIRGA WITH ORNAMENT	𑙠
+mongolian birga with ornament	𑙠
 MONGOLIAN ROTATED BIRGA WITH DOUBLE ORNAMENT	𑙦
+mongolian rotated birga with double ornament	𑙦
 MONGOLIAN TURNED SWIRL BIRGA WITH DOUBLE ORNAMENT	𑙬
+mongolian turned swirl birga with double ornament	𑙬
 # Takri
 TAKRI LETTER A	𑚀
+takri letter a	𑚀
 TAKRI LETTER MA	𑚢
+takri letter ma	𑚢
 TAKRI DIGIT NINE	𑛉
+takri digit nine	𑛉
 # Myanmar Extended-C
 MYANMAR PAO DIGIT ZERO	𑛐
+myanmar pao digit zero	𑛐
 MYANMAR EASTERN PWO KAREN DIGIT ZERO	𑛚
+myanmar eastern pwo karen digit zero	𑛚
 MYANMAR EASTERN PWO KAREN DIGIT NINE	𑛣
+myanmar eastern pwo karen digit nine	𑛣
 # Ahom
 AHOM LETTER KA	𑜀
+ahom letter ka	𑜀
 AHOM VOWEL SIGN I	𑜢
+ahom vowel sign i	𑜢
 AHOM LETTER LLA	𑝆
+ahom letter lla	𑝆
 # Dogra
 DOGRA LETTER A	𑠀
+dogra letter a	𑠀
 DOGRA LETTER PA	𑠞
+dogra letter pa	𑠞
 DOGRA ABBREVIATION SIGN	𑠻
+dogra abbreviation sign	𑠻
 # Warang Citi
 WARANG CITI CAPITAL LETTER NGAA	𑢠
+warang citi capital letter ngaa	𑢠
 WARANG CITI SMALL LETTER ANG	𑣊
+warang citi small letter ang	𑣊
 WARANG CITI OM	𑣿
+warang citi om	𑣿
 # Dives Akuru
 DIVES AKURU LETTER A	𑤀
+dives akuru letter a	𑤀
 DIVES AKURU LETTER SHA	𑤪
+dives akuru letter sha	𑤪
 DIVES AKURU DIGIT NINE	𑥙
+dives akuru digit nine	𑥙
 # Nandinagari
 NANDINAGARI LETTER A	𑦠
+nandinagari letter a	𑦠
 NANDINAGARI LETTER PA	𑧂
+nandinagari letter pa	𑧂
 NANDINAGARI VOWEL SIGN PRISHTHAMATRA E	𑧤
+nandinagari vowel sign prishthamatra e	𑧤
 # Zanabazar Square
 ZANABAZAR SQUARE LETTER A	𑨀
+zanabazar square letter a	𑨀
 ZANABAZAR SQUARE LETTER TSHA	𑨤
+zanabazar square letter tsha	𑨤
 ZANABAZAR SQUARE SUBJOINER	𑩇
+zanabazar square subjoiner	𑩇
 # Soyombo
 SOYOMBO LETTER A	𑩐
+soyombo letter a	𑩐
 SOYOMBO LETTER ZA	𑩹
+soyombo letter za	𑩹
 SOYOMBO TERMINAL MARK-2	𑪢
+soyombo terminal mark-2	𑪢
 # Unified Canadian Aboriginal Syllabics Extended-A
 CANADIAN SYLLABICS NATTILIK HI	𑪰
+canadian syllabics nattilik hi	𑪰
 CANADIAN SYLLABICS NATTILIK SHRO	𑪸
+canadian syllabics nattilik shro	𑪸
 CANADIAN SYLLABICS SPA	𑪿
+canadian syllabics spa	𑪿
 # Pau Cin Hau
 PAU CIN HAU LETTER PA	𑫀
+pau cin hau letter pa	𑫀
 PAU CIN HAU LETTER FINAL P	𑫜
+pau cin hau letter final p	𑫜
 PAU CIN HAU GLOTTAL STOP FINAL	𑫸
+pau cin hau glottal stop final	𑫸
 # Devanagari Extended-A
 DEVANAGARI HEAD MARK	𑬀
+devanagari head mark	𑬀
 DEVANAGARI SIGN EXTENDED BHALE	𑬄
+devanagari sign extended bhale	𑬄
 DEVANAGARI SIGN MINDU	𑬉
+devanagari sign mindu	𑬉
 # Sunuwar
 SUNUWAR LETTER DEVI	𑯀
+sunuwar letter devi	𑯀
 SUNUWAR LETTER AAL	𑯖
+sunuwar letter aal	𑯖
 SUNUWAR DIGIT NINE	𑯹
+sunuwar digit nine	𑯹
 # Bhaiksuki
 BHAIKSUKI LETTER A	𑰀
+bhaiksuki letter a	𑰀
 BHAIKSUKI VOWEL SIGN II	𑰱
+bhaiksuki vowel sign ii	𑰱
 BHAIKSUKI HUNDREDS UNIT MARK	𑱬
+bhaiksuki hundreds unit mark	𑱬
 # Marchen
 MARCHEN HEAD MARK	𑱰
+marchen head mark	𑱰
 MARCHEN SUBJOINED LETTER GA	𑲔
+marchen subjoined letter ga	𑲔
 MARCHEN SIGN CANDRABINDU	𑲶
+marchen sign candrabindu	𑲶
 # Masaram Gondi
 MASARAM GONDI LETTER A	𑴀
+masaram gondi letter a	𑴀
 MASARAM GONDI LETTER LA	𑴧
+masaram gondi letter la	𑴧
 MASARAM GONDI DIGIT NINE	𑵙
+masaram gondi digit nine	𑵙
 # Gunjala Gondi
 GUNJALA GONDI LETTER A	𑵠
+gunjala gondi letter a	𑵠
 GUNJALA GONDI LETTER JHA	𑶁
+gunjala gondi letter jha	𑶁
 GUNJALA GONDI DIGIT NINE	𑶩
+gunjala gondi digit nine	𑶩
 # Makasar
 MAKASAR LETTER KA	𑻠
+makasar letter ka	𑻠
 MAKASAR LETTER YA	𑻬
+makasar letter ya	𑻬
 MAKASAR END OF SECTION	𑻸
+makasar end of section	𑻸
 # Kawi
 KAWI SIGN CANDRABINDU	𑼀
+kawi sign candrabindu	𑼀
 KAWI LETTER RA	𑼬
+kawi letter ra	𑼬
 KAWI SIGN NUKTA	𑽚
+kawi sign nukta	𑽚
 # Lisu Supplement
 LISU LETTER YHA	𑾰
+lisu letter yha	𑾰
 # Tamil Supplement
 TAMIL FRACTION ONE THREE-HUNDRED-AND-TWENTIETH	𑿀
+tamil fraction one three-hundred-and-twentieth	𑿀
 TAMIL SIGN MUUVUZHAKKU	𑿙
+tamil sign muuvuzhakku	𑿙
 TAMIL PUNCTUATION END OF TEXT	𑿿
+tamil punctuation end of text	𑿿
 # Cuneiform
 CUNEIFORM SIGN A	𒀀
+cuneiform sign a	𒀀
 CUNEIFORM SIGN LAGAB TIMES IM	𒇌
+cuneiform sign lagab times im	𒇌
 CUNEIFORM SIGN U U	𒎙
+cuneiform sign u u	𒎙
 # Cuneiform Numbers and Punctuation
 CUNEIFORM NUMERIC SIGN TWO ASH	𒐀
+cuneiform numeric sign two ash	𒐀
 CUNEIFORM NUMERIC SIGN THREE VARIANT FORM ESH16	𒐺
+cuneiform numeric sign three variant form esh16	𒐺
 CUNEIFORM PUNCTUATION SIGN DIAGONAL QUADCOLON	𒑴
+cuneiform punctuation sign diagonal quadcolon	𒑴
 # Early Dynastic Cuneiform
 CUNEIFORM SIGN AB TIMES NUN TENU	𒒀
+cuneiform sign ab times nun tenu	𒒀
 CUNEIFORM SIGN LAK-210	𒓢
+cuneiform sign lak-210	𒓢
 CUNEIFORM SIGN ZU5 TIMES THREE DISH TENU	𒕃
+cuneiform sign zu5 times three dish tenu	𒕃
 # Cypro-Minoan
 CYPRO-MINOAN SIGN CM001	𒾐
+cypro-minoan sign cm001	𒾐
 CYPRO-MINOAN SIGN CM062	𒿁
+cypro-minoan sign cm062	𒿁
 CYPRO-MINOAN SIGN CM302	𒿲
+cypro-minoan sign cm302	𒿲
 # Egyptian Hieroglyphs
 EGYPTIAN HIEROGLYPH A001	𓀀
+egyptian hieroglyph a001	𓀀
 EGYPTIAN HIEROGLYPH N036	𓈘
+egyptian hieroglyph n036	𓈘
 EGYPTIAN HIEROGLYPH V011D	𓐯
+egyptian hieroglyph v011d	𓐯
 # Egyptian Hieroglyph Format Controls
 EGYPTIAN HIEROGLYPH VERTICAL JOINER	𓐰
+egyptian hieroglyph vertical joiner	𓐰
 EGYPTIAN HIEROGLYPH HALF BLANK	𓑂
+egyptian hieroglyph half blank	𓑂
 EGYPTIAN HIEROGLYPH MODIFIER DAMAGED	𓑕
+egyptian hieroglyph modifier damaged	𓑕
 # Egyptian Hieroglyphs Extended-A
 EGYPTIAN HIEROGLYPH-13460	𓑠
+egyptian hieroglyph-13460	𓑠
 EGYPTIAN HIEROGLYPH-13C2D	𓰭
+egyptian hieroglyph-13c2d	𓰭
 EGYPTIAN HIEROGLYPH-143FA	𔏺
+egyptian hieroglyph-143fa	𔏺
 # Anatolian Hieroglyphs
 ANATOLIAN HIEROGLYPH A001	𔐀
+anatolian hieroglyph a001	𔐀
 ANATOLIAN HIEROGLYPH A257	𔔣
+anatolian hieroglyph a257	𔔣
 ANATOLIAN HIEROGLYPH A530	𔙆
+anatolian hieroglyph a530	𔙆
 # Gurung Khema
 GURUNG KHEMA LETTER A	𖄀
+gurung khema letter a	𖄀
 GURUNG KHEMA LETTER LA	𖄜
+gurung khema letter la	𖄜
 GURUNG KHEMA DIGIT NINE	𖄹
+gurung khema digit nine	𖄹
 # Bamum Supplement
 BAMUM LETTER PHASE-A NGKUE MFON	𖠀
+bamum letter phase-a ngkue mfon	𖠀
 BAMUM LETTER PHASE-D MGBIEE	𖤜
+bamum letter phase-d mgbiee	𖤜
 BAMUM LETTER PHASE-F VUEQ	𖨸
+bamum letter phase-f vueq	𖨸
 # Mro
 MRO LETTER TA	𖩀
+mro letter ta	𖩀
 MRO LETTER THEA	𖩕
+mro letter thea	𖩕
 MRO DOUBLE DANDA	𖩯
+mro double danda	𖩯
 # Tangsa
 TANGSA LETTER OZ	𖩰
+tangsa letter oz	𖩰
 TANGSA LETTER MZ	𖪜
+tangsa letter mz	𖪜
 TANGSA DIGIT NINE	𖫉
+tangsa digit nine	𖫉
 # Bassa Vah
 BASSA VAH LETTER ENNI	𖫐
+bassa vah letter enni	𖫐
 BASSA VAH LETTER BA	𖫢
+bassa vah letter ba	𖫢
 BASSA VAH FULL STOP	𖫵
+bassa vah full stop	𖫵
 # Pahawh Hmong
 PAHAWH HMONG VOWEL KEEB	𖬀
+pahawh hmong vowel keeb	𖬀
 PAHAWH HMONG SIGN XYEEM FAIB	𖬿
+pahawh hmong sign xyeem faib	𖬿
 PAHAWH HMONG CLAN SIGN VWJ	𖮏
+pahawh hmong clan sign vwj	𖮏
 # Kirat Rai
 KIRAT RAI SIGN ANUSVARA	𖵀
+kirat rai sign anusvara	𖵀
 KIRAT RAI LETTER YA	𖵜
+kirat rai letter ya	𖵜
 KIRAT RAI DIGIT NINE	𖵹
+kirat rai digit nine	𖵹
 # Medefaidrin
 MEDEFAIDRIN CAPITAL LETTER M	𖹀
+medefaidrin capital letter m	𖹀
 MEDEFAIDRIN SMALL LETTER A	𖹭
+medefaidrin small letter a	𖹭
 MEDEFAIDRIN EXCLAMATION OH	𖺚
+medefaidrin exclamation oh	𖺚
 # Miao
 MIAO LETTER PA	𖼀
+miao letter pa	𖼀
 MIAO LETTER RTE	𖽊
+miao letter rte	𖽊
 MIAO LETTER REFORMED TONE-8	𖾟
+miao letter reformed tone-8	𖾟
 # Ideographic Symbols and Punctuation
 TANGUT ITERATION MARK	𖿠
+tangut iteration mark	𖿠
 OLD CHINESE ITERATION MARK	𖿣
+old chinese iteration mark	𖿣
 VIETNAMESE ALTERNATE READING MARK NHAY	𖿱
+vietnamese alternate reading mark nhay	𖿱
 # Tangut Components
 TANGUT COMPONENT-001	𘠀
+tangut component-001	𘠀
 TANGUT COMPONENT-385	𘦀
+tangut component-385	𘦀
 TANGUT COMPONENT-768	𘫿
+tangut component-768	𘫿
 # Khitan Small Script
 KHITAN SMALL SCRIPT CHARACTER-18B00	𘬀
+khitan small script character-18b00	𘬀
 KHITAN SMALL SCRIPT CHARACTER-18BEB	𘯫
+khitan small script character-18beb	𘯫
 KHITAN SMALL SCRIPT CHARACTER-18CFF	𘳿
+khitan small script character-18cff	𘳿
 # Kana Extended-B
 KATAKANA LETTER MINNAN TONE-2	𚿰
+katakana letter minnan tone-2	𚿰
 KATAKANA LETTER MINNAN NASALIZED TONE-1	𚿷
+katakana letter minnan nasalized tone-1	𚿷
 KATAKANA LETTER MINNAN NASALIZED TONE-8	𚿾
+katakana letter minnan nasalized tone-8	𚿾
 # Kana Supplement
 KATAKANA LETTER ARCHAIC E	𛀀
+katakana letter archaic e	𛀀
 HENTAIGANA LETTER NA-3	𛂀
+hentaigana letter na-3	𛂀
 HENTAIGANA LETTER RE-2	𛃿
+hentaigana letter re-2	𛃿
 # Kana Extended-A
 HENTAIGANA LETTER RE-3	𛄀
+hentaigana letter re-3	𛄀
 HENTAIGANA LETTER WI-5	𛄑
+hentaigana letter wi-5	𛄑
 KATAKANA LETTER ARCHAIC WU	𛄢
+katakana letter archaic wu	𛄢
 # Small Kana Extension
 HIRAGANA LETTER SMALL KO	𛄲
+hiragana letter small ko	𛄲
 KATAKANA LETTER SMALL KO	𛅕
+katakana letter small ko	𛅕
 KATAKANA LETTER SMALL N	𛅧
+katakana letter small n	𛅧
 # Nushu
 NUSHU CHARACTER-1B170	𛅰
+nushu character-1b170	𛅰
 NUSHU CHARACTER-1B236	𛈶
+nushu character-1b236	𛈶
 NUSHU CHARACTER-1B2FB	𛋻
+nushu character-1b2fb	𛋻
 # Duployan
 DUPLOYAN LETTER H	𛰀
+duployan letter h	𛰀
 DUPLOYAN LETTER E	𛱇
+duployan letter e	𛱇
 DUPLOYAN PUNCTUATION CHINOOK FULL STOP	𛲟
+duployan punctuation chinook full stop	𛲟
 # Shorthand Format Controls
 SHORTHAND FORMAT LETTER OVERLAP	𛲠
+shorthand format letter overlap	𛲠
 SHORTHAND FORMAT DOWN STEP	𛲢
+shorthand format down step	𛲢
 SHORTHAND FORMAT UP STEP	𛲣
+shorthand format up step	𛲣
 # Symbols for Legacy Computing Supplement
 UP-POINTING GO-KART	𜰀
+up-pointing go-kart	𜰀
 BLOCK OCTANT-12467	𜵜
+block octant-12467	𜵜
 BLACK RIGHT TRIANGLE CARET	𜺳
+black right triangle caret	𜺳
 # Znamenny Musical Notation
 ZNAMENNY COMBINING MARK GORAZDO NIZKO S KRYZHEM ON LEFT	𜼀
+znamenny combining mark gorazdo nizko s kryzhem on left	𜼀
 ZNAMENNY NEUME VRAKHIYA KLYUCHEVAYA PROSTAYA	𜽧
+znamenny neume vrakhiya klyuchevaya prostaya	𜽧
 ZNAMENNY NEUME PAUK	𜿃
+znamenny neume pauk	𜿃
 # Byzantine Musical Symbols
 BYZANTINE MUSICAL SYMBOL PSILI	𝀀
+byzantine musical symbol psili	𝀀
 BYZANTINE MUSICAL SYMBOL KATAVASMA	𝁺
+byzantine musical symbol katavasma	𝁺
 BYZANTINE MUSICAL SYMBOL GORGON NEO KATO	𝃵
+byzantine musical symbol gorgon neo kato	𝃵
 # Musical Symbols
 MUSICAL SYMBOL SINGLE BARLINE	𝄀
+musical symbol single barline	𝄀
 MUSICAL SYMBOL END TIE	𝅶
+musical symbol end tie	𝅶
 MUSICAL SYMBOL KORON	𝇪
+musical symbol koron	𝇪
 # Ancient Greek Musical Notation
 GREEK VOCAL NOTATION SYMBOL-1	𝈀
+greek vocal notation symbol-1	𝈀
 GREEK INSTRUMENTAL NOTATION SYMBOL-8	𝈢
+greek instrumental notation symbol-8	𝈢
 GREEK MUSICAL LEIMMA	𝉅
+greek musical leimma	𝉅
 # Kaktovik Numerals
 KAKTOVIK NUMERAL ZERO	𝋀
+kaktovik numeral zero	𝋀
 KAKTOVIK NUMERAL TEN	𝋊
+kaktovik numeral ten	𝋊
 KAKTOVIK NUMERAL NINETEEN	𝋓
+kaktovik numeral nineteen	𝋓
 # Mayan Numerals
 MAYAN NUMERAL ZERO	𝋠
+mayan numeral zero	𝋠
 MAYAN NUMERAL TEN	𝋪
+mayan numeral ten	𝋪
 MAYAN NUMERAL NINETEEN	𝋳
+mayan numeral nineteen	𝋳
 # Tai Xuan Jing Symbols
 MONOGRAM FOR EARTH	𝌀
+monogram for earth	𝌀
 TETRAGRAM FOR FULLNESS	𝌫
+tetragram for fullness	𝌫
 TETRAGRAM FOR FOSTERING	𝍖
+tetragram for fostering	𝍖
 # Counting Rod Numerals
 COUNTING ROD UNIT DIGIT ONE	𝍠
+counting rod unit digit one	𝍠
 COUNTING ROD TENS DIGIT FOUR	𝍬
+counting rod tens digit four	𝍬
 TALLY MARK FIVE	𝍸
+tally mark five	𝍸
 # Mathematical Alphanumeric Symbols
 MATHEMATICAL BOLD CAPITAL A	𝐀
+mathematical bold capital a	𝐀
 MATHEMATICAL SANS-SERIF ITALIC CAPITAL C	𝘊
+mathematical sans-serif italic capital c	𝘊
 MATHEMATICAL MONOSPACE DIGIT NINE	𝟿
+mathematical monospace digit nine	𝟿
 # Sutton SignWriting
 SIGNWRITING HAND-FIST INDEX	𝠀
+signwriting hand-fist index	𝠀
 SIGNWRITING TRAVEL-WALLPLANE ROTATION-FLOORPLANE ALTERNATING	𝥐
+signwriting travel-wallplane rotation-floorplane alternating	𝥐
 SIGNWRITING ROTATION MODIFIER-16	𝪯
+signwriting rotation modifier-16	𝪯
 # Latin Extended-G
 LATIN SMALL LETTER FENG DIGRAPH WITH TRILL	𝼀
+latin small letter feng digraph with trill	𝼀
 LATIN SMALL LETTER DEZH DIGRAPH WITH PALATAL HOOK	𝼒
+latin small letter dezh digraph with palatal hook	𝼒
 LATIN SMALL LETTER T WITH MID-HEIGHT LEFT HOOK	𝼪
+latin small letter t with mid-height left hook	𝼪
 # Glagolitic Supplement
 COMBINING GLAGOLITIC LETTER AZU	𞀀
+combining glagolitic letter azu	𞀀
 COMBINING GLAGOLITIC LETTER RITSI	𞀓
+combining glagolitic letter ritsi	𞀓
 COMBINING GLAGOLITIC LETTER FITA	𞀪
+combining glagolitic letter fita	𞀪
 # Cyrillic Extended-D
 MODIFIER LETTER CYRILLIC SMALL A	𞀰
+modifier letter cyrillic small a	𞀰
 MODIFIER LETTER CYRILLIC SMALL STRAIGHT U	𞁏
+modifier letter cyrillic small straight u	𞁏
 COMBINING CYRILLIC SMALL LETTER BYELORUSSIAN-UKRAINIAN I	𞂏
+combining cyrillic small letter byelorussian-ukrainian i	𞂏
 # Nyiakeng Puachue Hmong
 NYIAKENG PUACHUE HMONG LETTER MA	𞄀
+nyiakeng puachue hmong letter ma	𞄀
 NYIAKENG PUACHUE HMONG LETTER RRA	𞄣
+nyiakeng puachue hmong letter rra	𞄣
 NYIAKENG PUACHUE HMONG CIRCLED CA	𞅏
+nyiakeng puachue hmong circled ca	𞅏
 # Toto
 TOTO LETTER PA	𞊐
+toto letter pa	𞊐
 TOTO LETTER RA	𞊟
+toto letter ra	𞊟
 TOTO SIGN RISING TONE	𞊮
+toto sign rising tone	𞊮
 # Wancho
 WANCHO LETTER AA	𞋀
+wancho letter aa	𞋀
 WANCHO LETTER NGA	𞋝
+wancho letter nga	𞋝
 WANCHO NGUN SIGN	𞋿
+wancho ngun sign	𞋿
 # Nag Mundari
 NAG MUNDARI LETTER O	𞓐
+nag mundari letter o	𞓐
 NAG MUNDARI LETTER E	𞓤
+nag mundari letter e	𞓤
 NAG MUNDARI DIGIT NINE	𞓹
+nag mundari digit nine	𞓹
 # Ol Onal
 OL ONAL LETTER O	𞗐
+ol onal letter o	𞗐
 OL ONAL LETTER UNY	𞗦
+ol onal letter uny	𞗦
 OL ONAL ABBREVIATION SIGN	𞗿
+ol onal abbreviation sign	𞗿
 # Ethiopic Extended-B
 ETHIOPIC SYLLABLE HHYA	𞟠
+ethiopic syllable hhya	𞟠
 ETHIOPIC SYLLABLE GURAGE QWEE	𞟱
+ethiopic syllable gurage qwee	𞟱
 ETHIOPIC SYLLABLE GURAGE PWEE	𞟾
+ethiopic syllable gurage pwee	𞟾
 # Mende Kikakui
 MENDE KIKAKUI SYLLABLE M001 KI	𞠀
+mende kikakui syllable m001 ki	𞠀
 MENDE KIKAKUI SYLLABLE M186 HU	𞡪
+mende kikakui syllable m186 hu	𞡪
 MENDE KIKAKUI COMBINING NUMBER MILLIONS	𞣖
+mende kikakui combining number millions	𞣖
 # Adlam
 ADLAM CAPITAL LETTER ALIF	𞤀
+adlam capital letter alif	𞤀
 ADLAM SMALL LETTER FA	𞤬
+adlam small letter fa	𞤬
 ADLAM INITIAL QUESTION MARK	𞥟
+adlam initial question mark	𞥟
 # Indic Siyaq Numbers
 INDIC SIYAQ NUMBER ONE	𞱱
+indic siyaq number one	𞱱
 INDIC SIYAQ NUMBER EIGHT THOUSAND	𞲓
+indic siyaq number eight thousand	𞲓
 INDIC SIYAQ ALTERNATE LAKH MARK	𞲴
+indic siyaq alternate lakh mark	𞲴
 # Ottoman Siyaq Numbers
 OTTOMAN SIYAQ NUMBER ONE	𞴁
+ottoman siyaq number one	𞴁
 OTTOMAN SIYAQ NUMBER FOUR THOUSAND	𞴟
+ottoman siyaq number four thousand	𞴟
 OTTOMAN SIYAQ FRACTION ONE SIXTH	𞴽
+ottoman siyaq fraction one sixth	𞴽
 # Arabic Mathematical Alphabetic Symbols
 ARABIC MATHEMATICAL ALEF	𞸀
+arabic mathematical alef	𞸀
 ARABIC MATHEMATICAL STRETCHED YEH	𞹩
+arabic mathematical stretched yeh	𞹩
 ARABIC MATHEMATICAL OPERATOR HAH WITH DAL	𞻱
+arabic mathematical operator hah with dal	𞻱
 # Mahjong Tiles
 MAHJONG TILE EAST WIND	🀀
+mahjong tile east wind	🀀
 MAHJONG TILE SEVEN OF BAMBOOS	🀖
+mahjong tile seven of bamboos	🀖
 MAHJONG TILE BACK	🀫
+mahjong tile back	🀫
 # Domino Tiles
 DOMINO TILE HORIZONTAL BACK	🀰
+domino tile horizontal back	🀰
 DOMINO TILE VERTICAL BACK	🁢
+domino tile vertical back	🁢
 DOMINO TILE VERTICAL-06-06	🂓
+domino tile vertical-06-06	🂓
 # Playing Cards
 PLAYING CARD BACK	🂠
+playing card back	🂠
 PLAYING CARD JACK OF DIAMONDS	🃋
+playing card jack of diamonds	🃋
 PLAYING CARD TRUMP-21	🃵
+playing card trump-21	🃵
 # Enclosed Alphanumeric Supplement
 DIGIT ZERO FULL STOP	🄀
+digit zero full stop	🄀
 NEGATIVE CIRCLED LATIN CAPITAL LETTER U	🅤
+negative circled latin capital letter u	🅤
 REGIONAL INDICATOR SYMBOL LETTER Z	🇿
+regional indicator symbol letter z	🇿
 # Enclosed Ideographic Supplement
 SQUARE HIRAGANA HOKA	🈀
+square hiragana hoka	🈀
 SQUARED CJK UNIFIED IDEOGRAPH-4E2D	🈭
+squared cjk unified ideograph-4e2d	🈭
 ROUNDED SYMBOL FOR CAI	🉥
+rounded symbol for cai	🉥
 # Miscellaneous Symbols and Pictographs
 CYCLONE	🌀
+cyclone	🌀
 SKULL	💀
+skull	💀
 MOYAI	🗿
+moyai	🗿
 # Emoticons
 GRINNING FACE	😀
+grinning face	😀
 FEARFUL FACE	😨
+fearful face	😨
 PERSON WITH FOLDED HANDS	🙏
+person with folded hands	🙏
 # Ornamental Dingbats
 NORTH WEST POINTING LEAF	🙐
+north west pointing leaf	🙐
 HOLLOW QUILT SQUARE ORNAMENT	🙨
+hollow quilt square ornament	🙨
 REVERSE CHECKER BOARD	🙿
+reverse checker board	🙿
 # Transport and Map Symbols
 ROCKET	🚀
+rocket	🚀
 WOMENS SYMBOL	🚺
+womens symbol	🚺
 ROLLER SKATE	🛼
+roller skate	🛼
 # Alchemical Symbols
 ALCHEMICAL SYMBOL FOR QUINTESSENCE	🜀
+alchemical symbol for quintessence	🜀
 ALCHEMICAL SYMBOL FOR BISMUTH ORE	🜾
+alchemical symbol for bismuth ore	🜾
 ORCUS	🝿
+orcus	🝿
 # Geometric Shapes Extended
 BLACK LEFT-POINTING ISOSCELES RIGHT TRIANGLE	🞀
+black left-pointing isosceles right triangle	🞀
 VERY HEAVY FIVE SPOKED ASTERISK	🞳
+very heavy five spoked asterisk	🞳
 HEAVY EQUALS SIGN	🟰
+heavy equals sign	🟰
 # Supplemental Arrows-C
 LEFTWARDS ARROW WITH SMALL TRIANGLE ARROWHEAD	🠀
+leftwards arrow with small triangle arrowhead	🠀
 WIDE-HEADED RIGHTWARDS LIGHT BARB ARROW	🡢
+wide-headed rightwards light barb arrow	🡢
 RIGHTWARDS ARROW FROM DOWNWARDS ARROW	🣁
+rightwards arrow from downwards arrow	🣁
 # Supplemental Symbols and Pictographs
 CIRCLED CROSS FORMEE WITH FOUR DOTS	🤀
+circled cross formee with four dots	🤀
 CRAB	🦀
+crab	🦀
 NAZAR AMULET	🧿
+nazar amulet	🧿
 # Chess Symbols
 NEUTRAL CHESS KING	🨀
+neutral chess king	🨀
 WHITE CHESS KNIGHT ROTATED TWO HUNDRED TWENTY-FIVE DEGREES	🨰
+white chess knight rotated two hundred twenty-five degrees	🨰
 XIANGQI BLACK SOLDIER	🩭
+xiangqi black soldier	🩭
 # Symbols and Pictographs Extended-A
 BALLET SHOES	🩰
+ballet shoes	🩰
 FLY	🪰
+fly	🪰
 RIGHTWARDS PUSHING HAND	🫸
+rightwards pushing hand	🫸
 # Symbols for Legacy Computing
 BLOCK SEXTANT-1	🬀
+block sextant-1	🬀
 LEFT AND LOWER ONE EIGHTH BLOCK	🭼
+left and lower one eighth block	🭼
 SEGMENTED DIGIT NINE	🯹
+segmented digit nine	🯹
 # CJK Unified Ideographs Extension B
 CJK UNIFIED IDEOGRAPH-20000	𠀀
+cjk unified ideograph-20000	𠀀
 CJK UNIFIED IDEOGRAPH-25370	𥍰
+cjk unified ideograph-25370	𥍰
 CJK UNIFIED IDEOGRAPH-2A6DF	𪛟
+cjk unified ideograph-2a6df	𪛟
 # CJK Unified Ideographs Extension C
 CJK UNIFIED IDEOGRAPH-2A700	𪜀
+cjk unified ideograph-2a700	𪜀
 CJK UNIFIED IDEOGRAPH-2AF1C	𪼜
+cjk unified ideograph-2af1c	𪼜
 CJK UNIFIED IDEOGRAPH-2B739	𫜹
+cjk unified ideograph-2b739	𫜹
 # CJK Unified Ideographs Extension D
 CJK UNIFIED IDEOGRAPH-2B740	𫝀
+cjk unified ideograph-2b740	𫝀
 CJK UNIFIED IDEOGRAPH-2B7AE	𫞮
+cjk unified ideograph-2b7ae	𫞮
 CJK UNIFIED IDEOGRAPH-2B81D	𫠝
+cjk unified ideograph-2b81d	𫠝
 # CJK Unified Ideographs Extension E
 CJK UNIFIED IDEOGRAPH-2B820	𫠠
+cjk unified ideograph-2b820	𫠠
 CJK UNIFIED IDEOGRAPH-2C360	𬍠
+cjk unified ideograph-2c360	𬍠
 CJK UNIFIED IDEOGRAPH-2CEA1	𬺡
+cjk unified ideograph-2cea1	𬺡
 # CJK Unified Ideographs Extension F
 CJK UNIFIED IDEOGRAPH-2CEB0	𬺰
+cjk unified ideograph-2ceb0	𬺰
 CJK UNIFIED IDEOGRAPH-2DD48	𭵈
+cjk unified ideograph-2dd48	𭵈
 CJK UNIFIED IDEOGRAPH-2EBE0	𮯠
+cjk unified ideograph-2ebe0	𮯠
 # CJK Unified Ideographs Extension I
 CJK UNIFIED IDEOGRAPH-2EBF0	𮯰
+cjk unified ideograph-2ebf0	𮯰
 CJK UNIFIED IDEOGRAPH-2ED26	𮴦
+cjk unified ideograph-2ed26	𮴦
 CJK UNIFIED IDEOGRAPH-2EE5D	𮹝
+cjk unified ideograph-2ee5d	𮹝
 # CJK Compatibility Ideographs Supplement
 CJK COMPATIBILITY IDEOGRAPH-2F800	丽
+cjk compatibility ideograph-2f800	丽
 CJK COMPATIBILITY IDEOGRAPH-2F90E	淹
+cjk compatibility ideograph-2f90e	淹
 CJK COMPATIBILITY IDEOGRAPH-2FA1D	𪘀
+cjk compatibility ideograph-2fa1d	𪘀
 # CJK Unified Ideographs Extension G
 CJK UNIFIED IDEOGRAPH-30000	𰀀
+cjk unified ideograph-30000	𰀀
 CJK UNIFIED IDEOGRAPH-309A5	𰦥
+cjk unified ideograph-309a5	𰦥
 CJK UNIFIED IDEOGRAPH-3134A	𱍊
+cjk unified ideograph-3134a	𱍊
 # CJK Unified Ideographs Extension H
 CJK UNIFIED IDEOGRAPH-31350	𱍐
+cjk unified ideograph-31350	𱍐
 CJK UNIFIED IDEOGRAPH-31B80	𱮀
+cjk unified ideograph-31b80	𱮀
 CJK UNIFIED IDEOGRAPH-323AF	𲎯
+cjk unified ideograph-323af	𲎯
