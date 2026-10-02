@@ -14,6 +14,7 @@
 #define VERSION_PREFIX "https://uniscript.org/v"
 #define ESCAPED_COLON "<::>"
 #define ESCAPED_UNICODE "<:U>"
+#define BLOCK_PADDING " \t\n\r" /* a block tag eats one on its inner side, "\r\n" counting as one: <:greek> athos <:/greek> is αθοσ */
 #define MAX_HEX_DIGITS 8
 /* bare hex (\:1F60D) and \U1F60D need at least 4 digits, so a mistyped short name stays unknown */
 #define MIN_BARE_HEX_DIGITS 4
@@ -730,13 +731,40 @@ static size_t marker_in(str rest) {
 	return rest.n;
 }
 
+/* A tag's content closes a block: <:> or <:/greek>, not a meta close like <:/color> */
+static bool closes_block(str content) {
+	return !content.n || (content.p[0] == '/' && !meta_template(str_from(content, 1), NULL));
+}
+
+/* Whether the text starts with a tag that closes a block */
+static bool starts_block_closer(str text) {
+	size_t close = str_find(text, '>');
+	return str_starts(text, "<:") && close < text.n && closes_block(str_slice(text, 2, close));
+}
+
+static bool is_padding(char byte) { return byte && strchr(BLOCK_PADDING, byte); }
+
+/* Bytes of the one whitespace a block opener eats at the start of the text */
+static size_t opening_padding_length(str text) {
+	if (str_starts(text, "\r\n")) return 2;
+	return text.n && is_padding(text.p[0]);
+}
+
+/* The text without the one whitespace a block's closer eats before it */
+static str without_closing_padding(str text) {
+	if (text.n >= 2 && text.p[text.n - 2] == '\r' && text.p[text.n - 1] == '\n') return str_slice(text, 0, text.n - 2);
+	return text.n && is_padding(text.p[text.n - 1]) ? str_slice(text, 0, text.n - 1) : text;
+}
+
 static bool unicode_of(converter *self, buf *out, const char *text, uniscript_mode mode) {
 	str source = str_of(text), block = { NULL, 0 }, empty = { 0 };
 	for (size_t position = header_length(self, text); position < source.n;) {
 		str rest = str_from(source, position);
 		size_t marker = marker_in(rest);
-		if (block.p)
-			block_text(self, out, block, str_slice(rest, 0, marker), position);
+		if (block.p) {
+			str run = str_slice(rest, 0, marker);
+			block_text(self, out, block, starts_block_closer(str_from(rest, marker)) ? without_closing_padding(run) : run, position);
+		}
 		else
 			buf_adds(out, str_slice(rest, 0, marker));
 		position += marker;
@@ -763,16 +791,18 @@ static bool unicode_of(converter *self, buf *out, const char *text, uniscript_mo
 			fail(self, UNISCRIPT_UNCLOSED, rest);
 			return kept(self, out, rest, position, mode);
 		}
-		str content = str_slice(rest, 2, close), key = str_from(content, content.n ? 1 : 0);
-		if (str_starts(content, "/") && meta_template(key, NULL))
-			meta_tags(out, META_CLOSE, key, empty);
-		else if (!content.n || content.p[0] == '/')
+		str content = str_slice(rest, 2, close);
+		size_t after = close + 1;
+		if (closes_block(content))
 			block = (str){ NULL, 0 };
-		else if (is_block(content))
+		else if (content.p[0] == '/')
+			meta_tags(out, META_CLOSE, str_from(content, 1), empty);
+		else if (is_block(content)) {
 			block = content;
-		else if (!tag(self, out, content, position) && !kept(self, out, str_slice(rest, 0, close + 1), position, mode))
+			after += opening_padding_length(str_from(rest, after));
+		} else if (!tag(self, out, content, position) && !kept(self, out, str_slice(rest, 0, close + 1), position, mode))
 			return false;
-		position += close + 1;
+		position += after;
 	}
 	return true;
 }

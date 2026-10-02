@@ -43,7 +43,7 @@ static void index_is_sorted_and_every_key_resolves(void) {
 static void conversions_are_repeatable(void) {
 	for (int i = 0; i < 3; i++) {
 		uniscript_result result = uniscript_convert("<:mirror red A> <:greek> athos <:/greek> <:nosuch>", UNISCRIPT_LENIENT);
-		check(result.text && strcmp(result.text, "A\xF3\xA0\x81\xB2\xF3\xA0\x81\x8D  \xCE\xB1\xCE\xB8\xCE\xBF\xCF\x83  <:nosuch>") == 0, "repeatable lenient conversion");
+		check(result.text && strcmp(result.text, "A\xF3\xA0\x81\xB2\xF3\xA0\x81\x8D \xCE\xB1\xCE\xB8\xCE\xBF\xCF\x83 <:nosuch>") == 0, "repeatable lenient conversion");
 		check(result.warning_count == 1, "one warning");
 		uniscript_result_free(&result);
 	}
