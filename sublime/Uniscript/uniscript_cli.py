@@ -25,6 +25,10 @@ TAG_BEFORE_CURSOR = re.compile(r"<:[^<>\n]+>$")
 FINISHED_TAG_BEFORE_CURSOR = re.compile(r"<:[^<>\n]+>$|\\:[A-Za-z0-9_-]*[A-Za-z0-9_]$")
 # the tag the cursor is typing in: `<:` with words (no leading space), or `\:` with a name
 TYPED_TAG = re.compile(r"(?:<:(?! )([^<>\n\[\]{};=\"]*)|\\:([A-Za-z0-9_-]*))$")
+TAG = re.compile(r"<:([^<>\n]*)>")
+CLOSING_SLASH = "/"
+CLOSING_MARKER = MARKER + CLOSING_SLASH
+META_SPAN_WORDS = 2  # <:key value> opens a span closed by <:/key>
 NAMES_COMMAND = "names"
 HOMOPHONE = re.compile(r"^(.+)\.(\d+)$")  # chinese yi2.2: the second most frequent character read yi2
 MAX_COMPLETIONS = 1000  # the shortest first
@@ -105,6 +109,31 @@ def shown(name):
     """A name as listed: without the internal homophone number (yi2.2 is listed as yi2, inserted as yi2.2)"""
     homophone = HOMOPHONE.match(name)
     return homophone.group(1) if homophone else name
+
+
+def opened_name(content, names):
+    """The name a tag's content opens: a block (<:greek> … <:/greek>) or a meta span (<:font japanese> … <:/font>), else
+    None (an entity, an inline <:greek athos>, a meta key attached to operands <:color #ff8800 A>)"""
+    words = content.split(" ")
+    if content in names.blocks:
+        return content
+    if len(words) == META_SPAN_WORDS and words[0] not in names.blocks:
+        return words[0]
+    return None
+
+
+def tag_to_close(text_before_cursor, names):
+    """The innermost tag still open when <:/ is typed (<:greek> athos <:/ → greek), None when all are closed"""
+    if not text_before_cursor.endswith(CLOSING_MARKER):
+        return None
+    open_names = []
+    for content in TAG.findall(text_before_cursor):
+        opened = opened_name(content, names)
+        if not content or content.startswith(CLOSING_SLASH):
+            open_names = open_names[:-1]
+        elif opened:
+            open_names.append(opened)
+    return open_names[-1] if open_names else None
 
 
 def operand_first(trigger, annotation):

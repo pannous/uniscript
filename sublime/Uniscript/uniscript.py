@@ -13,6 +13,7 @@ SETTINGS_FILE = "Uniscript.sublime-settings"
 LIVE_SETTING = "convert_while_typing"  # true, false, or "header": only in files starting with <:
 LIVE_IN_UNISCRIPT_FILES = "header"
 TYPED_COMMAND = "insert"
+CLOSE_TAG_COMMAND = "uniscript_close_tag"  # after <:/ is typed
 COMMITTED_COMMANDS = ("commit_completion", "insert_completion")
 TAG_END = ">"
 TAG_OPENERS = ("<:", "\\:")
@@ -133,10 +134,24 @@ class UniscriptWhileTypingListener(sublime_plugin.ViewEventListener):
         if command_name in COMMITTED_COMMANDS:
             return finish_completion(self.view)
         typed = (args or {}).get("characters", "") if command_name == TYPED_COMMAND else ""
-        if typed and text_before_cursor(self.view, self.view.sel()[0].b, 2) in TAG_OPENERS:
+        if typed == cli.CLOSING_SLASH:
+            self.view.run_command(CLOSE_TAG_COMMAND)
+        elif typed and text_before_cursor(self.view, self.view.sel()[0].b, 2) in TAG_OPENERS:
             open_completions(self.view)
         elif typed.endswith(TAG_END) and self.is_live():
             convert_tags_before_cursors(self.view, cli.tag_before_cursor)
+
+
+class UniscriptCloseTagCommand(sublime_plugin.TextCommand):
+    """<:/ typed: the innermost open tag is closed (<:greek> athos <:/greek>), at every cursor. Inserted here, not by
+    the insert command, so the closer is not converted while typing"""
+
+    def run(self, edit):
+        for region in reversed(self.view.sel()):
+            name = cli.tag_to_close(self.view.substr(sublime.Region(0, region.b)), names())
+            if region.empty() and name:
+                self.view.insert(edit, region.b, name + TAG_END)
+        self.view.run_command("hide_auto_complete")
 
 
 def open_completions(view):

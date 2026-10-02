@@ -64,3 +64,7 @@
 - Up/down wrapping around the completion list is Sublime's `"auto_complete_cycle": true` (default false: up on the first
   entry closes the list); set in the user's Preferences.sublime-settings. `"auto_complete_preserve_order": "strict"`
   would also stop Sublime from re-sorting completions (default "some"), for every package.
+- `<:/` closes the innermost open tag (cli.tag_to_close over the text before the cursor): a block word alone
+  (`<:greek>`) or a meta span `<:key value>` (`<:font japanese>` → `<:/font>`) opens, `<:>` / `<:/x>` closes the
+  innermost. The name is inserted by `uniscript_close_tag`, not `insert`, so live conversion leaves the closer alone.
+  Output panels get no ViewEventListeners: run a typed-character test there by calling the command directly.
