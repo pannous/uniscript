@@ -57,7 +57,7 @@ test("the core converter reads an index loaded from a path", async () => {
 
 test("warning offsets are UTF-8 bytes", () => {
 	assert.deepEqual(convert("αβ <:fracture 7>").warnings, [{ message: "no fracture form of 7", at: 5 }]);
-	assert.deepEqual(convert("<:alpha> 𓀀 <:greek> c <:/greek>").warnings, [{ message: "no greek form of c", at: 22 }]);
+	assert.deepEqual(convert("<:alpha> 𓀀 <:greek> c <:/greek>").warnings, [{ message: "no greek form of c", at: 23 }]);
 });
 
 test("the version and escaping", () => {

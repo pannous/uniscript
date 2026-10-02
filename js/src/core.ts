@@ -35,6 +35,8 @@ const HEADER_OPEN = "<:uniscript";
 const VERSION_ATTRIBUTE = 'version="';
 const ATTRIBUTE_QUOTE = '"';
 const LINE_BREAKS = ["\r\n", "\n"];
+/** A block tag eats one of these on its inner side: `<:greek> athos <:/greek>` is `αθοσ` */
+const BLOCK_PADDING = ["\r\n", " ", "\t", "\n", "\r"];
 /** A code point token: `U+1F60D`, `U1F60D`, `0x1F60D` in any case (1–8 hex digits) or bare `1F60D` (4–8, so a mistyped
  * short name stays unknown) */
 const CODE_POINT = /^(?:(?:[Uu]\+?|0[xX])([0-9A-Fa-f]{1,8})|([0-9A-Fa-f]{4,8}))$/;
@@ -146,6 +148,15 @@ const characterCount = (text: string) => [...text].length;
 
 /** A tag's content is a closing tag: `<:>` or `<:/greek>` */
 const isClosing = (content: string) => content === "" || content.startsWith(CLOSING_SLASH);
+
+/** Characters of the one whitespace a block opener eats after `at` */
+const openingPaddingLength = (text: string, at: number) => BLOCK_PADDING.find((padding) => text.startsWith(padding, at))?.length ?? 0;
+
+/** The text without the one whitespace a block's closer eats before it */
+const withoutClosingPadding = (text: string) => {
+	const padding = BLOCK_PADDING.find((padding) => text.endsWith(padding));
+	return padding ? text.slice(0, -padding.length) : text;
+};
 
 /** `text` split at the first `separator`, like Rust's split_once */
 function splitOnce(text: string, separator: string): [string, string] | undefined {
@@ -566,7 +577,8 @@ export class Uniscript {
 		while (position < source.length) {
 			const marker = Uniscript.#marker(source, position);
 			const plain = source.slice(position, marker);
-			out += block !== undefined ? this.#blockText(block, plain, bytes) : plain;
+			if (block === undefined) out += plain;
+			else out += this.#blockText(block, this.#closesBlockAt(source, marker) ? withoutClosingPadding(plain) : plain, bytes);
 			advance(marker);
 			if (position >= source.length) break;
 			const escaped = unicodeEscapeAt(source, position + 1);
@@ -593,13 +605,14 @@ export class Uniscript {
 				break;
 			}
 			const content = source.slice(position + 2, close);
-			const closedKey = content.startsWith(CLOSING_SLASH) ? content.slice(1) : undefined;
-			if (closedKey !== undefined && this.metaTemplate(closedKey) !== undefined) {
-				out += Meta.close(closedKey).tags();
-			} else if (isClosing(content)) {
+			let after = close + 1;
+			if (this.#closesBlock(content)) {
 				block = undefined;
+			} else if (content.startsWith(CLOSING_SLASH)) {
+				out += Meta.close(content.slice(1)).tags();
 			} else if (this.#isBlock(content)) {
 				block = content;
+				after += openingPaddingLength(source, after);
 			} else {
 				try {
 					out += this.#tag(content, bytes);
@@ -608,9 +621,20 @@ export class Uniscript {
 					out += this.#kept(error, source.slice(position, close + 1), bytes, mode);
 				}
 			}
-			advance(close + 1);
+			advance(after);
 		}
 		return out;
+	}
+
+	/** A tag's content closes a block: `<:>` or `<:/greek>`, not a meta close like `<:/color>` */
+	#closesBlock(content: string): boolean {
+		return isClosing(content) && (content === "" || this.metaTemplate(content.slice(1)) === undefined);
+	}
+
+	#closesBlockAt(source: string, marker: number): boolean {
+		if (!source.startsWith(TAG_OPEN + MARKER_COLON, marker)) return false;
+		const close = source.indexOf(TAG_CLOSE, marker + 2);
+		return close >= 0 && this.#closesBlock(source.slice(marker + 2, close));
 	}
 
 	/** UTF-16 length of the header to skip; a version that is no uniscript.org version ({@link readsVersion}) warns */
