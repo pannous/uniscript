@@ -19,11 +19,15 @@ use index::{Index, Table};
 pub use meta::{Font, Meta, MetaRun, Styled};
 use std::cell::RefCell;
 use std::fmt;
+use std::path::{Path, PathBuf};
 
 /// The index built from data/entities/, compiled into the library (feature `embedded-index`, on by default)
 #[cfg(feature = "embedded-index")]
 pub const ENTITIES_INDEX: &[u8] = include_bytes!("../data/entities.idx");
 
+/// Local entities in the format of data/entities/ (`virus: 🦠`, sections like `blocks { … }`), see [`local_entity_files`]
+pub const LOCAL_ENTITIES_FILE: &str = ".uniscript";
+const HOME_VARIABLES: [&str; 2] = ["HOME", "USERPROFILE"];
 const MARKER_COLON: char = ':';
 const TAG_OPEN: char = '<';
 const SHORT_OPEN: char = '\\';
@@ -173,6 +177,26 @@ impl Default for Uniscript<'static> {
 	fn default() -> Self {
 		Uniscript::new(Index::new(ENTITIES_INDEX).expect("the built-in index is valid"))
 	}
+}
+
+#[cfg(feature = "embedded-index")]
+impl Uniscript<'static> {
+	/// The built-in entities with local entity files on top, the first file winning: their names win both ways
+	/// (`<:virus>` ⇄ 🦠). The local index is built once and kept for the rest of the program.
+	pub fn with_local_entities(files: &[PathBuf]) -> Result<Self, String> {
+		let built_in = Index::new(ENTITIES_INDEX).expect("the built-in index is valid");
+		if files.is_empty() {
+			return Ok(Uniscript::new(built_in));
+		}
+		let local = Box::leak(index::build(&entities::Entities::load_files(files)?).into_boxed_slice());
+		Ok(Uniscript::new(built_in.with_local(local)?))
+	}
+}
+
+/// The local entity files, nearest first: `.uniscript` in `directory` and each of its parents, then in the home directory
+pub fn local_entity_files(directory: &Path) -> Vec<PathBuf> {
+	let home = HOME_VARIABLES.iter().find_map(std::env::var_os).map(PathBuf::from).filter(|home| !directory.starts_with(home));
+	directory.ancestors().chain(home.as_deref()).map(|folder| folder.join(LOCAL_ENTITIES_FILE)).filter(|file| file.is_file()).collect()
 }
 
 /// The script a character needs its own controls for: hieroglyphs, and CJK ideographs, radicals and strokes

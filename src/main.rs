@@ -3,6 +3,7 @@
 //! echo "<:alpha>" | uniscript → α (stdin when no text is given)
 //! uniscript [-r] /path/file.txt → the file's content converted (arguments starting with / are files)
 //! uniscript --html "<:font cuneiform-hittite>𒀭<:/font>"   meta information as <span lang style> instead of TAG sequences
+//! ./.uniscript, its parents' and ~/.uniscript add or override names (`virus: 🦠`, format of data/entities/)
 //! uniscript names              every name with its text, tab separated (`alpha	α`, blocks `fracture `, `fracture A	𝔄`)
 //! uniscript build [entities/] [entities.idx]   rebuild the index from the readable files
 //! uniscript check [entities/] [entities.idx]   verify both agree
@@ -38,7 +39,7 @@ fn main() -> ExitCode {
 		Some("names") => names(),
 		Some("chunks") => chunks(path_argument(&arguments, 1, DEFAULT_INDEX), path_argument(&arguments, 2, DEFAULT_CHUNKS)),
 		Some("-h" | "--help") => {
-			include_str!("main.rs").lines().take(7).for_each(|line| println!("{}", &line[4..]));
+			include_str!("main.rs").lines().take_while(|line| line.starts_with("//!")).for_each(|line| println!("{}", &line[4..]));
 			Ok(())
 		}
 		_ => convert(&arguments),
@@ -69,14 +70,14 @@ fn convert(arguments: &[String]) -> Result<(), String> {
 		words.join(" ")
 	};
 	let converted = if reverse {
-		uniscript::to_uniscript(&text)
+		converter().to_uniscript(&text)
 	} else {
 		let mode = match (strict, flag(LENIENT_FLAG)) {
 			(true, _) => uniscript::WarningMode::Error,
 			(_, true) => uniscript::WarningMode::Lenient,
 			_ => uniscript::WarningMode::Warn,
 		};
-		let converter = uniscript::Uniscript::default();
+		let converter = converter();
 		let (mut converted, mut warnings) = converter.convert(&text, mode).map_err(|e| e.to_string())?;
 		if flag(HTML_FLAG) {
 			let (styled, meta_warnings) = converter.meta_runs(&converted);
@@ -93,6 +94,15 @@ fn convert(arguments: &[String]) -> Result<(), String> {
 		println!();
 	}
 	Ok(())
+}
+
+/// The built-in entities with the local `.uniscript` files on top; a broken file warns and is left out
+fn converter() -> uniscript::Uniscript<'static> {
+	let files = std::env::current_dir().map(|directory| uniscript::local_entity_files(&directory)).unwrap_or_default();
+	uniscript::Uniscript::with_local_entities(&files).unwrap_or_else(|message| {
+		eprintln!("warning: {message}");
+		uniscript::Uniscript::default()
+	})
 }
 
 fn file_content_or_word(word: &str) -> Result<String, String> {
@@ -124,7 +134,7 @@ fn check(entities_path: &str, index_path: &str) -> Result<(), String> {
 
 /// For editors' completion: names whose text is on one line
 fn names() -> Result<(), String> {
-	let converter = uniscript::Uniscript::default();
+	let converter = converter();
 	let mut out = String::new();
 	for (name, text) in converter.index().entries(index::Table::Names).filter(|(_, text)| !text.contains(['\n', '\t'])) {
 		out += &format!("{name}\t{text}\n");

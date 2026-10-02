@@ -1,0 +1,8 @@
+// local entities: the format of data/entities/, a bare `name: text` is an own name
+virus:🦠
+bug: 🪲
+blocks {
+	tiny {
+		a: "ᵃ"
+	}
+}

@@ -88,6 +88,8 @@ pub fn chunk_order(table: Table, key: &str) -> (u32, u32) {
 /// Lookups in an index file or in the chunks of a chunked index (format in AGENTS.md)
 pub struct Index<'a> {
 	source: Source<'a>,
+	/// local entities (`.uniscript` files), looked up before the source: their entries win
+	local: Option<Whole<'a>>,
 }
 
 enum Source<'a> {
@@ -293,13 +295,18 @@ impl<'a> Chunked<'a> {
 
 impl<'a> Index<'a> {
 	pub fn new(data: &'a [u8]) -> Result<Self, String> {
-		Ok(Index { source: Source::Whole(Whole::new(data)?) })
+		Ok(Index { source: Source::Whole(Whole::new(data)?), local: None })
+	}
+
+	/// This index with the entries of another index file layered on top: they win over this index's
+	pub fn with_local(self, local: &'a [u8]) -> Result<Self, String> {
+		Ok(Index { local: Some(Whole::new(local)?), ..self })
 	}
 
 	/// An index over chunks loaded on demand: lookups in chunks not added yet find nothing and are listed by
 	/// [`Index::take_missing`], so a caller can fetch those chunks, [`Index::add_chunk`] them and convert again
 	pub fn chunked(manifest: &'a [u8]) -> Result<Self, String> {
-		Ok(Index { source: Source::Chunked(Chunked::new(manifest)?) })
+		Ok(Index { source: Source::Chunked(Chunked::new(manifest)?), local: None })
 	}
 
 	/// The version of the index a chunk manifest was cut from (a hash of its bytes), for cache busting; 0 for a whole index
@@ -351,7 +358,7 @@ impl<'a> Index<'a> {
 	}
 
 	pub fn len(&self, table: Table) -> usize {
-		match &self.source {
+		self.local.as_ref().map_or(0, |local| local.len(table)) + match &self.source {
 			Source::Whole(whole) => whole.len(table),
 			Source::Chunked(chunked) => chunked.table_field(table, 2),
 		}
@@ -367,21 +374,23 @@ impl<'a> Index<'a> {
 
 	/// The stored key and its value
 	pub fn entry(&self, table: Table, key: &str) -> Option<(&'a str, &'a str)> {
-		match &self.source {
+		self.local.as_ref().and_then(|local| local.entry(table, key)).or_else(|| match &self.source {
 			Source::Whole(whole) => whole.entry(table, key),
 			Source::Chunked(chunked) => chunked.entry(table, key),
-		}
+		})
 	}
 
-	/// The entries of a table; of a chunked index only those of the chunks loaded so far
+	/// The entries of a table, local ones first; of a chunked index only those of the chunks loaded so far
 	pub fn entries(&self, table: Table) -> Box<dyn Iterator<Item = (&'a str, &'a str)> + '_> {
-		match &self.source {
+		let local = self.local.iter().flat_map(move |local| local.entries(table));
+		let source: Box<dyn Iterator<Item = (&'a str, &'a str)> + '_> = match &self.source {
 			Source::Whole(whole) => Box::new(whole.entries(table)),
 			Source::Chunked(chunked) => {
 				let numbers = chunked.common().into_iter().chain(chunked.table_chunks(table));
 				Box::new(numbers.filter_map(|number| chunked.chunks[number].get()).flat_map(move |chunk| chunk.entries(table)))
 			}
-		}
+		};
+		Box::new(local.chain(source))
 	}
 }
 

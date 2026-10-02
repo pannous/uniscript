@@ -9,7 +9,8 @@ use crate::meta::ZERO_WIDTH_JOINER;
 use std::path::{Path, PathBuf};
 
 /// Sections holding plain entities, earlier ones win when a name occurs twice
-const ENTITY_SECTIONS: [&str; 4] = ["uniscript", "names", "latex", "html"];
+const OWN_SECTION: &str = "uniscript";
+const ENTITY_SECTIONS: [&str; 4] = [OWN_SECTION, "names", "latex", "html"];
 const BLOCKS: &str = "blocks";
 const BLOCK_ALIASES: &str = "block-aliases";
 const FONTS: &str = "fonts";
@@ -142,8 +143,13 @@ fn entity_files(path: &Path) -> Result<Vec<PathBuf>, String> {
 impl Entities {
 	/// All entity files of a directory (data/entities), merged in path order, or a single file
 	pub fn load(path: impl AsRef<Path>) -> Result<Self, String> {
+		Entities::load_files(&entity_files(path.as_ref())?)
+	}
+
+	/// Entity files merged in the given order, the first entry of a key wins
+	pub fn load_files(files: &[PathBuf]) -> Result<Self, String> {
 		let mut sections = Table::default();
-		for file in entity_files(path.as_ref())? {
+		for file in files {
 			let source = std::fs::read_to_string(&file).map_err(|e| format!("{}: {e}", file.display()))?;
 			sections.merge(Entities::parse(&source).map_err(|e| format!("{}: {e}", file.display()))?.sections);
 		}
@@ -168,7 +174,7 @@ impl Entities {
 			}
 		}
 		match stack.len() {
-			1 => Ok(Entities { sections: stack.pop().expect("root").1 }),
+			1 => Ok(Entities { sections: own_names_in_section(stack.pop().expect("root").1) }),
 			_ => Err("unclosed table at the end of the file".into()),
 		}
 	}
@@ -247,7 +253,7 @@ impl Entities {
 			}
 		}
 		let mut chosen = Ordered::default();
-		for (name, text) in self.section("uniscript").texts() {
+		for (name, text) in self.section(OWN_SECTION).texts() {
 			chosen.set_default(text, &format!("<:{name}>"));
 		}
 		for (text, name) in &agreed.entries {
@@ -302,6 +308,17 @@ impl Entities {
 	pub fn meta_entries(&self) -> Vec<(String, String)> {
 		self.section(META).texts().map(|(key, template)| (key.to_string(), template.to_string())).collect()
 	}
+}
+
+/// `name: text` outside any section is an own name, as in the uniscript section: a local file may hold just `virus: 🦠`
+fn own_names_in_section(root: Table) -> Table {
+	let (texts, mut sections): (Vec<_>, Vec<_>) = root.0.into_iter().partition(|(_, entry)| matches!(entry, Entry::Text(_)));
+	if !texts.is_empty() {
+		sections.insert(0, (OWN_SECTION.to_string(), Entry::Table(Table(texts))));
+	}
+	let mut merged = Table::default();
+	merged.merge(Table(sections));
+	merged
 }
 
 /// A block operand spelled in ASCII by its own name: `<:bold alpha>`, not `<:bold α>`
