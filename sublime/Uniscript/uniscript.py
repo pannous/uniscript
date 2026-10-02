@@ -183,6 +183,28 @@ class UniscriptTabCompletionCommand(sublime_plugin.TextCommand):
         finish_completion(self.view)
 
 
+FINISH_TAG_COMMAND = "uniscript_finish_tag"
+
+
+def completion_item(trigger, annotation, completion, typed_word):
+    """Sublime hides a completion that would leave the typed word as it is (\\:egyptian-a1 typed whole): inserting
+    characters, that one finishes the tag by a command instead, so it is listed and chosen like the others"""
+    if completion == typed_word and inserts_characters():
+        return sublime.CompletionItem.command_completion(trigger, FINISH_TAG_COMMAND, {"word": typed_word}, annotation=annotation)
+    return sublime.CompletionItem(trigger, annotation=annotation, completion=completion)
+
+
+class UniscriptFinishTagCommand(sublime_plugin.TextCommand):
+    """The tag before the cursor, typed whole and chosen in the list, becomes its character; the word comes back first
+    should Sublime have erased it before running a command completion"""
+
+    def run(self, edit, word=""):
+        cursor = self.view.sel()[0].b
+        if not text_before_cursor(self.view, cursor).endswith(word):
+            self.view.insert(edit, cursor, word)
+        convert_tags_before_cursors(self.view, cli.finished_tag_before_cursor)
+
+
 class UniscriptCompletionListener(sublime_plugin.EventListener):
     """Inside <: and \\: tags in any file: entity names with their character, block words, after block words their
     operands; names sharing their next segment fold into one group (alchemical-)"""
@@ -200,6 +222,6 @@ class UniscriptCompletionListener(sublime_plugin.EventListener):
             return None
         if not entries:
             return None
-        items = [sublime.CompletionItem(trigger, annotation=annotation, completion=completion) for trigger, annotation, completion in entries]
+        items = [completion_item(trigger, annotation, completion, prefix) for trigger, annotation, completion in entries]
         flags = sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS | sublime.DYNAMIC_COMPLETIONS
         return sublime.CompletionList(items, flags)

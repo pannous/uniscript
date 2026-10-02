@@ -48,3 +48,6 @@
   it inserted itself (`finish_completion`): treating it as a commit in on_post_text_command also converted after
   merely opening the list.
 - Order everywhere: shortest first, of equal length the name in the case typed (`equal` before HTML's `Equal` ⩵).
+- Sublime hides a completion identical to the typed word (`\:egyptian-a1` typed whole vanished from its own list); when
+  inserting characters that entry is a `command_completion` of `uniscript_finish_tag` (args: the word, re-inserted if
+  Sublime erased it), which converts the tag.
