@@ -66,7 +66,7 @@ followed by TAG characters (U+E0020…E007E). Basic fonts shows the plain letter
   (`lower`), small capitals, circled, fullwidth, ligatures, phonetic Greek (`<:greek athos>` → αθοσ, `<:greek> filosofia kosmos<:/greek>` → φιλοσοφια κοσμοσ).
 - **Styles combine** in any word order: `<:bold italic alpha>` → 𝜶, `<:sans bold A>` → 𝗔, `<:fraktur bold A>` → 𝕬.
 - **Effects**: mirror, flip, turn, left, right and 11 colors, which you can stack: `<:mirror red R>`.
-- **Hieroglyphs**: `<:egyptian A1>` (alias `gardiner`, Gardiner numbers and descriptions; short `\:egyptian-a1`), `<:anatolian CAPUT>` (alias
+- **Hieroglyphs**: `<:egyptian A1>` (alias `gardiner`, Gardiner numbers and descriptions; short `\:egyptian-a1` `\:egyptian-seated-man`), `<:anatolian CAPUT>` (alias
   `luwian`: Laroche numbers, Latin logogram names, syllabic values `ka` `tá`/`ta2`, from Unicode's NamesList), and
   `<:hieroglyph …>`, which looks in both (Egyptian first).
 - **Groups**: Egyptian hieroglyph joiners (`<:above 𓀀 𓁐>`, by Gardiner number `<:egyptian above A1 A2>`, inner groups `<:above 宀 beside 电 电>` → ⿱宀⿰电电) and CJK

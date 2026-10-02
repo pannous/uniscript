@@ -132,7 +132,6 @@ VOWEL_ALTERNATIVE = re.compile(r"([a-záàíìú]*)([aeiouáàéèíìúù])/([a
 OPTIONAL_PART = re.compile(r"(?<=.)\(([^)]*)\)")  # i(a) → i, ia; a leading (deus) determinative stays
 ACCENT_INDICES = {"\u0301": "2", "\u0300": "3"}  # tá is ta2, tà is ta3
 GARDINER_NUMBER = re.compile(r"^EGYPTIAN HIEROGLYPH ([A-Z]+?)0*(\d+)([A-Z]*)$")  # A001 → A1, AA001 → Aa1, A014A → A14A
-GARDINER_KEY = re.compile(r"^(?:[A-Z]|Aa|NL|NU)\d+[A-Za-z]*$")  # a Gardiner number among the descriptions of the block
 # more spellings of a description: seated man → man sitting, man seated
 DESCRIPTION_SYNONYMS = [(re.compile(r"^seated-([a-z]+)$"), [r"\1-sitting", r"\1-seated"])]
 PLAIN_CATEGORIES = "LNPS"  # letters, numbers, punctuation, symbols: no marks, controls or separators in block tables
@@ -359,12 +358,11 @@ def egyptian_block(named):
 	return table
 
 
-def gardiner_names(egyptian):
-	"""The Gardiner numbers of the egyptian block as short names: \\:egyptian-a2 is <:egyptian A2>"""
+def egyptian_names(egyptian):
+	"""The operands of the egyptian block as short names: \\:egyptian-a2 is <:egyptian A2>, \\:egyptian-seated-man <:egyptian seated man>"""
 	names = {}
 	for key, character in egyptian.items():
-		if GARDINER_KEY.match(key):
-			names.setdefault(f"{EGYPTIAN_BLOCK}-{key.lower()}", character)
+		names.setdefault(f"{EGYPTIAN_BLOCK}-{key.lower()}", character)
 	return names
 
 
@@ -483,7 +481,8 @@ def seed_files():
 	egyptian = files[block_file(chr(EGYPTIAN_HIEROGLYPHS_START), blocks)]
 	egyptian_table = egyptian_block(named)
 	egyptian["blocks"] = {EGYPTIAN_BLOCK: {RARE_KEY: "", **egyptian_table}}
-	egyptian["names"].update(gardiner_names(egyptian_table))
+	for name, character in egyptian_names(egyptian_table).items():
+		egyptian["names"].setdefault(name, character)
 	egyptian["block-aliases"] = dict(EGYPTIAN_ALIASES)
 	anatolian = files[block_file(chr(ANATOLIAN_HIEROGLYPHS_START), blocks)]
 	anatolian["blocks"] = {ANATOLIAN_BLOCK: {RARE_KEY: "", **anatolian_block(named)}}

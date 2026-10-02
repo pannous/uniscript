@@ -125,6 +125,12 @@ fn gardiner_numbers_are_short_names_in_lower_case() {
 }
 
 #[test]
+fn hieroglyph_descriptions_are_short_names() {
+	converts("\\:egyptian-seated-man", "𓀀");
+	converts("\\:egyptian-man-sitting", "𓀀");
+}
+
+#[test]
 fn hieroglyph_looks_in_every_hieroglyphic_script() {
 	converts("<:anatolian 1>", "\u{14400}");
 	converts("<:luwian 10A>", "\u{1440A}");
