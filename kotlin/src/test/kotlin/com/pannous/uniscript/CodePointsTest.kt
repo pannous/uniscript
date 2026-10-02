@@ -26,7 +26,7 @@ class CodePointsTest {
 	fun theCodePointEndsWhereANameEnds() {
 		converts("\\:1F60D. \\:1F60D x <:1F60D>x (\\U1F60D)", "😍. 😍 x 😍x (😍)")
 		assertEquals(UniscriptError.UnknownEntity("1F60Dx"), assertThrows(UniscriptError.UnknownEntity::class.java) { uniscript.toUnicode("\\:1F60Dx") })
-		converts("<:greek> a \\:03B2 <:/greek>", " α β ")
+		converts("<:greek> a \\:03B2 <:/greek>", "α β")
 	}
 
 	@Test

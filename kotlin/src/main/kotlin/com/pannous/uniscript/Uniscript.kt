@@ -15,6 +15,8 @@ private const val CLOSING_SLASH = '/'
 private const val ZERO_WIDTH_JOINER = 0x200D
 private const val EMOJI_PRESENTATION = 0xFE0F
 private const val ESCAPED_COLON = "<::>"
+/** A block tag eats one of these on its inner side: `<:greek> athos <:/greek>` is `αθοσ` */
+private val BLOCK_PADDING = listOf("\r\n", " ", "\t", "\n", "\r")
 private const val UNICODE_ESCAPE_LETTER = 'U'
 private const val ESCAPED_UNICODE = "<:U>"
 /** A code point token: `U+1F60D`, `U1F60D`, `0x1F60D` in any case (1–8 hex digits) or bare `1F60D` (4–8, so a mistyped
@@ -519,7 +521,7 @@ private class Conversion(val index: EntityIndex, val source: String, val lenient
 		while (position < source.length) {
 			val marker = MARKERS.find(source, position)?.range?.first ?: source.length
 			val run = source.substring(position, marker)
-			out.append(block?.let { blockText(it, run, position) } ?: run)
+			out.append(block?.let { blockText(it, if (closesBlockAt(marker)) withoutClosingPadding(run) else run, position) } ?: run)
 			position = marker
 			if (position == source.length) break
 			val escaped = unicodeEscapeAt(source, position + 1)
@@ -543,11 +545,14 @@ private class Conversion(val index: EntityIndex, val source: String, val lenient
 					break
 				}
 				val content = source.substring(position + 2, close)
-				val closedKey = content.removePrefix(CLOSING_SLASH.toString())
+				var after = close + 1
 				when {
-					content.startsWith(CLOSING_SLASH) && index[Table.META, closedKey] != null -> out.append(Meta.Close(closedKey).tags)
-					isClosing(content) -> block = null
-					isBlock(content) -> block = content
+					closesBlock(content) -> block = null
+					content.startsWith(CLOSING_SLASH) -> out.append(Meta.Close(content.drop(1)).tags)
+					isBlock(content) -> {
+						block = content
+						after += openingPaddingLength(source, after)
+					}
 					else -> out.append(
 						try {
 							tag(content, position)
@@ -556,10 +561,19 @@ private class Conversion(val index: EntityIndex, val source: String, val lenient
 						},
 					)
 				}
-				position = close + 1
+				position = after
 			}
 		}
 		return out.toString()
+	}
+
+	/** A tag's content closes a block: `<:>` or `<:/greek>`, not a meta close like `<:/color>` */
+	private fun closesBlock(content: String) = isClosing(content) && (content.isEmpty() || index[Table.META, content.drop(1)] == null)
+
+	private fun closesBlockAt(marker: Int): Boolean {
+		if (!source.startsWith("$TAG_OPEN$MARKER_COLON", marker)) return false
+		val close = source.indexOf(TAG_CLOSE, marker + 2)
+		return close >= 0 && closesBlock(source.substring(marker + 2, close))
 	}
 }
 
@@ -581,6 +595,12 @@ private fun unicodeEscapeAt(text: String, position: Int) = UNICODE_ESCAPE.matchA
 
 /** A tag's content is a closing tag: `<:>` or `<:/greek>` */
 private fun isClosing(content: String) = content.isEmpty() || content.startsWith(CLOSING_SLASH)
+
+/** Chars of the one whitespace a block opener eats after it */
+private fun openingPaddingLength(text: String, at: Int) = BLOCK_PADDING.firstOrNull { text.startsWith(it, at) }?.length ?: 0
+
+/** The text without the one whitespace a block's closer eats before it */
+private fun withoutClosingPadding(text: String) = BLOCK_PADDING.firstOrNull { text.endsWith(it) }?.let { text.dropLast(it.length) } ?: text
 
 /** Rust's `split(' ')` without the empty pieces */
 private fun splitOnSpaces(text: String) = text.split(' ').filter { it.isNotEmpty() }
