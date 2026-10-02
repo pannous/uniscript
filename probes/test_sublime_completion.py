@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "sublime" / "Uniscript"))
-from uniscript_cli import best_completion, completions, finished_tag_before_cursor, load_names  # noqa: E402
+from uniscript_cli import CHOOSE, completions, tab_completion, finished_tag_before_cursor, load_names  # noqa: E402
 
 names = load_names()
 
@@ -39,12 +39,13 @@ expect(completed("<:nosuchblock x"), {})
 expect(completed("\\:equals-s", word="equals-s")["equals-sign"], ("=", "equals-sign"))
 expect(completed("\\:equals-s", word="s")["equals-sign"], ("=", "sign"))
 expect(completed("\\:equals-s", word="\\:equals-s")["equals-sign"], ("=", "\\:equals-sign"))
-# Tab without the popup: the top suggestion, the shortest name first (equal before equiv)
-expect(best_completion("\\:equ", "", names), (3, "equal"))
-expect(best_completion("x <:alph", "", names), (4, "alpha>"))
-expect(best_completion("<:egyptian seated m", "", names), (8, "seated-man"))
-expect(best_completion("alph", "", names), None)
-expect(best_completion("\\:a2", "", names), None)  # no match: Tab inserts nothing, the name blinks
+# Tab without the popup: a whole name or the only match is inserted, several open the list, none blink
+expect(tab_completion("\\:equal-to-by-definition", "", names), (22, "equal-to-by-definition"))
+expect(tab_completion("x <:alpha", "", names), (5, "alpha>"))  # Alpha matches too, but alpha is typed whole
+expect(tab_completion("\\:egyptian-", "", names), CHOOSE)
+expect(tab_completion("\\:equ", "", names), CHOOSE)
+expect(tab_completion("alph", "", names), None)
+expect(tab_completion("\\:a2", "", names), None)
 # inserting characters: operands close their tag too, and a finished tag is found for its conversion
 entries = {trigger: text for trigger, _, text in completions("<:red c", "", names, "c", close_operands=True)}
 expect(entries["circle"], "circle>")

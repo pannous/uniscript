@@ -1,6 +1,6 @@
 [
-	// Tab inside a <: or \: tag while the completion popup is closed: the top uniscript suggestion (not Sublime's own pick)
-	{ "keys": ["tab"], "command": "uniscript_insert_best_completion", "context":
+	// Tab inside a <: or \: tag while the completion popup is closed: a whole name or the only match, else the list
+	{ "keys": ["tab"], "command": "uniscript_tab_completion", "context":
 		[
 			{ "key": "auto_complete_visible", "operand": false },
 			{ "key": "selection_empty", "operator": "equal", "operand": true, "match_all": true },

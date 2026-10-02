@@ -21,6 +21,7 @@ FINISHED_TAG_BEFORE_CURSOR = re.compile(r"<:[^<>\n]+>$|\\:[A-Za-z0-9_-]*[A-Za-z0
 TYPED_TAG = re.compile(r"(?:<:(?! )([^<>\n\[\]{};=\"]*)|\\:([A-Za-z0-9_-]*))$")
 NAMES_COMMAND = "names"
 MAX_COMPLETIONS = 1000  # the shortest first
+CHOOSE = "choose"  # tab_completion: several names to choose from
 GROUP_SAMPLES = 3  # characters shown beside a group of names
 BLOCK_ANNOTATION = "block"  # a block word without operands of its own (mirror)
 SEGMENT_END = "-"
@@ -132,11 +133,17 @@ def typed_tag(line_before_cursor, names):
     return is_short, words, leading, SEGMENT_END.join(words[leading:])
 
 
-def best_completion(line_before_cursor, next_character, names, close_operands=False):
-    """(length typed before the cursor to replace, its replacement): the top suggestion, for Tab without the popup"""
+def tab_completion(line_before_cursor, next_character, names, close_operands=False):
+    """Tab without the popup: (length typed before the cursor to replace, its replacement) when the typed name is whole
+    or the only match, CHOOSE when there are several to choose from, None when nothing matches"""
     typed = typed_tag(line_before_cursor, names)
     entries = typed and completions(line_before_cursor, next_character, names, typed[3], close_operands)
-    return (len(typed[3]), entries[0][2]) if entries else None
+    if not entries:
+        return None
+    whole = [entry for entry in entries if entry[0] == typed[3]]
+    if len(entries) > 1 and not whole:
+        return CHOOSE
+    return len(typed[3]), (whole or entries)[0][2]
 
 
 def completions(line_before_cursor, next_character, names, word, close_operands=False):

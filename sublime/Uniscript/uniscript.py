@@ -11,8 +11,7 @@ SETTINGS_FILE = "Uniscript.sublime-settings"
 LIVE_SETTING = "convert_while_typing"  # true, false, or "header": only in files starting with <:
 LIVE_IN_UNISCRIPT_FILES = "header"
 TYPED_COMMAND = "insert"
-BEST_COMPLETION_COMMAND = "uniscript_insert_best_completion"
-COMMITTED_COMMANDS = ("commit_completion", "insert_completion", BEST_COMPLETION_COMMAND)
+COMMITTED_COMMANDS = ("commit_completion", "insert_completion")
 TAG_END = ">"
 TAG_OPENERS = ("<:", "\\:")
 CONTINUE_AFTER = ("-", " ")  # a committed group or block word asks for the rest
@@ -119,26 +118,41 @@ class UniscriptWhileTypingListener(sublime_plugin.ViewEventListener):
         return bool(live)
 
     def on_post_text_command(self, command_name, args):
-        typed = (args or {}).get("characters", "") if command_name == TYPED_COMMAND else ""
-        committed = command_name in COMMITTED_COMMANDS
-        before = text_before_cursor(self.view, self.view.sel()[0].b, 2) if len(self.view.sel()) else ""
-        if typed and before in TAG_OPENERS or committed and before[-1:] in CONTINUE_AFTER:
-            silence_other_completions(self.view)
-            return self.view.run_command("auto_complete", {"disable_auto_insert": True})
-        if committed and inserts_characters():
-            find_tag = cli.finished_tag_before_cursor  # a chosen name: \\:equal-to-by-definition becomes ≝
-        elif typed.endswith(TAG_END) and self.is_live():
-            find_tag = cli.tag_before_cursor
-        else:
+        if not len(self.view.sel()):
             return
-        regions = []
-        for cursor in (region.b for region in self.view.sel() if region.empty()):
-            line_start = self.view.line(cursor).begin()
-            offset = find_tag(self.view.substr(sublime.Region(line_start, cursor)))
-            if offset is not None:
-                regions.append((line_start + offset, cursor))
-        if regions:
-            self.view.run_command("uniscript_convert", {"regions": regions, "live": True})
+        if command_name in COMMITTED_COMMANDS:
+            return finish_completion(self.view)
+        typed = (args or {}).get("characters", "") if command_name == TYPED_COMMAND else ""
+        if typed and text_before_cursor(self.view, self.view.sel()[0].b, 2) in TAG_OPENERS:
+            open_completions(self.view)
+        elif typed.endswith(TAG_END) and self.is_live():
+            convert_tags_before_cursors(self.view, cli.tag_before_cursor)
+
+
+def open_completions(view):
+    silence_other_completions(view)
+    view.run_command("auto_complete", {"disable_auto_insert": True})
+
+
+def convert_tags_before_cursors(view, find_tag):
+    """Converts the tags ending at the cursors, found in their line by find_tag (the tag's offset or None)"""
+    regions = []
+    for cursor in (region.b for region in view.sel() if region.empty()):
+        line_start = view.line(cursor).begin()
+        offset = find_tag(view.substr(sublime.Region(line_start, cursor)))
+        if offset is not None:
+            regions.append((line_start + offset, cursor))
+    if regions:
+        view.run_command("uniscript_convert", {"regions": regions, "live": True})
+
+
+def finish_completion(view):
+    """After a chosen completion: a group or block word asks for the rest, a name becomes its character"""
+    before = text_before_cursor(view, view.sel()[0].b, 1)
+    if before in CONTINUE_AFTER:
+        open_completions(view)
+    elif inserts_characters():
+        convert_tags_before_cursors(view, cli.finished_tag_before_cursor)  # \\:equal-to-by-definition becomes ≝
 
 
 def blink(view, region, times=NO_MATCH_BLINKS):
@@ -149,20 +163,24 @@ def blink(view, region, times=NO_MATCH_BLINKS):
         sublime.set_timeout(lambda: blink(view, region, times - 1), 2 * NO_MATCH_BLINK_MS)
 
 
-class UniscriptInsertBestCompletionCommand(sublime_plugin.TextCommand):
-    """Tab in a tag while the popup is closed (Default.sublime-keymap): the top suggestion, which Sublime's own Tab
-    completion would not pick (it chose equiv over equal); a group or block word then opens the popup for the rest"""
+class UniscriptTabCompletionCommand(sublime_plugin.TextCommand):
+    """Tab in a tag while the popup is closed (Default.sublime-keymap), instead of Sublime's own Tab completion, which
+    picks one by its own ranking (equiv over equal): a whole name or the only match is inserted, several open the
+    list, none blink"""
 
     def run(self, edit):
         cursor = self.view.sel()[0].b
         line = text_before_cursor(self.view, cursor)
-        best = cli.best_completion(line, self.view.substr(cursor), names(), inserts_characters())
+        best = cli.tab_completion(line, self.view.substr(cursor), names(), inserts_characters())
+        if best == cli.CHOOSE:
+            return open_completions(self.view)
         if best is None:  # nothing to complete: no tab either, the name blinks
             typed = cli.typed_tag(line, names())[3]
             blink(self.view, sublime.Region(cursor - len(typed), cursor))
             return self.view.window().status_message("uniscript: no name starts with {}".format(typed))
         replaced, text = best
         self.view.replace(edit, sublime.Region(cursor - replaced, cursor), text)
+        finish_completion(self.view)
 
 
 class UniscriptCompletionListener(sublime_plugin.EventListener):
