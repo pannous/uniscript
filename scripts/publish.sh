@@ -30,8 +30,9 @@ GRADLE_PROPERTIES="$HOME/.gradle/gradle.properties"
 CPP_WORK="$ROOT/probes/publish/cpp"
 PYTHON="${PYTHON:-python3}"
 WHEEL_TARGETS="universal2-apple-darwin x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu"
-SMOKE_INPUT='<:alpha> <:fracture A>'
-SMOKE_EXPECTED='α 𝔄 | <:alpha> <:fracture A>'
+SMOKE_INPUT='\:alpha <:fracture A/>'
+SMOKE_EXPECTED='α 𝔄 | \:alpha \:fracture-A'
+WASI_TARGET=wasm32-wasip1  # uniscript.wasm: the CLI as a WASI command, run by warp (`warp tool uniscript …`) on every OS
 export CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-/opt/cargo}"
 VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' "$ROOT/Cargo.toml" | head -1)"
 TARBALL="$DIST/uniscript-c-$VERSION.tar.gz"
@@ -106,9 +107,9 @@ publish_debian() { # the .debs into the flat apt repository $APT_URL (signed on 
 		gpg --batch --yes --detach-sign --armor -o Release.gpg Release
 	EOF
 	if gh release view "v$VERSION" --repo pannous/uniscript >/dev/null 2>&1; then
-		gh release upload "v$VERSION" "$DIST"/deb/*.deb --repo pannous/uniscript --clobber
+		gh release upload "v$VERSION" "$DIST"/deb/*.deb "$DIST/uniscript.wasm" --repo pannous/uniscript --clobber
 	else
-		echo "no GitHub release v$VERSION yet: after gh release create, run gh release upload v$VERSION $DIST/deb/*.deb" >&2
+		echo "no GitHub release v$VERSION yet: after gh release create, run gh release upload v$VERSION $DIST/deb/*.deb $DIST/uniscript.wasm" >&2
 	fi
 }
 
@@ -292,6 +293,12 @@ step "Maven: com.pannous:uniscript $VERSION (into $MAVEN_REPOSITORY)"
 (cd "$ROOT/java" && ./gradlew --quiet checkNatives test publishToMavenLocal -Dmaven.repo.local="$MAVEN_REPOSITORY")
 expect_smoke uniscript-java "$("$ROOT/java/gradlew" --quiet -p "$ROOT/probes/publish/java-consumer" run \
 	-PuniscriptRepository="file://$MAVEN_REPOSITORY" -PuniscriptVersion="$VERSION" --args="'$SMOKE_INPUT'")"
+
+step "WASI: uniscript.wasm $VERSION (GitHub release asset for warp's package tools)"
+(cd "$ROOT" && cargo build --release --target "$WASI_TARGET" --bin uniscript)
+cp "$CARGO_TARGET_DIR/$WASI_TARGET/release/uniscript.wasm" "$DIST/uniscript.wasm"
+WASI_RUN="wasmtime --dir=$ROOT::. $DIST/uniscript.wasm"
+expect_smoke wasi "$($WASI_RUN "$SMOKE_INPUT") | $($WASI_RUN -r "$($WASI_RUN "$SMOKE_INPUT")")"
 
 if ! $PUBLISH; then
 	step "all packages built and smoke-tested in $DIST; run with --publish to upload them"

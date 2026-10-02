@@ -50,3 +50,8 @@
 - npm asks for a browser 2FA confirmation on every `npm publish`, so the user runs it (`! npm publish …`); a session cannot.
 - The confirm-git-destructive hook blocks `git push -f` of a moved tag; the user runs it.
 - Tag only once every port passes the shared cases: the first v1.0.0 was cut mid-rollout and had to be moved.
+- uniscript.wasm (2026-10-02): the CLI built for wasm32-wasip1 (`cargo build --release --target wasm32-wasip1 --bin uniscript`,
+  ~10 MB with the embedded index) is a GitHub release asset; warp's `run_package_tool` / `warp tool uniscript …` downloads
+  it for the pinned tag instead of building the package (which once overwrote this checkout's build in the shared cargo
+  target). publish.sh smoke-tests it with wasmtime (`--dir=<checkout>::.` for `check`). The smoke input is now explicit
+  (`\:alpha <:fracture A/>`): inline tags warn since 8ed80c0.
