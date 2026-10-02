@@ -12,7 +12,9 @@ Replaces uniscript with Unicode in place: `<:alpha> <:fracture A> \:infinity` �
 - **Completion** inside `<:` and `\:` tags in every file type, opening by itself after `<:` and `\:`: entity names
   with their character, block words, after block words their operands (`<:egyptian seated m` → `seated-man`). Names
   sharing their next segment fold into one group (`alchemical-` 🝟🜥🜙… 116) that asks for the rest when chosen. A name
-  on its own closes its tag; in files converting while typing, it then becomes its character. Needs a `uniscript` with
+  chosen (Tab, Enter, or Tab after typing a whole name: `\:equal-to-by-definition` → ≝) becomes its **character**;
+  with the setting `"completion_inserts": "name"` the tag stays as uniscript (`<:alpha>`). Tab with the popup closed
+  takes the top suggestion. Needs a `uniscript` with
   the `names` command (`uniscript names`).
   While a tag is typed, the other packages' completions (All Autocomplete, LSP, …) stay quiet (setting
   `only_uniscript_completions_in_tags`).

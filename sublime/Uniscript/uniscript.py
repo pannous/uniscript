@@ -17,6 +17,8 @@ TAG_END = ">"
 TAG_OPENERS = ("<:", "\\:")
 CONTINUE_AFTER = ("-", " ")  # a committed group or block word asks for the rest
 QUIET_SETTING = "only_uniscript_completions_in_tags"
+INSERTS_SETTING = "completion_inserts"  # "character": a chosen name becomes its character, "name": <:alpha> stays
+INSERTS_CHARACTERS = "character"
 QUERY_CALLBACK = "on_query_completions"
 QUIETED_MARK = "_uniscript_quieted"
 _names = None
@@ -37,6 +39,10 @@ def names():
     if _names is None:
         _names = cli.load_names(settings().get("binary", ""))
     return _names
+
+
+def inserts_characters():
+    return settings().get(INSERTS_SETTING, INSERTS_CHARACTERS) == INSERTS_CHARACTERS
 
 
 def text_before_cursor(view, cursor, length=None):
@@ -115,12 +121,16 @@ class UniscriptWhileTypingListener(sublime_plugin.ViewEventListener):
         if typed and before in TAG_OPENERS or committed and before[-1:] in CONTINUE_AFTER:
             silence_other_completions(self.view)
             return self.view.run_command("auto_complete", {"disable_auto_insert": True})
-        if not (typed.endswith(TAG_END) or committed and before.endswith(TAG_END)) or not self.is_live():
+        if committed and inserts_characters():
+            find_tag = cli.finished_tag_before_cursor  # a chosen name: \\:equal-to-by-definition becomes ≝
+        elif typed.endswith(TAG_END) and self.is_live():
+            find_tag = cli.tag_before_cursor
+        else:
             return
         regions = []
         for cursor in (region.b for region in self.view.sel() if region.empty()):
             line_start = self.view.line(cursor).begin()
-            offset = cli.tag_before_cursor(self.view.substr(sublime.Region(line_start, cursor)))
+            offset = find_tag(self.view.substr(sublime.Region(line_start, cursor)))
             if offset is not None:
                 regions.append((line_start + offset, cursor))
         if regions:
@@ -133,7 +143,7 @@ class UniscriptInsertBestCompletionCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         cursor = self.view.sel()[0].b
-        best = cli.best_completion(text_before_cursor(self.view, cursor), self.view.substr(cursor), names())
+        best = cli.best_completion(text_before_cursor(self.view, cursor), self.view.substr(cursor), names(), inserts_characters())
         if best is None:
             return self.view.insert(edit, cursor, "\t")
         replaced, text = best
@@ -151,7 +161,7 @@ class UniscriptCompletionListener(sublime_plugin.EventListener):
             return None
         silence_other_completions(view)
         try:
-            entries = cli.completions(line, view.substr(cursor), names(), prefix)
+            entries = cli.completions(line, view.substr(cursor), names(), prefix, inserts_characters())
         except cli.UniscriptError as error:
             view.window().status_message("uniscript: {}".format(error))
             return None

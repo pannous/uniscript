@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "sublime" / "Uniscript"))
-from uniscript_cli import best_completion, completions, load_names  # noqa: E402
+from uniscript_cli import best_completion, completions, finished_tag_before_cursor, load_names  # noqa: E402
 
 names = load_names()
 
@@ -44,6 +44,13 @@ expect(best_completion("\\:equ", "", names), (3, "equal"))
 expect(best_completion("x <:alph", "", names), (4, "alpha>"))
 expect(best_completion("<:egyptian seated m", "", names), (8, "seated-man"))
 expect(best_completion("alph", "", names), None)
+# inserting characters: operands close their tag too, and a finished tag is found for its conversion
+entries = {trigger: text for trigger, _, text in completions("<:red c", "", names, "c", close_operands=True)}
+expect(entries["circle"], "circle>")
+expect(finished_tag_before_cursor("x \\:equal-to-by-definition"), 2)
+expect(finished_tag_before_cursor("x <:red circle>"), 2)
+expect(finished_tag_before_cursor("x \\:alchemical-"), None)  # a group asks for the rest
+expect(finished_tag_before_cursor("x <:red "), None)
 groups = completed("\\:al")
 expect(groups["alchemical-"][1], "alchemical-")  # a group: names sharing their next segment
 assert not any(name.startswith("alchemical-symbol") for name in groups), groups

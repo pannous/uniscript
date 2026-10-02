@@ -8,5 +8,8 @@
 	"convert_while_typing": "header",
 
 	// while a <: or \: tag is typed, the other packages' completions (All Autocomplete, LSP, …) stay quiet
-	"only_uniscript_completions_in_tags": true
+	"only_uniscript_completions_in_tags": true,
+
+	// what choosing a name in the completion list (or Tab on a typed name) leaves: "character" (α, ≝) or "name" (<:alpha>)
+	"completion_inserts": "character"
 }

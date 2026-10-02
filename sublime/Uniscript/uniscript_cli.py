@@ -15,6 +15,8 @@ MARKER = "<:"
 TAG_END = ">"
 # a complete `<:…>` tag just before the cursor, the last one on its line
 TAG_BEFORE_CURSOR = re.compile(r"<:[^<>\n]+>$")
+# a tag finished by a chosen completion: a closed `<:…>`, or `\:name` not ending in "-" (a group)
+FINISHED_TAG_BEFORE_CURSOR = re.compile(r"<:[^<>\n]+>$|\\:[A-Za-z0-9_-]*[A-Za-z0-9_]$")
 # the tag the cursor is typing in: `<:` with words (no leading space), or `\:` with a name
 TYPED_TAG = re.compile(r"(?:<:(?! )([^<>\n\[\]{};=\"]*)|\\:([A-Za-z0-9_-]*))$")
 NAMES_COMMAND = "names"
@@ -63,6 +65,12 @@ def is_uniscript_file(text):
 def tag_before_cursor(line_before_cursor):
     """Offset of the `<:…>` tag that ends right at the cursor, or None"""
     match = TAG_BEFORE_CURSOR.search(line_before_cursor)
+    return match.start() if match else None
+
+
+def finished_tag_before_cursor(line_before_cursor):
+    """Offset of the `<:…>` or `\\:name` tag a completion finished right at the cursor, or None"""
+    match = FINISHED_TAG_BEFORE_CURSOR.search(line_before_cursor)
     return match.start() if match else None
 
 
@@ -124,17 +132,18 @@ def typed_tag(line_before_cursor, names):
     return is_short, words, leading, SEGMENT_END.join(words[leading:])
 
 
-def best_completion(line_before_cursor, next_character, names):
+def best_completion(line_before_cursor, next_character, names, close_operands=False):
     """(length typed before the cursor to replace, its replacement): the top suggestion, for Tab without the popup"""
     typed = typed_tag(line_before_cursor, names)
-    entries = typed and completions(line_before_cursor, next_character, names, word=typed[3])
+    entries = typed and completions(line_before_cursor, next_character, names, typed[3], close_operands)
     return (len(typed[3]), entries[0][2]) if entries else None
 
 
-def completions(line_before_cursor, next_character, names, word):
+def completions(line_before_cursor, next_character, names, word, close_operands=False):
     """(trigger, annotation, completion) for the tag being typed: entity names, block words, after block words their
     operands. Sublime replaces `word`, the word before the cursor by the syntax's word_separators ("s" or "equals-s"),
-    so a completion holds the name from where that word starts."""
+    so a completion holds the name from where that word starts. A name on its own closes its tag, an operand after
+    block words only with close_operands (when the tag becomes its character at once)."""
     typed = typed_tag(line_before_cursor, names)
     if not typed:
         return []
@@ -142,7 +151,7 @@ def completions(line_before_cursor, next_character, names, word):
     candidates = names.operands.get(words[leading - 1], []) if leading else names.entities
     word_start = max(0, len(prefix) - len(word))
     word_head = word[:max(0, len(word) - len(prefix))]  # where the word reaches before the name (\: in its word chars)
-    closes = not leading and not is_short and next_character != TAG_END
+    closes = (close_operands or not leading) and not is_short and next_character != TAG_END
     entries = []
     for name, annotation, count in grouped(candidates, prefix):
         tail = "" if count > 1 or not closes else TAG_END
