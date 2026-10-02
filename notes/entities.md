@@ -42,7 +42,8 @@
   Mandarin reading in Unihan 18 (44,364; kMandarin, kHanyuPinlu, kTGHZ2013, kXHC1983, else kHanyuPinyin), ordered by
   kHanyuPinlu counts, kGradeLevel, the 2013 standard table, code point. The frequency list's readings go first, so
   the common character keeps the plain reading (yi2 疑); the other characters of a reading are numbered in frequency
-  order (yi2.2 移, yi2.3 遗); without tone only the first (yi 一). lve4 is also lue4. 46,743 keys (×2 with `cn`).
+  order (yi2.2 移, yi2.3 遗); without tone only the first (yi 一). lve4 is also lue4. The `.N` suffix is internal
+  syntax (no other entity uses `.digits`): editors show the plain reading for every homophone and insert the key. 46,743 keys (×2 with `cn`).
   Rejected: numbering toneless readings too (fan.2): 91k keys, index 12 MB.
 - Size: entities.idx 6.12 → 9.19 MB (gzip 2.05 → 3.04 MB), which the IntelliJ/VS Code/Sublime plugins bundle. Web: the
   names of rare blocks go in 8 KB chunks (index::RARE_CHUNK_FACTOR): manifest 36,576 → 37,068 bytes (4 KB chunks: 46 KB,
