@@ -149,3 +149,6 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - Sublime with "completion_inserts": "name" leaves an inline `<:alpha>`, which now warns: insert `\:alpha` / `<:…/>` instead
 - IntelliJ and VS Code plugins: rebuild against the ports with explicit(), maybe offer "Make Tags Explicit" as a quick fix there too
 - Swift port has no lenient WarningMode, so its new shared-case runner skips the lenient section
+- warp: a function with parameters cannot write a global (the assignment becomes a local); uniscript.wasp works around it with a U+FDD0 mark in unsupported() (notes/wasp.md, also: a variable named like a function parses as a call; a text const built from an expression breaks the module's types)
+- warp repo tests/test_uniscript.rs expect the old reverse spelling (spells("α","<:alpha>")); they will break once warp's packages/uniscript copy is updated past ed75f9a: switch them to \:alpha
+- wasp port has no shared cases.json runner (and no meta/TAG sequences)
