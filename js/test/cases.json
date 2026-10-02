@@ -18,7 +18,7 @@
 		"Offsets (at, length, run start/end) are UTF-8 byte offsets."
 	],
 	"converts": [
-		["<:alpha>", "α"],
+["<:dark-skinned red-haired woman>", "👩🏿‍🦰"], ["<:woman><:red-hair>", "👩‍🦰"], 		["<:alpha>", "α"],
 		["\\:infinity", "∞"],
 		["<:greek small letter alpha>", "α"],
 		["<:dopf>", "𝕕"],
@@ -136,7 +136,7 @@
 		["<:double bold A>", "𝐀", 1]
 	],
 	"roundTrips": [
-		["<:bold Alpha>", "𝚨"],
+["<:red-haired woman>", "👩‍🦰"], ["<:dark-skinned woman>", "👩🏿"], 		["<:bold Alpha>", "𝚨"],
 		["<:bold alpha>", "𝛂"],
 		["<:bold-italic Alpha>", "𝜜"],
 		["<:bold-italic alpha>", "𝜶"],
@@ -156,7 +156,7 @@
 		["<:color red B>", "B{attached color red}"]
 	],
 	"toUniscript": [
-		["A{U+E0072}{U+E004D} 🔴{U+E004D}", "<:mirror red A> <:mirror red circle>"],
+["👩🏿‍🦰", "<:dark-skinned woman><:red-hair>"], 		["A{U+E0072}{U+E004D} 🔴{U+E004D}", "<:mirror red A> <:mirror red circle>"],
 		["𓀀 𓐍", "<:egyptian A1> <:egyptian Aa1>"],
 		["口 扣", "口 扣"],
 		["α Ω 𝔄 ∞ ℝ", "<:alpha> <:Omega> <:fracture A> <:infinity> <:double R>"],

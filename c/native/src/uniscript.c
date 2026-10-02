@@ -31,6 +31,8 @@
 #define META_FALLBACK_KEY "*meta"
 #define REPLACEMENT_CHARACTER 0xFFFDu
 #define ZERO_WIDTH_JOINER "\xE2\x80\x8D"
+#define EMOJI_PRESENTATION 0xFE0Fu
+#define MAX_JOINED_PARTS 16
 
 typedef struct { str *items; size_t n, cap; } strs;
 
@@ -856,6 +858,27 @@ static size_t known_meta_at(str text, meta *found) {
 	return length;
 }
 
+/* The spelling of the longest known emoji sequence joined at the start of text (👩‍🦰 → <:red-haired woman>) and its
+ * length, 0 if none: the prefixes end after each joined part, an optional zero width joiner first (‍🦰 → <:red-hair>) */
+static size_t joined_form(str text, str *form) {
+	size_t ends[MAX_JOINED_PARTS], count = 0, at = 0, length;
+	size_t joiner = strlen(ZERO_WIDTH_JOINER);
+	uint32_t character;
+	bool joined = str_starts(text, ZERO_WIDTH_JOINER);
+	if (joined) at = joiner;
+	while (count < MAX_JOINED_PARTS && (length = utf8_decode(str_from(text, at), &character)) && !str_starts(str_from(text, at), ZERO_WIDTH_JOINER)) {
+		at += length;
+		if ((length = utf8_decode(str_from(text, at), &character)) && character == EMOJI_PRESENTATION) at += length;
+		if (joined) ends[count++] = at;
+		joined = str_starts(str_from(text, at), ZERO_WIDTH_JOINER);
+		if (!joined) break;
+		at += joiner;
+	}
+	while (count--)
+		if (index_get(TABLE_CHARS, str_slice(text, 0, ends[count]), form)) return ends[count];
+	return 0;
+}
+
 char *uniscript_to_uniscript(const char *text) {
 	if (invalid(text)) return NULL;
 	buf out = { 0 }, attached = { 0 }, form = { 0 };
@@ -873,6 +896,13 @@ char *uniscript_to_uniscript(const char *text) {
 			continue;
 		}
 		if (meta_length) meta_free(&sequence);
+		str joined;
+		size_t joined_length = joined_form(rest, &joined);
+		if (joined_length) {
+			buf_adds(&out, joined);
+			rest = str_from(rest, joined_length);
+			continue;
+		}
 		rest = str_from(rest, length);
 		if ((character == '<' || character == '\\') && str_starts(rest, ":")) {
 			rest = str_from(rest, 1);

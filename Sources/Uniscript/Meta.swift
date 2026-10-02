@@ -10,6 +10,8 @@ private let closeSigil = "</"
 private let attachSigil = ":"
 /// besides ASCII letters and digits; no spaces, quotes, `;` or brackets, so values stay safe inside CSS and HTML
 private let valuePunctuation = Set("#.%+-_,()/".unicodeScalars)
+let zeroWidthJoiner: Unicode.Scalar = "\u{200D}"
+let emojiPresentation: Unicode.Scalar = "\u{FE0F}"
 
 public enum Meta: Equatable, Sendable {
 	case open(key: String, value: String)
@@ -258,7 +260,7 @@ private extension Unicode.Scalar {
 func afterBase(_ text: String, _ suffixes: String) -> String {
 	var scalars = String.UnicodeScalarView()
 	scalars.append(contentsOf: text.unicodeScalars)
-	let joiner = scalars.firstIndex(of: "\u{200D}") ?? scalars.endIndex
+	let joiner = scalars.firstIndex(of: zeroWidthJoiner) ?? scalars.endIndex
 	scalars.insert(contentsOf: suffixes.unicodeScalars, at: joiner)
 	return String(scalars)
 }

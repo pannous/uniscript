@@ -67,6 +67,7 @@ static const conversion_case round_trips[] = {
 	{"<:color #ff8800 mirror red A>", "A\U000E0072\U000E004D{:color #ff8800}"},
 	{"<:color #ff8800 angle 90 alpha>", "α{:color #ff8800}{:angle 90}"},
 	{"<:color red B>", "B{:color red}"}, /* the r of "color red" is no red suffix control */
+	{"<:red-haired woman>", "👩\u200D🦰"}, {"<:dark-skinned woman>", "👩🏿"},
 };
 
 /* uniscript → Unicode without warnings */
@@ -119,6 +120,7 @@ static const conversion_case converts[] = {
 	{"\\U0001F60D", "😍"}, {"\\:U+41 \\:0x42 <:u+43>", "A B C"}, {"\\:1F60D. <:1F60D>x (\\U1F60D)", "😍. 😍x (😍)"},
 	{"<:greek> a \\:03B2 <:/greek>", " α β "}, {"\\:bed \\:BbbA \\:U+BBBA", "🛏 𝔸 뮺"},
 	{"C:\\Users\\U1F60Dx \\UABC \\u00e9", "C:\\Users\\U1F60Dx \\UABC \\u00e9"}, {"\\<:U>1F60D", "\\U1F60D"},
+	{"<:dark-skinned red-haired woman>", "👩🏿\u200D🦰"}, {"<:woman><:red-hair>", "👩\u200D🦰"},
 };
 
 /* Unicode → uniscript */
@@ -128,6 +130,7 @@ static const conversion_case spells_back[] = {
 	{"<:alpha> <:Omega> <:fracture A> <:infinity> <:double R>", "α Ω 𝔄 ∞ ℝ"},
 	{"<:red A> <:red circle> x<:upper a>", "A\U000E0072 🔴 xᵃ"},
 	{"a <<::> b \\<::> c", "a <: b \\: c"},
+	{"<:dark-skinned woman><:red-hair>", "👩🏿\u200D🦰"},
 	{"print(\"\\<:U>0001F60D\") \\Users", "print(\"\\U0001F60D\") \\Users"}, /* a literal \U code point is escaped */
 };
 

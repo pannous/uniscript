@@ -204,6 +204,28 @@ public struct Uniscript: Sendable {
 	}
 
 	/// Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A>`
+	/// The spelling of the longest known emoji sequence joined at `position` and its length in scalars:
+	/// 👩‍🦰 → <:red-haired woman>; a zero width joiner may come first: ‍🦰 → <:red-hair>
+	private func joinedForm(_ characters: [Unicode.Scalar], at position: Int) -> (form: String, length: Int)? {
+		var ends: [Int] = []
+		var at = position
+		func next(is wanted: Unicode.Scalar) -> Bool { at < characters.count && characters[at] == wanted }
+		var joined = next(is: zeroWidthJoiner)
+		if joined { at += 1 }
+		while at < characters.count, characters[at] != zeroWidthJoiner {
+			at += 1
+			if next(is: emojiPresentation) { at += 1 }
+			if joined { ends.append(at) }
+			joined = next(is: zeroWidthJoiner)
+			if !joined { break }
+			at += 1
+		}
+		for end in ends.reversed() {
+			if let form = index.get(.chars, String(String.UnicodeScalarView(characters[position..<end]))) { return (form, end - position) }
+		}
+		return nil
+	}
+
 	public func toUniscript(_ text: String) -> String {
 		let characters = Array(text.unicodeScalars)
 		func knownMeta(at position: Int) -> (meta: Meta, length: Int)? {
@@ -215,6 +237,11 @@ public struct Uniscript: Sendable {
 		while position < characters.count {
 			if let (meta, length) = knownMeta(at: position), !meta.isAttached {
 				out += meta.uniscript
+				position += length
+				continue
+			}
+			if let (form, length) = joinedForm(characters, at: position) {
+				out += form
 				position += length
 				continue
 			}

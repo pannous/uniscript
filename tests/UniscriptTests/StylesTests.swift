@@ -37,4 +37,17 @@ final class StylesTests: XCTestCase {
 		XCTAssertEqual(text, "𝐀")
 		XCTAssertEqual(warnings.count, 1)
 	}
+
+	func testHairStylesJoinTheirComponentToTheStandardPeople() throws {
+		try roundTrips("<:red-haired woman>", "👩\u{200D}🦰")
+		try roundTrips("<:bald woman>", "👩\u{200D}🦲")
+		XCTAssertEqual(try Uniscript.convert("<:woman><:red-hair>").text, "👩\u{200D}🦰")
+		XCTAssertEqual(try Uniscript.convert("<:red-haired girl>", mode: .warn).warnings.count, 1)
+	}
+
+	func testSkinTonesFollowTheirPersonAlsoInJoinedSequences() throws {
+		try roundTrips("<:dark-skinned woman>", "👩🏿")
+		XCTAssertEqual(try Uniscript.convert("<:dark-skinned red-haired woman>").text, "👩🏿\u{200D}🦰")
+		XCTAssertEqual(Uniscript.toUniscript("👩🏿\u{200D}🦰"), "<:dark-skinned woman><:red-hair>")
+	}
 }

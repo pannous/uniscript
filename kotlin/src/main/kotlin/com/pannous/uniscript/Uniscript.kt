@@ -12,6 +12,8 @@ private const val SHORT_OPEN = '\\'
 private const val MARKER_COLON = ':'
 private const val TAG_CLOSE = '>'
 private const val CLOSING_SLASH = '/'
+private const val ZERO_WIDTH_JOINER = 0x200D
+private const val EMOJI_PRESENTATION = 0xFE0F
 private const val ESCAPED_COLON = "<::>"
 private const val UNICODE_ESCAPE_LETTER = 'U'
 private const val ESCAPED_UNICODE = "<:U>"
@@ -154,6 +156,26 @@ class Uniscript(val index: EntityIndex = EntityIndex.bundled) {
 	}
 
 	/** Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A>` */
+	/** The spelling of the longest known emoji sequence joined at [position] and its length in code points:
+	 *  👩‍🦰 → <:red-haired woman>; a zero width joiner may come first: ‍🦰 → <:red-hair> */
+	private fun joinedForm(characters: IntArray, position: Int): Pair<String, Int>? {
+		val ends = mutableListOf<Int>()
+		var at = position
+		var joined = characters.getOrNull(at) == ZERO_WIDTH_JOINER
+		if (joined) at++
+		while (at < characters.size && characters[at] != ZERO_WIDTH_JOINER) {
+			at++
+			if (characters.getOrNull(at) == EMOJI_PRESENTATION) at++
+			if (joined) ends += at
+			joined = characters.getOrNull(at) == ZERO_WIDTH_JOINER
+			if (!joined) break
+			at++
+		}
+		return ends.asReversed().firstNotNullOfOrNull { end ->
+			index[Table.CHARS, String(characters, position, end - position)]?.let { it to end - position }
+		}
+	}
+
 	fun toUniscript(text: String): String {
 		val characters = text.codePoints().toArray()
 		val out = StringBuilder()
@@ -163,6 +185,12 @@ class Uniscript(val index: EntityIndex = EntityIndex.bundled) {
 			if (spanMeta != null && spanMeta.first !is Meta.Attached) {
 				out.append(spanMeta.first.uniscript)
 				position += spanMeta.second
+				continue
+			}
+			val joined = joinedForm(characters, position)
+			if (joined != null) {
+				out.append(joined.first)
+				position += joined.second
 				continue
 			}
 			val character = characters[position++]
@@ -577,6 +605,6 @@ private val String.utf8Size get() = toByteArray(Charsets.UTF_8).size
 
 /** Suffixes after text; in an emoji sequence joined by zero width joiners they style its first character: 👩🏿‍🦰 */
 internal fun afterBase(text: String, suffixes: String): String {
-	val joiner = text.indexOf('\u200D')
+	val joiner = text.indexOf(ZERO_WIDTH_JOINER.toChar())
 	return if (joiner < 0) text + suffixes else text.substring(0, joiner) + suffixes + text.substring(joiner)
 }
