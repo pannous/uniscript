@@ -24,7 +24,7 @@ import com.pannous.uniscript.isNameChar
 
 private const val MAX_COMPLETIONS = 1000 // the shortest first; typing on narrows and asks again
 private const val GROUP_SAMPLES = 3 // characters shown beside a group of names
-private const val BLOCK_TYPE_TEXT = "block"
+private const val BLOCK_TYPE_TEXT = "block" // a block word without operands of its own (mirror)
 private const val SEGMENT_END = '-'
 private const val TAG_END = '>'
 private const val LONG_OPEN = "<:"
@@ -95,6 +95,12 @@ private object Completions {
 /** A name, or a group of names sharing everything up to the "-" ending `name` (`size` > 1) */
 private data class Completion(val name: String, val text: String, val size: Int)
 
+private val shortestFirst = compareBy<Pair<String, String>>({ it.first.length }, { it.first })
+
+/** `🍎🔴🟥… 18`: the characters of the shortest names, and how many there are */
+private fun summary(members: List<Pair<String, String>>) =
+	members.sortedWith(shortestFirst).take(GROUP_SAMPLES).joinToString("") { it.second } + "… ${members.size}"
+
 /** The candidates starting with prefix (ignoring case), the shortest first; names sharing their next segment fold into
  *  one group, as deep as all of them agree */
 private fun grouped(candidates: List<Pair<String, String>>, prefix: String): List<Completion> {
@@ -108,7 +114,7 @@ private fun grouped(candidates: List<Pair<String, String>>, prefix: String): Lis
 		}
 		return groups.map { (key, members) ->
 			members.singleOrNull()?.let { Completion(it.first, it.second, 1) }
-				?: Completion(key, members.take(GROUP_SAMPLES).joinToString("") { it.second } + "… ${members.size}", members.size)
+				?: Completion(key, summary(members), members.size)
 		}.sortedWith(compareBy({ it.name.length }, { it.name })).take(MAX_COMPLETIONS)
 	}
 }
@@ -129,8 +135,10 @@ class UniscriptCompletionContributor : CompletionContributor(), DumbAware {
 			matching.addElement(element.withInsertHandler { context, _ -> if (size > 1) reopenPopup(context) else finishName(context, closes) })
 		}
 		if (!tag.isShort && leading.isEmpty()) {
-			Completions.blocks.filter { it.startsWith(prefix, ignoreCase = true) }.forEach {
-				matching.addElement(LookupElementBuilder.create(it).withTypeText(BLOCK_TYPE_TEXT).withInsertHandler(continueWithOperands))
+			// a block word is the group of its operands: <:red> shows 🍎🔴🟥… 18 and asks for them when chosen
+			Completions.blocks.filter { it.startsWith(prefix, ignoreCase = true) }.forEach { block ->
+				val typeText = Completions.operands[block]?.let(::summary) ?: BLOCK_TYPE_TEXT
+				matching.addElement(LookupElementBuilder.create(block).withTypeText(typeText).withInsertHandler(continueWithOperands))
 			}
 		}
 		matching.stopHere()

@@ -62,6 +62,14 @@ class UniscriptCompletionTest : BasePlatformTestCase() {
 		myFixture.checkResult("<:fracture <caret>")
 	}
 
+	fun testABlockWordShowsTheCharactersOfItsOperands() {
+		myFixture.configureByText("notes.txt", "<:re<caret>")
+		val red = myFixture.completeBasic().first { it.lookupString == "red" }
+		val presentation = LookupElementPresentation()
+		red.renderElement(presentation)
+		assertEquals("🍎🔴🟥… 18", presentation.typeText)
+	}
+
 	fun testNothingOutsideTags() {
 		assertEquals(emptyList<String>(), completions("alph<caret>"))
 	}

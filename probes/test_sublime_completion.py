@@ -23,7 +23,10 @@ alpha = completed("x <:alph")
 expect(alpha["alpha"], ("α", "alpha>"))  # an entity on its own closes the tag
 expect(completed("x <:alph", ">")["alpha"], ("α", "alpha"))  # unless it is closed already
 expect(completed("\\:infin")["infinity"], ("∞", "infinity"))  # short tags have no end
-expect(completed("<:fractu")["fracture"], ("block", "fracture "))
+expect(completed("<:fractu")["fracture"][1], "fracture ")
+expect(completed("<:re")["red"], ("🍎🔴🟥… 18", "red "))  # a block word shows its operands' characters
+expect(completed("<:mirr")["mirror"], ("block", "mirror "))  # an effect without operands of its own
+expect(completed("<:red c")["circle"], ("🔴", "circle"))  # several operands may follow: the tag stays open
 expect(completed("<:egyptian seated-m")["seated-man"], ("𓀀", "man"))  # Sublime replaces only the word after "-"
 expect(completed("<:egyptian seated m")["seated-man"][0], "𓀀")
 expect(completed("<:LATIN CAPITAL LETTER E")["latin-capital-letter-eth"], ("Ð", "eth>"))

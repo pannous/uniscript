@@ -20,7 +20,7 @@ TYPED_TAG = re.compile(r"(?:<:(?! )([^<>\n\[\]{};=\"]*)|\\:([A-Za-z0-9_-]*))$")
 NAMES_COMMAND = "names"
 MAX_COMPLETIONS = 1000  # the shortest first
 GROUP_SAMPLES = 3  # characters shown beside a group of names
-BLOCK_ANNOTATION = "block"
+BLOCK_ANNOTATION = "block"  # a block word without operands of its own (mirror)
 SEGMENT_END = "-"
 WORD_SEPARATORS = " -"  # Sublime replaces the word after the last of these
 
@@ -87,6 +87,12 @@ def load_names(binary=""):
     return Names(run([NAMES_COMMAND], binary=binary)[0].splitlines())
 
 
+def summary(members):
+    """`🔴🟥🍎… 18`: the characters of the shortest names, and how many there are"""
+    shortest = sorted(members, key=lambda member: (len(member[0]), member[0]))[:GROUP_SAMPLES]
+    return "{}… {}".format("".join(text for _, text in shortest), len(members))
+
+
 def grouped(candidates, prefix):
     """(name, text, count) of the candidates starting with prefix (ignoring case), the shortest first; names sharing
     their next segment fold into one group ending with "-" (count > 1), as deep as all of them agree"""
@@ -100,8 +106,7 @@ def grouped(candidates, prefix):
         if len(groups) == 1 and len(matching) > 1:
             start = len(next(iter(groups)))
             continue
-        folded = [members[0] + (1,) if len(members) == 1 else
-                  (key, "{}… {}".format("".join(text for _, text in members[:GROUP_SAMPLES]), len(members)), len(members))
+        folded = [members[0] + (1,) if len(members) == 1 else (key, summary(members), len(members))
                   for key, members in groups.items()]
         return sorted(folded, key=lambda entry: (len(entry[0]), entry[0]))[:MAX_COMPLETIONS]
 
@@ -126,5 +131,7 @@ def completions(line_before_cursor, next_character, names):
         tail = "" if count > 1 or not closes else TAG_END
         entries.append((name, annotation, name[word_start:] + tail))
     if not is_short and not leading:
-        entries += [(block, BLOCK_ANNOTATION, block[word_start:] + " ") for block in sorted(names.blocks) if block.lower().startswith(prefix.lower())]
+        # a block word is the group of its operands: <:red> shows 🔴🟥🍎… 18 and asks for them when chosen
+        entries += [(block, summary(names.operands[block]) if block in names.operands else BLOCK_ANNOTATION, block[word_start:] + " ")
+                    for block in sorted(names.blocks) if block.lower().startswith(prefix.lower())]
     return entries[:MAX_COMPLETIONS]
