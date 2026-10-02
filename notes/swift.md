@@ -22,3 +22,9 @@
   converting bare `<:alpha>` in `.error` mode must spell `<:alpha/>`.
 - `tests/UniscriptTests/CasesTests.swift` runs js/test/cases.json (path via `#filePath`) — every section except
   `lenient`: the Swift port has no lenient mode.
+
+# Readings blocks (port of Rust c9cd2a1)
+
+- `operand` checks `form(block, "*readings")` after the own entry: `readings(block, word)` splits over unicode scalars
+  (Rust char boundaries), fewest pieces, longest first piece; no split → token as written + one `no <block> form of <word>`.
+- Before the port the shared cases failed only in testQuiet/testWarns (the letter-split shi哈㕶); no Swift test asserted it.

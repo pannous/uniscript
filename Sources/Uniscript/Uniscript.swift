@@ -26,6 +26,8 @@ private let minBareHexDigits = 4
 /// The scalars after a backslash that decide `\U1F60D`: U, 8 digits and the one that ends the token
 private let unicodeEscapeWindow = 10
 private let groupKey = "*group"
+/// a block whose words split into whole readings (chinese shihan → shi han), not letters and digraphs (greek)
+private let readingsKey = "*readings"
 /// The most words one operand spans: `<:egyptian man with hand to mouth>`
 private let maxOperandWords = 8
 private let fontKey = "font"
@@ -457,8 +459,17 @@ private final class Conversion {
 	/// One operand: its own entry (red circle → 🔴, greek eta → η), else each character or pair (greek th → θ)
 	/// of the operand, or of the entity it names
 	private func operand(_ block: String, _ token: String, _ effects: [String], _ at: Int) -> String {
+		let ownForm = { (own: String) in afterBase(own, self.effectSuffixes(effects, own.unicodeScalars.first ?? " ", at)) }
 		if let own = name("\(block) \(token)") {
-			return afterBase(own, effectSuffixes(effects, own.unicodeScalars.first ?? " ", at))
+			return ownForm(own)
+		}
+		if form(block, readingsKey) != nil {
+			// <:chinese> shihan: whole readings, never letters (nuli is nu li, not n u l i)
+			guard let pieces = readings(block, token) else {
+				warn("no \(block) form of \(token)", at)
+				return token
+			}
+			return pieces.map(ownForm).joined()
 		}
 		let characters = Array(((token.utf8.count > 1 ? name(token) : nil) ?? token).unicodeScalars)
 		var out = ""
@@ -473,6 +484,33 @@ private final class Conversion {
 			}
 		}
 		return out
+	}
+
+	/// The forms of the whole readings a word splits into (shihan → 是 汉): the fewest pieces, of those the longest first
+	/// piece; nil when it does not split
+	private func readings(_ block: String, _ word: String) -> [String]? {
+		let characters = Array(word.unicodeScalars)
+		let last = characters.count
+		let piece = { (start: Int, end: Int) in self.form(block, String(String.UnicodeScalarView(characters[start..<end]))) }
+		// fewest[k]: (pieces, end of the first piece) of the best split of the word from character k
+		var fewest: [(pieces: Int, end: Int)?] = Array(repeating: nil, count: last + 1)
+		fewest[last] = (0, last)
+		for start in stride(from: last - 1, through: 0, by: -1) {
+			for end in stride(from: last, to: start, by: -1) {
+				guard let (pieces, _) = fewest[end] else { continue }
+				if piece(start, end) != nil, fewest[start].map({ pieces + 1 < $0.pieces }) ?? true {
+					fewest[start] = (pieces + 1, end)
+				}
+			}
+		}
+		var forms: [String] = []
+		var start = 0
+		while start < last {
+			guard let (_, end) = fewest[start], let form = piece(start, end) else { return nil }
+			forms.append(form)
+			start = end
+		}
+		return forms
 	}
 
 	/// The text inside a full block (`<:greek> filosofia kosmos<:/greek>`) as written: its whitespace stays, each word is
