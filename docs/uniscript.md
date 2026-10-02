@@ -661,7 +661,7 @@ through C and C++.
 | `data/entities.wasp` | the readable source of truth (wasp data syntax): Unicode 16 names, LaTeX (unicode-math) and HTML5 names, block types, font styles, meta keys |
 | `data/entities.idx` | the binary index built from it, compiled into the library |
 | `data/uniscript_index.py` | seeds `entities.wasp` from the sources (needs Python's `unicodedata` and TeX Live's `unicode-math-table.tex`) |
-
+<:woman><:zwj><:emoji-component-red-hair>
 
 ### Block control keys
 

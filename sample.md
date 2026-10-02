@@ -59,6 +59,9 @@ circle := <:pi> * r<:upper 2>  // \:infinity <:nosuchthing> <:greek c>
 - `<:above 𓀀 𓁐>  <:reverse 𓀀 𓁐>` → <:above 𓀀 𓁐>  <:reverse 𓀀 𓁐>
 - `<:above 󳀃 𓁐>  <:reverse 󳀃 𓁐>` → <:above 󳀃 𓁐>  <:reverse 󳀃 𓁐>
 - `a literal <<::> marker` → a literal <<::> marker
+<:woman><:zwj><:emoji-component-red-hair>
+<:woman><:zwj><:emoji-component-red-hair>
+
 
 **Bold <:alpha>**, *italic <:Omega>* and a [link to <:infinity>](https://example.com).
 
