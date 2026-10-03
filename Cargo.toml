@@ -9,6 +9,8 @@ homepage = "https://pannous.com/uniscript/"
 readme = "README.md"
 keywords = ["unicode", "entities", "text", "encoding"]
 categories = ["text-processing", "encoding"]
+# one test crate: tests/main.rs declares every tests/*.rs file as a module
+autotests = false
 # the crate: the library, the CLI, its data (entities.idx is compiled in, entities/ is the source `uniscript build` reads) and the Rust tests
 include = ["/src/**/*.rs", "/data/entities.idx", "/data/entities/**", "/tests/*.rs", "/README.md", "/LICENSE", "/docs/uniscript.md"]
 
@@ -24,6 +26,11 @@ pack = ["dep:miniz_oxide"]
 name = "uniscript"
 path = "src/main.rs"
 required-features = ["embedded-index"]
+test = false
+
+[[test]]
+name = "tests"
+path = "tests/main.rs"
 
 [dependencies]
 miniz_oxide = { version = "0.9", optional = true }

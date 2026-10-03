@@ -70,3 +70,7 @@ synchronously with results identical to the whole index. JS: `await init({ chunk
  [`fonts/uniscript_fonts.py`](fonts/) (`python3 fonts/uniscript_fonts.py all`, details in fonts/README.md). Text
 engines must shape with HarfBuzz or CoreText for the controls to take effect: Chrome, Firefox, Safari, Sublime Text,
 VS Code, and iTerm with ligatures on.
+
+# Rust tests
+One test crate (`autotests = false`): a new tests/*.rs file needs a `mod <file>;` line in tests/main.rs, otherwise it never runs.
+Run one file with `cargo test --test tests <file_stem>::`.
