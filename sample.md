@@ -1,7 +1,7 @@
 <:uniscript version="https://uniscript.org/v1">  
 <:alpha> <:beta> <:gamma>: this file starts with the uniscript marker, so MarkdownPreview converts uniscript in its prose.  
 我 👒 👢 👡 👚  
-我的 朋有 谢 <:chinese> xie3xie3 shi hen3 nuli woaini<:/chinese> TODO  
+我的 朋有 谢 <:chinese> xie3 xie3 shi hen3 nuli woaini<:/chinese> TODO  
 \:a2 á 𓀁 𒀉   
 𒀉𒊩  A2 SAL  
 𒀉𒌉  A2 TUR  
