@@ -30,6 +30,8 @@ NO_MATCH_SCOPE = "invalid"  # the color scheme's error color
 NO_MATCH_BLINKS = 2
 NO_MATCH_BLINK_MS = 150
 CHARACTER_POPUP_WIDTH = 800
+ORDER_SETTING = "auto_complete_preserve_order"
+STRICT_ORDER = "strict"  # Sublime keeps the list as given
 _names = None
 _names_source = None  # (Names class, binary, its build time) the names were loaded with
 
@@ -107,6 +109,14 @@ def silence_other_completions(view):
         if query is None or isinstance(listener, UniscriptCompletionListener) or getattr(query, QUIETED_MARK, False):
             continue
         setattr(listener, QUERY_CALLBACK, quieted(listener, query))
+
+
+def take_over_completions(view):
+    """Only our completions, in our order: Sublime's default re-sorting ("some") weighs fuzzy score and how often an
+    entry was chosen before, so a once chosen lAngle ⟪ led the exact lang ⟨ despite INHIBIT_REORDER. Set on the view,
+    erased again outside tags, so other packages keep their ranking"""
+    silence_other_completions(view)
+    view.settings().set(ORDER_SETTING, STRICT_ORDER)
 
 
 def report(view, warnings):
@@ -187,7 +197,7 @@ class UniscriptCloseTagCommand(sublime_plugin.TextCommand):
 
 
 def open_completions(view):
-    silence_other_completions(view)
+    take_over_completions(view)
     view.run_command("auto_complete", {"disable_auto_insert": True})
 
 
@@ -311,14 +321,15 @@ class UniscriptCompletionListener(sublime_plugin.EventListener):
         cursor = locations[0]
         operands = block_words(view)
         if operands:  # a word in block text: the block's operands, homophones by frequency
-            silence_other_completions(view)
+            take_over_completions(view)
             items = [sublime.CompletionItem(trigger, annotation=annotation, completion=operand) for trigger, annotation, operand in operands]
             return sublime.CompletionList(items, sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS
                                           | sublime.DYNAMIC_COMPLETIONS | sublime.INHIBIT_REORDER)
         line = text_before_cursor(view, cursor)
         if not any(opener in line for opener in TAG_OPENERS):
+            view.settings().erase(ORDER_SETTING)
             return None
-        silence_other_completions(view)
+        take_over_completions(view)
         closing = cli.closing_completion(text_up_to(view, cursor), names())
         if closing:  # the open tag to close: <:/ch lists chinese
             typed, rest = closing  # Sublime replaces its prefix word, which may reach before the typed name
