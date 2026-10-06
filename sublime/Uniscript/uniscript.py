@@ -1,5 +1,6 @@
 """Sublime Text commands that replace uniscript (<:alpha> <:fracture A>) with Unicode (α 𝔄) and back, and completion of
 names inside <: and \\: tags in every file type."""
+import html
 import os
 
 import sublime
@@ -28,6 +29,7 @@ NO_MATCH_REGION = "uniscript_no_match"
 NO_MATCH_SCOPE = "invalid"  # the color scheme's error color
 NO_MATCH_BLINKS = 2
 NO_MATCH_BLINK_MS = 150
+CHARACTER_POPUP_WIDTH = 800
 _names = None
 _names_source = None  # (Names class, binary, its build time) the names were loaded with
 
@@ -130,6 +132,23 @@ class UniscriptConvertCommand(sublime_plugin.TextCommand):
                 return self.view.window().status_message("uniscript: {}".format(error))
             return sublime.error_message("uniscript: {}".format(error))
         report(self.view, warnings)
+
+
+class UniscriptCharacterNameCommand(sublime_plugin.TextCommand):
+    """Shows the names of each selected text, or of the character after an empty cursor: ⟨ U+27E8 MATHEMATICAL LEFT
+    ANGLE BRACKET · \\:langle · also lang, LeftAngleBracket"""
+
+    def run(self, edit):
+        selected = [region if not region.empty() else sublime.Region(region.b, region.b + 1) for region in self.view.sel()]
+        try:
+            descriptions = [cli.describe_character(self.view.substr(region), names(), settings().get("binary", ""))
+                            for region in selected if region.end() <= self.view.size()]
+        except cli.UniscriptError as error:
+            return sublime.error_message("uniscript: {}".format(error))
+        if not descriptions:
+            return self.view.window().status_message("uniscript: no character at the cursor")
+        self.view.window().status_message(descriptions[0])
+        self.view.show_popup("<br>".join(html.escape(description) for description in descriptions), max_width=CHARACTER_POPUP_WIDTH)
 
 
 class UniscriptWhileTypingListener(sublime_plugin.ViewEventListener):

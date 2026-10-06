@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 import subprocess
+import unicodedata
 
 BINARY_NAME = "uniscript"
 # GUI apps on macOS don't inherit the shell's PATH, so look where `cargo install` puts binaries
@@ -44,6 +45,8 @@ CHOOSE = "choose"  # tab_completion: several names to choose from
 GROUP_SAMPLES = 3  # characters shown beside a group of names
 BLOCK_ANNOTATION = "block"  # a block word without operands of its own (mirror)
 SEGMENT_END = "-"
+SHORT_TAG = "\\:"  # the reverse conversion's form of a name: \:langle
+DESCRIPTION_SEPARATOR = " · "
 
 
 class UniscriptError(Exception):
@@ -114,6 +117,29 @@ def with_fix_hint(warnings):
     if any(INLINE_TAG_WARNING in warning for warning in warnings):
         return warnings + ["run " + EXPLICIT_COMMAND_CAPTION]
     return warnings
+
+
+def other_names(text, preferred, names):
+    """The entity names of the text besides the preferred tag, a lowercase twin (leftanglebracket) only without its
+    cased original (LeftAngleBracket)"""
+    found = [name for name, entity in names.entities if entity == text and SHORT_TAG + name != preferred]
+    cased = {name.lower() for name in found if name != name.lower()}
+    return [name for name in found if name != name.lower() or name not in cased]
+
+
+def describe_character(text, names, binary=""):
+    """`⟨ U+27E8 MATHEMATICAL LEFT ANGLE BRACKET · \\:langle · also lang, LeftAngleBracket`: the text's code points
+    and Unicode names, its uniscript tag and the other names of it"""
+    code_points = " ".join("U+{:04X}".format(ord(character)) for character in text)
+    unicode_names = " + ".join(unicodedata.name(character, "") or "<unnamed>" for character in text)
+    parts = ["{} {} {}".format(text, code_points, unicode_names)]
+    preferred = convert(text, reverse=True, binary=binary)[0]
+    if preferred != text:
+        parts.append(preferred)
+    aliases = other_names(text, preferred, names)
+    if aliases:
+        parts.append("also " + ", ".join(aliases))
+    return DESCRIPTION_SEPARATOR.join(parts)
 
 
 def is_uniscript_file(text):

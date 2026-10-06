@@ -6,5 +6,6 @@
 		"caption": "Preferences: Uniscript Settings",
 		"command": "edit_settings",
 		"args": { "base_file": "${packages}/Uniscript/Uniscript.sublime-settings", "default": "{\n\t$0\n}\n" }
-	}
+	},
+	{ "caption": "Uniscript: Name of Selected Character", "command": "uniscript_character_name" }
 ]

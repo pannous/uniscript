@@ -1,5 +1,6 @@
 [
 	{ "caption": "Uniscript → Unicode", "command": "uniscript_convert" },
 	{ "caption": "Unicode → Uniscript", "command": "uniscript_convert", "args": { "reverse": true } },
-	{ "caption": "Uniscript: Make Tags Explicit", "command": "uniscript_convert", "args": { "explicit": true } }
+	{ "caption": "Uniscript: Make Tags Explicit", "command": "uniscript_convert", "args": { "explicit": true } },
+	{ "caption": "Uniscript: Name of Character", "command": "uniscript_character_name" }
 ]

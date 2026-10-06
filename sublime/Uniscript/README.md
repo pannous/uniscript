@@ -5,6 +5,9 @@ Replaces uniscript with Unicode in place: `<:alpha> <:fracture A> \:infinity` �
 - **Uniscript: Convert to Unicode** (command palette, context menu): the selections, or the whole file (its
   `<:uniscript version=…>` header goes, the text is Unicode now).
 - **Uniscript: Convert Unicode to Uniscript**: the reverse, `α` → `<:alpha>`.
+- **Uniscript: Name of Selected Character** (command palette, context menu): the selected text, or the character
+  after the cursor, in the status bar and a popup: `⟨ U+27E8 MATHEMATICAL LEFT ANGLE BRACKET · \:langle · also lang,
+  LeftAngleBracket, mathematical-left-angle-bracket`.
 - **While typing**: a `<:tag>` becomes its Unicode when you type its `>`, in files that start with `<:` (setting
   `convert_while_typing`: `"header"`, `true` or `false`). Block openers such as `<:greek>` stay until the whole block
   is converted with the command. Undo restores the tag.
