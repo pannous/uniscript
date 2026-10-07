@@ -145,7 +145,8 @@ spaced(name:text) := byte_replaced(name, 45, " ")
 // with a mark, so a tag knows it warned (a warp function cannot count in a global); uniscript() drops the marks
 unsupported(message:text, at) := warning("uniscript: " + message + " at byte " + join([at], "")) + (warned_code_point as char)
 
-warned(text:text) := offset_of_text(text, "" + (warned_code_point as char), 0) < text.bytes
+// a strict warning is an Error, which warned too
+warned(text:text) := is_error(text) or offset_of_text(text, "" + (warned_code_point as char), 0) < text.bytes
 
 // a strict warning stays its Error: warp's byte_slice would read the Error as its message text
 unmarked(text:text) := {

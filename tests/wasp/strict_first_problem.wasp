@@ -1,0 +1,4 @@
+// under use strict a tag reports its first problem as the Error, not the opening-tag warning that would follow it
+use strict
+use uniscript
+uniscript("<:greek c>") == error("uniscript: no greek form of c at byte 0")
