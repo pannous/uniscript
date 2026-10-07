@@ -1,0 +1,3 @@
+use strict
+g(t:text) := t.bytes
+g(warning("uniscript: boom"))

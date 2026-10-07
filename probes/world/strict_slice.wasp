@@ -1,0 +1,4 @@
+use strict
+f(m:text) := warning(m) + (64976 as char)
+g(t:text) := byte_slice(t, 0, t.bytes)
+g(f("uniscript: boom"))

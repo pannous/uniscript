@@ -1,0 +1,5 @@
+g(t:text) := {
+	if is_error(t) { return t }
+	byte_slice(t, 0, 3)
+}
+g("uniscript: boom")

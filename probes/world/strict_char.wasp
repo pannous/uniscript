@@ -1,0 +1,3 @@
+use strict
+f(m:text) := warning(m) + (64976 as char)
+f("uniscript: boom")

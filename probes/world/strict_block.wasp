@@ -1,0 +1,6 @@
+use strict
+f(m:text) := {
+	warning(m)
+	"Z"
+}
+f("uniscript: boom")
