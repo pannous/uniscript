@@ -15,6 +15,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 BLOCKS_FILE = ROOT / "data/sources/Blocks.txt"
+LATEX_FILE = ROOT / "data/entities/latex.wasp"
+LETTER_CATEGORIES = ("Lu", "Ll", "Lt", "Lo")
 TABLE_FILE = ROOT / "tests/entity_names.tsv"
 SAMPLES_PER_BLOCK = 3
 RANDOM_SAMPLES = 1000
@@ -72,8 +74,20 @@ def hand_written_rows():
 	yield from (tuple(line.split("\t")) for line in HAND_WRITTEN_CASES.splitlines())
 
 
+def latex_entities():
+	escaped = lambda value: re.sub(r"\\u\{([0-9a-fA-F]+)\}", lambda match: chr(int(match.group(1), 16)), value)
+	return {name: escaped(value) for name, value in re.findall(r'^\t([^\s:]+): "((?:[^"\\]|\\.)*)"', LATEX_FILE.read_text(), re.M)}
+
+
+def p198(name, value, latex):
+	"""User decision P198: where HTML and LaTeX disagree, a letter takes the HTML reading (ocirc ô), the rest the LaTeX one (asymp ≍)"""
+	is_letter = len(value) == 1 and unicodedata.category(value) in LETTER_CATEGORIES
+	return value if is_letter or name not in latex else latex[name]
+
+
 def html_rows():
-	entities = {name[:-1]: value for name, value in html.entities.html5.items() if name.endswith(";")}
+	latex = latex_entities()
+	entities = {name[:-1]: p198(name[:-1], value, latex) for name, value in html.entities.html5.items() if name.endswith(";")}
 	case_groups = {}
 	for name in entities:
 		case_groups.setdefault(name.lower(), []).append(name)

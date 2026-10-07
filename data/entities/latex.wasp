@@ -1,10 +1,8 @@
 // Uniscript entities: latex.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
 
 latex {
-	// LaTeX's own glyphs, which win over the HTML entities of the same name (&circ; is ˆ, HTML swaps varepsilon/varphi)
+	// LaTeX readings of names HTML defines as no letter win (user decision P198: asymp ≍, circ ∘; letters stay HTML: ocirc ô)
 	circ: "∘"
-	varepsilon: "ε"
-	varphi: "φ"
 	// LaTeX names beyond unicode-math's table
 	to: "→"
 	neq: "≠"
@@ -68,7 +66,6 @@ latex {
 	dot: "\u{307}"
 	ddot: "\u{308}"
 	ovhook: "\u{309}"
-	ocirc: "\u{30A}"
 	check: "\u{30C}"
 	widecheck: "\u{30C}"
 	candra: "\u{310}"
@@ -495,7 +492,6 @@ latex {
 	oplus: "⊕"
 	ominus: "⊖"
 	otimes: "⊗"
-	oslash: "⊘"
 	odot: "⊙"
 	circledcirc: "⊚"
 	circledast: "⊛"
@@ -540,7 +536,6 @@ latex {
 	bigcap: "⋂"
 	bigcup: "⋃"
 	smwhtdiamond: "⋄"
-	cdot: "⋅"
 	star: "⋆"
 	divideontimes: "⋇"
 	bowtie: "⋈"
@@ -2121,8 +2116,6 @@ latex {
 	mttx: "𝚡"
 	mtty: "𝚢"
 	mttz: "𝚣"
-	imath: "𝚤"
-	jmath: "𝚥"
 	mbfAlpha: "𝚨"
 	mbfBeta: "𝚩"
 	mbfGamma: "𝚪"
