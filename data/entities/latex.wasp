@@ -1,6 +1,24 @@
 // Uniscript entities: latex.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
 
 latex {
+	// LaTeX's own glyphs, which win over the HTML entities of the same name (&circ; is ˆ, HTML swaps varepsilon/varphi)
+	circ: "∘"
+	varepsilon: "ε"
+	varphi: "φ"
+	// LaTeX names beyond unicode-math's table
+	to: "→"
+	neq: "≠"
+	land: "∧"
+	lor: "∨"
+	lnot: "¬"
+	ldots: "…"
+	dots: "…"
+	// short math names (warp's parser had them): typed only, characters keep spelling back as their Unicode names
+	nat: "ℕ"
+	complex: "ℂ"
+	euler: "ℯ"
+	degree: "°"
+	cbrt: "∛"
 	mathexclam: "!"
 	mathoctothorpe: "#"
 	mathdollar: "$"
