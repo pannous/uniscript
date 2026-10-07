@@ -3,6 +3,8 @@
 latex {
 	// LaTeX readings of names HTML defines as no letter win (user decision P198: asymp ≍, circ ∘; letters stay HTML: ocirc ô)
 	circ: "∘"
+	// varepsilon: "ε"  // P198: the HTML letter wins
+	// varphi: "φ"  // P198: the HTML letter wins
 	// LaTeX names beyond unicode-math's table
 	to: "→"
 	neq: "≠"
@@ -66,6 +68,7 @@ latex {
 	dot: "\u{307}"
 	ddot: "\u{308}"
 	ovhook: "\u{309}"
+	// ocirc: "\u{30A}"  // P198: the HTML letter wins
 	check: "\u{30C}"
 	widecheck: "\u{30C}"
 	candra: "\u{310}"
@@ -492,6 +495,7 @@ latex {
 	oplus: "⊕"
 	ominus: "⊖"
 	otimes: "⊗"
+	// oslash: "⊘"  // P198: the HTML letter wins
 	odot: "⊙"
 	circledcirc: "⊚"
 	circledast: "⊛"
@@ -536,6 +540,7 @@ latex {
 	bigcap: "⋂"
 	bigcup: "⋃"
 	smwhtdiamond: "⋄"
+	// cdot: "⋅"  // P198: the HTML letter wins
 	star: "⋆"
 	divideontimes: "⋇"
 	bowtie: "⋈"
@@ -2116,6 +2121,8 @@ latex {
 	mttx: "𝚡"
 	mtty: "𝚢"
 	mttz: "𝚣"
+	// imath: "𝚤"  // P198: the HTML letter wins
+	// jmath: "𝚥"  // P198: the HTML letter wins
 	mbfAlpha: "𝚨"
 	mbfBeta: "𝚩"
 	mbfGamma: "𝚪"
