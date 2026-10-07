@@ -3,8 +3,10 @@
 latex {
 	// LaTeX readings of names HTML defines as no letter win (user decision P198: asymp ≍, circ ∘; letters stay HTML: ocirc ô)
 	circ: "∘"
-	// varepsilon: "ε"  // P198: the HTML letter wins
-	// varphi: "φ"  // P198: the HTML letter wins
+	// P198 exception: a math name, not a letter with a diacritic, keeps its LaTeX reading
+	varepsilon: "ε"
+	// P198 exception: a math name, not a letter with a diacritic, keeps its LaTeX reading
+	varphi: "φ"
 	// LaTeX names beyond unicode-math's table
 	to: "→"
 	neq: "≠"
@@ -540,7 +542,8 @@ latex {
 	bigcap: "⋂"
 	bigcup: "⋃"
 	smwhtdiamond: "⋄"
-	// cdot: "⋅"  // P198: the HTML letter wins
+	// P198 exception: a math name, not a letter with a diacritic, keeps its LaTeX reading
+	cdot: "⋅"
 	star: "⋆"
 	divideontimes: "⋇"
 	bowtie: "⋈"

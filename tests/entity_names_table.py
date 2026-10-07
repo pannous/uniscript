@@ -16,7 +16,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 BLOCKS_FILE = ROOT / "data/sources/Blocks.txt"
 LATEX_FILE = ROOT / "data/entities/latex.wasp"
-LETTER_CATEGORIES = ("Lu", "Ll", "Lt", "Lo")
 TABLE_FILE = ROOT / "tests/entity_names.tsv"
 SAMPLES_PER_BLOCK = 3
 RANDOM_SAMPLES = 1000
@@ -80,9 +79,9 @@ def latex_entities():
 
 
 def p198(name, value, latex):
-	"""User decision P198: where HTML and LaTeX disagree, a letter takes the HTML reading (ocirc ô), the rest the LaTeX one (asymp ≍)"""
-	is_letter = len(value) == 1 and unicodedata.category(value) in LETTER_CATEGORIES
-	return value if is_letter or name not in latex else latex[name]
+	"""User decision P198: where HTML and LaTeX disagree, the LaTeX reading wins (asymp ≍, cdot ⋅), except for letters with
+	a diacritic (ocirc ô), whose LaTeX readings latex.wasp keeps commented out"""
+	return latex.get(name, value)
 
 
 def html_rows():
