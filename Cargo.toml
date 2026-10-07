@@ -1,6 +1,6 @@
 [package]
 name = "uniscript"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 description = "Uniscript: ASCII names for Unicode text (<:alpha> → α, <:fracture A> → 𝔄) and back"
 license = "MIT"
