@@ -11,6 +11,7 @@
 //! ([`meta`]), rendered by the application, e.g. as HTML spans with CSS ([`Uniscript::html`]).
 //! All names, block types, font styles and meta keys come from `data/entities/` through its binary index `data/entities.idx`.
 
+mod algorithmic_names;
 pub mod entities;
 pub mod index;
 pub mod meta;
@@ -740,6 +741,10 @@ impl<'a> Uniscript<'a> {
 		}
 		if let Some(text) = self.code_point(content, &format!("<:{content}>"), at) {
 			return Ok(text);
+		}
+		// `<:CJK UNIFIED IDEOGRAPH-4E00>`, `<:hangul syllable ga>`, `<:egyptian hieroglyph-13460>` before the egyptian block
+		if let Some(character) = algorithmic_names::character(content) {
+			return Ok(character.to_string());
 		}
 		if let Some(text) = self.meta_tag(content, at)? {
 			return Ok(text);

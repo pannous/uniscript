@@ -2,6 +2,7 @@
 //! Run one file with `cargo test --test tests <file_stem>::`.
 
 mod aliases_test;
+mod algorithmic_names_test;
 mod block_readings_test;
 mod chinese_test;
 mod chunks_test;
