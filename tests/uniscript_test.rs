@@ -37,7 +37,7 @@ fn block_types_style_their_operands() {
 
 #[test]
 fn greek_is_transliterated_phonetically() {
-	converts("<:greek> athos <:/greek>", "αθοσ"); // th is one letter
+	converts("<:greek> athos <:/greek>", "αθος"); // th is one letter
 	converts("<:greek th ch ps>", "θχψ");
 	converts("<:greek eta Omega lambda>", "ηΩλ");
 }
@@ -45,13 +45,13 @@ fn greek_is_transliterated_phonetically() {
 /// A full block tag eats one whitespace on its inner side and keeps the rest as written; inline tags drop the spaces between operands
 #[test]
 fn full_blocks_eat_one_space_of_padding() {
-	converts("<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμοσ");
-	converts("<:greek a kosmos>", "ακοσμοσ");
+	converts("<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμος");
+	converts("<:greek a kosmos>", "ακοσμος");
 	converts("<:greek phi chi>", "φχ");
-	assert_eq!(convert("<:greek>\nkosmos\t<:/greek>", WarningMode::Error), Ok(("κοσμοσ".to_string(), vec![])));
-	converts("<:greek>  athos  <:/greek>", " αθοσ ");
-	converts("<:greek>\r\nkosmos\r\n<:/greek>", "κοσμοσ");
-	converts("<:greek>\nfilosofia\nkosmos\n<:/greek>", "φιλοσοφια\nκοσμοσ");
+	assert_eq!(convert("<:greek>\nkosmos\t<:/greek>", WarningMode::Error), Ok(("κοσμος".to_string(), vec![])));
+	converts("<:greek>  athos  <:/greek>", " αθος ");
+	converts("<:greek>\r\nkosmos\r\n<:/greek>", "κοσμος");
+	converts("<:greek>\nfilosofia\nkosmos\n<:/greek>", "φιλοσοφια\nκοσμος");
 }
 
 /// A character or combination without a Unicode counterpart stays plain, with a warning naming it and its position
@@ -63,7 +63,7 @@ fn warns(uniscript: &str, unicode: &str, message: &str, at: usize) {
 
 #[test]
 fn unsupported_characters_and_combinations_warn() {
-	warns("<:greek c>", "c", "no greek form of c", 0);
+	warns("<:greek q>", "q", "no greek form of q", 0);
 	warns("x <:fracture 7>", "x 7", "no fracture form of 7", 2);
 	warns("<:left 𓀀>", "𓀀", "left does not apply to 𓀀", 0);
 	// a color the fonts cannot show on a character becomes its color meta, after the character's suffix controls

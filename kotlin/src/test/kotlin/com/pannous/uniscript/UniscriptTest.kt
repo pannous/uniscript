@@ -48,22 +48,22 @@ class UniscriptTest {
 
 	@Test
 	fun greekIsTransliteratedPhonetically() {
-		converts("<:greek> athos <:/greek>", "αθοσ")
+		converts("<:greek> athos <:/greek>", "αθος")
 		converts("<:greek th ch ps>", "θχψ")
 		converts("<:greek eta Omega lambda>", "ηΩλ")
 	}
 
 	@Test
 	fun fullBlocksEatOneSpaceOfPadding() {
-		converts("<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμοσ")
-		converts("<:greek a kosmos>", "ακοσμοσ")
+		converts("<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμος")
+		converts("<:greek a kosmos>", "ακοσμος")
 		converts("<:greek phi chi>", "φχ")
-		converts("<:greek>\nkosmos\t<:/greek>", "κοσμοσ")
+		converts("<:greek>\nkosmos\t<:/greek>", "κοσμος")
 	}
 
 	@Test
 	fun unsupportedCharactersAndCombinationsWarn() {
-		warns("<:greek c>", "c", "no greek form of c", 0)
+		warns("<:greek q>", "q", "no greek form of q", 0)
 		warns("x <:fracture 7>", "x 7", "no fracture form of 7", 2)
 		warns("<:left 𓀀>", "𓀀", "left does not apply to 𓀀", 0)
 		// a color the fonts cannot show on a character becomes its color meta, after the character's suffix controls
@@ -71,7 +71,7 @@ class UniscriptTest {
 		warns("<:red 𓀀>", "𓀀$red", "red on 𓀀 kept as color meta", 0)
 		warns("<:mirror red 狗>", "狗$MIRROR$red", "red on 狗 kept as color meta", 0)
 		warns("<:beside a b>", "ab", "no beside group of a", 0)
-		warns("𓀀 <:greek c>", "𓀀 c", "no greek form of c", 5) // offsets are UTF-8 bytes
+		warns("𓀀 <:greek q>", "𓀀 q", "no greek form of q", 5) // offsets are UTF-8 bytes
 	}
 
 	@Test

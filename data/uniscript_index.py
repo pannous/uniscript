@@ -88,9 +88,12 @@ DECOMPOSITION_TAGS = {"upper": "<super>", "lower": "<sub>", "circled": "<circle>
 # Unicode leaves holes in Mathematical Alphanumeric Symbols where a Letterlike Symbol already existed
 LETTERLIKE_HOLES = {("italic", "h"): "PLANCK CONSTANT"}
 # the standard Greek keyboard layout (ELOT 1000 / Windows Greek) as block type 'greek'
-# block type 'greek': phonetic transliteration; letters without a clear counterpart (c h j q v w y) have none,
+# block type 'greek': phonetic transliteration; letters without a clear counterpart (h j q v w y) have none,
 # so uniscript warns about them instead of guessing; the other letters by name: <:greek eta>, <:greek Omega>
 GREEK_LETTERS = dict(zip("abgdezikl" "mnxoprstuf", "αβγδεζικλ" "μνξοπρστυφ"))
+GREEK_TYPED_FINAL = {"c": "ς"}  # final sigma typed on purpose (user decision 2026-10-08); no capital form exists
+FINAL_KEY = "*final"  # "*final σ": ς, the form a letter takes at the end of a word (after a letter, before none)
+GREEK_FINAL_FORMS = {"σ": "ς"}
 GREEK_DIGRAPHS = {"th": "θ", "ch": "χ", "ps": "ψ"}
 GREEK_NAMED = re.compile(r"GREEK (SMALL|CAPITAL) LETTER ([A-Z]+(?: [A-Z]+)?)$")
 GREEK_NAMED_RANGE = range(0x391, 0x3CA)
@@ -228,6 +231,8 @@ def greek_transliteration():
 			name = match.group(2).lower().replace(" ", "-")
 			for spelling in [name] + ([GREEK_SPELLINGS[name]] if name in GREEK_SPELLINGS else []):
 				table.setdefault(spelling if match.group(1) == "SMALL" else spelling.capitalize(), chr(code))
+	table.update(GREEK_TYPED_FINAL)
+	table.update({f"{FINAL_KEY} {letter}": final for letter, final in GREEK_FINAL_FORMS.items()})
 	return table
 
 
@@ -724,14 +729,16 @@ def cased_letter(name):
 def short_names(sections):
 	"""Unicode name of a cased letter → its short name: the letter without its script (zhe) where no other letter has that
 	name, or no other Latin one (Latin is the default: schwa is Latin's, Cyrillic's is cyrillic-schwa), else with its
-	script; never a name that another entity already has"""
+	script; never a name that another entity or a block operand already has"""
 	letters = [(name, *cased_letter(name)) for name in sections.get("names", {}) if cased_letter(name)]
 	bare, latin_bare, scripted = {}, {}, {}
 	for _, script, letter in letters:
 		bare[letter] = bare.get(letter, 0) + 1
 		latin_bare[letter] = latin_bare.get(letter, 0) + (script == DEFAULT_SCRIPT)
 		scripted[f"{script}-{letter}"] = scripted.get(f"{script}-{letter}", 0) + 1
-	taken = lambda short: any(short in sections.get(section, {}) for section in ENTITY_SECTIONS)
+	# a block operand counts as taken too: \\:wo is typed for chinese wo 我, not for Cherokee ꮼ
+	operands = {operand for table in sections.get("blocks", {}).values() for operand in table}
+	taken = lambda short: short in operands or any(short in sections.get(section, {}) for section in ENTITY_SECTIONS)
 	shorts = {}
 	for name, script, letter in letters:
 		with_script = f"{script}-{letter}"

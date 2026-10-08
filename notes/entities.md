@@ -72,3 +72,8 @@
 - `seed` retired (user decision 2026-10-08): `python3 data/uniscript_index.py regenerate unicode/<block>.wasp …` rewrites only block files under unicode/ from data/sources/; the top-level files carry hand edits.
 - Neutral tone (2026-10-08, user decision): readings without a tone number are neutral and stored as tone 5 (`shi5` 匙 of 钥匙, `de5`), so the toneless key (`shi` 是) is the most frequent character of any tone and no longer mixes in numbered neutral readings.
 - Short names v2 (2026-10-08, user decision): other scripts drop their script word when the bare letter name is unique (`\:ayb`), else keep it (`\:cyrillic-zhe`); on a tie Latin keeps the bare name (`\:schwa`, `\:cyrillic-schwa`).
+- Final forms (2026-10-08, user decision): a block's `"*final σ": "ς"` control gives the form a letter takes after a letter and
+  before none (decided on the typed input, so effect TAG characters do not interfere; a letter = ASCII letter or anything
+  non-ASCII, alike in every port incl. C). `c` types ς; a lone `s` and the operand `sigma` stay σ.
+- Short names: a bare name also has to be no block operand (Cherokee `wo` would shadow chinese `wo` 我 for `\:wo`), else
+  it keeps its script word (`\:cherokee-wo`).

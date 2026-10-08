@@ -37,7 +37,7 @@ final class UniscriptTests: XCTestCase {
 	}
 
 	func testGreekIsTransliteratedPhonetically() {
-		converts("<:greek> athos <:/greek>", "αθοσ") // th is one letter
+		converts("<:greek> athos <:/greek>", "αθος") // th is one letter
 		converts("<:greek th ch ps>", "θχψ")
 		converts("<:greek eta Omega lambda>", "ηΩλ")
 	}
@@ -54,7 +54,7 @@ final class UniscriptTests: XCTestCase {
 	}
 
 	func testUnsupportedCharactersAndCombinationsWarn() throws {
-		try warns("<:greek c>", "c", "no greek form of c", at: 0)
+		try warns("<:greek q>", "q", "no greek form of q", at: 0)
 		try warns("x <:fracture 7>", "x 7", "no fracture form of 7", at: 2)
 		try warns("<:left 𓀀>", "𓀀", "left does not apply to 𓀀", at: 0)
 		// a color the fonts cannot show on a character becomes its color meta, after the character's suffix controls
@@ -138,13 +138,13 @@ final class UniscriptTests: XCTestCase {
 	}
 
 	func testFullBlocksEatOneSpaceOfPadding() throws {
-		converts("<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμοσ")
-		converts("<:greek a kosmos>", "ακοσμοσ")
+		converts("<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμος")
+		converts("<:greek a kosmos>", "ακοσμος")
 		converts("<:greek phi chi>", "φχ")
-		XCTAssertEqual(try Uniscript.convert("<:greek>\nkosmos\t<:/greek>", mode: .error).text, "κοσμοσ")
-		converts("<:greek>  athos  <:/greek>", " αθοσ ")
-		converts("<:greek>\r\nkosmos\r\n<:/greek>", "κοσμοσ")
-		converts("<:greek>\nfilosofia\nkosmos\n<:/greek>", "φιλοσοφια\nκοσμοσ")
+		XCTAssertEqual(try Uniscript.convert("<:greek>\nkosmos\t<:/greek>", mode: .error).text, "κοσμος")
+		converts("<:greek>  athos  <:/greek>", " αθος ")
+		converts("<:greek>\r\nkosmos\r\n<:/greek>", "κοσμος")
+		converts("<:greek>\nfilosofia\nkosmos\n<:/greek>", "φιλοσοφια\nκοσμος")
 	}
 
 	func testTheHeaderDeclaresUniscriptAndItsVersion() throws {

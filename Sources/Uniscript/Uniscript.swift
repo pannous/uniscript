@@ -12,7 +12,7 @@ private let shortOpen = UInt8(ascii: "\\")
 private let tagClose = UInt8(ascii: ">")
 private let closingSlash: Unicode.Scalar = "/"
 private let escapedColon = "<::>"
-/// A block tag eats one of these on its inner side: `<:greek> athos <:/greek>` is `αθοσ`; `\r\n` counts as one
+/// A block tag eats one of these on its inner side: `<:greek> athos <:/greek>` is `αθος`; `\r\n` counts as one
 private let padding: Set<UInt8> = [UInt8(ascii: " "), UInt8(ascii: "\t"), UInt8(ascii: "\n"), UInt8(ascii: "\r")]
 private let crlf: [UInt8] = [UInt8(ascii: "\r"), UInt8(ascii: "\n")]
 /// `\U1F60D`: the only marker without a colon, a code point in the notation of Python and C
@@ -30,6 +30,8 @@ private let unicodeEscapeWindow = 10
 private let groupKey = "*group"
 /// a block whose words split into whole readings (chinese shihan → shi han), not letters and digraphs (greek)
 private let readingsKey = "*readings"
+/// `"*final σ": "ς"`: the form a letter of the block takes at the end of a word
+private let finalKey = "*final"
 /// The most words one operand spans: `<:egyptian man with hand to mouth>`
 private let maxOperandWords = 8
 private let fontKey = "font"
@@ -496,13 +498,19 @@ private final class Conversion {
 		var out = ""
 		var position = 0
 		while position < characters.count {
-			if position + 1 < characters.count, let own = name("\(block) \(characters[position])\(characters[position + 1])") {
-				out += own + effectSuffixes(effects, characters[position], at)
-				position += 2
+			let pair = position + 1 < characters.count ? name("\(block) \(characters[position])\(characters[position + 1])") : nil
+			let width = pair == nil ? 1 : 2
+			let own = pair ?? form(block, String(characters[position]))
+			// kosmos → κοσμος: a letter after a letter and before none takes the block's final form ("*final σ": "ς")
+			let endsWord = position > 0 && isWordLetter(characters[position - 1])
+				&& (position + width >= characters.count || !isWordLetter(characters[position + width]))
+			let final = endsWord ? own.flatMap { form(block, "\(finalKey) \($0)") } : nil
+			if let chosen = final ?? pair {
+				out += chosen + effectSuffixes(effects, characters[position], at)
 			} else {
 				out += styled(block, characters[position], effects, at)
-				position += 1
 			}
+			position += width
 		}
 		return out
 	}
@@ -856,6 +864,11 @@ private func scriptOf(_ character: Unicode.Scalar) -> String {
 	case 0x2E80...0x2FFF, 0x3000...0x9FFF, 0x20000...0x33FFF: return "cjk"
 	default: return ""
 	}
+}
+
+/// A letter for the end of a word: typed input is ASCII, so anything beyond it counts as a letter too (alike in every port)
+private func isWordLetter(_ character: Unicode.Scalar) -> Bool {
+	("a"..."z").contains(character) || ("A"..."Z").contains(character) || !character.isASCII
 }
 
 private func isNameByte(_ byte: UInt8) -> Bool {

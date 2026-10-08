@@ -37,6 +37,7 @@ SUFFIX_KEY = "*suffix"
 GROUP_KEY = "*group"
 # a block whose words split into whole readings (chinese shihan → shi han), not letters and digraphs (greek)
 READINGS_KEY = "*readings"
+FINAL_KEY = "*final"  # "*final σ": "ς", the form a letter of the block takes at the end of a word
 MAX_OPERAND_WORDS = 8  # the most words one operand spans: `<:egyptian man with hand to mouth>`
 # the block control naming the meta a block becomes where it has no suffix control (`red *meta` → `color red`)
 META_FALLBACK_KEY = "*meta"
@@ -47,7 +48,7 @@ HEADER_OPEN = "<:uniscript"
 VERSION_ATTRIBUTE = 'version="'
 ATTRIBUTE_QUOTE = '"'
 LINE_BREAKS = ("\r\n", "\n")
-BLOCK_PADDING = ("\r\n", " ", "\t", "\n", "\r")  # a block tag eats one on its inner side: `<:greek> athos <:/greek>` is αθοσ
+BLOCK_PADDING = ("\r\n", " ", "\t", "\n", "\r")  # a block tag eats one on its inner side: `<:greek> athos <:/greek>` is αθος
 
 
 class WarningMode(enum.Enum):
@@ -99,6 +100,11 @@ def script_of(character: str) -> str:
     if 0x2E80 <= code <= 0x9FFF or 0x20000 <= code <= 0x33FFF:
         return "cjk"
     return ""
+
+
+def is_word_letter(character: str) -> bool:
+    """A letter for the end of a word: typed input is ASCII, so anything beyond it counts as a letter too (alike in every port)"""
+    return (character.isascii() and character.isalpha()) or not character.isascii()
 
 
 def is_name_character(character: str) -> bool:
@@ -391,12 +397,18 @@ class Uniscript:
         while i < len(characters):
             pair = characters[i:i + 2]
             own = self._name(f"{block} {pair}") if len(pair) == 2 else None
-            if own is not None:
-                out.append(own + self._effect_suffixes(effects, characters[i], at))
-                i += 2
+            width = 1 if own is None else 2
+            if own is None:
+                own = self._form(block, characters[i])
+            # kosmos → κοσμος: a letter after a letter and before none takes the block's final form ("*final σ": "ς")
+            ends_word = i > 0 and is_word_letter(characters[i - 1]) and (i + width >= len(characters) or not is_word_letter(characters[i + width]))
+            final = self._form(block, f"{FINAL_KEY} {own}") if ends_word and own is not None else None
+            form = final if final is not None else own if width == 2 else None
+            if form is not None:
+                out.append(form + self._effect_suffixes(effects, characters[i], at))
             else:
                 out.append(self._styled(block, characters[i], effects, at))
-                i += 1
+            i += width
         return "".join(out)
 
     def _readings(self, block: str, word: str):

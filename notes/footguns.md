@@ -14,7 +14,7 @@ Behaviour that is intended but can silently give a wrong result. Keep each entry
   (`abcde` → abcde, "no chinese form of abcde"). But a typo that happens to split converts silently:
   `nihaoo` → 你好噢, `zhonggou` (meant zhongguo) → 中构, `woaini2` → 我爱尼. Proofread converted block text.
 - Letter blocks (greek, no `*readings`) are not affected: they spell a word letter by letter, digraphs first
-  (`athos` → αθοσ), and never read a letter name inside a word (`metal` → μεταλ, not μ eta λ).
+  (`athos` → αθος), and never read a letter name inside a word (`metal` → μεταλ, not μ eta λ).
 - Before 2026-10-02 every block used greek's digraph rule (pieces of at most 2 letters), so `nuli` → 努里 only by
   accident and `shihan` → shi哈㕶.
 - Tests: tests/block_readings_test.rs and the shared cases; every port has the split (Python, TypeScript, Kotlin, Swift, C, wasp).

@@ -34,7 +34,7 @@ const TAG_OPEN: char = '<';
 const SHORT_OPEN: char = '\\';
 const TAG_CLOSE: char = '>';
 const CLOSING_SLASH: char = '/';
-/// A block tag eats one of these on its inner side: `<:greek> athos <:/greek>` is `αθοσ`
+/// A block tag eats one of these on its inner side: `<:greek> athos <:/greek>` is `αθος`
 const PADDING: [char; 4] = [' ', '\t', '\n', '\r'];
 const CRLF: &str = "\r\n";
 const ESCAPED_COLON: &str = "<::>";
@@ -66,6 +66,8 @@ const MAX_OPERAND_WORDS: usize = 8;
 const GROUP_KEY: &str = "*group";
 /// a block whose words split into whole readings (chinese shihan → shi han), not letters and digraphs (greek)
 const READINGS_KEY: &str = "*readings";
+/// `"*final σ": "ς"`: the form a letter of the block takes at the end of a word
+const FINAL_KEY: &str = "*final";
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Error {
@@ -269,6 +271,11 @@ fn script_of(character: char) -> &'static str {
 
 fn first_script(text: &str) -> &'static str {
 	text.chars().next().map(script_of).unwrap_or("")
+}
+
+/// A letter for the end of a word: typed input is ASCII, so anything beyond it counts as a letter too (alike in every port)
+fn is_word_letter(character: char) -> bool {
+	character.is_ascii_alphabetic() || !character.is_ascii()
 }
 
 fn is_name_character(character: char) -> bool {
@@ -673,17 +680,18 @@ impl<'a> Uniscript<'a> {
 		let mut i = 0;
 		while i < characters.len() {
 			let pair: String = characters[i..characters.len().min(i + 2)].iter().collect();
-			match self.name(&format!("{block} {pair}")).filter(|_| pair.chars().count() == 2) {
-				Some(own) => {
-					out += own;
-					out += &self.effect_suffixes(effects, characters[i], at);
-					i += 2;
-				}
-				None => {
-					out += &self.styled(block, characters[i], effects, at);
-					i += 1;
-				}
-			}
+			let (own, width) = match self.name(&format!("{block} {pair}")).filter(|_| pair.chars().count() == 2) {
+				Some(own) => (Some(own), 2),
+				None => (self.form(block, &characters[i].to_string()), 1),
+			};
+			// kosmos → κοσμος: a letter after a letter and before none takes the block's final form ("*final σ": "ς")
+			let ends_word = i > 0 && is_word_letter(characters[i - 1]) && characters.get(i + width).is_none_or(|next| !is_word_letter(*next));
+			let final_form = own.filter(|_| ends_word).and_then(|own| self.form(block, &format!("{FINAL_KEY} {own}")));
+			out += &match final_form.or(own.filter(|_| width == 2)) {
+				Some(form) => form.to_string() + &self.effect_suffixes(effects, characters[i], at),
+				None => self.styled(block, characters[i], effects, at),
+			};
+			i += width;
 		}
 		out
 	}

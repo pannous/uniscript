@@ -20,6 +20,7 @@
 		"Offsets (at, length, run start/end) are UTF-8 byte offsets."
 	],
 	"converts": [
+		["<:greek> kosmos, <:/greek>", "κοσμος,"],
 ["<:dark-skinned red-haired woman>", "👩🏿‍🦰"], ["<:woman><:red-hair>", "👩‍🦰"], 		["<:alpha>", "α"],
 		["\\:infinity", "∞"],
 		["<:greek small letter alpha>", "α"],
@@ -38,15 +39,15 @@
 		["<:ligature ae>", "æ"],
 		["<:reverseInPlace e>", "ɘ"],
 		["<:iconic ⚠>", "⚠{U+FE0F}"],
-		["<:greek> athos <:/greek>", "αθοσ"],
+		["<:greek> athos <:/greek>", "αθος"],
 		["<:greek th ch ps>", "θχψ"],
-		["<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμοσ"],
-		["<:greek a kosmos>", "ακοσμοσ"],
+		["<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμος"],
+		["<:greek a kosmos>", "ακοσμος"],
 		["<:greek phi chi>", "φχ"],
-		["<:greek>\nkosmos\t<:/greek>", "κοσμοσ"],
-		["<:greek>  athos  <:/greek>", " αθοσ "],
-		["<:greek>\r\nkosmos\r\n<:/greek>", "κοσμοσ"],
-		["<:greek>\nfilosofia\nkosmos\n<:/greek>", "φιλοσοφια\nκοσμοσ"],
+		["<:greek>\nkosmos\t<:/greek>", "κοσμος"],
+		["<:greek>  athos  <:/greek>", " αθος "],
+		["<:greek>\r\nkosmos\r\n<:/greek>", "κοσμος"],
+		["<:greek>\nfilosofia\nkosmos\n<:/greek>", "φιλοσοφια\nκοσμος"],
 		["<:greek eta Omega lambda>", "ηΩλ"],
 		["<:greek a>", "α"],
 		["<:red circle>", "🔴"],
@@ -149,9 +150,9 @@
 		["\\<:U>1F60D", "\\U1F60D"],
 		["<:alpha/>", "α"],
 		["\\:alpha", "α"],
-		["<:greek athos/>", "αθοσ"],
-		["\\:greek-athos", "αθοσ"],
-		["<:greek> athos <:/greek>", "αθοσ"],
+		["<:greek athos/>", "αθος"],
+		["\\:greek-athos", "αθος"],
+		["<:greek> athos <:/greek>", "αθος"],
 		["<:fracture A b c/>", "𝔄𝔟𝔠"],
 		["<:color #ff8800 A/>", "A{attached color #ff8800}"],
 		["<:font han-japanese>直<:/font>", "{open font han-japanese}直{close font}"],
@@ -176,7 +177,10 @@
 		["<:bold U+41 U+42/>", "𝐀𝐁"],
 		["<:fracture u+61/>", "𝔞"],
 		["<:red U+2661/>", "♡{U+E0072}"],
-		["<:greek beef/>", "βεεφ"]
+		["<:greek beef/>", "βεεφ"],
+		["<:greek> s kosmoc <:/greek>", "σ κοσμος"],
+		["<:greek kosmo sigma/>", "κοσμοσ"],
+		["<:greek> psis kosmos <:/greek>", "ψις κοσμος"]
 	],
 	"warnCounts": [
 		["<:double bold A>", "𝐀", 1]
@@ -222,7 +226,7 @@
 		["print(\"\\U0001F60D\")"]
 	],
 	"warns": [
-		["<:greek c>", "c", "no greek form of c", 0],
+		["<:greek q>", "q", "no greek form of q", 0],
 		["x <:fracture 7>", "x 7", "no fracture form of 7", 2],
 		["<:left 𓀀>", "𓀀", "left does not apply to 𓀀", 0],
 		["<:red 𓀀>", "𓀀{attached color red}", "red on 𓀀 kept as color meta", 0],
@@ -234,7 +238,7 @@
 		["x <:U+110000>", "x <:U+110000>", "invalid code point U+110000", 2],
 		["\\UDFFF", "\\UDFFF", "invalid code point U+DFFF", 0],
 		["<:alpha>", "α", "<:alpha> looks like an opening tag: write \\:alpha or <:alpha/>", 0],
-		["<:greek athos>", "αθοσ", "<:greek athos> looks like an opening tag: write \\:greek-athos, <:greek> athos <:/greek> or <:greek athos/>", 0],
+		["<:greek athos>", "αθος", "<:greek athos> looks like an opening tag: write \\:greek-athos, <:greek> athos <:/greek> or <:greek athos/>", 0],
 		["<:color #ff8800 A>", "A{attached color #ff8800}", "<:color #ff8800 A> looks like an opening tag: write <:color #ff8800 A/>", 0],
 		["<:alpha>x", "αx", "<:alpha> looks like an opening tag: write <:alpha/>", 0],
 		["<:fracture A b c>", "𝔄𝔟𝔠", "<:fracture A b c> looks like an opening tag: write \\:fracture-A-b-c or <:fracture A b c/>", 0],

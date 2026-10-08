@@ -20,6 +20,8 @@ const SUFFIX_KEY = "*suffix";
 const GROUP_KEY = "*group";
 /** a block whose words split into whole readings (chinese shihan → shi han), not letters and digraphs (greek) */
 const READINGS_KEY = "*readings";
+/** `"*final σ": "ς"`: the form a letter of the block takes at the end of a word */
+const FINAL_KEY = "*final";
 /** The most words one operand spans: `<:egyptian man with hand to mouth>` */
 const MAX_OPERAND_WORDS = 8;
 /** The block control naming the meta a block becomes where it has no suffix control (`red *meta` → `color red`) */
@@ -38,7 +40,7 @@ const HEADER_OPEN = "<:uniscript";
 const VERSION_ATTRIBUTE = 'version="';
 const ATTRIBUTE_QUOTE = '"';
 const LINE_BREAKS = ["\r\n", "\n"];
-/** A block tag eats one of these on its inner side: `<:greek> athos <:/greek>` is `αθοσ` */
+/** A block tag eats one of these on its inner side: `<:greek> athos <:/greek>` is `αθος` */
 const BLOCK_PADDING = ["\r\n", " ", "\t", "\n", "\r"];
 /** A code point token: `U+1F60D`, `U1F60D`, `0x1F60D` in any case (1–8 hex digits) or bare `1F60D` (4–8, so a mistyped
  * short name stays unknown) */
@@ -127,6 +129,8 @@ function scriptOf(character: string): string {
 }
 
 const isNameCharacter = (character: string) => /^[A-Za-z0-9_-]$/.test(character);
+/** A letter for the end of a word: typed input is ASCII, so anything beyond it counts as a letter too (alike in every port) */
+const isWordLetter = (character: string) => /^[A-Za-z]$/.test(character) || character.charCodeAt(0) >= 0x80;
 
 /** The sticky `pattern`'s match at `position` */
 function matchAt(pattern: RegExp, text: string, position: number): RegExpExecArray | null {
@@ -477,13 +481,14 @@ export class Uniscript {
 		for (let i = 0; i < characters.length; ) {
 			const pair = characters.slice(i, i + 2);
 			const ownPair = pair.length === 2 ? this.#name(`${block} ${pair.join("")}`) : undefined;
-			if (ownPair !== undefined) {
-				out += ownPair + this.#effectSuffixes(effects, characters[i], at);
-				i += 2;
-			} else {
-				out += this.#styled(block, characters[i], effects, at);
-				i += 1;
-			}
+			const width = ownPair === undefined ? 1 : 2;
+			const own = ownPair ?? this.#form(block, characters[i]);
+			// kosmos → κοσμος: a letter after a letter and before none takes the block's final form ("*final σ": "ς")
+			const endsWord = i > 0 && isWordLetter(characters[i - 1]) && (i + width >= characters.length || !isWordLetter(characters[i + width]));
+			const final = endsWord && own !== undefined ? this.#form(block, `${FINAL_KEY} ${own}`) : undefined;
+			const form = final ?? (width === 2 ? own : undefined);
+			out += form !== undefined ? form + this.#effectSuffixes(effects, characters[i], at) : this.#styled(block, characters[i], effects, at);
+			i += width;
 		}
 		return out;
 	}

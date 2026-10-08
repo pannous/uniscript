@@ -238,9 +238,9 @@ impl Entities {
 		types
 	}
 
-	/// Unicode name of a cased letter → its short name and text: the letter without its script (`zhe`) where no other letter
+	/// Unicode name of a cased letter → its short name and text: the letter without its script (`ayb`) where no other letter
 	/// has that name, or no other Latin one (Latin is the default: `schwa` is Latin's, Cyrillic's is `cyrillic-schwa`),
-	/// else with its script; never a name that another entity already has
+	/// else with its script; never a name that another entity or a block operand already has
 	fn short_names(&self) -> HashMap<String, (String, String)> {
 		let names = self.section("names");
 		let letters: Vec<(&str, &str, &str, String)> =
@@ -254,7 +254,10 @@ impl Entities {
 			*scripted.entry(format!("{script}-{letter}")).or_default() += 1;
 		}
 		let sections: Vec<Table> = ENTITY_SECTIONS.iter().map(|section| self.section(section)).collect();
-		let taken = |short: &str| sections.iter().any(|section| section.get(short).is_some());
+		// a block operand counts as taken too: \:wo is typed for chinese wo 我, not for Cherokee ꮼ
+		let blocks = self.blocks();
+		let operands: HashSet<&str> = blocks.tables().flat_map(|(_, table)| table.texts().map(|(operand, _)| operand)).collect();
+		let taken = |short: &str| operands.contains(short) || sections.iter().any(|section| section.get(short).is_some());
 		let mut shorts = HashMap::new();
 		for (name, text, script, letter) in &letters {
 			let (named, latin_named) = bare[letter.as_str()];

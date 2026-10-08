@@ -14,7 +14,7 @@
 #define VERSION_PREFIX "https://uniscript.org/v"
 #define ESCAPED_COLON "<::>"
 #define ESCAPED_UNICODE "<:U>"
-#define BLOCK_PADDING " \t\n\r" /* a block tag eats one on its inner side, "\r\n" counting as one: <:greek> athos <:/greek> is αθοσ */
+#define BLOCK_PADDING " \t\n\r" /* a block tag eats one on its inner side, "\r\n" counting as one: <:greek> athos <:/greek> is αθος */
 #define MAX_HEX_DIGITS 8
 /* bare hex (\:1F60D) and \U1F60D need at least 4 digits, so a mistyped short name stays unknown */
 #define MIN_BARE_HEX_DIGITS 4
@@ -29,6 +29,8 @@
 #define GROUP_KEY "*group"
 /* a block whose words split into whole readings (chinese shihan → shi han), not letters and digraphs (greek) */
 #define READINGS_KEY "*readings"
+/* "*final σ": "ς", the form a letter of the block takes at the end of a word */
+#define FINAL_KEY "*final"
 #define MAX_OPERAND_WORDS 8 /* the most words one operand spans: <:egyptian man with hand to mouth> */
 /* the block control naming the meta a block becomes where it has no suffix control (red *meta → color red) */
 #define META_FALLBACK_KEY "*meta"
@@ -115,6 +117,11 @@ static const char *script_of(uint32_t c) {
 	if (c >= 0x13000 && c <= 0x13FFF) return "egyptian";
 	if ((c >= 0x2E80 && c <= 0x2FFF) || (c >= 0x3000 && c <= 0x9FFF) || (c >= 0x20000 && c <= 0x33FFF)) return "cjk";
 	return "";
+}
+
+/* A letter for the end of a word: typed input is ASCII, so anything beyond it counts as a letter too (alike in every port) */
+static bool is_word_letter(uint32_t c) {
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c >= 0x80;
 }
 
 static bool is_name_character(char c) {
@@ -328,18 +335,25 @@ static void operand(converter *self, buf *out, str block, str token, strs effect
 	uint32_t *characters;
 	size_t count = characters_of(name(token, &named) && token.n > 1 ? named : token, &characters);
 	for (size_t i = 0; i < count;) {
+		char first[5], second[5];
+		utf8_encode(characters[i], first);
+		size_t width = 1;
 		if (i + 1 < count) {
-			char first[5], second[5];
-			utf8_encode(characters[i], first);
 			utf8_encode(characters[i + 1], second);
-			if (index_getf(TABLE_NAMES, &own, "%.*s %s%s", S(block), first, second)) {
-				buf_adds(out, own);
-				effect_suffixes(self, out, effects, characters[i], at);
-				i += 2;
-				continue;
-			}
+			if (index_getf(TABLE_NAMES, &own, "%.*s %s%s", S(block), first, second)) width = 2;
 		}
-		styled(self, out, block, characters[i++], effects, at);
+		bool owned = width == 2 || index_getf(TABLE_NAMES, &own, "%.*s %s", S(block), first);
+		/* kosmos → κοσμος: a letter after a letter and before none takes the block's final form ("*final σ": "ς") */
+		bool ends_word = i > 0 && is_word_letter(characters[i - 1]) && (i + width >= count || !is_word_letter(characters[i + width]));
+		str final;
+		bool finals = owned && ends_word && index_getf(TABLE_NAMES, &final, "%.*s " FINAL_KEY " %.*s", S(block), S(own));
+		if (finals || width == 2) {
+			buf_adds(out, finals ? final : own);
+			effect_suffixes(self, out, effects, characters[i], at);
+		} else {
+			styled(self, out, block, characters[i], effects, at);
+		}
+		i += width;
 	}
 	free(characters);
 }

@@ -238,6 +238,8 @@ blocks {
 		chi: "χ"
 		psi: "ψ"
 		omega: "ω"
+		c: "ς"
+		"*final σ": "ς"
 	}
 }
 

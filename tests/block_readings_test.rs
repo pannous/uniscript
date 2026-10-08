@@ -30,6 +30,6 @@ fn a_word_that_does_not_split_stays_with_one_warning() {
 
 #[test]
 fn letter_blocks_still_spell_letters() {
-	quiet("<:greek> athos <:/greek>", "αθοσ");
+	quiet("<:greek> athos <:/greek>", "αθος");
 	quiet("<:greek> metal <:/greek>", "μεταλ"); // no letter name (eta) read inside a word
 }

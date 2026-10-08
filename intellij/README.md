@@ -6,7 +6,7 @@ plugin depends only on `com.intellij.modules.platform`).
 - **Edit | Uniscript | Uniscript → Unicode** and **Unicode → Uniscript** (also in the editor's context menu) convert the
   selection, or the whole file. Warnings show as a hint, errors (unknown entity) as an error hint.
 - **Highlighting in every file type**: markers, entity names, block words (`fracture`, `mirror`, `color`), meta values and
-  operands; an unknown entity is an error, a character without a counterpart (`<:greek c>`) a weak warning; hovering a tag
+  operands; an unknown entity is an error, a character without a counterpart (`<:greek q>`) a weak warning; hovering a tag
   shows its Unicode.
 - **Completion** inside tags in every file type: entity names after `<:` and `\:` with their character beside them,
   block words, and after block words their operands (`<:egyptian seated m` → `seated-man`). Names sharing their next

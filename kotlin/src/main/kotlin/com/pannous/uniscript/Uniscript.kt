@@ -15,7 +15,7 @@ private const val CLOSING_SLASH = '/'
 private const val ZERO_WIDTH_JOINER = 0x200D
 private const val EMOJI_PRESENTATION = 0xFE0F
 private const val ESCAPED_COLON = "<::>"
-/** A block tag eats one of these on its inner side: `<:greek> athos <:/greek>` is `αθοσ` */
+/** A block tag eats one of these on its inner side: `<:greek> athos <:/greek>` is `αθος` */
 private val BLOCK_PADDING = listOf("\r\n", " ", "\t", "\n", "\r")
 private const val UNICODE_ESCAPE_LETTER = 'U'
 private const val ESCAPED_UNICODE = "<:U>"
@@ -40,6 +40,8 @@ private const val MAX_OPERAND_WORDS = 8
 private const val GROUP_KEY = "*group"
 /** A block whose words split into whole readings (chinese shihan → shi han), not letters and digraphs (greek) */
 private const val READINGS_KEY = "*readings"
+/** `"*final σ": "ς"`: the form a letter of the block takes at the end of a word */
+private const val FINAL_KEY = "*final"
 private val WHITESPACE = Regex("\\s+")
 /** The current uniscript version, declared by the header `<:uniscript version="…">`; every later uniscript.org version is read too */
 const val UNISCRIPT_VERSION = "https://uniscript.org/v1"
@@ -452,13 +454,16 @@ private class Conversion(val index: EntityIndex, val source: String, val lenient
 		var position = 0
 		while (position < characters.size) {
 			val pair = if (position + 1 < characters.size) name("$block ${characters[position].asText()}${characters[position + 1].asText()}") else null
-			if (pair != null) {
-				out.append(pair).append(effectSuffixes(effects, characters[position], at))
-				position += 2
-			} else {
-				out.append(styled(block, characters[position], effects, at))
-				position += 1
-			}
+			val width = if (pair == null) 1 else 2
+			val own = pair ?: form(block, characters[position].asText())
+			// kosmos → κοσμος: a letter after a letter and before none takes the block's final form ("*final σ": "ς")
+			val endsWord = position > 0 && isWordLetter(characters[position - 1]) &&
+				characters.getOrNull(position + width)?.let { !isWordLetter(it) } != false
+			val final = if (endsWord && own != null) form(block, "$FINAL_KEY $own") else null
+			val chosen = final ?: pair
+			if (chosen != null) out.append(chosen).append(effectSuffixes(effects, characters[position], at))
+			else out.append(styled(block, characters[position], effects, at))
+			position += width
 		}
 		return out.toString()
 	}
@@ -717,6 +722,9 @@ private fun scriptOf(character: Int) = when (character) {
 	in 0x2E80..0x2FFF, in 0x3000..0x9FFF, in 0x20000..0x33FFF -> "cjk"
 	else -> ""
 }
+
+/** A letter for the end of a word: typed input is ASCII, so anything beyond it counts as a letter too (alike in every port) */
+private fun isWordLetter(character: Int) = character in 'a'.code..'z'.code || character in 'A'.code..'Z'.code || character >= 0x80
 
 fun isNameChar(character: Char) = character in 'a'..'z' || character in 'A'..'Z' || character in '0'..'9' || character == '-' || character == '_'
 

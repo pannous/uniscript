@@ -42,7 +42,7 @@ Neither <:nosuchthing> nor \:nosuchthing is an entity.
 
 ## Unsupported characters are kept and marked
 
-No `<:greek c>` <:greek c>, red may not color `<:red 𓀀>` <:red 𓀀>, no beside group of `<:beside a b>` <:beside a b>.  
+No `<:greek q>` <:greek q>, red may not color `<:red 𓀀>` <:red 𓀀>, no beside group of `<:beside a b>` <:beside a b>.  
 <:reverse gardiner AB> | <:gardiner AB>
 
 ## Code is left alone, except wasp and warp
@@ -58,7 +58,7 @@ Inline `<:alpha> \:infinity` stays as written, and so do code blocks:
 Except in wasp and warp, where uniscript is part of the language:
 
 ```wasp
-circle := <:pi> * r<:upper 2>  // \:infinity <:nosuchthing> <:greek c>
+circle := <:pi> * r<:upper 2>  // \:infinity <:nosuchthing> <:greek q>
 ```
 
 ## Wiki examples

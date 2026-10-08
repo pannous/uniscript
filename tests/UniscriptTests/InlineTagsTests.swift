@@ -20,7 +20,7 @@ final class InlineTagsTests: XCTestCase {
 
 	func testInlineTagsWarnWithTheirExplicitForms() throws {
 		try warnsInline("<:alpha>", "α", "\\:alpha or <:alpha/>", at: 0)
-		try warnsInline("<:greek athos>", "αθοσ", "\\:greek-athos, <:greek> athos <:/greek> or <:greek athos/>", at: 0)
+		try warnsInline("<:greek athos>", "αθος", "\\:greek-athos, <:greek> athos <:/greek> or <:greek athos/>", at: 0)
 		try warnsInline("<:color #ff8800 A>", "A\u{E003A}\u{E0063}\u{E006F}\u{E006C}\u{E006F}\u{E0072}\u{E0020}\u{E0023}\u{E0066}\u{E0066}\u{E0038}\u{E0038}\u{E0030}\u{E0030}\u{E007F}", "<:color #ff8800 A/>", at: 0)
 		try warnsInline("<:alpha>x", "αx", "<:alpha/>", at: 0) // \:alphax would be another name
 		try warnsInline("<:fracture A b c>", "𝔄𝔟𝔠", "\\:fracture-A-b-c or <:fracture A b c/>", at: 0) // a block keeps the spaces
@@ -30,10 +30,10 @@ final class InlineTagsTests: XCTestCase {
 	func testExplicitFormsConvertWithoutWarning() throws {
 		try quiet("<:alpha/>", "α")
 		try quiet("\\:alpha", "α")
-		try quiet("<:greek athos/>", "αθοσ")
-		try quiet("\\:greek-athos", "αθοσ")
-		try quiet("<:greek> athos <:/greek>", "αθοσ")
-		try quiet("<:greek>athos<:>", "αθοσ")
+		try quiet("<:greek athos/>", "αθος")
+		try quiet("\\:greek-athos", "αθος")
+		try quiet("<:greek> athos <:/greek>", "αθος")
+		try quiet("<:greek>athos<:>", "αθος")
 		try quiet("<:fracture A b c/>", "𝔄𝔟𝔠")
 		try quiet("<:font han-japanese>直<:/font>", try Uniscript.toUnicode("<:font han-japanese>直<:/font>"))
 		try quiet("<:uniscript version=\"https://uniscript.org/v1\">\nA", "A")

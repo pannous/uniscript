@@ -1,8 +1,8 @@
 // Uniscript for C++17: header-only wrapper over the C API (c/uniscript.h) of c/ffi or c/native.
 //
 //   uniscript::to_unicode("<:alpha> <:fracture A>")           // "α 𝔄", throws uniscript::Error; warnings to stderr
-//   uniscript::convert("<:greek c>")                          // {"c", {{"no greek form of c", 0}}}
-//   uniscript::convert("<:greek c>", uniscript::Mode::Error)  // throws uniscript::Error, kind Unsupported
+//   uniscript::convert("<:greek q>")                          // {"q", {{"no greek form of q", 0}}}
+//   uniscript::convert("<:greek q>", uniscript::Mode::Error)  // throws uniscript::Error, kind Unsupported
 //   uniscript::to_uniscript("α 𝔄")                           // "\\:alpha \\:fracture-A"
 //   uniscript::html(tagged)                                   // meta information as <span>s with CSS
 #ifndef UNISCRIPT_HPP

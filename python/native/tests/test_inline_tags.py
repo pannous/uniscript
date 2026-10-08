@@ -18,7 +18,7 @@ def quiet(uniscript, unicode):
 
 def test_inline_tags_warn_with_their_explicit_forms():
     warns_inline("<:alpha>", "α", "\\:alpha or <:alpha/>", 0)
-    warns_inline("<:greek athos>", "αθοσ", "\\:greek-athos, <:greek> athos <:/greek> or <:greek athos/>", 0)
+    warns_inline("<:greek athos>", "αθος", "\\:greek-athos, <:greek> athos <:/greek> or <:greek athos/>", 0)
     warns_inline("<:color #ff8800 A>", "A" + Meta.attached("color", "#ff8800").tags(), "<:color #ff8800 A/>", 0)
     warns_inline("<:alpha>x", "αx", "<:alpha/>", 0)  # \:alphax would be another name
     warns_inline("<:fracture A b c>", "𝔄𝔟𝔠", "\\:fracture-A-b-c or <:fracture A b c/>", 0)  # a block keeps the spaces
@@ -28,10 +28,10 @@ def test_inline_tags_warn_with_their_explicit_forms():
 def test_explicit_forms_convert_without_warning():
     quiet("<:alpha/>", "α")
     quiet("\\:alpha", "α")
-    quiet("<:greek athos/>", "αθοσ")
-    quiet("\\:greek-athos", "αθοσ")
-    quiet("<:greek> athos <:/greek>", "αθοσ")
-    quiet("<:greek>athos<:>", "αθοσ")
+    quiet("<:greek athos/>", "αθος")
+    quiet("\\:greek-athos", "αθος")
+    quiet("<:greek> athos <:/greek>", "αθος")
+    quiet("<:greek>athos<:>", "αθος")
     quiet("<:fracture A b c/>", "𝔄𝔟𝔠")
     quiet("<:font han-japanese>直<:/font>", to_unicode("<:font han-japanese>直<:/font>"))
     quiet(HEADER + "A", "A")

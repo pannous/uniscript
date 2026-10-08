@@ -297,16 +297,34 @@ operand(block:text, token:text, effects:text, at) := {
 	out = ""
 	i = 0
 	while i < characters.bytes {
-		out += styled_prefix(block, characters, i, effects, at)
-		i += prefix_width(block, characters, i)
+		width = prefix_width(block, characters, i)
+		out += final_or_styled(block, characters, i, width, effects, at)
+		i += width
 	}
 	out
+}
+
+// a letter for the end of a word by its byte: typed input is ASCII, so anything beyond it counts as a letter too
+is_word_letter_byte(b) := (b >= 65 and b <= 90) or (b >= 97 and b <= 122) or b >= 128
+
+// kosmos → κοσμος: the width bytes at i after a letter and before none take the block's final form ("*final σ": "ς"),
+// else they are styled as usual
+final_or_styled(block:text, characters:text, i, width, effects:text, at) := {
+	written = byte_slice(characters, i, i + width)
+	own = entry(block + " " + written)
+	ends_word = i > 0 and is_word_letter_byte(byte_at(characters, i - 1))
+	if ends_word and i + width < characters.bytes { ends_word = not is_word_letter_byte(byte_at(characters, i + width)) }
+	if ends_word and own.bytes > 0 {
+		final_form = entry(block + " *final " + own)
+		if final_form.bytes > 0 { return final_form + effect_suffixes(effects, written, at) }
+	}
+	styled_prefix(block, characters, i, effects, at)
 }
 
 // whitespace, which a full block keeps as written but for one on each inner side of its tags
 is_space(b) := b == 32 or b == 9 or b == 10 or b == 13
 
-// bytes of the one whitespace a block opener eats after it, at byte at (<:greek> athos <:/greek> is αθοσ); \r\n is one
+// bytes of the one whitespace a block opener eats after it, at byte at (<:greek> athos <:/greek> is αθος); \r\n is one
 opening_padding(source:text, at) := {
 	if at + 1 < source.bytes and byte_at(source, at) == 13 and byte_at(source, at + 1) == 10 { return 2 }
 	if at < source.bytes and is_space(byte_at(source, at)) { return 1 }

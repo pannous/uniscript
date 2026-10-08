@@ -14,7 +14,7 @@ def expect(actual, expected):
 
 
 expect(convert("\\:alpha <:fracture A/> \\:infinity"), ("α 𝔄 ∞", []))
-expect(convert("<:greek> athos <:/greek>\n"), ("αθοσ\n", []))
+expect(convert("<:greek> athos <:/greek>\n"), ("αθος\n", []))
 expect(convert("<:greek>"), ("", []))
 expect(convert("α 𝔄", reverse=True), ("\\:alpha \\:fracture-A", []))
 expect(convert("<:fracture 7>"), ("7", ["uniscript: no fracture form of 7 at byte 0"]))

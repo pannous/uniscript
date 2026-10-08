@@ -9,7 +9,7 @@ import com.pannous.uniscript.ide.ENTITY
 import com.pannous.uniscript.ide.MARKER
 import com.pannous.uniscript.ide.OPERAND
 
-private const val SAMPLE = "<:alpha> <:fracture A> \\:infinity <:nosuchthing> <:greek c>"
+private const val SAMPLE = "<:alpha> <:fracture A> \\:infinity <:nosuchthing> <:greek q>"
 
 class UniscriptPluginTest : BasePlatformTestCase() {
 	private fun highlighted(fileName: String, text: String) = myFixture.run {
@@ -28,7 +28,7 @@ class UniscriptPluginTest : BasePlatformTestCase() {
 		)) assertTrue("$expected in $infos", expected in infos)
 		val messages = myFixture.doHighlighting().map { it.severity to it.description }
 		assertTrue(messages.toString(), HighlightSeverity.ERROR to "unknown uniscript entity: nosuchthing" in messages)
-		assertTrue(messages.toString(), HighlightSeverity.WEAK_WARNING to "no greek form of c" in messages)
+		assertTrue(messages.toString(), HighlightSeverity.WEAK_WARNING to "no greek form of q" in messages)
 		assertTrue(messages.toString(), HighlightSeverity.INFORMATION to "𝔄" in messages)
 	}
 

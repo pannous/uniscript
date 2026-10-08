@@ -54,13 +54,13 @@ def test_block_types_style_their_operands():
 
 
 def test_greek_is_transliterated_phonetically():
-    converts("<:greek> athos <:/greek>", "αθοσ")
+    converts("<:greek> athos <:/greek>", "αθος")
     converts("<:greek th ch ps>", "θχψ")
     converts("<:greek eta Omega lambda>", "ηΩλ")
 
 
 def test_unsupported_characters_and_combinations_warn():
-    warns("<:greek c>", "c", "no greek form of c", 0)
+    warns("<:greek q>", "q", "no greek form of q", 0)
     warns("x <:fracture 7>", "x 7", "no fracture form of 7", 2)
     warns("<:left 𓀀>", "𓀀", "left does not apply to 𓀀", 0)
     # a color the fonts cannot show on a character becomes its color meta, after the character's suffix controls

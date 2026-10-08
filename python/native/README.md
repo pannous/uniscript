@@ -13,7 +13,7 @@ import uniscript
 uniscript.to_unicode("<:alpha> <:fracture A>")               # 'α 𝔄'; lenient: warnings go to stderr
 uniscript.to_uniscript("α 𝔄")                                # '\\:alpha \\:fracture-A' (explicit form)
 uniscript.explicit("<:alpha> <:color red A>")                # '\\:alpha <:color red A/>'; inline tags warn
-uniscript.convert("<:greek c>")                              # ('c', [Warning(message='no greek form of c', at=0)])
+uniscript.convert("<:greek q>")                              # ('q', [Warning(message='no greek form of q', at=0)])
 uniscript.convert("<:nosuch>", uniscript.WarningMode.WARN)   # raises UnknownEntity; ERROR raises Unsupported on warnings
 converter = uniscript.Uniscript()
 styled, warnings = converter.meta_runs(uniscript.to_unicode("<:color red A>"))

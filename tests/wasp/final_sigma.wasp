@@ -1,0 +1,5 @@
+use uniscript
+ok = uniscript("<:greek> kosmos athos <:/greek>") == "κοσμος αθος"
+ok = ok and uniscript("<:greek> s kosmoc <:/greek>") == "σ κοσμος"
+ok = ok and uniscript("<:greek kosmo sigma/> <:greek> psis <:/greek>") == "κοσμοσ ψις"
+ok

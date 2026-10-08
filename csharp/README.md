@@ -14,8 +14,8 @@ using Pannous;
 Uniscript.ToUnicode("\\:alpha \\:fracture-A");             // "α 𝔄", warnings to stderr, throws UniscriptException
 Uniscript.ToUniscript("α 𝔄");                             // "\\:alpha \\:fracture-A"
 Uniscript.Explicit("<:alpha> <:color red A>");            // "\\:alpha <:color red A/>": inline tags in explicit form
-Uniscript.Convert("<:greek c>");                          // Conversion { Text = "c", Warnings = [("no greek form of c", 0)] }
-Uniscript.Convert("<:greek c>", UniscriptMode.Error);     // throws UniscriptException, Kind Unsupported
+Uniscript.Convert("<:greek q>");                          // Conversion { Text = "q", Warnings = [("no greek form of q", 0)] }
+Uniscript.Convert("<:greek q>", UniscriptMode.Error);     // throws UniscriptException, Kind Unsupported
 Uniscript.Convert("<:nosuch> x", UniscriptMode.Lenient);  // never throws: "<:nosuch> x" with a warning
 Uniscript.Html(tagged);                                    // meta information (fonts, colors) as <span>s with CSS
 Uniscript.MetaRuns(tagged);                                // plain text and its meta runs

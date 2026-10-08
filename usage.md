@@ -13,7 +13,7 @@ Each section shows the same five things:
 
 - **round trip**: `\:alpha \:fracture-A` ⇄ `α 𝔄`
 - **tag forms**: `\:alpha`, full Unicode names with spaces for hyphens (`<:greek small letter alpha>`), `<:double-R>`,
-  stacked styles (`<:bold italic alpha>` → 𝜶), blocks closed by `<:/greek>` or `<:>` (`<:greek>athos<:>` → αθοσ) and
+  stacked styles (`<:bold italic alpha>` → 𝜶), blocks closed by `<:/greek>` or `<:>` (`<:greek>athos<:>` → αθος) and
   the escape `<<::>` (`<<::>alpha>` → `<:alpha>`)
 - **code points** ([docs/uniscript.md](docs/uniscript.md#code-points)): `\:1F60D` `\:U+1F60D` `\:U1F60D` `\:0x1F60D`
   `<:U+1F60D>` `<:0x1F60D>` `<:1F60D>` `\U1F60D` `\U0001F60D` all give 😍. `U+`, `U` and `0x` (any case) take 1–8 hex
@@ -70,7 +70,7 @@ fn main() -> Result<(), Error> {
 	// every tag form
 	for (source, unicode) in [
 		("\\:alpha", "α"), ("<:greek small letter alpha>", "α"), ("<:double-R>", "ℝ"), ("<:bold italic alpha>", "𝜶"),
-		("<:greek>athos<:/greek>", "αθοσ"), ("<:greek>athos<:>", "αθοσ"), ("<<::>alpha>", "<:alpha>"),
+		("<:greek>athos<:/greek>", "αθος"), ("<:greek>athos<:>", "αθος"), ("<<::>alpha>", "<:alpha>"),
 		("\\:U+1F60D <:0x1F60D> \\U1F60D", "😍 😍 😍"), ("\\:1F60D", "😍"), ("\\:bed", "🛏"),
 	] {
 		assert_eq!(uniscript::to_unicode(source)?, unicode);
@@ -120,7 +120,7 @@ uniscript "<:alpha> <:fracture A>"          # α 𝔄
 uniscript -r "α 𝔄"                          # \:alpha \:fracture-A
 uniscript -r --ascii "α 😀 "               # \:alpha \:grinning-face \:U+E000 (unnamed characters by code point)
 uniscript '\:alpha <:greek small letter alpha> <:double-R> <:bold italic alpha>'   # α α ℝ 𝜶
-uniscript '<:greek>athos<:/greek> <:greek>athos<:> <<::>alpha>'   # αθοσ αθοσ <:alpha>
+uniscript '<:greek>athos<:/greek> <:greek>athos<:> <<::>alpha>'   # αθος αθος <:alpha>
 uniscript '\:U+1F60D <:0x1F60D> \U1F60D \:bed'   # 😍 😍 😍 🛏 (code points; names win)
 uniscript "<:fracture 7>"                   # 7, and on stderr: warning: uniscript: no fracture form of 7 at byte 0
 uniscript --strict "<:fracture 7>" || echo "--strict: the warning is an error"
@@ -180,7 +180,7 @@ precondition(Uniscript.toUniscript("α 𝔄") == "\\:alpha \\:fracture-A")
 // every tag form
 for (source, unicode) in [
 	("\\:alpha", "α"), ("<:greek small letter alpha>", "α"), ("<:double-R>", "ℝ"), ("<:bold italic alpha>", "𝜶"),
-	("<:greek>athos<:/greek>", "αθοσ"), ("<:greek>athos<:>", "αθοσ"), ("<<::>alpha>", "<:alpha>"),
+	("<:greek>athos<:/greek>", "αθος"), ("<:greek>athos<:>", "αθος"), ("<<::>alpha>", "<:alpha>"),
 	("\\:U+1F60D <:0x1F60D> \\U1F60D", "😍 😍 😍"), ("\\:1F60D", "😍"), ("\\:bed", "🛏"),
 ] {
 	let converted = try Uniscript.toUnicode(source)
@@ -243,7 +243,7 @@ assert.equal(toUniscript("α 𝔄"), "\\:alpha \\:fracture-A");
 // every tag form
 for (const [source, unicode] of [
 	["\\:alpha", "α"], ["<:greek small letter alpha>", "α"], ["<:double-R>", "ℝ"], ["<:bold italic alpha>", "𝜶"],
-	["<:greek>athos<:/greek>", "αθοσ"], ["<:greek>athos<:>", "αθοσ"], ["<<::>alpha>", "<:alpha>"],
+	["<:greek>athos<:/greek>", "αθος"], ["<:greek>athos<:>", "αθος"], ["<<::>alpha>", "<:alpha>"],
 	["\\:U+1F60D <:0x1F60D> \\U1F60D", "😍 😍 😍"], ["\\:1F60D", "😍"], ["\\:bed", "🛏"],
 ]) assert.equal(toUnicode(source), unicode);
 
@@ -364,7 +364,7 @@ assert uniscript.to_uniscript("α 𝔄") == "\\:alpha \\:fracture-A"
 # every tag form
 for source, unicode in [
     ("\\:alpha", "α"), ("<:greek small letter alpha>", "α"), ("<:double-R>", "ℝ"), ("<:bold italic alpha>", "𝜶"),
-    ("<:greek>athos<:/greek>", "αθοσ"), ("<:greek>athos<:>", "αθοσ"), ("<<::>alpha>", "<:alpha>"),
+    ("<:greek>athos<:/greek>", "αθος"), ("<:greek>athos<:>", "αθος"), ("<<::>alpha>", "<:alpha>"),
     ("\\:U+1F60D <:0x1F60D> \\U1F60D", "😍 😍 😍"), ("\\:1F60D", "😍"), ("\\:bed", "🛏"),
 ]:
     assert uniscript.to_unicode(source) == unicode
@@ -436,7 +436,7 @@ int main(void) {
 	/* every tag form */
 	const char *forms[][2] = {
 		{"\\:alpha", "α"}, {"<:greek small letter alpha>", "α"}, {"<:double-R>", "ℝ"}, {"<:bold italic alpha>", "𝜶"},
-		{"<:greek>athos<:/greek>", "αθοσ"}, {"<:greek>athos<:>", "αθοσ"}, {"<<::>alpha>", "<:alpha>"},
+		{"<:greek>athos<:/greek>", "αθος"}, {"<:greek>athos<:>", "αθος"}, {"<<::>alpha>", "<:alpha>"},
 		{"\\:U+1F60D <:0x1F60D> \\U1F60D", "😍 😍 😍"}, {"\\:1F60D", "😍"}, {"\\:bed", "🛏"},
 	};
 	for (size_t i = 0; i < sizeof forms / sizeof *forms; i++) {
@@ -509,7 +509,7 @@ int main() {
 
 	// every tag form
 	for (auto [source, unicode] : {std::pair{"\\:alpha", "α"}, {"<:greek small letter alpha>", "α"}, {"<:double-R>", "ℝ"},
-	                               {"<:bold italic alpha>", "𝜶"}, {"<:greek>athos<:/greek>", "αθοσ"}, {"<:greek>athos<:>", "αθοσ"},
+	                               {"<:bold italic alpha>", "𝜶"}, {"<:greek>athos<:/greek>", "αθος"}, {"<:greek>athos<:>", "αθος"},
 	                               {"<<::>alpha>", "<:alpha>"}, {"\\:U+1F60D <:0x1F60D> \\U1F60D", "😍 😍 😍"},
 	                               {"\\:1F60D", "😍"}, {"\\:bed", "🛏"}})
 		assert(uniscript::to_unicode(source) == unicode);
@@ -570,7 +570,7 @@ fun main() {
 	check(converter.toUniscript("α 𝔄") == "\\:alpha \\:fracture-A")
 	listOf(
 		"\\:alpha" to "α", "<:greek small letter alpha>" to "α", "<:double-R>" to "ℝ", "<:bold italic alpha>" to "𝜶",
-		"<:greek>athos<:/greek>" to "αθοσ", "<:greek>athos<:>" to "αθοσ", "<<::>alpha>" to "<:alpha>",
+		"<:greek>athos<:/greek>" to "αθος", "<:greek>athos<:>" to "αθος", "<<::>alpha>" to "<:alpha>",
 		"\\:U+1F60D <:0x1F60D> \\U1F60D" to "😍 😍 😍", "\\:1F60D" to "😍", "\\:bed" to "🛏",
 	).forEach { (source, unicode) -> check(converter.toUnicode(source) == unicode) }
 

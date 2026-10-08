@@ -1,3 +1,3 @@
 use strict
 use uniscript
-uniscript("<:greek c>")
+uniscript("<:greek q>")

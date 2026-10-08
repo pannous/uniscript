@@ -8,7 +8,7 @@ assert.equal(toUniscript("α 𝔄"), "\\:alpha \\:fracture-A");
 // every tag form
 for (const [source, unicode] of [
 	["\\:alpha", "α"], ["<:greek small letter alpha>", "α"], ["<:double-R>", "ℝ"], ["<:bold italic alpha>", "𝜶"],
-	["<:greek>athos<:/greek>", "αθοσ"], ["<:greek>athos<:>", "αθοσ"], ["<<::>alpha>", "<:alpha>"],
+	["<:greek>athos<:/greek>", "αθος"], ["<:greek>athos<:>", "αθος"], ["<<::>alpha>", "<:alpha>"],
 	["\\:U+1F60D <:0x1F60D> \\U1F60D", "😍 😍 😍"], ["\\:1F60D", "😍"], ["\\:bed", "🛏"],
 ]) assert.equal(toUnicode(source), unicode);
 

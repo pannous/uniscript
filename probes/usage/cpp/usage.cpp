@@ -9,7 +9,7 @@ int main() {
 
 	// every tag form
 	for (auto [source, unicode] : {std::pair{"\\:alpha", "α"}, {"<:greek small letter alpha>", "α"}, {"<:double-R>", "ℝ"},
-	                               {"<:bold italic alpha>", "𝜶"}, {"<:greek>athos<:/greek>", "αθοσ"}, {"<:greek>athos<:>", "αθοσ"},
+	                               {"<:bold italic alpha>", "𝜶"}, {"<:greek>athos<:/greek>", "αθος"}, {"<:greek>athos<:>", "αθος"},
 	                               {"<<::>alpha>", "<:alpha>"}, {"\\:U+1F60D <:0x1F60D> \\U1F60D", "😍 😍 😍"},
 	                               {"\\:1F60D", "😍"}, {"\\:bed", "🛏"}})
 		assert(uniscript::to_unicode(source) == unicode);

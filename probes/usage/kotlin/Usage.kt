@@ -10,7 +10,7 @@ fun main() {
 	check(converter.toUniscript("α 𝔄") == "\\:alpha \\:fracture-A")
 	listOf(
 		"\\:alpha" to "α", "<:greek small letter alpha>" to "α", "<:double-R>" to "ℝ", "<:bold italic alpha>" to "𝜶",
-		"<:greek>athos<:/greek>" to "αθοσ", "<:greek>athos<:>" to "αθοσ", "<<::>alpha>" to "<:alpha>",
+		"<:greek>athos<:/greek>" to "αθος", "<:greek>athos<:>" to "αθος", "<<::>alpha>" to "<:alpha>",
 		"\\:U+1F60D <:0x1F60D> \\U1F60D" to "😍 😍 😍", "\\:1F60D" to "😍", "\\:bed" to "🛏",
 	).forEach { (source, unicode) -> check(converter.toUnicode(source) == unicode) }
 

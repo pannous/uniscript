@@ -83,11 +83,11 @@ static const conversion_case converts[] = {
 	{"\\:fracture-A", "𝔄"}, {"\\:fracture-A-b-c-", "𝔄𝔟𝔠"}, {"<:fracture> A b c <:>", "𝔄 𝔟 𝔠"},
 	{"<:greek> a b g d <:/greek>", "α β γ δ"}, {"\\:double-d", "𝕕"}, {"\\:double-d", "𝕕"}, {"x\\:upper-a", "xᵃ"},
 	{"\\:ligature-ae", "æ"}, {"\\:reverseInPlace-e", "ɘ"}, {"<:iconic ⚠/>", "⚠\uFE0F"},
-	{"<:greek> athos <:/greek>", "αθοσ"}, {"\\:greek-th-ch-ps", "θχψ"}, {"\\:greek-eta-Omega-lambda", "ηΩλ"},
+	{"<:greek> athos <:/greek>", "αθος"}, {"\\:greek-th-ch-ps", "θχψ"}, {"\\:greek-eta-Omega-lambda", "ηΩλ"},
 	{"\\:greek-a", "α"},
-	{"<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμοσ"}, {"\\:greek-a-kosmos", "ακοσμοσ"}, /* spaces next to a word stay */
-	{"\\:greek-phi-chi", "φχ"}, {"<:greek>\nkosmos\t<:/greek>", "κοσμοσ"}, {"<:greek>  athos  <:/greek>", " αθοσ "},
-	{"<:greek>\r\nkosmos\r\n<:/greek>", "κοσμοσ"}, {"<:greek>\nfilosofia\nkosmos\n<:/greek>", "φιλοσοφια\nκοσμοσ"},
+	{"<:greek> filosofia kosmos<:/greek>", "φιλοσοφια κοσμος"}, {"\\:greek-a-kosmos", "ακοσμος"}, /* spaces next to a word stay */
+	{"\\:greek-phi-chi", "φχ"}, {"<:greek>\nkosmos\t<:/greek>", "κοσμος"}, {"<:greek>  athos  <:/greek>", " αθος "},
+	{"<:greek>\r\nkosmos\r\n<:/greek>", "κοσμος"}, {"<:greek>\nfilosofia\nkosmos\n<:/greek>", "φιλοσοφια\nκοσμος"},
 	{"\\:red-circle", "🔴"}, {"\\:brown-heart", "🤎"}, {"\\:red-A", "A\U000E0072"}, {"\\:mirror-e", "e\U000E004D"},
 	{"<:mirror 𓀀/>", "𓀀\U00013440"},
 	{"\\:mirror-red-A", "A\U000E0072\U000E004D"}, {"\\:red-mirror-A", "A\U000E004D\U000E0072"},
@@ -131,7 +131,7 @@ static const conversion_case converts[] = {
 	{"C:\\Users\\U1F60Dx \\UABC \\u00e9", "C:\\Users\\U1F60Dx \\UABC \\u00e9"}, {"\\<:U>1F60D", "\\U1F60D"},
 	{"<:dark-skinned red-haired woman/>", "👩🏿\u200D🦰"}, {"\\:woman\\:red-hair", "👩\u200D🦰"},
 	/* explicit forms of inline tags convert without the opener warning */
-	{"<:alpha/>", "α"}, {"<:greek athos/>", "αθοσ"}, {"\\:greek-athos", "αθοσ"}, {"<:fracture A b c/>", "𝔄𝔟𝔠"},
+	{"<:alpha/>", "α"}, {"<:greek athos/>", "αθος"}, {"\\:greek-athos", "αθος"}, {"<:fracture A b c/>", "𝔄𝔟𝔠"},
 	{"<:font han-japanese>直<:/font>", "{<font han-japanese}直{</font}"}, {HEADER "\nA", "A"},
 	/* algorithmic Unicode names (UAX #44 NR1, NR2), derived from the code point, not in the index */
 	{"<:CJK UNIFIED IDEOGRAPH-4E00/>", "一"}, {"<:cjk unified ideograph-31cb0/>", "𱲰"},
@@ -141,6 +141,8 @@ static const conversion_case converts[] = {
 	/* a block operand is a code point only with the prefix U+ or 0x: beef stays a word */
 	{"<:bold 0x41/>", "𝐀"}, {"<:bold U+41 U+42/>", "𝐀𝐁"}, {"<:fracture u+61/>", "𝔞"}, {"<:red U+2661/>", "♡\U000E0072"},
 	{"<:greek beef/>", "βεεφ"},
+	/* final sigma: after a letter and before none; a lone s stays σ, sigma always σ, c types ς */
+	{"<:greek> s kosmoc <:/greek>", "σ κοσμος"}, {"<:greek kosmo sigma/>", "κοσμοσ"}, {"<:greek> psis kosmos <:/greek>", "ψις κοσμος"},
 };
 
 /* Unicode → uniscript in ASCII only, and back */
@@ -178,7 +180,7 @@ static const char *const restores[] = {
 };
 
 static const warning_case warns[] = {
-	{"<:greek c>", "c", "no greek form of c", 0},
+	{"<:greek q>", "q", "no greek form of q", 0},
 	{"x <:fracture 7>", "x 7", "no fracture form of 7", 2},
 	{"<:left 𓀀>", "𓀀", "left does not apply to 𓀀", 0},
 	/* a color the fonts cannot show falls back to its color meta, after the suffix controls */
@@ -194,7 +196,7 @@ static const warning_case warns[] = {
 	{"\\UDFFF", "\\UDFFF", "invalid code point U+DFFF", 0},
 	/* an inline tag reads as an opening tag: it warns with its explicit forms */
 	{"<:alpha>", "α", "<:alpha> looks like an opening tag: write \\:alpha or <:alpha/>", 0},
-	{"<:greek athos>", "αθοσ", "<:greek athos> looks like an opening tag: write \\:greek-athos, <:greek> athos <:/greek> or <:greek athos/>", 0},
+	{"<:greek athos>", "αθος", "<:greek athos> looks like an opening tag: write \\:greek-athos, <:greek> athos <:/greek> or <:greek athos/>", 0},
 	{"<:color #ff8800 A>", "A{:color #ff8800}", "<:color #ff8800 A> looks like an opening tag: write <:color #ff8800 A/>", 0},
 	{"<:alpha>x", "αx", "<:alpha> looks like an opening tag: write <:alpha/>", 0},
 	{"<:fracture A b c>", "𝔄𝔟𝔠", "<:fracture A b c> looks like an opening tag: write \\:fracture-A-b-c or <:fracture A b c/>", 0},

@@ -136,7 +136,7 @@ the same:
 `\:alpha` (names only; `\:` reads hyphens as spaces: `\:greek-athos`), `<:greek> athos <:/greek>` (a block and one
 operand) and the self-closed `<:color #ff8800 A/>`, which always works.
 
-`<:greek athos>` ⩵ αθοσ (warning: `<:greek athos> looks like an opening tag: write \:greek-athos, <:greek> athos <:/greek> or <:greek athos/>`)
+`<:greek athos>` ⩵ αθος (warning: `<:greek athos> looks like an opening tag: write \:greek-athos, <:greek> athos <:/greek> or <:greek athos/>`)
 
 Not inline, so no warning: blocks and their closers (`<:greek>`, `<:/greek>`, `<:>`), meta spans (`<:font han-japanese>`),
 the header and the escapes `<:<>` `<::>`. A tag that already warns (`<:fracture 7>`) gets no second warning.
@@ -151,9 +151,9 @@ representation.
 A full block tag eats one whitespace on its inner side: one space, tab or line break (`\r\n` counts as one) right after
 the opener and one right before the closer (`<:/greek>` or `<:>`, not a meta close like `<:/color>`). Everything else
 inside renders as written, spaces and line breaks included:
-`<:greek> athos <:/greek>` ⩵ "αθοσ", `<:greek> a b g <:/greek>` ⩵ "α β γ",
-`<:greek> filosofia kosmos<:/greek>` ⩵ "φιλοσοφια κοσμοσ", and a block spanning lines
-`<:greek>⏎filosofia⏎kosmos⏎<:/greek>` ⩵ "φιλοσοφια⏎κοσμοσ". Two spaces keep one: `<:greek>  athos  <:/greek>` ⩵ " αθοσ ".  
+`<:greek> athos <:/greek>` ⩵ "αθος", `<:greek> a b g <:/greek>` ⩵ "α β γ",
+`<:greek> filosofia kosmos<:/greek>` ⩵ "φιλοσοφια κοσμος", and a block spanning lines
+`<:greek>⏎filosofia⏎kosmos⏎<:/greek>` ⩵ "φιλοσοφια⏎κοσμος". Two spaces keep one: `<:greek>  athos  <:/greek>` ⩵ " αθος ".  
 Why: the padding makes the source readable without adding noise to the output, like LaTeX eating the space after a
 command and CommonMark stripping one space inside a code span. HTML-style collapsing of all whitespace would be wrong
 for plain text, and eating exactly one keeps the rule lossless: padding that should stay is written twice.  
@@ -163,9 +163,13 @@ In an inline tag the spaces only separate the operands and are dropped: `<:greek
 # Greek
   
 `greek` transliterates phonetically: a b g d e z i k l m n x o p r s t u f ⩵ α β γ δ ε ζ ι κ λ μ ν ξ ο π ρ σ τ υ φ,  
-the digraphs th ch ps ⩵ θ χ ψ (also inside words: `<:greek athos>` ⩵ αθοσ), and letter names for the rest:  
-`<:greek eta>` ⩵ η, `<:greek Omega>` ⩵ Ω. Letters without a clear Greek counterpart (c h j q v w y) are not guessed:  
+the digraphs th ch ps ⩵ θ χ ψ (also inside words: `<:greek athos>` ⩵ αθος), and letter names for the rest:  
+`<:greek eta>` ⩵ η, `<:greek Omega>` ⩵ Ω. Letters without a clear Greek counterpart (h j q v w y) are not guessed:  
 they stay unchanged, with a warning.    
+**Final sigma**: σ at the end of a word is ς, as Greek writes it: `<:greek> kosmos <:/greek>` ⩵ κοσμος, also before
+punctuation (`kosmos,` ⩵ κοσμος,). A letter becomes final after a letter and before none, so a lone `s` stays σ (the
+symbol); `c` types ς on purpose, `sigma` always gives σ. The block declares it as data (`"*final σ": "ς"`), so other
+scripts' final forms work alike.    
 
 Short forms for typing: `gr` (greek), `eg` (egyptian), `cn` (chinese: pinyin with or without tone number, the most
 frequent character wins, `<:cn kou>` ⩵ 口, `<:cn kou4>` ⩵ 扣, ü as v). Chinese is typing only: 口 spells back as 口.
@@ -202,7 +206,7 @@ segment).
 Whenever a character or combination has no counterpart, the character stays plain and uniscript warns, naming the  
 character, the block or effect, and the position:    
   
-`<:fracture 7>` ⩵ 7 (warning: no fracture form of 7), `<:greek c>` ⩵ c, `<:red 𓀀>` ⩵ 𓀀 (warning: red does not apply to   𓀀),
+`<:fracture 7>` ⩵ 7 (warning: no fracture form of 7), `<:greek q>` ⩵ q, `<:red 𓀀>` ⩵ 𓀀 (warning: red does not apply to   𓀀),
 `<:beside a b>` ⩵ ab (warning: no beside group of a).    
   
 An unknown name (`<:nosuchthing>`) is always an error.    
@@ -578,8 +582,8 @@ The same converter as a Swift package (`Package.swift`, `Sources/Uniscript`), re
 // .package(url: "https://github.com/pannous/uniscript", branch: "main"), product "Uniscript"
 import Uniscript
 try Uniscript.toUnicode("<:alpha> <:fracture A>")   // "α 𝔄", throws UniscriptError.unknownEntity / .unclosed; warnings to stderr
-try Uniscript.convert("<:greek c>")                 // ("c", [Warning(message: "no greek form of c", at: 0)])
-try Uniscript.convert("<:greek c>", mode: .error)   // throws UniscriptError.unsupported(warning)
+try Uniscript.convert("<:greek q>")                 // ("q", [Warning(message: "no greek form of q", at: 0)])
+try Uniscript.convert("<:greek q>", mode: .error)   // throws UniscriptError.unsupported(warning)
 Uniscript.toUniscript("α 𝔄")                       // "\\:alpha \\:fracture-A"
 let (styled, warnings) = Uniscript.standard.metaRuns(tagged)   // meta information, as in Rust
 Uniscript.standard.html(styled)
@@ -599,8 +603,8 @@ A pure Kotlin/JVM port ([kotlin/](kotlin/), Java 21+, `entities.idx` inside the 
 import com.pannous.uniscript.*
 val uniscript = Uniscript()
 uniscript.toUnicode("<:alpha> <:fracture A>")         // "α 𝔄", throws UniscriptError.UnknownEntity / Unclosed / InvalidMeta
-uniscript.convert("<:greek c>")                        // Converted("c", [Warning("no greek form of c", 0)])
-uniscript.convert("<:greek c>", WarningMode.ERROR)     // throws UniscriptError.Unsupported(warning); LENIENT never throws
+uniscript.convert("<:greek q>")                        // Converted("q", [Warning("no greek form of q", 0)])
+uniscript.convert("<:greek q>", WarningMode.ERROR)     // throws UniscriptError.Unsupported(warning); LENIENT never throws
 uniscript.toUniscript("α 𝔄")                          // "\\:alpha \\:fracture-A"
 val (styled, warnings) = uniscript.metaRuns(tagged)    // meta information, as in Rust
 uniscript.html(styled)
@@ -618,8 +622,8 @@ reference `csharp/src/Uniscript.csproj` from your project.
 // dotnet add package Uniscript
 using Pannous;
 Uniscript.ToUnicode("<:alpha> <:fracture A>");            // "α 𝔄", throws UniscriptException (Kind: UnknownEntity, Unclosed, InvalidMeta)
-Uniscript.Convert("<:greek c>");                          // Conversion("c", [("no greek form of c", 0)])
-Uniscript.Convert("<:greek c>", UniscriptMode.Error);     // throws UniscriptException, Kind Unsupported; Lenient never throws
+Uniscript.Convert("<:greek q>");                          // Conversion("q", [("no greek form of q", 0)])
+Uniscript.Convert("<:greek q>", UniscriptMode.Error);     // throws UniscriptException, Kind Unsupported; Lenient never throws
 Uniscript.ToUniscript("α 𝔄");                             // "\\:alpha \\:fracture-A"
 Uniscript.Html(tagged);                                    // meta information as <span>s; MetaRuns(tagged), Font(name)
 ```
@@ -641,7 +645,7 @@ JDK's restricted-method warning.
 import com.pannous.uniscript.ffi.Uniscript;               // package .ffi: com.pannous:uniscript-kotlin owns com.pannous.uniscript.Uniscript
 Uniscript.toUnicode("<:alpha> <:fracture A>");              // "α 𝔄", leniently: faulty uniscript stays, warnings are logged (logger com.pannous.uniscript.ffi)
 Uniscript.toUniscript("α 𝔄");                              // "\\:alpha \\:fracture-A"
-Uniscript.convert("<:greek c>", Uniscript.Mode.WARN);       // Result[text=c, warnings=[uniscript: no greek form of c at byte 0]]
+Uniscript.convert("<:greek q>", Uniscript.Mode.WARN);       // Result[text=q, warnings=[uniscript: no greek form of q at byte 0]]
 Uniscript.convert("<:nosuchthing>", Uniscript.Mode.WARN);   // throws UniscriptException (kind() UNKNOWN_ENTITY, detail() "nosuchthing")
 Uniscript.html(Uniscript.convert("<:font han-japanese>直").text()).text();  // <span lang="ja" …>直</span>
 Uniscript.metaRuns(tagged); Uniscript.header(source); Uniscript.font("cuneiform-hittite");
@@ -670,7 +674,7 @@ target_link_libraries(app PRIVATE uniscript::uniscript)   # C: <uniscript.h>, C+
 ```cpp
 #include <uniscript.hpp>
 uniscript::to_unicode("<:alpha> <:fracture A>");                // "α 𝔄", throws uniscript::Error; warnings to stderr
-auto [text, warnings] = uniscript::convert("<:greek c>");       // "c", {{"no greek form of c", 0}}
+auto [text, warnings] = uniscript::convert("<:greek q>");       // "q", {{"no greek form of q", 0}}
 uniscript::convert("<:nosuch>", uniscript::Mode::Lenient).text;  // "<:nosuch>", with a warning
 uniscript::to_uniscript("α 𝔄");                                // "\\:alpha \\:fracture-A"
 uniscript::html(tagged).text;                                   // meta information as <span>s with CSS
@@ -686,7 +690,7 @@ through C and C++.
   `<:TILDE>` → the entity `tilde`. A name without a lowercase twin is indexed in lowercase too (`<:CAYLEYS>` → `Cayleys` ℭ).
 - `<:type operands>`: a block type applied to space separated operands; `<:double-d>` works too.
 - `<:type> … <:/type>` or `<:type> … <:>`: a block; its text is rendered as written, spaces included, but each block tag
-  eats one whitespace on its inner side (`<:greek> athos <:/greek>` → αθοσ). In an inline tag
+  eats one whitespace on its inner side (`<:greek> athos <:/greek>` → αθος). In an inline tag
   `<:type a b>` the spaces only separate operands and are dropped.
 - Effect words stack: `<:mirror red A>` gives A with the red and the mirror control.
 - Style words stack too: the last styles the operands and the others restyle the result. They use the block that
