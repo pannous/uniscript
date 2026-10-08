@@ -3,6 +3,7 @@
 
 mod aliases_test;
 mod algorithmic_names_test;
+mod egyptian_extended_test;
 mod short_names_test;
 mod block_readings_test;
 mod chinese_test;

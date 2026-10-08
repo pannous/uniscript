@@ -65,3 +65,7 @@
   `E-with-tilde-below`, `cyrillic-zhe`, `sharp-s`. Kept only when one letter derives it and no own/LaTeX/HTML/descriptions
   name has it (`Eth` yields to HTML's ETH/eth); single letters (`a`) get none. to_uniscript writes the short name instead
   of the Unicode name; the long names still read (entity_names_test). Both builders (src/entities.rs, data/uniscript_index.py).
+- Egyptian Extended-A numbers (2026-10-08): data/sources/unikemet_numbers.txt holds the kEH_UniK/kEH_JSesh lines of
+  Unikemet-16.0.0.txt. A sign's JSesh number (kEH_JSesh, or a `HJ A072A` Unikemet number taken over from JSesh) numbers
+  like the extended sign list; Unikemet's own numbers (A001F → A1F) can mean another sign there (U+13517: Unikemet A6C,
+  JSesh A6B) and come last. Order in egyptian_block: Unicode names, descriptions, private use list, JSesh, Unikemet own.

@@ -26,6 +26,9 @@ HIEROGLYPH_DESCRIPTIONS = HERE / "sources" / "list_of_hieroglyphs.wiki"
 # the Aegyptus font's extended sign list (https://rhbarnhart.net/Aegyptus_character_list.html): Gardiner number, private
 # use code point from U+F3000, decimal, sign; drawn by Aegyptus (fonts/README.md). Its Aa section is numbered J.
 EXTENDED_SIGN_LIST = HERE / "sources" / "gardiner.full.csv"
+UNIKEMET_NUMBERS = HERE / "sources" / "unikemet_numbers.txt"  # kEH_UniK, kEH_JSesh of Unicode's Unikemet.txt
+JSESH_UNIKEMET_PREFIX = "HJ "  # a Unikemet number taken over from JSesh: HJ A426B
+JSESH_NUMBER = re.compile(r"^[A-Z][a-z]?\d+[A-Za-z]*$")  # A426B, Aa56, V20h; not JSesh's internal US1A6BEXTU
 # the Anatolian Hieroglyphs section of Unicode's NamesList.txt: Latin logogram names and Luwian syllabic values as aliases
 ANATOLIAN_NAMES_LIST = HERE / "sources" / "anatolian_names_list.txt"
 # character → pinyin readings with tone numbers (de/di2/di4), most frequent character first (data/chinese_readings.py):
@@ -359,9 +362,32 @@ def extended_signs():
 	return {row[0].strip(): chr(int(row[1], 16)) for row in rows if len(row) >= 3}
 
 
+def unikemet_numbers():
+	"""(JSesh numbers, Unikemet's own numbers) → hieroglyph of the signs Unicode names by code point only (Extended-A):
+	the JSesh number (kEH_JSesh, or a Unikemet number taken over from JSesh) numbers like the extended sign list; a
+	number of Unikemet's own may name another sign there (U+13517 is Unikemet A6C, JSesh A6B)"""
+	values = {}
+	for line in UNIKEMET_NUMBERS.read_text().splitlines():
+		if not line.startswith("#"):
+			code, field, value = line.split("\t")
+			values.setdefault(chr(int(code[2:], 16)), {})[field] = value
+	jsesh, own = {}, {}
+	for character, fields in values.items():
+		if gardiner_number(unicodedata.name(character, "")):
+			continue  # its Unicode name holds its Gardiner number
+		unik = fields.get("kEH_UniK", "")
+		taken_over = unik.removeprefix(JSESH_UNIKEMET_PREFIX) if unik.startswith(JSESH_UNIKEMET_PREFIX) else ""
+		for number in (fields.get("kEH_JSesh", ""), gardiner_number(f"EGYPTIAN HIEROGLYPH {taken_over}") or ""):  # HJ A072A is A72A
+			if JSESH_NUMBER.match(number):
+				jsesh.setdefault(number, character)
+		if unik and not taken_over and gardiner_number(f"EGYPTIAN HIEROGLYPH {unik}"):
+			own.setdefault(gardiner_number(f"EGYPTIAN HIEROGLYPH {unik}"), character)
+	return jsesh, own
+
+
 def egyptian_block(named):
 	"""Gardiner number → hieroglyph, then description (and its synonyms) → hieroglyph, then the numbers Unicode lacks →
-	private use sign; the first entry of a text wins"""
+	private use sign, then the numbers of the signs Unicode names by code point (Extended-A); the first entry wins"""
 	numbers = {gardiner_number(n): c for c, n in named if gardiner_number(n)}
 	descriptions = hieroglyph_descriptions()
 	table = dict(numbers)
@@ -371,7 +397,9 @@ def egyptian_block(named):
 			for spelling in [name] + [pattern.sub(synonym, name) for pattern, synonyms in DESCRIPTION_SYNONYMS
 			                          for synonym in synonyms if pattern.match(name)]:
 				table.setdefault(spelling, character)
-	for number, sign in extended_signs().items():
+	jsesh, own = unikemet_numbers()
+	# the private use signs keep their numbers (tests pin Q4A → U+F446E, see open-decisions.md), Unikemet's own numbers last
+	for number, sign in [*extended_signs().items(), *jsesh.items(), *own.items()]:
 		table.setdefault(number, sign)
 	return table
 

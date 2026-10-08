@@ -60,3 +60,4 @@ DONE - C ffi/native: NULL or invalid UTF-8 input fails with UNISCRIPT_INVALID_IN
 - DONE (operand_end; tests/wasp/groups.wasp checks <:egyptian seated man>) the wasp implementation (warp lib/uniscript.wasp) needs the multi-word operand lookup of `operands` (`<:egyptian seated man>` → `egyptian seated-man`); `<:egyptian A1>` already works there through the index.
 - DONE (uniscript.wasp, tests/wasp/stacked_styles.wasp) wasp's lib/uniscript.wasp (warp) needs the stacked-style resolution of src/lib.rs `restyled` (combined block over permutations, else commute): `<:bold italic alpha>` → 𝜶, `<:greek bold a>` → 𝛂.
 - DONE (Swift WarningMode.lenient, wasp lenient_uniscript, 2026-10-08): the Swift package and wasp's lib/uniscript.wasp have no lenient mode yet (Rust: WarningMode::Lenient, `--lenient`: errors become warnings, the faulty uniscript stays as written).
+
