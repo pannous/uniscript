@@ -133,6 +133,11 @@ static const conversion_case converts[] = {
 	/* explicit forms of inline tags convert without the opener warning */
 	{"<:alpha/>", "α"}, {"<:greek athos/>", "αθοσ"}, {"\\:greek-athos", "αθοσ"}, {"<:fracture A b c/>", "𝔄𝔟𝔠"},
 	{"<:font han-japanese>直<:/font>", "{<font han-japanese}直{</font}"}, {HEADER "\nA", "A"},
+	/* algorithmic Unicode names (UAX #44 NR1, NR2), derived from the code point, not in the index */
+	{"<:CJK UNIFIED IDEOGRAPH-4E00/>", "一"}, {"<:cjk unified ideograph-31cb0/>", "𱲰"},
+	{"<:CJK COMPATIBILITY IDEOGRAPH-F900/>", "\uF900"}, {"<:TANGUT COMPONENT-001/>", "𘠀"},
+	{"<:egyptian hieroglyph-13460/>", "𓑠"}, {"<:HANGUL SYLLABLE GA/>", "가"}, {"<:hangul syllable hih/>", "힣"},
+	{"<:HANGUL SYLLABLE SWAELP/>", "쇒"}, {"\\:cjk-unified-ideograph-4e00", "一"},
 };
 
 /* Unicode → uniscript */
@@ -198,6 +203,9 @@ static const error_case errors[] = {
 	{"<:color red;x A>", 4 /* UNISCRIPT_INVALID_META */, "color red;x A", "invalid meta value in <:color red;x A>"},
 	{"\\:1F60Dx", 1, "1F60Dx", "unknown uniscript entity: 1F60Dx"}, /* a code point ends where a name ends */
 	{"\\:ab", 1, "ab", "unknown uniscript entity: ab"}, /* bare hex needs 4 digits */
+	{"<:CJK UNIFIED IDEOGRAPH-0041/>", 1, "CJK UNIFIED IDEOGRAPH-0041", "unknown uniscript entity: CJK UNIFIED IDEOGRAPH-0041"},
+	{"<:HANGUL SYLLABLE XYZ/>", 1, "HANGUL SYLLABLE XYZ", "unknown uniscript entity: HANGUL SYLLABLE XYZ"},
+	{"<:TANGUT COMPONENT-000/>", 1, "TANGUT COMPONENT-000", "unknown uniscript entity: TANGUT COMPONENT-000"},
 };
 
 static const lenient_case lenients[] = {

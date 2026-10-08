@@ -161,7 +161,16 @@
 		["<:chinese> shi han nuli <:/chinese>", "是 汉 努里"],
 		["<:chinese> nu3li4 <:/chinese>", "努力"],
 		["<:chinese shihan/>", "是汉"],
-		["<:greek> metal <:/greek>", "μεταλ"]
+		["<:greek> metal <:/greek>", "μεταλ"],
+		["<:CJK UNIFIED IDEOGRAPH-4E00/>", "一"],
+		["<:cjk unified ideograph-31cb0/>", "𱲰"],
+		["<:CJK COMPATIBILITY IDEOGRAPH-F900/>", "{U+F900}"],
+		["<:TANGUT COMPONENT-001/>", "𘠀"],
+		["<:egyptian hieroglyph-13460/>", "𓑠"],
+		["<:HANGUL SYLLABLE GA/>", "가"],
+		["<:hangul syllable hih/>", "힣"],
+		["<:HANGUL SYLLABLE SWAELP/>", "쇒"],
+		["\\:cjk-unified-ideograph-4e00", "一"]
 	],
 	"warnCounts": [
 		["<:double bold A>", "𝐀", 1]
@@ -234,7 +243,10 @@
 		["x <:uniscript version=\"https://uniscript.org/v1\">", "UnknownEntity", "uniscript version=\"https://uniscript.org/v1\""],
 		["<:color red;x A>", "InvalidMeta", "color red;x A"],
 		["\\:1F60Dx", "UnknownEntity", "1F60Dx"],
-		["\\:ab", "UnknownEntity", "ab"]
+		["\\:ab", "UnknownEntity", "ab"],
+		["<:CJK UNIFIED IDEOGRAPH-0041/>", "UnknownEntity", "CJK UNIFIED IDEOGRAPH-0041"],
+		["<:HANGUL SYLLABLE XYZ/>", "UnknownEntity", "HANGUL SYLLABLE XYZ"],
+		["<:TANGUT COMPONENT-000/>", "UnknownEntity", "TANGUT COMPONENT-000"]
 	],
 	"lenient": [
 		["\\:alpha <:nosuchthing> \\:nosuch \\:beta", "α <:nosuchthing> \\:nosuch β", ["unknown uniscript entity: nosuchthing", "unknown uniscript entity: nosuch"]],

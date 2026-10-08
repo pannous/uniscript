@@ -45,6 +45,9 @@ bool utf8_valid(const char *text, size_t n);
 bool utf8_sequence(const char *text, size_t n, size_t *length);
 uint32_t first_character(str text);
 
+/* the character of an algorithmic Unicode name (CJK UNIFIED IDEOGRAPH-4E00, hangul syllable ga), any case, hyphens as spaces */
+bool algorithmic_character(str name, uint32_t *character);
+
 typedef enum { TABLE_NAMES, TABLE_CHARS, TABLE_SUFFIXES, TABLE_FONTS, TABLE_META, TABLE_COUNT } table;
 uint32_t text_hash(str text);
 /* the value of the key, and the stored key when wanted */

@@ -659,6 +659,12 @@ static bool tag(converter *self, buf *out, str content, size_t at) {
 	bool coded = code_point(self, out, content, buf_str(&written), at);
 	buf_free(&written);
 	if (coded) return true;
+	/* <:CJK UNIFIED IDEOGRAPH-4E00>, <:hangul syllable ga>, <:egyptian hieroglyph-13460> before the egyptian block */
+	uint32_t algorithmic;
+	if (algorithmic_character(content, &algorithmic)) {
+		buf_addc(out, algorithmic);
+		return true;
+	}
 	bool handled;
 	if (!meta_tag(self, out, content, at, &handled)) return false;
 	if (handled) return true;

@@ -561,6 +561,8 @@ private class Conversion(val index: EntityIndex, val source: String, val lenient
 		if (content.utf8Size == 1) return content // <:<> <::> escape the marker
 		name(content.replace(' ', '-'))?.let { return it }
 		codePoint(content, "<:$content>", at)?.let { return it }
+		// `<:CJK UNIFIED IDEOGRAPH-4E00>`, `<:hangul syllable ga>`, `<:egyptian hieroglyph-13460>` before the egyptian block
+		AlgorithmicNames.character(content)?.let { return it }
 		metaTag(content, at)?.let { return it }
 		val (first, afterFirst) = splitOnce(content, ' ') ?: splitOnce(content, '-') ?: return caseFallback(content)
 		if (!isBlock(first)) return caseFallback(content)

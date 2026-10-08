@@ -7,7 +7,7 @@ import re
 import sys
 from dataclasses import dataclass
 
-from . import meta
+from . import algorithmic_names, meta
 from .errors import InvalidMeta, Unclosed, UniscriptError, UnknownEntity, Unsupported, Warning
 from .index import Index, Table
 from .meta import Font, Meta, MetaRun, Styled, utf8_length
@@ -489,6 +489,10 @@ class Uniscript:
         if text is not None:
             return text
         text = self._code_point(content, f"<:{content}>", at)
+        if text is not None:
+            return text
+        # `<:CJK UNIFIED IDEOGRAPH-4E00>`, `<:hangul syllable ga>`, `<:egyptian hieroglyph-13460>` before the egyptian block
+        text = algorithmic_names.character(content)
         if text is not None:
             return text
         text = self._meta_tag(content, at)

@@ -3,6 +3,7 @@
 // suffix controls (`<:mirror red A>` → A + TAG r + TAG M), hieroglyph and CJK groups (`<:beside 犭 句>` → ⿰犭句),
 // meta information as invisible TAG sequences. All offsets are UTF-8 byte offsets, as in Rust and Swift.
 
+import { algorithmicCharacter } from "./algorithmicNames.ts";
 import { EntityIndex, Table } from "./entityIndex.ts";
 import type { Lookup } from "./entityIndex.ts";
 import { Meta, Styled, attach, emojiTagsAt, escapeHTML, isMetaValue, joinedPrefixes, afterBase, list, metaAt, utf8Length } from "./meta.ts";
@@ -563,6 +564,9 @@ export class Uniscript {
 		if (text !== undefined) return text;
 		const codePoint = this.#codePoint(content, `<:${content}>`, at);
 		if (codePoint !== undefined) return codePoint;
+		// `<:CJK UNIFIED IDEOGRAPH-4E00>`, `<:hangul syllable ga>`, `<:egyptian hieroglyph-13460>` before the egyptian block
+		const algorithmic = algorithmicCharacter(content);
+		if (algorithmic !== undefined) return algorithmic;
 		const meta = this.#metaTag(content, at);
 		if (meta !== undefined) return meta;
 		const split = content.includes(" ") ? content.indexOf(" ") : content.indexOf("-");

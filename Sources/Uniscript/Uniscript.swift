@@ -627,6 +627,10 @@ private final class Conversion {
 		if let text = codePoint(content, written: "<:\(content)>", at) {
 			return text
 		}
+		// `<:CJK UNIFIED IDEOGRAPH-4E00>`, `<:hangul syllable ga>`, `<:egyptian hieroglyph-13460>` before the egyptian block
+		if let text = AlgorithmicNames.character(content) {
+			return text
+		}
 		if let text = try metaTag(content, at) {
 			return text
 		}
