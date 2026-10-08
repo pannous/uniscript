@@ -388,6 +388,7 @@ assert uniscript.header(source).version == uniscript.UNISCRIPT_VERSION
 assert uniscript.to_unicode(source) == "α"
 text, warnings = uniscript.convert('<:uniscript version="https://example.com/v9">\n<:alpha>')
 assert warnings[0].message == "unsupported uniscript version https://example.com/v9"
+assert uniscript.reads_version("https://uniscript.org/v2")
 
 # meta information
 converter = uniscript.Uniscript()

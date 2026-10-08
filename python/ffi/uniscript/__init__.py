@@ -19,11 +19,12 @@ UNISCRIPT_VERSION: str = _uniscript.UNISCRIPT_VERSION
 __all__ = [
     "UNISCRIPT_VERSION", "Index", "Table", "text_hash", "standard", "WarningMode", "Warning", "Header", "Font", "MetaRun", "Styled", "Meta", "Uniscript",
     "UniscriptError", "UnknownEntity", "Unclosed", "Unsupported", "InvalidMeta",
-    "convert", "to_unicode", "to_uniscript", "explicit", "header",
+    "convert", "to_unicode", "to_uniscript", "explicit", "header", "reads_version",
 ]
 
 
 text_hash = _uniscript.text_hash
+reads_version = _uniscript.reads_version
 
 
 class Table(enum.IntEnum):

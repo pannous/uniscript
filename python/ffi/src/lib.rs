@@ -171,6 +171,12 @@ fn header(source: &str) -> Option<(String, usize)> {
 	uniscript::header(source).map(|header| (header.version.to_string(), header.length))
 }
 
+/// Whether a header version is read without warning: none, or https://uniscript.org/vN for any number N
+#[pyfunction]
+fn reads_version(version: &str) -> bool {
+	uniscript::reads_version(version)
+}
+
 fn meta(kind: &str, key: String, value: String) -> PyResult<Meta> {
 	match kind {
 		"open" => Ok(Meta::Open { key, value }),
@@ -216,6 +222,7 @@ fn _uniscript(module: &Bound<'_, PyModule>) -> PyResult<()> {
 	module.add_class::<PyIndex>()?;
 	module.add_class::<Converter>()?;
 	module.add_function(wrap_pyfunction!(header, module)?)?;
+	module.add_function(wrap_pyfunction!(reads_version, module)?)?;
 	module.add_function(wrap_pyfunction!(meta_tags, module)?)?;
 	module.add_function(wrap_pyfunction!(meta_uniscript, module)?)?;
 	module.add_function(wrap_pyfunction!(meta_at, module)?)?;
