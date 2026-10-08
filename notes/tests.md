@@ -12,4 +12,4 @@
 - Kept as probes (2026-10-02 cleanup): measurement tools (page_weight.sh, live_chunk_requests.sh, wasm_vs_ts_speed.mjs,
   chinese/web_cost.sh), sublime_live_state.py, publish/ and usage/, the warp bug repro group_clashes/warp_not_call.wasp,
   and the Egyptian font tests until egyptian_baseline_test.py passes (TODO). Download caches unihan/, finefreq/.
-- Known failing: tests/entity_names_test.rs (5 of 3227 names since the algorithmic names and P198, 2026-10-07: the tilde family; TODO.md).
+- Known failing: none in tests/*.rs (entity_names_test passes since the descriptions section, 2026-10-08).

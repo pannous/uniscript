@@ -38,11 +38,12 @@ UNICODE_MATH_TABLE = Path("/usr/local/texlive/2026basic/texmf-dist/tex/latex/uni
 MAGIC = b"USX1"
 HASH_MULTIPLIER = 31
 HASH_MODULUS = 1 << 32
+LATIN_LETTER_WITH = re.compile(r"latin-(capital|small)-letter-([a-z])-with-(.+)$")
 RECORD_FIELDS = 5  # hash, key offset, key length, value offset, value length: all u32 little endian
 TABLE_NAMES = ("names", "chars", "suffixes", "fonts", "meta")  # forward, reverse, suffix control → block type, font styles, meta keys
 
 # sections holding plain entities, earlier ones win when a name occurs twice
-ENTITY_SECTIONS = ("uniscript", "names", "latex", "html")
+ENTITY_SECTIONS = ("uniscript", "names", "latex", "html", "descriptions")
 # the uniscript section: escapes of the '<:' marker (wiki/uniscript.md "Special remark") and short spec names
 UNISCRIPT_NAMES = {"less": "<", "colon": ":", "greater": ">", "empty": "∅"}
 
@@ -666,12 +667,23 @@ def ascii_lowercase(text):
 	return text.encode().lower().decode()
 
 
+def latin_letter_with(name):
+	"""latin-capital-letter-e-with-tilde-below → E-with-tilde-below: a Latin letter with marks by its letter alone"""
+	match = LATIN_LETTER_WITH.match(name)
+	if match:
+		return (match.group(2).upper() if match.group(1) == "capital" else match.group(2)) + "-with-" + match.group(3)
+
+
 def forward_entries(sections):
 	"""name → text; a block entry is 'block operand' (or 'block *suffix'…), the block itself 'block ' → """""
 	entries = {}
 	for section in ENTITY_SECTIONS:
 		for name, text in sections.get(section, {}).items():
 			entries.setdefault(name, text)
+	for name, text in sections.get("names", {}).items():
+		short = latin_letter_with(name)
+		if short:
+			entries.setdefault(short, text)
 	for name, text in list(entries.items()):
 		entries.setdefault(ascii_lowercase(name), text)  # the case fallback: a name without a lowercase twin is found in lowercase
 	for block, table in block_types(sections).items():

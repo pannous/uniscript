@@ -10,7 +10,7 @@ use std::path::{Path, PathBuf};
 
 /// Sections holding plain entities, earlier ones win when a name occurs twice
 const OWN_SECTION: &str = "uniscript";
-const ENTITY_SECTIONS: [&str; 4] = [OWN_SECTION, "names", "latex", "html"];
+const ENTITY_SECTIONS: [&str; 5] = [OWN_SECTION, "names", "latex", "html", "descriptions"];
 const BLOCKS: &str = "blocks";
 const BLOCK_ALIASES: &str = "block-aliases";
 const FONTS: &str = "fonts";
@@ -20,6 +20,7 @@ const SUFFIX_KEY: &str = "*suffix";
 /// a block only for typing: its characters do not spell back as it (口 stays 口, not `<:chinese kou>`)
 const ONE_WAY_KEY: &str = "*one-way";
 const ENTITY_EXTENSION: &str = "wasp";
+const LATIN_LETTER_PREFIXES: [(&str, bool); 2] = [("latin-capital-letter-", true), ("latin-small-letter-", false)];
 
 /// Key → entry, in file order
 #[derive(Debug, Default, Clone)]
@@ -222,6 +223,11 @@ impl Entities {
 				entries.set_default(name, text);
 			}
 		}
+		for (name, text) in self.section("names").texts() {
+			if let Some(short) = latin_letter_with(name) {
+				entries.set_default(&short, text);
+			}
+		}
 		for (name, text) in entries.entries.clone() {
 			entries.set_default(&name.to_ascii_lowercase(), &text); // the case fallback: a name without a lowercase twin is found in lowercase
 		}
@@ -367,4 +373,15 @@ fn take_token(text: &str, is_key: bool) -> Option<(String, &str)> {
 	}
 	let end = text.find(|c: char| c.is_whitespace() || (is_key && (c == ':' || c == '"'))).unwrap_or(text.len());
 	(end > 0).then(|| (text[..end].to_string(), &text[end..]))
+}
+
+/// `latin-capital-letter-e-with-tilde-below` → `E-with-tilde-below`: a Latin letter with marks by its letter alone
+fn latin_letter_with(name: &str) -> Option<String> {
+	LATIN_LETTER_PREFIXES.iter().find_map(|(prefix, capital)| {
+		let rest = name.strip_prefix(prefix)?;
+		let (letter, marks) = rest.split_once("-with-")?;
+		let letter = letter.chars().next().filter(|c| letter.len() == 1 && c.is_ascii_alphabetic())?;
+		let letter = if *capital { letter.to_ascii_uppercase() } else { letter };
+		Some(format!("{letter}-with-{marks}"))
+	})
 }
