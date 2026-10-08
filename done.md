@@ -55,3 +55,5 @@ DONE - C ffi/native: NULL or invalid UTF-8 input fails with UNISCRIPT_INVALID_IN
 - DONE (inputs.file in both build scripts) kotlin/java gradle test tasks do not list js/test/cases.json as an input: after editing the shared cases, `gradle test` reports success from cache; run with `--rerun-tasks`
 - DONE (java: checkNativesCurrent, csharp: RequireCurrentNative fail loudly) java and csharp test the prebuilt c/ffi/build natives: after Rust changes run `make -C c/ffi natives` first, else they test a stale library (csharp failed on LATIN CAPITAL LETTER ETH for that reason)
 - DONE (completions close self-closed then: <:alpha/>) Sublime with "completion_inserts": "name" leaves an inline `<:alpha>`, which now warns: insert `\:alpha` / `<:…/>` instead
+- DONE (seeded since 2026-10-08) seed drift: `data/uniscript_index.py seed` drops the hand-added `*open/*close egyptian` keys of styles.wasp (seed them)
+- DONE (both already work: \:TILDE reads as the tag, the annotator checks the lowercase name) case fallback only in `<:…>` tags, not in `\:NAME`; intellij/UniscriptAnnotator.kt isName check does not know it (paints `<:TILDE>` as unknown)

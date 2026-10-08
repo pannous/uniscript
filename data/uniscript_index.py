@@ -98,6 +98,8 @@ EMOJI_START = 0x1F000
 EGYPTIAN_MIRROR = "\U00013440"  # the Unicode 15 format controls for hieroglyphs: mirror, vertical and horizontal joiner
 EGYPTIAN_VERTICAL_JOINER = "\U00013430"
 EGYPTIAN_HORIZONTAL_JOINER = "\U00013431"
+EGYPTIAN_BEGIN_SEGMENT = "\U00013437"
+EGYPTIAN_END_SEGMENT = "\U00013438"
 IDS_ABOVE_TO_BELOW = "\u2FF1"
 IDS_LEFT_TO_RIGHT = "\u2FF0"
 VARIATION_SUFFIXES = {"iconic": "\uFE0F", "plain": "\uFE0E"}
@@ -107,6 +109,8 @@ SUFFIX_KEY = "*suffix"  # follows any character without its own entry; "*suffix 
 PREFIX_KEY = "*prefix"  # "*prefix cjk": goes before the parts of a group (an IDS operator)
 GROUP_KEY = "*group"    # the block joins its operands (above, beside) instead of styling them
 INFIX_KEY = "*infix"    # "*infix egyptian": goes between the parts of a group (a hieroglyph joiner)
+OPEN_KEY = "*open"      # "*open egyptian": goes before a group (a hieroglyph segment begins)
+CLOSE_KEY = "*close"    # "*close egyptian": goes after a group (the segment ends)
 META_FALLBACK_KEY = "*meta"  # "color red": the attached meta a block becomes where it has no suffix
 RARE_KEY = "*rare"  # a block of a rare script: its names stay out of the web manifest's filter of absent names
 ZERO_WIDTH_JOINER = "\u200d"
@@ -498,8 +502,9 @@ def seed_files():
 	for block, suffix in VARIATION_SUFFIXES.items():
 		styles[block] = {SUFFIX_KEY: suffix}
 	# groups keep their parts unstyled; a script without prefix or infix cannot be grouped, uniscript warns
-	styles["above"] = {GROUP_KEY: "", f"{PREFIX_KEY} cjk": IDS_ABOVE_TO_BELOW, f"{INFIX_KEY} egyptian": EGYPTIAN_VERTICAL_JOINER}
-	styles["beside"] = {GROUP_KEY: "", f"{PREFIX_KEY} cjk": IDS_LEFT_TO_RIGHT, f"{INFIX_KEY} egyptian": EGYPTIAN_HORIZONTAL_JOINER}
+	segment = {f"{OPEN_KEY} egyptian": EGYPTIAN_BEGIN_SEGMENT, f"{CLOSE_KEY} egyptian": EGYPTIAN_END_SEGMENT}
+	styles["above"] = {GROUP_KEY: "", f"{PREFIX_KEY} cjk": IDS_ABOVE_TO_BELOW, f"{INFIX_KEY} egyptian": EGYPTIAN_VERTICAL_JOINER, **segment}
+	styles["beside"] = {GROUP_KEY: "", f"{PREFIX_KEY} cjk": IDS_LEFT_TO_RIGHT, f"{INFIX_KEY} egyptian": EGYPTIAN_HORIZONTAL_JOINER, **segment}
 	files = {
 		"uniscript.wasp": {"uniscript": dict(UNISCRIPT_NAMES)},
 		"latex.wasp": {"latex": unicode_math_names()},
