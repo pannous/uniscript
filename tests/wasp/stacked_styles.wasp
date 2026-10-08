@@ -1,0 +1,6 @@
+use uniscript
+ok = uniscript("<:bold italic alpha/> <:italic bold A/> <:sans bold italic alpha/> <:bold sans italic Alpha/>") == "𝜶 𝑨 𝞪 𝞐"
+ok = ok and uniscript("<:bold fracture A/> <:fraktur bold A/> <:bold script B/>") == "𝕬 𝕬 𝓑"
+ok = ok and uniscript("<:mirror bold italic A/>") == "𝑨" + (0xE004D as char)
+ok = ok and uniscript("<:greek bold a/> <:bold greek a/> <:greek bold alpha/>") == "𝛂 𝛂 𝛂"
+ok

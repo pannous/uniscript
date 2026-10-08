@@ -449,6 +449,148 @@ naming_word(words:text) := {
 	found
 }
 
+// ---- stacked styles: <:bold italic alpha> 𝜶, <:greek bold a> 𝛂 ---------------------------------------------------------
+
+// the effects (with a suffix control: mirror, red) or else the styles among the space terminated words, space terminated
+stacked_words(words:text, effects) := {
+	out = ""
+	i = 0
+	while i < words.bytes {
+		end = offset_of(words, 32, i)
+		word = byte_slice(words, i, end)
+		if word.bytes > 0 and is_effect(word) == effects { out += word + " " }
+		i = end + 1
+	}
+	out
+}
+
+// the block and plain operand a character spells back as, "bold a" (𝐚) or "alpha" (α); "" for none
+spelling(character:text) := {
+	record = find(chars_table, character)
+	if record < 0 { return "" }
+	form = value_of(record)
+	if form.bytes < 3 or byte_slice(form, 0, 2) != "<:" { return "" }
+	byte_slice(form, 2, form.bytes - 1)
+}
+
+// the block of a spelling ("" for none): bold of "bold a", "" of "alpha"
+spelling_block(content:text) := {
+	space = offset_of(content, 32, 0)
+	if space < content.bytes and is_block(byte_slice(content, 0, space)) { return byte_slice(content, 0, space) }
+	""
+}
+
+// the operand of a spelling: a of "bold a", alpha of "alpha"
+spelling_operand(content:text) := {
+	block = spelling_block(content)
+	if block.bytes == 0 { return content }
+	byte_slice(content, block.bytes + 1, content.bytes)
+}
+
+// a block named by the parts (split at hyphens) of the space terminated words, joined in some order: bold + sans + italic
+// → sans-bold-italic; prefix holds the parts placed so far; "" for none
+combined(prefix:text, parts:text) := {
+	if parts.bytes == 0 {
+		if is_block(prefix) { return prefix }
+		return ""
+	}
+	i = 0
+	while i < parts.bytes {
+		end = offset_of(parts, 32, i)
+		part = byte_slice(parts, i, end)
+		rest = byte_slice(parts, 0, i) + byte_slice(parts, end + 1, parts.bytes)
+		joined = part
+		if prefix.bytes > 0 { joined = prefix + "-" + part }
+		found = combined(joined, rest)
+		if found.bytes > 0 { return found }
+		i = end + 1
+	}
+	""
+}
+
+// the space terminated words with their hyphenated parts as words, each once: "sans-bold italic " → "sans bold italic "
+style_parts(words:text) := {
+	out = ""
+	spaced_words = byte_replaced(words, 45, " ")
+	i = 0
+	while i < spaced_words.bytes {
+		end = offset_of(spaced_words, 32, i)
+		part = byte_slice(spaced_words, i, end)
+		if part.bytes > 0 and offset_of_text(" " + out, " " + part + " ", 0) >= out.bytes + 1 { out += part + " " }
+		i = end + 1
+	}
+	out
+}
+
+// the form of one character in one more style, "" for none: its own entry, else (greek alpha → α) the style of its operand,
+// else the style commuting with the character's own (greek on 𝐚: bold of greek a → 𝛂)
+restyled_by(style:text, character:text) := {
+	own = find(names_table, style + " " + character)
+	if own >= 0 { return value_of(own) }
+	content = spelling(character)
+	if content.bytes == 0 { return "" }
+	block = spelling_block(content)
+	plain_operand = spelling_operand(content)
+	if block.bytes == 0 { return entry(style + " " + plain_operand) }
+	base = plain_operand
+	named = find(names_table, plain_operand)
+	if named >= 0 and plain_operand.bytes > 1 { base = value_of(named) }
+	if base.bytes != utf8_width(byte_at(base, 0)) { return "" }
+	base_form = restyled_by(style, base)
+	if base_form.bytes == 0 { return "" }
+	if base_form == base { return character }
+	entry(block + " " + base_form)
+}
+
+// the text in the space terminated styles, the last applied first; a style without a form keeps it, with a warning
+restyled_by_all(styles:text, text:text, at) := {
+	if styles.bytes == 0 { return text }
+	end = styles.bytes - 1
+	start = end
+	while start > 0 and byte_at(styles, start - 1) != 32 { start-- }
+	style = byte_slice(styles, start, end)
+	rest = byte_slice(styles, 0, start)
+	if text.bytes != utf8_width(byte_at(text, 0)) { return restyled_by_all(rest, text, at) }
+	form = restyled_by(style, text)
+	if form.bytes == 0 { return restyled_by_all(rest, unsupported("no " + style + " form of " + text, at) + text, at) }
+	restyled_by_all(rest, form, at)
+}
+
+// a character in further styles: in the block combining them with its own style (bold on 𝛼 → bold-italic α), else one
+// style after the other
+restyled(styles:text, character:text, at) := {
+	content = spelling(character)
+	if content.bytes > 0 {
+		block = spelling_block(content)
+		plain_operand = spelling_operand(content)
+		base = plain_operand
+		named = find(names_table, plain_operand)
+		if block.bytes > 0 and named >= 0 and plain_operand.bytes > 1 { base = value_of(named) }
+		all = styles
+		if block.bytes > 0 { all += block + " " }
+		combination = combined("", style_parts(all))
+		if combination.bytes > 0 {
+			form = find(names_table, combination + " " + base)
+			if form >= 0 { return value_of(form) }
+		}
+	}
+	restyled_by_all(styles, character, at)
+}
+
+// each character of the plain operands in the styles, followed by the suffixes of the effects; warning marks stay
+restyled_operands(styles:text, effects:text, plain:text, at) := {
+	mark = "" + (warned_code_point as char)
+	out = ""
+	i = 0
+	while i < plain.bytes {
+		width = utf8_width(byte_at(plain, i))
+		character = byte_slice(plain, i, i + width)
+		if character == mark { out += mark } else { out += restyled(styles, character, at) + effect_suffixes(effects, character, at) }
+		i += width
+	}
+	out
+}
+
 // the text of <:content> at byte `at` of the source, or the block it opens (as "<block>"), or "" for a closing tag; an Error when nothing matches
 tag(content:text, at) := {
 	if content.bytes == 0 or byte_at(content, 0) == 47 { return "" }
@@ -480,7 +622,10 @@ tag(content:text, at) := {
 			// <:egyptian above A1 A2>: the other block names the parts of the group
 			grouping = group_word(effects + block)
 			if grouping.bytes > 0 { return group(grouping, naming_word(effects + block), rest, at) }
-			return operands(block, rest, effects, at)
+			styles = stacked_words(effects, false)
+			if styles.bytes == 0 { return operands(block, rest, effects, at) }
+			// <:bold italic A>: the other style words restyle the operands of the last
+			return restyled_operands(styles, stacked_words(effects, true), operands(block, rest, "", at), at)
 		}
 	}
 	// the case fallback, after the blocks: <:LATIN CAPITAL LETTER ETH> is latin-capital-letter-eth, <:TILDE> tilde

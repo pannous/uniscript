@@ -27,7 +27,7 @@
   Unicode decomposition (`<font>`, `<super>`, …), not from the name: the name heuristic tried LATIN before GREEK, so
   MATHEMATICAL BOLD SMALL ALPHA became bold of Latin ɑ. A `<font>` variant belongs only to its most specific block
   (sans-serif bold, not sans); other characters may belong to several (ᴎ: small-capital and reversed).
-- Stacked styles are resolved at runtime (Rust, Swift, Kotlin): combined block over all permutations of the parts,
+- Stacked styles are resolved at runtime (Rust, Swift, Kotlin, wasp): combined block over all permutations of the parts,
   else commute through the character's own style, found via its reverse spelling in the chars table.
 - Short aliases `gr` `eg` `cn` (2026-10-01): `chinese` block (data/entities/unicode/cjk-unified-ideographs.wasp) from
   `data/sources/chinese_readings.tsv` (character + pinyin columns of uruk_egypt's dicts/chinese.freq.tsv, most frequent
