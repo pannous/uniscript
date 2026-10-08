@@ -41,6 +41,8 @@ fn every_character_and_reading_of_the_sources_can_be_typed() {
 		for line in text.lines().filter(|line| !line.starts_with('#')) {
 			let (character, readings) = line.split_once('\t').unwrap();
 			for reading in readings.split('/') {
+				// a neutral tone is written as tone 5 (user decision 2026-10-08): 匙 shi is shi5
+				let reading = if reading.ends_with(|c: char| c.is_ascii_digit()) { reading.to_string() } else { format!("{reading}5") };
 				let keys = (1..).map(|count| if count == 1 { format!("chinese {reading}") } else { format!("chinese {reading}.{count}") });
 				let found = keys.map(|key| index.get(Table::Names, &key)).take_while(Option::is_some).any(|value| value == Some(character));
 				assert!(found, "{character} {reading} in {source}");

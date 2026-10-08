@@ -84,5 +84,4 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - warp repo tests/test_uniscript.rs expect the old reverse spelling (spells("α","<:alpha>")); they will break once warp's packages/uniscript copy is updated past ed75f9a: switch them to \:alpha
 - wasp port has no shared cases.json runner (and no meta/TAG sequences)
 - probes/egyptian_baseline_test.py fails test_stacked_group_composes_on_the_descender_too (bottom −0.125, expected −0.17 of Aegyptus): fix, then promote it with egyptian_private_use_test.py (which imports its constants) to tests/fonts/
-- Chinese toneless readings: `shi` lists 是 twice (shi and shi.4), 𥫽 third, and only 18 entries, while shi4 alone has 十 事 世 市 … (frequency order of the toneless list looks merged wrongly; data/chinese_readings.py)
 - warp: `list += [x]` fails WASM validation (type mismatch i64 vs ref); `list = list + [x]` works (found by the wasp *readings port, notes/wasp.md)

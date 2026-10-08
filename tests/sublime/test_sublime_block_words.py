@@ -17,13 +17,13 @@ def expect(actual, expected):
 
 
 shi = block_word_completions("<:chinese> shi", names)
-expect([entry[:3] for entry in shi[:2]], [("shi", "是", "shi"), ("shi", "匙", "shi.2")])
+# the neutral tone is tone 5 (user decision 2026-10-08): the toneless shi is only 是, 匙 of 钥匙 is shi5
+expect([entry[:3] for entry in shi[:2]], [("shi", "是", "shi"), ("shi1", "师", "shi1")])
 readings = [entry[2] for entry in shi]
-expect(readings[:3], ["shi", "shi.2", "shi.3"])
+expect(readings.count("shi"), 1)
 assert all(reading.startswith("shi") for reading in readings), readings
-first_longer = next(index for index, reading in enumerate(readings) if reading.partition(".")[0] != "shi")
-assert all(reading.partition(".")[0] == "shi" for reading in readings[:first_longer])  # the whole reading first
-expect(convert("<:chinese> {} <:/chinese>".format(shi[1][2]))[0], "匙")
+expect(convert("<:chinese> {} <:/chinese>".format(next(entry[2] for entry in shi if entry[1] == "匙")))[0], "匙")
+expect(convert("<:chinese> shi5 <:/chinese>")[0], "匙")
 expect(block_word_completions("<:chinese> shi han nuli <:/chinese>\n<:greek>\nkosm", names), [])  # greek spells letters
 expect(block_word_completions("<:chinese>\nwo ai\nni", names)[0][2], "ni")  # opened on an earlier line
 expect(block_word_completions("<:chinese> shi <:/chinese> shi", names), [])  # closed

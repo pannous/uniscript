@@ -472,11 +472,15 @@ def ranked_readings(source):
 	return [(c, s[position]) for position in range(max(len(s) for _, s in readings)) for c, s in readings if position < len(s)]
 
 
+NEUTRAL_TONE = "5"  # the neutral tone as pinyin input methods write it (user decision 2026-10-08)
+
+
 def chinese_block():
 	"""reading → its characters in order, with tone (kou4 扣, kou4.2 寇) and the first without (kou 口)"""
 	table = {}
 	holders = {}
 	for character, reading in dict.fromkeys(pair for source in CHINESE_READINGS for pair in ranked_readings(source)):
+		reading = reading if reading[-1:].isdigit() else reading + NEUTRAL_TONE  # 匙 in 钥匙: shi5, so toneless shi stays 是
 		count = holders.get(reading, 0) + 1
 		while homophone(reading, count) in table:  # a neutral tone's reading taken without tone: fan (反 fan3) → fan.2
 			count += 1
