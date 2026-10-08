@@ -38,7 +38,8 @@ UNICODE_MATH_TABLE = Path("/usr/local/texlive/2026basic/texmf-dist/tex/latex/uni
 MAGIC = b"USX1"
 HASH_MULTIPLIER = 31
 HASH_MODULUS = 1 << 32
-LATIN_LETTER_WITH = re.compile(r"latin-(capital|small)-letter-([a-z])-with-(.+)$")
+DEFAULT_SCRIPT = "latin"  # the script that short names leave out: E-with-tilde-below, but cyrillic-zhe
+CASED_LETTER = {"-capital-letter-": True, "-small-letter-": False}
 RECORD_FIELDS = 5  # hash, key offset, key length, value offset, value length: all u32 little endian
 TABLE_NAMES = ("names", "chars", "suffixes", "fonts", "meta")  # forward, reverse, suffix control → block type, font styles, meta keys
 
@@ -667,11 +668,32 @@ def ascii_lowercase(text):
 	return text.encode().lower().decode()
 
 
-def latin_letter_with(name):
-	"""latin-capital-letter-e-with-tilde-below → E-with-tilde-below: a Latin letter with marks by its letter alone"""
-	match = LATIN_LETTER_WITH.match(name)
-	if match:
-		return (match.group(2).upper() if match.group(1) == "capital" else match.group(2)) + "-with-" + match.group(3)
+def ascii_uppercase(text):
+	return text.encode().upper().decode()
+
+
+def short_name(name):
+	"""The Unicode name of a cased letter without its case words, which the letter's case says, and without the default
+	script: latin-capital-letter-e-with-tilde-below → E-with-tilde-below, cyrillic-capital-letter-zhe → cyrillic-Zhe;
+	None for other names and for a single letter (latin-small-letter-a is just a)"""
+	words = next((words for words in CASED_LETTER if words in name), None)
+	if not words:
+		return None
+	script, _, rest = name.partition(words)
+	rest = ascii_uppercase(rest[:1]) + rest[1:] if CASED_LETTER[words] else rest
+	short = rest if script == DEFAULT_SCRIPT else f"{script}-{rest}"
+	return short if len(short) > 1 else None
+
+
+def short_names(sections):
+	"""Unicode name of a cased letter → its short name, when no other letter and no other name has that short name"""
+	derived = {}
+	for name in sections.get("names", {}):
+		short = short_name(name)
+		if short:
+			derived.setdefault(short, []).append(name)
+	taken = lambda short: any(short in sections.get(section, {}) for section in ENTITY_SECTIONS)
+	return {names[0]: short for short, names in derived.items() if len(names) == 1 and not taken(short)}
 
 
 def forward_entries(sections):
@@ -680,10 +702,9 @@ def forward_entries(sections):
 	for section in ENTITY_SECTIONS:
 		for name, text in sections.get(section, {}).items():
 			entries.setdefault(name, text)
-	for name, text in sections.get("names", {}).items():
-		short = latin_letter_with(name)
-		if short:
-			entries.setdefault(short, text)
+	names = sections.get("names", {})
+	for name, short in short_names(sections).items():
+		entries.setdefault(short, names[name])
 	for name, text in list(entries.items()):
 		entries.setdefault(ascii_lowercase(name), text)  # the case fallback: a name without a lowercase twin is found in lowercase
 	for block, table in block_types(sections).items():
@@ -716,8 +737,9 @@ def reverse_entries(sections):
 			if not is_control_key(operand) and is_one_glyph(text) and text not in chosen:
 				block_forms.setdefault(text, (block, operand))
 				chosen.setdefault(text, "")
+	shortened = short_names(sections)
 	for name, text in sections.get("names", {}).items():
-		chosen.setdefault(text, f"<:{name}>")
+		chosen.setdefault(text, f"<:{shortened.get(name, name)}>")
 	for text, (block, operand) in block_forms.items():
 		chosen[text] = f"<:{block} {ascii_operand(operand, chosen)}>"
 	return {text: form for text, form in chosen.items() if not text.isascii()}

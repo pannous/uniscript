@@ -60,3 +60,8 @@
 - Both builders must give identical bytes: the Rust hair-style commit (5b42f7a, ZWJ sequences spell back as block forms)
   had not been ported to Python; `is_one_glyph` now is.
 - Seeding drift: styles.wasp has hand-added `*open/*close egyptian` keys that `seed` does not produce.
+- Short names (2026-10-08, user request): every `<script>-(capital|small)-letter-<rest>` Unicode name also gets
+  `<rest>` (capital: first letter upper case) with the script word, except for the default script latin:
+  `E-with-tilde-below`, `cyrillic-zhe`, `sharp-s`. Kept only when one letter derives it and no own/LaTeX/HTML/descriptions
+  name has it (`Eth` yields to HTML's ETH/eth); single letters (`a`) get none. to_uniscript writes the short name instead
+  of the Unicode name; the long names still read (entity_names_test). Both builders (src/entities.rs, data/uniscript_index.py).

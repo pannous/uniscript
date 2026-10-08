@@ -21,7 +21,7 @@ Each section shows the same five things:
 - **warnings**: a character without a counterpart (`<:fracture 7>`) stays plain with a warning; the modes
   - *warn* (the default, Python: *lenient*): unsupported characters warn, an unknown name (`<:nosuch>`) is an error
   - *error*: the first warning is an error too (the CLI's `--strict`)
-  - *lenient*: errors become warnings too, the faulty uniscript stays as written (not in Swift)
+  - *lenient*: errors become warnings too, the faulty uniscript stays as written
 - **header**: `<:uniscript version="https://uniscript.org/v1">` at the very start of a file converts to nothing; every
   `https://uniscript.org/vN` is read without warning, a foreign version warns
 - **meta information**: `<:color red 𓀀>` gives 𓀀 followed by invisible TAG characters; `meta_runs` reads them back as

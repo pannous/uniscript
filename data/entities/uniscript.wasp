@@ -6,7 +6,9 @@
 //   names          Unicode names, lower case, spaces as hyphens: <:greek-small-letter-alpha> or <:greek small letter alpha>
 //   latex          unicode-math command names without backslash: <:alpha> <:infty> <:mfrakA>
 //   html           HTML5 entities, backwards compatible but discouraged: <:dopf>
-//   descriptions   descriptive names, read but never written back: <:double tilde> (Latin letters with marks need none: <:E with tilde below>)
+//   descriptions   descriptive names, read but never written back: <:double tilde>
+// Cased letters also get their shortest unambiguous name, read and written back: no case words (the letter's case says
+// them), no script for latin: \:E-with-tilde-below, \:cyrillic-zhe, \:sharp-s (src/entities.rs short_name)
 //   blocks         block types: <:fracture A>, <:greek> a b <:/greek>, <:egyptian A1> <:egyptian seated man>; control
 //                  keys: "*suffix" follows any other character, "*suffix egyptian" a hieroglyph, "*prefix cjk" / "*infix egyptian" go before / between the parts of a group, "*meta" is the attached meta a block becomes where it has no suffix (colors: "color red"), "*rare" marks a rare script's block (its names are fetched, not filtered)
 //   block-aliases  other names of block types

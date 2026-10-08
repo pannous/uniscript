@@ -20,7 +20,9 @@ const SUFFIX_KEY: &str = "*suffix";
 /// a block only for typing: its characters do not spell back as it (口 stays 口, not `<:chinese kou>`)
 const ONE_WAY_KEY: &str = "*one-way";
 const ENTITY_EXTENSION: &str = "wasp";
-const LATIN_LETTER_PREFIXES: [(&str, bool); 2] = [("latin-capital-letter-", true), ("latin-small-letter-", false)];
+/// the script that short names leave out: `E-with-tilde-below`, but `cyrillic-zhe`
+const DEFAULT_SCRIPT: &str = "latin";
+const CASED_LETTER: [(&str, bool); 2] = [("-capital-letter-", true), ("-small-letter-", false)];
 
 /// Key → entry, in file order
 #[derive(Debug, Default, Clone)]
@@ -215,6 +217,24 @@ impl Entities {
 		types
 	}
 
+	/// Unicode name of a cased letter → its short name and text, when no other letter and no other name has that short name
+	fn short_names(&self) -> HashMap<String, (String, String)> {
+		let names = self.section("names");
+		let mut derived: HashMap<String, Vec<(&str, &str)>> = HashMap::new();
+		for (name, text) in names.texts() {
+			if let Some(short) = short_name(name) {
+				derived.entry(short).or_default().push((name, text));
+			}
+		}
+		let sections: Vec<Table> = ENTITY_SECTIONS.iter().map(|section| self.section(section)).collect();
+		let taken = |short: &str| sections.iter().any(|section| section.get(short).is_some());
+		derived
+			.into_iter()
+			.filter(|(short, letters)| letters.len() == 1 && !taken(short))
+			.map(|(short, letters)| (letters[0].0.to_string(), (short, letters[0].1.to_string())))
+			.collect()
+	}
+
 	/// name → text; a block entry is `block operand`, the block itself `block ` → ""
 	pub fn forward_entries(&self) -> Vec<(String, String)> {
 		let mut entries = Ordered::default();
@@ -223,10 +243,8 @@ impl Entities {
 				entries.set_default(name, text);
 			}
 		}
-		for (name, text) in self.section("names").texts() {
-			if let Some(short) = latin_letter_with(name) {
-				entries.set_default(&short, text);
-			}
+		for (short, text) in self.short_names().values() {
+			entries.set_default(short, text);
 		}
 		for (name, text) in entries.entries.clone() {
 			entries.set_default(&name.to_ascii_lowercase(), &text); // the case fallback: a name without a lowercase twin is found in lowercase
@@ -278,7 +296,9 @@ impl Entities {
 				}
 			}
 		}
+		let short_names = self.short_names();
 		for (name, text) in names.texts() {
+			let name = short_names.get(name).map_or(name, |(short, _)| short);
 			chosen.set_default(text, &format!("<:{name}>"));
 		}
 		for (text, form) in &block_forms.entries {
@@ -375,13 +395,12 @@ fn take_token(text: &str, is_key: bool) -> Option<(String, &str)> {
 	(end > 0).then(|| (text[..end].to_string(), &text[end..]))
 }
 
-/// `latin-capital-letter-e-with-tilde-below` → `E-with-tilde-below`: a Latin letter with marks by its letter alone
-fn latin_letter_with(name: &str) -> Option<String> {
-	LATIN_LETTER_PREFIXES.iter().find_map(|(prefix, capital)| {
-		let rest = name.strip_prefix(prefix)?;
-		let (letter, marks) = rest.split_once("-with-")?;
-		let letter = letter.chars().next().filter(|c| letter.len() == 1 && c.is_ascii_alphabetic())?;
-		let letter = if *capital { letter.to_ascii_uppercase() } else { letter };
-		Some(format!("{letter}-with-{marks}"))
-	})
+/// The Unicode name of a cased letter without its case words, which the letter's case says, and without the default
+/// script: `latin-capital-letter-e-with-tilde-below` → `E-with-tilde-below`, `cyrillic-capital-letter-zhe` → `cyrillic-Zhe`;
+/// None for other names and for a single letter (`latin-small-letter-a` is just a)
+fn short_name(name: &str) -> Option<String> {
+	let (script, rest, capital) = CASED_LETTER.iter().find_map(|(words, capital)| name.split_once(words).map(|(script, rest)| (script, rest, *capital)))?;
+	let rest = if capital { rest[..1].to_ascii_uppercase() + &rest[1..] } else { rest.to_string() };
+	let short = if script == DEFAULT_SCRIPT { rest } else { format!("{script}-{rest}") };
+	(short.chars().count() > 1).then_some(short)
 }
