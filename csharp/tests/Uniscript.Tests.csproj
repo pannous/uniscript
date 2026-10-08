@@ -19,4 +19,17 @@
 		<None Include="../../js/test/cases.json" CopyToOutputDirectory="PreserveNewest" />
 		<None Include="$(HostNative)*" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
+	<!-- a native library built before the last change of the Rust sources or the index fails the shared cases: say so -->
+	<Target Name="RequireCurrentNative" BeforeTargets="Build">
+		<ItemGroup>
+			<HostNativeLibrary Include="$(HostNative)*" />
+			<NativeInput Include="$(MSBuildThisFileDirectory)../../src/*.rs;$(MSBuildThisFileDirectory)../../data/entities.idx" />
+		</ItemGroup>
+		<PropertyGroup>
+			<HostNativeTicks>@(HostNativeLibrary->'%(ModifiedTime)')</HostNativeTicks>
+			<HostNativeTicks Condition="'$(HostNativeTicks)' != ''">$([System.DateTime]::Parse('$(HostNativeTicks)').Ticks)</HostNativeTicks>
+		</PropertyGroup>
+		<Error Condition="'$(HostNativeTicks)' != '' And $([System.DateTime]::Parse('%(NativeInput.ModifiedTime)').Ticks) &gt; $(HostNativeTicks)"
+		       Text="$(HostNative) is older than %(NativeInput.Identity): run make -C c/ffi natives" />
+	</Target>
 </Project>
