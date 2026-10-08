@@ -16,7 +16,7 @@ Replaces uniscript with Unicode in place: `<:alpha> <:fracture A> \:infinity` �
   with their character, block words, after block words their operands (`<:egyptian seated m` → `seated-man`). Names
   sharing their next segment fold into one group (`alchemical-` 🝟🜥🜙… 116) that asks for the rest when chosen. A name
   chosen (Tab, Enter, or Tab after typing a whole name: `\:equal-to-by-definition` → ≝) becomes its **character**;
-  with the setting `"completion_inserts": "name"` the tag stays as uniscript (`<:alpha>`). Tab with the popup closed
+  with the setting `"completion_inserts": "name"` the tag stays as uniscript, self-closed (`<:alpha/>`). Tab with the popup closed
   inserts the only match, opens the list when there are several (a second Tab takes its top), and blinks when nothing matches. Needs a `uniscript` with
   the `names` command (`uniscript names`).
   While a tag is typed, the other packages' completions (All Autocomplete, LSP, …) stay quiet (setting

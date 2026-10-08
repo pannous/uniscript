@@ -21,7 +21,7 @@ TAG_END = ">"
 TAG_OPENERS = ("<:", "\\:")
 CONTINUE_AFTER = ("-", " ")  # a committed group or block word asks for the rest
 QUIET_SETTING = "only_uniscript_completions_in_tags"
-INSERTS_SETTING = "completion_inserts"  # "character": a chosen name becomes its character, "name": <:alpha> stays
+INSERTS_SETTING = "completion_inserts"  # "character": a chosen name becomes its character, "name": <:alpha/> stays
 INSERTS_CHARACTERS = "character"
 QUERY_CALLBACK = "on_query_completions"
 QUIETED_MARK = "_uniscript_quieted"
@@ -248,7 +248,7 @@ class UniscriptTabCompletionCommand(sublime_plugin.TextCommand):
             typed = cli.BLOCK_WORD.search(text_before_cursor(self.view, cursor)).group(1)
             return self.view.replace(edit, sublime.Region(cursor - len(typed), cursor), operands[0][2])
         line = text_before_cursor(self.view, cursor)
-        best = cli.tab_completion(line, self.view.substr(cursor), names(), inserts_characters())
+        best = cli.tab_completion(line, self.view.substr(cursor), names(), inserts_characters(), not inserts_characters())
         if best == cli.CHOOSE:
             return open_completions(self.view)
         if best is None:  # nothing to complete: no tab either, the name blinks
@@ -336,7 +336,7 @@ class UniscriptCompletionListener(sublime_plugin.EventListener):
             item = sublime.CompletionItem(rest[:-len(TAG_END)], annotation="close", completion=prefix[:len(prefix) - typed] + rest)
             return sublime.CompletionList([item], sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS)
         try:
-            entries = cli.completions(line, view.substr(cursor), names(), prefix, inserts_characters())
+            entries = cli.completions(line, view.substr(cursor), names(), prefix, inserts_characters(), not inserts_characters())
         except cli.UniscriptError as error:
             view.window().status_message("uniscript: {}".format(error))
             return None

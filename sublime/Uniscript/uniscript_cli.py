@@ -25,6 +25,7 @@ EXPLICIT_COMMAND_CAPTION = "Uniscript: Make Tags Explicit"  # Default.sublime-co
 WARNING_PREFIX = "warning: "
 MARKER = "<:"
 TAG_END = ">"
+SELF_CLOSING_END = "/>"  # an inline tag left as uniscript is written self-closed: <:alpha> warns, <:alpha/> does not
 # a complete `<:…>` tag just before the cursor, the last one on its line
 TAG_BEFORE_CURSOR = re.compile(r"<:[^<>\n]+>$")
 # a tag finished by a chosen completion: a closed `<:…>`, or `\:name` not ending in "-" (a group)
@@ -332,24 +333,25 @@ def typed_tag_start(line_before_cursor):
     return match.start() if match else None
 
 
-def tab_completion(line_before_cursor, next_character, names, close_operands=False):
+def tab_completion(line_before_cursor, next_character, names, close_operands=False, explicit=False):
     """Tab without the popup: (length typed before the cursor to replace, its replacement, the whole tag replacing
     the typed one or None) for the only match, CHOOSE when there are several (the list is shown once, even when the
     typed name is whole), None when nothing matches"""
     typed = typed_tag(line_before_cursor, names)
-    entries = typed and completions(line_before_cursor, next_character, names, typed[3], close_operands)
+    entries = typed and completions(line_before_cursor, next_character, names, typed[3], close_operands, explicit)
     if not entries:
         return None
     return CHOOSE if len(entries) > 1 else (len(typed[3]),) + entries[0][2:]
 
 
-def completions(line_before_cursor, next_character, names, word, close_operands=False):
+def completions(line_before_cursor, next_character, names, word, close_operands=False, explicit=False):
     """(trigger, annotation, completion, whole tag) for the tag being typed: entity names, block words, after block
     words their operands, and an operand of several blocks typed alone (\\:a2: egyptian A2, anatolian a2, chinese a2).
     Sublime replaces `word`, the word before the cursor by the syntax's word_separators ("s" or "equals-s"), so a
     completion holds the name from where that word starts. A name on its own closes its tag, an operand after block
     words only with close_operands (when the tag becomes its character at once). The whole tag, set for operands of
-    other blocks, replaces the typed tag instead (\\:chinese-a2 is no name: <:chinese a2>)."""
+    other blocks, replaces the typed tag instead (\\:chinese-a2 is no name: <:chinese a2>). With explicit, a tag that stays
+    uniscript (the editor inserts names, not characters) closes self-closed: <:alpha/>, <:chinese a2/>."""
     typed = typed_tag(line_before_cursor, names)
     if not typed:
         return []
@@ -360,16 +362,17 @@ def completions(line_before_cursor, next_character, names, word, close_operands=
     word_start = max(0, len(prefix) - len(word))
     word_head = word[:max(0, len(word) - len(prefix))]  # where the word reaches before the name (\: in its word chars)
     closes = (close_operands or not leading) and not is_short and next_character != TAG_END
+    end = SELF_CLOSING_END if explicit else TAG_END
     entries = []
     for name, annotation, count in grouped(candidates, prefix):
-        tail = "" if count > 1 or not closes else TAG_END
+        tail = "" if count > 1 or not closes else end
         entries.append((shown(name), annotation, word_head + name[word_start:] + tail, None))
     if not leading:
         # operands of other blocks match the typed name whole (chinese wo 我): after a whole name, before longer names
         whole_names = sum(1 for entry in entries if entry[0].lower() == prefix.lower())
         whole_operands = []
         for block, operand, text in names.across_blocks(prefix):
-            tag = "{}{} {}{}".format(MARKER, block, operand, TAG_END)
+            tag = "{}{} {}{}".format(MARKER, block, operand, end)
             whole_operands.append(("{} {}".format(block, shown(operand)), text, tag, tag))
         entries[whole_names:whole_names] = whole_operands
     if not is_short and not leading:

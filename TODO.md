@@ -97,7 +97,6 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - local `.uniscript` entity files (`virus: 🦠`) are read by the Rust library and CLI only: the native ports (Swift, TypeScript, Python, C, Kotlin, wasp) and the editor plugins (VS Code, Sublime, IntelliJ completion) do not see them yet
 - local `.uniscript` block aliases can only name local blocks: the built-in blocks are not available when the local index is built (`block-aliases { tiniest: "upper" }` finds nothing)
 - Inline tags warn (user decision 2026-10-02, 8ed80c0): usage.md, README, sample.md and test.md still write inline tags (`<:alpha> <:fracture A>`, `<:color red 𓀀>`), so their examples print the new warnings; rewrite the inputs to explicit forms (`uniscript --explicit` per language string, minding each language's escaping)?
-- Sublime with "completion_inserts": "name" leaves an inline `<:alpha>`, which now warns: insert `\:alpha` / `<:…/>` instead
 - IntelliJ and VS Code plugins: rebuild against the ports with explicit(), maybe offer "Make Tags Explicit" as a quick fix there too
 - warp: a function with parameters cannot write a global (the assignment becomes a local); uniscript.wasp works around it with a U+FDD0 mark in unsupported() (notes/wasp.md, also: a variable named like a function parses as a call; a text const built from an expression breaks the module's types)
 - warp repo tests/test_uniscript.rs expect the old reverse spelling (spells("α","<:alpha>")); they will break once warp's packages/uniscript copy is updated past ed75f9a: switch them to \:alpha
