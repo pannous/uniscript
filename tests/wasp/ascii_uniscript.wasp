@@ -1,0 +1,8 @@
+use uniscript
+private = (0xE000 as char)
+ok = unicode_to_ascii_uniscript("α " + private + " " + private + "x") == "\\:alpha \\:U+E000 <:U+E000/>x"
+ok = ok and unicode_to_ascii_uniscript(private + (0xE0072 as char)) == "<:red U+E000/>"
+ok = ok and unicode_to_ascii_uniscript("é 😀") == "\\:e-with-acute \\:grinning-face"
+ok = ok and unicode_to_ascii_uniscript((0x10FFFD as char) + ".") == "\\:U+10FFFD."
+ok = ok and uniscript(unicode_to_ascii_uniscript("α " + private + "x")) == "α " + private + "x"
+ok

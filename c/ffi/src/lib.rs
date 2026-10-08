@@ -199,6 +199,11 @@ pub unsafe extern "C" fn uniscript_to_uniscript(text_pointer: *const c_char) -> 
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn uniscript_to_ascii_uniscript(text_pointer: *const c_char) -> *mut c_char {
+	text(text_pointer).map_or(null_mut(), |text| owned(&uniscript::ascii_escaped(&CONVERTER.with(|converter| converter.to_uniscript(text)))))
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn uniscript_explicit(source: *const c_char) -> *mut c_char {
 	text(source).map_or(null_mut(), |source| owned(&CONVERTER.with(|converter| converter.explicit(source))))
 }

@@ -55,6 +55,14 @@ static void test_spells(const conversion_case *c) {
 	free(unicode);
 }
 
+static void test_ascii_spells(const conversion_case *c) {
+	char *ascii = uniscript_to_ascii_uniscript(c->unicode), *back = uniscript_to_unicode(ascii);
+	check_text("to_ascii_uniscript", c->unicode, ascii, c->uniscript);
+	check_text("ascii round trip", c->uniscript, back, c->unicode);
+	uniscript_free(ascii);
+	uniscript_free(back);
+}
+
 static void test_explicit(const explicit_case *c) {
 	char *rewritten = uniscript_explicit(c->source);
 	check_text("explicit", c->source, rewritten, c->rewritten);
@@ -210,6 +218,7 @@ int main(void) {
 	EACH(round_trips, test_spells);
 	EACH(converts, test_converts);
 	EACH(spells_back, test_spells);
+	EACH(ascii_spells, test_ascii_spells);
 	EACH(explicits, test_explicit);
 	for (size_t i = 0; i < COUNT(restores); i++) test_restores(restores[i]);
 	EACH(warns, test_warns);

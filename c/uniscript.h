@@ -87,6 +87,10 @@ char *uniscript_to_unicode(const char *source);
 /* Unicode → uniscript; uniscript_to_unicode gives the text back. NULL only for NULL or invalid UTF-8 */
 char *uniscript_to_uniscript(const char *text);
 
+/* Unicode → uniscript in ASCII only: a character without a name is written by its code point (\:U+E000). NULL only for
+ * NULL or invalid UTF-8 */
+char *uniscript_to_ascii_uniscript(const char *text);
+
 /* The source with its opener-like inline tags in explicit form (<:alpha> → \:alpha, <:color red A> → <:color red A/>),
  * which converts alike without warnings; the header and everything else stay. NULL only for NULL or invalid UTF-8 */
 char *uniscript_explicit(const char *source);

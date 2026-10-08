@@ -3,6 +3,7 @@
 
 mod aliases_test;
 mod algorithmic_names_test;
+mod ascii_uniscript_test;
 mod egyptian_extended_test;
 mod operand_code_points_test;
 mod short_names_test;

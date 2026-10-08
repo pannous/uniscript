@@ -7,6 +7,7 @@
 		"warnCounts: [uniscript, unicode, number of warnings]",
 		"roundTrips: [uniscript, unicode]: converts, and toUniscript(unicode) == uniscript",
 		"toUniscript: [unicode, uniscript]",
+		"toAsciiUniscript: [unicode, uniscript]: toUniscript with every character beyond ASCII by its code point, and toUnicode gives the unicode back",
 		"explicit: [source, rewritten]: explicit(source) == rewritten, the inline tags (which warn) in their explicit form",
 		"unicodeRoundTrips: [unicode]: toUnicode(toUniscript(unicode)) == unicode",
 		"warns: [uniscript, unicode, message, at]: mode warn gives unicode and exactly this warning; mode error throws Unsupported with it",
@@ -284,5 +285,11 @@
 		["cuneiform-old-babylonian", "akk-Xsux-x-oldbab", "Santakku"],
 		["han-japanese", "ja", null],
 		["nosuchfont", null]
+	],
+	"toAsciiUniscript": [
+		["α {U+E000} {U+E000}x", "\\:alpha \\:U+E000 <:U+E000/>x"],
+		["{U+E000}{U+E0072}", "<:red U+E000/>"],
+		["é 😀", "\\:e-with-acute \\:grinning-face"],
+		["{U+10FFFD}.", "\\:U+10FFFD."]
 	]
 }

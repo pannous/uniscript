@@ -84,6 +84,13 @@ final class CasesTests: XCTestCase {
 		try check("toUniscript") { XCTAssertEqual(uniscript.toUniscript($0.text(0)), $0.text(1), "\($0)") }
 	}
 
+	func testToAsciiUniscript() throws {
+		try check("toAsciiUniscript") {
+			XCTAssertEqual(Uniscript.toAsciiUniscript($0.text(0)), $0.text(1), "\($0)")
+			XCTAssertEqual(try uniscript.convert($0.text(1)).text, $0.text(0), "\($0)")
+		}
+	}
+
 	func testExplicit() throws {
 		try check("explicit") {
 			XCTAssertEqual(uniscript.explicit($0.text(0)), $0.text(1), "\($0)")

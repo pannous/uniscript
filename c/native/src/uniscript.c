@@ -1193,6 +1193,34 @@ char *uniscript_to_uniscript(const char *text) {
 	return explicit;
 }
 
+/* Uniscript with every character beyond ASCII written by its code point: \:U+E000, <:U+E000/> before a name character
+ * (\:U+E000x would read as one name), and inside a tag the operand U+E000 (<:red U+E000>) */
+static char *ascii_escaped(str uniscript) {
+	buf out = { 0 };
+	bool in_tag = false;
+	uint32_t character;
+	size_t length;
+	for (str rest = uniscript; (length = utf8_decode(rest, &character)); rest = str_from(rest, length)) {
+		if (character == '<' && length < rest.n && rest.p[length] == ':') in_tag = true;
+		else if (character == '>') in_tag = false;
+		if (character < 0x80) {
+			buf_addc(&out, character);
+			continue;
+		}
+		bool before_name = length < rest.n && is_name_character(rest.p[length]);
+		buf_addf(&out, in_tag ? "U+%04X" : before_name ? "<:U+%04X/>" : "\\:U+%04X", (unsigned)character);
+	}
+	return buf_take(&out);
+}
+
+char *uniscript_to_ascii_uniscript(const char *text) {
+	char *spelled = uniscript_to_uniscript(text);
+	if (!spelled) return NULL;
+	char *ascii = ascii_escaped(str_of(spelled));
+	free(spelled);
+	return ascii;
+}
+
 char *uniscript_meta_template(const char *key) {
 	str template;
 	return !invalid(key) && meta_template(str_of(key), &template) ? copy_of(template) : NULL;

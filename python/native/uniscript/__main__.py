@@ -1,16 +1,18 @@
 """uniscript "<:alpha> <:fracture A>"   → α 𝔄   (stdin when no words; -r/--reverse, --strict, --lenient, --html;
---explicit: the inline tags, which warn, made explicit: <:alpha> <:color red A> → \\:alpha <:color red A/>)"""
+--explicit: the inline tags, which warn, made explicit: <:alpha> <:color red A> → \\:alpha <:color red A/>;
+-r --ascii: characters without a name by their code point, \\:U+E000)"""
 
 import sys
 
-from . import Uniscript, UniscriptError, WarningMode
+from . import Uniscript, UniscriptError, WarningMode, ascii_escaped
 
 REVERSE_FLAGS = ("-r", "--reverse")
 STRICT_FLAG = "--strict"
 HTML_FLAG = "--html"
 LENIENT_FLAG = "--lenient"
 EXPLICIT_FLAG = "--explicit"
-FLAGS = (*REVERSE_FLAGS, STRICT_FLAG, HTML_FLAG, LENIENT_FLAG, EXPLICIT_FLAG)
+ASCII_FLAG = "--ascii"
+FLAGS = (*REVERSE_FLAGS, STRICT_FLAG, HTML_FLAG, LENIENT_FLAG, EXPLICIT_FLAG, ASCII_FLAG)
 
 
 def converted(arguments) -> str:
@@ -18,7 +20,8 @@ def converted(arguments) -> str:
     text = " ".join(words) if words else sys.stdin.read()
     converter = Uniscript()
     if any(flag in arguments for flag in REVERSE_FLAGS):
-        return converter.to_uniscript(text)
+        uniscript = converter.to_uniscript(text)
+        return ascii_escaped(uniscript) if ASCII_FLAG in arguments else uniscript
     if EXPLICIT_FLAG in arguments:
         return converter.explicit(text)
     strict = STRICT_FLAG in arguments

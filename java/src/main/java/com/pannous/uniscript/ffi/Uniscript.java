@@ -76,6 +76,11 @@ public final class Uniscript {
 		return takeString(call(NativeLibrary.TO_UNISCRIPT, text));
 	}
 
+	/** Unicode → uniscript in ASCII only: a character without a name is written by its code point ({@code \:U+E000}) */
+	public static String toAsciiUniscript(String text) {
+		return takeString(call(NativeLibrary.TO_ASCII_UNISCRIPT, text));
+	}
+
 	/** The source with its opener-like inline tags in explicit form ({@code <:alpha>} → {@code \:alpha}), which converts alike */
 	public static String explicit(String source) {
 		return takeString(call(NativeLibrary.EXPLICIT, source));

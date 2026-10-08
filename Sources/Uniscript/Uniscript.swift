@@ -148,6 +148,11 @@ public struct Uniscript: Sendable {
 		standard.toUniscript(text)
 	}
 
+	/// Unicode → uniscript in ASCII only: a character without a name is written by its code point (`\:U+E000`)
+	public static func toAsciiUniscript(_ text: String) -> String {
+		asciiEscaped(standard.toUniscript(text))
+	}
+
 	/// The source with its inline tags in their explicit form (`<:alpha>` → `\:alpha`), which converts without warnings
 	public static func explicit(_ source: String) -> String {
 		standard.explicit(source)
@@ -816,6 +821,26 @@ extension EntityIndex {
 
 private func selfClosedForm(_ content: String) -> String {
 	"<:\(content)/>"
+}
+
+/// Uniscript with every character beyond ASCII written by its code point: `\:U+E000`, `<:U+E000/>` before a name character
+/// (`\:U+E000x` would read as one name), and inside a tag the operand `U+E000` (`<:red U+E000>`)
+public func asciiEscaped(_ uniscript: String) -> String {
+	let scalars = Array(uniscript.unicodeScalars)
+	var out = ""
+	var inTag = false
+	for (position, scalar) in scalars.enumerated() {
+		let next = position + 1 < scalars.count ? scalars[position + 1] : nil
+		if scalar == "<" && next == ":" { inTag = true } else if scalar == ">" { inTag = false }
+		if scalar.isASCII {
+			out.unicodeScalars.append(scalar)
+			continue
+		}
+		let codePoint = "U+" + String(format: "%04X", scalar.value)
+		let beforeName = next.map { $0.isASCII && isNameByte(UInt8($0.value)) } ?? false
+		out += inTag ? codePoint : beforeName ? selfClosedForm(codePoint) : "\\:" + codePoint
+	}
+	return out
 }
 
 /// `a, b or c`

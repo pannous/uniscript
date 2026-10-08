@@ -85,6 +85,16 @@ public class CasesTest
 	}
 
 	[Fact]
+	public void ToAsciiUniscript()
+	{
+		foreach (var row in Section("toAsciiUniscript"))
+		{
+			Assert.Equal(Text(row[1]), Uniscript.ToAsciiUniscript(Text(row[0])));
+			Assert.Equal(Text(row[0]), Uniscript.ToUnicode(Text(row[1])));
+		}
+	}
+
+	[Fact]
 	public void Explicit()
 	{
 		foreach (var row in Section("explicit")) Assert.Equal(Text(row[1]), Uniscript.Explicit(Text(row[0])));

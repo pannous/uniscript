@@ -111,6 +111,14 @@ class SharedCasesTest {
 	}
 
 	@TestFactory
+	Stream<DynamicTest> toAsciiUniscript() {
+		return cases("toAsciiUniscript", c -> {
+			assertEquals(text(c, 1), Uniscript.toAsciiUniscript(text(c, 0)));
+			assertEquals(text(c, 0), Uniscript.toUnicode(text(c, 1)));
+		});
+	}
+
+	@TestFactory
 	Stream<DynamicTest> explicit() {
 		return cases("explicit", c -> assertEquals(text(c, 1), Uniscript.explicit(text(c, 0))));
 	}

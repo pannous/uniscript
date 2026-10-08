@@ -131,6 +131,13 @@ inline std::string to_uniscript(const std::string &text) {
 	return detail::take(spelled);
 }
 
+/// Unicode → uniscript in ASCII only: a character without a name is written by its code point (\:U+E000)
+inline std::string to_ascii_uniscript(const std::string &text) {
+	char *spelled = uniscript_to_ascii_uniscript(text.c_str());
+	if (!spelled) throw Error(ErrorKind::InvalidInput, "uniscript: invalid input (not UTF-8)", "", 0);
+	return detail::take(spelled);
+}
+
 /// The source with its opener-like inline tags in explicit form (<:alpha> → \:alpha); `explicit` is a C++ keyword
 inline std::string explicit_tags(const std::string &source) {
 	char *rewritten = uniscript_explicit(source.c_str());

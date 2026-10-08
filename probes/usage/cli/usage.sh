@@ -1,5 +1,6 @@
 uniscript "<:alpha> <:fracture A>"          # α 𝔄
 uniscript -r "α 𝔄"                          # \:alpha \:fracture-A
+uniscript -r --ascii "α 😀 "               # \:alpha \:grinning-face \:U+E000 (unnamed characters by code point)
 uniscript '\:alpha <:greek small letter alpha> <:double-R> <:bold italic alpha>'   # α α ℝ 𝜶
 uniscript '<:greek>athos<:/greek> <:greek>athos<:> <<::>alpha>'   # αθοσ αθοσ <:alpha>
 uniscript '\:U+1F60D <:0x1F60D> \U1F60D \:bed'   # 😍 😍 😍 🛏 (code points; names win)

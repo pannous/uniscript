@@ -136,6 +136,39 @@ pub fn to_uniscript(text: &str) -> String {
 	Uniscript::default().to_uniscript(text)
 }
 
+/// Unicode → uniscript in ASCII only: a character without a name is written by its code point (`\:U+E000`)
+#[cfg(feature = "embedded-index")]
+pub fn to_ascii_uniscript(text: &str) -> String {
+	ascii_escaped(&to_uniscript(text))
+}
+
+/// Uniscript with every character beyond ASCII written by its code point: `\:U+E000`, `<:U+E000/>` before a name character
+/// (`\:U+E000x` would read as one name), and inside a tag the operand `U+E000` (`<:red U+E000>`)
+pub fn ascii_escaped(uniscript: &str) -> String {
+	let mut out = String::with_capacity(uniscript.len());
+	let mut in_tag = false;
+	let mut characters = uniscript.char_indices().peekable();
+	while let Some((at, character)) = characters.next() {
+		if character == TAG_OPEN && uniscript[at + 1..].starts_with(MARKER_COLON) {
+			in_tag = true;
+		} else if character == TAG_CLOSE {
+			in_tag = false;
+		}
+		if character.is_ascii() {
+			out.push(character);
+			continue;
+		}
+		let code_point = format!("U+{:04X}", u32::from(character));
+		let before_name = characters.peek().is_some_and(|(_, next)| is_name_character(*next));
+		out += &match (in_tag, before_name) {
+			(true, _) => code_point,
+			(false, true) => self_closed_form(&code_point),
+			(false, false) => format!("{SHORT_OPEN}{MARKER_COLON}{code_point}"),
+		};
+	}
+	out
+}
+
 /// The source with its inline tags in their explicit form (`<:alpha>` → `\:alpha`), which converts without warnings
 #[cfg(feature = "embedded-index")]
 pub fn explicit(source: &str) -> String {

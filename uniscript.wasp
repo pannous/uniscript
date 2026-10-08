@@ -1027,6 +1027,40 @@ spelled(character:text, blocks:text) := {
 	"<:" + blocks + " " + inner + ">"
 }
 
+// Unicode → uniscript in ASCII only: a character without a name is written by its code point (\:U+E000)
+unicode_to_ascii_uniscript(text:text) := ascii_escaped(unicode_to_uniscript(text))
+
+// the code point of the UTF-8 sequence of width bytes at byte i
+code_point_at(text:text, i, width) := {
+	b = byte_at(text, i)
+	if width == 1 { return b }
+	if width == 2 { return (b - 192) * 64 + byte_at(text, i + 1) - 128 }
+	if width == 3 { return (b - 224) * 4096 + (byte_at(text, i + 1) - 128) * 64 + byte_at(text, i + 2) - 128 }
+	(b - 240) * 262144 + (byte_at(text, i + 1) - 128) * 4096 + (byte_at(text, i + 2) - 128) * 64 + byte_at(text, i + 3) - 128
+}
+
+// uniscript with every character beyond ASCII written by its code point: \:U+E000, <:U+E000/> before a name byte
+// (\:U+E000x would read as one name), and inside a tag the operand U+E000 (<:red U+E000>)
+ascii_escaped(text:text) := {
+	out = ""
+	in_tag = false
+	i = 0
+	while i < text.bytes {
+		b = byte_at(text, i)
+		width = utf8_width(b)
+		if b == 60 and byte_after(text, i) == 58 { in_tag = true }
+		if b == 62 { in_tag = false }
+		if b < 128 { out += byte_slice(text, i, i + 1) } else {
+			written = code_point_name(code_point_at(text, i, width))
+			if in_tag { out += written } else {
+				if is_name_byte(byte_after(text, i + width - 1)) { out += self_closed_form(written) } else { out += "\\:" + written }
+			}
+		}
+		i += width
+	}
+	out
+}
+
 unicode_to_uniscript(text:text) := {
 	out = ""
 	i = 0

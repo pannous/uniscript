@@ -143,6 +143,12 @@ static const conversion_case converts[] = {
 	{"<:greek beef/>", "βεεφ"},
 };
 
+/* Unicode → uniscript in ASCII only, and back */
+static const conversion_case ascii_spells[] = {
+	{"\\:alpha \\:U+E000 <:U+E000/>x", "α \uE000 \uE000x"}, {"<:red U+E000/>", "\uE000\U000E0072"},
+	{"\\:e-with-acute \\:grinning-face", "é 😀"}, {"\\:U+10FFFD.", "\U0010FFFD."},
+};
+
 /* Unicode → uniscript */
 static const conversion_case spells_back[] = {
 	{"\\:mirror-red-A \\:mirror-red-circle", "A\U000E0072\U000E004D 🔴\U000E004D"},

@@ -65,6 +65,8 @@ followed by TAG characters (U+E0020…E007E). Basic fonts shows the plain letter
 - **40,000 names**: Unicode 16 character names, LaTeX `unicode-math` commands, HTML5 entities, and uniscript's own names.
 - **Block types**: bold, italic, script, fracture, double-struck, sans, monospace, superscript (`upper`), subscript
   (`lower`), small capitals, circled, fullwidth, ligatures, phonetic Greek (`<:greek athos>` → αθοσ, `<:greek> filosofia kosmos<:/greek>` → φιλοσοφια κοσμοσ; a block tag eats one space of padding on its inner side, so `<:greek> athos <:/greek>` → αθοσ).
+- **Code points**: any character by its code point, `\:U+1F60D`, `<:1F60D/>` or `\U1F60D` → 😍, also as a block operand
+  (`<:bold 0x41/>` → 𝐀); `to_ascii_uniscript` (`uniscript -r --ascii`) writes characters without a name that way.
 - **Styles combine** in any word order: `<:bold italic alpha>` → 𝜶, `<:sans bold A>` → 𝗔, `<:fraktur bold A>` → 𝕬.
 - **Effects**: mirror, flip, turn, left, right and 11 colors, which you can stack: `<:mirror red R>`.
 - **Hieroglyphs**: `<:egyptian A1>` (alias `gardiner`, Gardiner numbers and descriptions, any case; short `\:egyptian-a1` `\:egyptian-seated-man` like every block), `<:anatolian CAPUT>` (alias

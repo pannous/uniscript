@@ -199,6 +199,9 @@ class Uniscript(val index: EntityIndex = EntityIndex.bundled) {
 		return out.append(source, position, source.length).toString()
 	}
 
+	/** Unicode → uniscript in ASCII only: a character without a name is written by its code point (`\:U+E000`) */
+	fun toAsciiUniscript(text: String): String = asciiEscaped(toUniscript(text))
+
 	/** Unicode → uniscript; meta sequences of known keys become `<:font han-japanese>`, `<:/font>`, `<:color red A/>`, the
 	 *  other tags their explicit form (`\:alpha`, `<:alpha/>x`) */
 	fun toUniscript(text: String): String {
@@ -300,6 +303,28 @@ private fun EntityIndex.blockForm(content: String): String? {
 }
 
 private fun selfClosedForm(content: String) = "$TAG_OPEN$MARKER_COLON$content$CLOSING_SLASH$TAG_CLOSE"
+
+/**
+ * Uniscript with every character beyond ASCII written by its code point: `\:U+E000`, `<:U+E000/>` before a name character
+ * (`\:U+E000x` would read as one name), and inside a tag the operand `U+E000` (`<:red U+E000>`)
+ */
+fun asciiEscaped(uniscript: String): String {
+	val characters = uniscript.codePoints().toArray()
+	val out = StringBuilder()
+	var inTag = false
+	for ((position, character) in characters.withIndex()) {
+		if (character == TAG_OPEN.code && characters.getOrNull(position + 1) == MARKER_COLON.code) inTag = true
+		else if (character == TAG_CLOSE.code) inTag = false
+		if (character < 0x80) {
+			out.appendCodePoint(character)
+			continue
+		}
+		val codePoint = "U+%04X".format(character)
+		val beforeName = characters.getOrNull(position + 1)?.let { it < 0x80 && isNameChar(it.toChar()) } ?: false
+		out.append(if (inTag) codePoint else if (beforeName) selfClosedForm(codePoint) else "$SHORT_OPEN$MARKER_COLON$codePoint")
+	}
+	return out.toString()
+}
 
 /** `a, b or c` */
 private fun either(forms: List<String>) = if (forms.size <= 1) forms.joinToString() else forms.dropLast(1).joinToString(", ") + " or " + forms.last()

@@ -123,3 +123,10 @@ def test_fonts(case):
         assert font is None
     else:
         assert (font.lang, font.families[0] if case[2] else None) == (case[1], case[2])
+
+
+@pytest.mark.parametrize("case", cases("toAsciiUniscript"), ids=str)
+def test_to_ascii_uniscript(case):
+    unicode, ascii = expanded(case[0]), case[1]
+    assert uniscript.to_ascii_uniscript(unicode) == ascii
+    assert uniscript.to_unicode(ascii) == unicode

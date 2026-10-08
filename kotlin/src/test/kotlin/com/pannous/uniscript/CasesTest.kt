@@ -69,6 +69,12 @@ class CasesTest {
 	fun toUniscript() = check("toUniscript") { assertEquals("$it", it.text(1), uniscript.toUniscript(it.text(0))) }
 
 	@Test
+	fun toAsciiUniscript() = check("toAsciiUniscript") {
+		assertEquals("$it", it.text(1), uniscript.toAsciiUniscript(it.text(0)))
+		assertEquals("$it", it.text(0), uniscript.toUnicode(it.text(1)))
+	}
+
+	@Test
 	fun explicit() = check("explicit") { assertEquals("$it", it.text(1), uniscript.explicit(it.text(0))) }
 
 	@Test

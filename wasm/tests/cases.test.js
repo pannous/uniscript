@@ -2,7 +2,7 @@
 import { test, before } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import init, { UniscriptError, convert, explicit, font, header, html, metaRuns, toUniscript, toUnicode } from "../uniscript.js";
+import init, { UniscriptError, convert, explicit, font, header, html, metaRuns, toAsciiUniscript, toUniscript, toUnicode } from "../uniscript.js";
 
 const CASES = new URL("../../js/test/cases.json", import.meta.url);
 const TAG_BASE = 0xe0000;
@@ -114,5 +114,12 @@ test("fonts", () => {
 			assert.equal(found?.lang, lang, name);
 			if (family) assert.equal(found?.families[0], family, name);
 		}
+	}
+});
+
+test("toAsciiUniscript", () => {
+	for (const [unicode, ascii] of section("toAsciiUniscript")) {
+		assert.equal(toAsciiUniscript(unicode), ascii, unicode);
+		assert.equal(convert(ascii).text, unicode, ascii);
 	}
 });

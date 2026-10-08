@@ -1,7 +1,7 @@
 // The uniscript package with its bundled entities.idx loaded (top-level await: a file read in Node, a fetch in
 // browsers). `uniscript/core` has the same API without loading anything, for an index from your own bytes.
 
-import { EntityIndex, Uniscript, describeWarning } from "./core.ts";
+import { EntityIndex, Uniscript, asciiEscaped, describeWarning } from "./core.ts";
 import type { WarningMode } from "./core.ts";
 import type { Styled } from "./meta.ts";
 
@@ -23,6 +23,8 @@ export const convert = (source: string, mode: WarningMode = "warn") => standard.
 
 /** Unicode → uniscript with the built-in entities; `toUnicode` gives the text back */
 export const toUniscript = (text: string) => standard.toUniscript(text);
+/** Unicode → uniscript in ASCII only: a character without a name is written by its code point (`\:U+E000`) */
+export const toAsciiUniscript = (text: string) => asciiEscaped(standard.toUniscript(text));
 export const explicit = (source: string) => standard.explicit(source);
 export const font = (name: string) => standard.font(name);
 export const metaTemplate = (key: string) => standard.metaTemplate(key);

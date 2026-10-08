@@ -59,6 +59,7 @@ internal static unsafe partial class Native
 
 	[LibraryImport(Library)] internal static partial Result uniscript_convert(byte* source, UniscriptMode mode);
 	[LibraryImport(Library)] internal static partial byte* uniscript_to_uniscript(byte* text);
+	[LibraryImport(Library)] internal static partial byte* uniscript_to_ascii_uniscript(byte* text);
 	[LibraryImport(Library)] internal static partial byte* uniscript_explicit(byte* source);
 	[LibraryImport(Library)] internal static partial int uniscript_header(byte* source, byte** version, nuint* versionLength, nuint* length);
 	[LibraryImport(Library)] internal static partial Styled uniscript_meta_runs(byte* tagged);

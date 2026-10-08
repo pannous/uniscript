@@ -68,6 +68,8 @@ export function convert(source: string, mode?: WarningMode): { text: string; war
 export function toUnicode(source: string): string;
 /** Unicode → uniscript; toUnicode gives the text back */
 export function toUniscript(text: string): string;
+/** Unicode → uniscript in ASCII only: a character without a name is written by its code point (`\:U+E000`) */
+export function toAsciiUniscript(text: string): string;
 /** The source with its inline tags, which warn, in their explicit form: `<:alpha>` → `\:alpha` */
 export function explicit(source: string): string;
 /** The header at the start of the source; it is no header anywhere else */

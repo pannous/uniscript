@@ -784,6 +784,30 @@ def to_uniscript(text: str) -> str:
     return standard().to_uniscript(text)
 
 
+def to_ascii_uniscript(text: str) -> str:
+    """Unicode → uniscript in ASCII only: a character without a name is written by its code point (`\\:U+E000`)"""
+    return ascii_escaped(to_uniscript(text))
+
+
+def ascii_escaped(uniscript: str) -> str:
+    """Uniscript with every character beyond ASCII written by its code point: `\\:U+E000`, `<:U+E000/>` before a name
+    character (`\\:U+E000x` would read as one name), and inside a tag the operand `U+E000` (`<:red U+E000>`)"""
+    out = []
+    in_tag = False
+    for at, character in enumerate(uniscript):
+        if character == TAG_OPEN and uniscript.startswith(MARKER_COLON, at + 1):
+            in_tag = True
+        elif character == TAG_CLOSE:
+            in_tag = False
+        if character.isascii():
+            out.append(character)
+            continue
+        code_point = f"U+{ord(character):04X}"
+        before_name = at + 1 < len(uniscript) and is_name_character(uniscript[at + 1])
+        out.append(code_point if in_tag else self_closed_form(code_point) if before_name else f"{SHORT_OPEN}{MARKER_COLON}{code_point}")
+    return "".join(out)
+
+
 def explicit(source: str) -> str:
     """The source with its inline tags in their explicit form (`<:alpha>` → `\\:alpha`), which converts without warnings"""
     return standard().explicit(source)

@@ -19,12 +19,13 @@ UNISCRIPT_VERSION: str = _uniscript.UNISCRIPT_VERSION
 __all__ = [
     "UNISCRIPT_VERSION", "Index", "Table", "text_hash", "standard", "WarningMode", "Warning", "Header", "Font", "MetaRun", "Styled", "Meta", "Uniscript",
     "UniscriptError", "UnknownEntity", "Unclosed", "Unsupported", "InvalidMeta",
-    "convert", "to_unicode", "to_uniscript", "explicit", "header", "reads_version",
+    "convert", "to_unicode", "to_uniscript", "to_ascii_uniscript", "ascii_escaped", "explicit", "header", "reads_version",
 ]
 
 
 text_hash = _uniscript.text_hash
 reads_version = _uniscript.reads_version
+ascii_escaped = _uniscript.ascii_escaped
 
 
 class Table(enum.IntEnum):
@@ -259,6 +260,11 @@ def to_unicode(source: str) -> str:
 def to_uniscript(text: str) -> str:
     """Unicode → uniscript; to_unicode gives the text back"""
     return standard().to_uniscript(text)
+
+
+def to_ascii_uniscript(text: str) -> str:
+    """Unicode → uniscript in ASCII only: a character without a name is written by its code point (\\:U+E000)"""
+    return ascii_escaped(to_uniscript(text))
 
 
 def explicit(source: str) -> str:

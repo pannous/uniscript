@@ -163,6 +163,23 @@ const isClosing = (content: string) => content === "" || content.startsWith(CLOS
 
 const selfClosedForm = (content: string) => `${TAG_OPEN}${MARKER_COLON}${content}${CLOSING_SLASH}${TAG_CLOSE}`;
 
+/**
+ * Uniscript with every character beyond ASCII written by its code point: `\:U+E000`, `<:U+E000/>` before a name character
+ * (`\:U+E000x` would read as one name), and inside a tag the operand `U+E000` (`<:red U+E000>`)
+ */
+export function asciiEscaped(uniscript: string): string {
+	const characters = [...uniscript];
+	let inTag = false;
+	return characters.map((character, position) => {
+		if (character === TAG_OPEN && characters[position + 1] === MARKER_COLON) inTag = true;
+		else if (character === TAG_CLOSE) inTag = false;
+		if (character.charCodeAt(0) < 0x80) return character;
+		const codePoint = `U+${character.codePointAt(0)!.toString(16).toUpperCase().padStart(4, "0")}`;
+		const beforeName = position + 1 < characters.length && isNameCharacter(characters[position + 1]);
+		return inTag ? codePoint : beforeName ? selfClosedForm(codePoint) : `${SHORT_OPEN}${MARKER_COLON}${codePoint}`;
+	}).join("");
+}
+
 /** `a, b or c` */
 const either = (forms: string[]) => (forms.length > 1 ? `${forms.slice(0, -1).join(", ")} or ${forms.at(-1)}` : forms[0] ?? "");
 

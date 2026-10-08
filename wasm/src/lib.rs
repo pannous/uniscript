@@ -207,6 +207,12 @@ pub fn to_uniscript(text: &str) -> Result<String, JsValue> {
 	with_converter(|converter| converter.to_uniscript(text))
 }
 
+/// Unicode → uniscript in ASCII only: a character without a name is written by its code point (`\:U+E000`)
+#[wasm_bindgen(js_name = toAsciiUniscript)]
+pub fn to_ascii_uniscript(text: &str) -> Result<String, JsValue> {
+	with_converter(|converter| uniscript::ascii_escaped(&converter.to_uniscript(text)))
+}
+
 /// The source with its inline tags, which warn, in their explicit form: `<:alpha>` → `\:alpha`
 #[wasm_bindgen]
 pub fn explicit(source: &str) -> Result<String, JsValue> {

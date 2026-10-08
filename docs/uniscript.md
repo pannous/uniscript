@@ -76,6 +76,10 @@ instead of silently becoming a character; with a prefix any length works: `\:U+4
 **As a block operand** a code point needs its prefix `U+` or `0x`: `<:bold 0x41/>` ⩵ 𝐀, `<:red U+2661/>` ⩵ ♡ in red,
 while `<:greek beef/>` stays the word βεεφ.    
   
+**ASCII only**: `to_uniscript` keeps a character without a name as it is; `to_ascii_uniscript` (CLI `-r --ascii`) writes
+it by its code point instead: `\:U+E000`, `<:U+E000/>` before a letter, `<:red U+E000/>` inside a tag. Its output is
+pure ASCII and reads back to the same text.    
+  
 **`\U` without the colon** is the only marker without `:`. It counts only when 4–8 hex digits follow as a whole token  
 (`\U1F60D`, not `\Users` or `\U1F60Dx`, which stay text without a warning), so Windows paths and prose are unaffected.  
 Code quoted in uniscript text is converted too: `"\U0001F60D"` becomes `"😍"`, the same string for Python and C. To keep  

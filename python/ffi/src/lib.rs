@@ -171,6 +171,12 @@ fn header(source: &str) -> Option<(String, usize)> {
 	uniscript::header(source).map(|header| (header.version.to_string(), header.length))
 }
 
+/// Uniscript with every character beyond ASCII written by its code point (`\:U+E000`)
+#[pyfunction]
+fn ascii_escaped(uniscript: &str) -> String {
+	uniscript::ascii_escaped(uniscript)
+}
+
 /// Whether a header version is read without warning: none, or https://uniscript.org/vN for any number N
 #[pyfunction]
 fn reads_version(version: &str) -> bool {
@@ -223,6 +229,7 @@ fn _uniscript(module: &Bound<'_, PyModule>) -> PyResult<()> {
 	module.add_class::<Converter>()?;
 	module.add_function(wrap_pyfunction!(header, module)?)?;
 	module.add_function(wrap_pyfunction!(reads_version, module)?)?;
+	module.add_function(wrap_pyfunction!(ascii_escaped, module)?)?;
 	module.add_function(wrap_pyfunction!(meta_tags, module)?)?;
 	module.add_function(wrap_pyfunction!(meta_uniscript, module)?)?;
 	module.add_function(wrap_pyfunction!(meta_at, module)?)?;
