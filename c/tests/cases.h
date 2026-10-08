@@ -138,6 +138,9 @@ static const conversion_case converts[] = {
 	{"<:CJK COMPATIBILITY IDEOGRAPH-F900/>", "\uF900"}, {"<:TANGUT COMPONENT-001/>", "𘠀"},
 	{"<:egyptian hieroglyph-13460/>", "𓑠"}, {"<:HANGUL SYLLABLE GA/>", "가"}, {"<:hangul syllable hih/>", "힣"},
 	{"<:HANGUL SYLLABLE SWAELP/>", "쇒"}, {"\\:cjk-unified-ideograph-4e00", "一"},
+	/* a block operand is a code point only with the prefix U+ or 0x: beef stays a word */
+	{"<:bold 0x41/>", "𝐀"}, {"<:bold U+41 U+42/>", "𝐀𝐁"}, {"<:fracture u+61/>", "𝔞"}, {"<:red U+2661/>", "♡\U000E0072"},
+	{"<:greek beef/>", "βεεφ"},
 };
 
 /* Unicode → uniscript */

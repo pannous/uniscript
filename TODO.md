@@ -38,15 +38,12 @@
 - Other hieroglyphic scripts could join `hieroglyph: "egyptian anatolian"`: Meroitic hieroglyphs (letter names), Egyptian Extended-A once it has Gardiner/Unikemet numbers.
 - TODO: release 1.0.0 is on crates.io, PyPI (uniscript-py, uniscript-rs), GitHub (v1.0.0 with the C tarball and the IntelliJ zip, sublime-1.0.0), Homebrew (pannous/homebrew-tap) and pending at the Swift Package Index (SwiftPackageIndex/PackageList#15450). Still open: npm (@pannous/uniscript, @pannous/uniscript-wasm) needs the user's 2FA per publish: `npm publish probes/publish/dist/pannous-uniscript{,-wasm}-1.0.0.tgz --access public`; the first JetBrains Marketplace upload by hand; the Package Control PR (line above).
 - to_uniscript keeps characters without a name as they are; an option to write them as `<:U+XXXX>` (ASCII-only output) is not implemented in any port (docs/uniscript.md "# Code points").
-- Code points as block operands (`<:red U+2661>`, `<:bold 0x41>`) are not supported: only a whole tag or `\:` token is a code point.
 - warp: returning a `const` from a function makes the analyzer type the function as text (`const no_value = -1 … return no_value` → "f needs an Int for parameter v"); `{ return -1 }` parses as `return - 1` ("undefined variable: return"); `if c {⏎ call()⏎ return x⏎ }` misparses (probes/codepoints workarounds in uniscript.wasp: `return (-1)`, `unsupported(…) + written`).
 - warp: `/` of integers that do not divide gives a float, which later fails as a byte_slice index ("index out of range") instead of a type error.
 
 
 Open problems:
 
-Code points don't work as operands inside a tag, e.g. <:red U+2661>.
-There is no ASCII-only option for to_uniscript.
 warp has four bugs I had to work around in uniscript.wasp, recorded in TODO.md:
 returning a constant breaks type inference;
 return -1 parses as return - 1;

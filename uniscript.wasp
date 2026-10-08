@@ -283,6 +283,8 @@ readings(block:text, word:text, effects:text, at) := {
 operand(block:text, token:text, effects:text, at) := {
 	own = find(names_table, block + " " + token)
 	if own >= 0 { return own_form(value_of(own), effects, at) }
+	value = operand_code_point(token)
+	if value >= 0 { return styled(block, "" + (value as char), effects, at) }
 	if find(names_table, block + " " + readings_key) >= 0 {
 		// <:chinese> shihan: whole readings, never letters (nuli is nu li, not n u l i)
 		split = readings(block, token, effects, at)
@@ -784,6 +786,18 @@ code_point_value(token:text) := {
 	prefix = code_point_prefix(token)
 	if prefix > 0 { return hex_value(token, prefix, token.bytes, 1) }
 	hex_value(token, 0, token.bytes, min_bare_hex_digits)
+}
+
+// the code point of a block operand written with the prefix U+ or 0x (<:bold 0x41>, <:red U+2661>), else -1: only with a
+// prefix, so beef stays a word
+operand_code_point(token:text) := {
+	if token.bytes < 3 { return (-1) }
+	first = byte_at(token, 0)
+	second = byte_at(token, 1)
+	if not ((is_u(first) and second == 43) or (first == 48 and (second == 120 or second == 88))) { return (-1) }
+	value = hex_value(token, 2, token.bytes, 1)
+	if value > max_code_point or (value >= first_surrogate and value <= last_surrogate) { return (-1) }
+	value
 }
 
 // U+ and at least 4 upper case hex digits

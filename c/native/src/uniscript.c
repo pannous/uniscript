@@ -149,6 +149,17 @@ static bool code_point_value(str token, uint32_t *value) {
 	return hex_value(token, MIN_BARE_HEX_DIGITS, value);
 }
 
+/* The character of a block operand written as a prefixed code point (U+2661 ♡, 0x41 A): only with a prefix, so beef
+ * stays a word */
+static bool operand_code_point(str token, uint32_t *character) {
+	static const char *const prefixes[] = { "U+", "u+", "0x", "0X" };
+	for (size_t i = 0; i < sizeof prefixes / sizeof *prefixes; i++)
+		if (str_starts(token, prefixes[i]))
+			return hex_value(str_from(token, strlen(prefixes[i])), 1, character) && *character <= MAX_CODE_POINT &&
+			       (*character < SURROGATE_FIRST || *character > SURROGATE_LAST);
+	return false;
+}
+
 /* Bytes after the backslash of \U1F60D (4–8 hex digits as a whole name token), the only marker without a colon; 0 for none */
 static size_t unicode_escape(str after_backslash) {
 	if (!str_starts(after_backslash, "U")) return 0;
@@ -303,6 +314,11 @@ static void operand(converter *self, buf *out, str block, str token, strs effect
 	str own, named;
 	if (form(block, token, &own)) {
 		own_form(self, out, own, effects, at);
+		return;
+	}
+	uint32_t code_point;
+	if (operand_code_point(token, &code_point)) {
+		styled(self, out, block, code_point, effects, at);
 		return;
 	}
 	if (form(block, str_of(READINGS_KEY), NULL)) {

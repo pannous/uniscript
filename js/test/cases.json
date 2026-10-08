@@ -170,7 +170,12 @@
 		["<:HANGUL SYLLABLE GA/>", "가"],
 		["<:hangul syllable hih/>", "힣"],
 		["<:HANGUL SYLLABLE SWAELP/>", "쇒"],
-		["\\:cjk-unified-ideograph-4e00", "一"]
+		["\\:cjk-unified-ideograph-4e00", "一"],
+		["<:bold 0x41/>", "𝐀"],
+		["<:bold U+41 U+42/>", "𝐀𝐁"],
+		["<:fracture u+61/>", "𝔞"],
+		["<:red U+2661/>", "♡{U+E0072}"],
+		["<:greek beef/>", "βεεφ"]
 	],
 	"warnCounts": [
 		["<:double bold A>", "𝐀", 1]

@@ -73,6 +73,9 @@ the LaTeX `BbbA`–`BbbF`, `Bbba`–`Bbbf` (𝔸 …): `\:bed` ⩵ 🛏 and `\:B
 code point U+BBBA. The bare form needs at least 4 digits, so a mistyped short name (`\:ab`) stays an unknown name  
 instead of silently becoming a character; with a prefix any length works: `\:U+41` ⩵ A.    
   
+**As a block operand** a code point needs its prefix `U+` or `0x`: `<:bold 0x41/>` ⩵ 𝐀, `<:red U+2661/>` ⩵ ♡ in red,
+while `<:greek beef/>` stays the word βεεφ.    
+  
 **`\U` without the colon** is the only marker without `:`. It counts only when 4–8 hex digits follow as a whole token  
 (`\U1F60D`, not `\Users` or `\U1F60Dx`, which stay text without a warning), so Windows paths and prose are unaffected.  
 Code quoted in uniscript text is converted too: `"\U0001F60D"` becomes `"😍"`, the same string for Python and C. To keep  

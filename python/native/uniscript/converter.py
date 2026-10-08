@@ -19,6 +19,7 @@ MARKER = re.compile(r"[<\\]:|\\(?=U[0-9A-Fa-f]{4,8}(?![A-Za-z0-9_-]))")
 # a code point token: U+1F60D, U1F60D, 0x1F60D in any case (1–8 hex digits) or bare 1F60D (4–8, so a mistyped short
 # name stays unknown)
 CODE_POINT = re.compile(r"(?:[Uu]\+?|0[xX])([0-9A-Fa-f]{1,8})|([0-9A-Fa-f]{4,8})")
+OPERAND_CODE_POINT = re.compile(r"(?:[Uu]\+|0[xX])([0-9A-Fa-f]{1,8})")  # <:bold 0x41>, <:red U+2661>; beef stays a word
 # U1F60D after a backslash: \U1F60D, the only marker without a colon, 4–8 hex digits as a whole name token
 UNICODE_ESCAPE = re.compile(r"U([0-9A-Fa-f]{4,8})(?![A-Za-z0-9_-])")
 # a name token after \:; the + of a leading U+ belongs to it
@@ -108,6 +109,13 @@ def code_point_value(token: str):
     """The value of a code point token (`U+1F60D`, `1F60D`), else None"""
     digits = CODE_POINT.fullmatch(token)
     return int(digits[1] or digits[2], 16) if digits else None
+
+
+def operand_code_point(token: str):
+    """The character of a block operand written as a prefixed code point (`U+2661` ♡, `0x41` A), else None"""
+    digits = OPERAND_CODE_POINT.fullmatch(token)
+    value = int(digits[1], 16) if digits else None
+    return chr(value) if value is not None and value <= MAX_CODE_POINT and value not in SURROGATES else None
 
 
 def unicode_escape_at(text: str, position: int):
@@ -367,6 +375,9 @@ class Uniscript:
         own = self._name(f"{block} {token}")
         if own is not None:
             return own_form(own)
+        character = operand_code_point(token)
+        if character is not None:
+            return self._styled(block, character, effects, at)
         if self._form(block, READINGS_KEY) is not None:
             # <:chinese> shihan: whole readings, never letters (nuli is nu li, not n u l i)
             pieces = self._readings(block, token)

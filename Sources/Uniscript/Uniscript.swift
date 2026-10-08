@@ -20,6 +20,8 @@ private let unicodeEscape = UInt8(ascii: "U")
 private let escapedUnicode = "<:U>"
 /// `U+1F60D`, `U1F60D`, `0x1F60D` in any case; `U+` before `U`
 private let codePointPrefixes = ["U+", "u+", "0x", "0X", "U", "u"]
+/// a block operand is a code point only with one of these: `<:bold 0x41>`, `<:red U+2661>`
+private let operandCodePointPrefixes = ["U+", "u+", "0x", "0X"]
 private let maxHexDigits = 8
 /// Bare hex (`\:1F60D`) and `\U` need at least 4 digits, so a mistyped short name stays unknown
 private let minBareHexDigits = 4
@@ -474,6 +476,9 @@ private final class Conversion {
 		if let own = name("\(block) \(token)") {
 			return ownForm(own)
 		}
+		if let character = operandCodePoint(token) {
+			return styled(block, character, effects, at)
+		}
 		if form(block, readingsKey) != nil {
 			// <:chinese> shihan: whole readings, never letters (nuli is nu li, not n u l i)
 			guard let pieces = readings(block, token) else {
@@ -858,6 +863,13 @@ private func tokenLength(_ bytes: [UInt8], from start: Int) -> Int {
 private func hexValue<Digits: StringProtocol>(_ digits: Digits, minimum: Int) -> UInt32? {
 	guard (minimum...maxHexDigits).contains(digits.utf8.count), digits.utf8.allSatisfy(isHexByte) else { return nil }
 	return UInt32(digits, radix: 16)
+}
+
+/// The character of a block operand written as a prefixed code point (`U+2661` ♡, `0x41` A): only with a prefix, so beef
+/// stays a word
+func operandCodePoint(_ token: String) -> Unicode.Scalar? {
+	guard let prefix = operandCodePointPrefixes.first(where: token.hasPrefix) else { return nil }
+	return hexValue(token.dropFirst(prefix.count), minimum: 1).flatMap(Unicode.Scalar.init)
 }
 
 /// The value of a code point token: `U+1F60D`, `U1F60D`, `0x1F60D` (1–8 hex digits) or bare `1F60D` (4–8)

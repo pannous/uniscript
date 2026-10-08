@@ -1,0 +1,5 @@
+use uniscript
+ok = uniscript("<:bold 0x41/> <:bold U+41 U+42/> <:fracture u+61/>") == "𝐀 𝐀𝐁 𝔞"
+ok = ok and uniscript("<:red U+2661/>") == "♡" + (0xE0072 as char)
+ok = ok and uniscript("<:greek beef/>") == "βεεφ"
+ok

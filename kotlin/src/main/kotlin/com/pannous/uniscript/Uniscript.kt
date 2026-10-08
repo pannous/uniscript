@@ -22,6 +22,8 @@ private const val ESCAPED_UNICODE = "<:U>"
 /** A code point token: `U+1F60D`, `U1F60D`, `0x1F60D` in any case (1–8 hex digits) or bare `1F60D` (4–8, so a mistyped
  *  short name stays unknown) */
 private val CODE_POINT = Regex("(?:[Uu]\\+?|0[xX])([0-9A-Fa-f]{1,8})|([0-9A-Fa-f]{4,8})")
+/** <:bold 0x41>, <:red U+2661>: a block operand is a code point only with a prefix, so beef stays a word */
+private val OPERAND_CODE_POINT = Regex("(?:[Uu]\\+|0[xX])([0-9A-Fa-f]{1,8})")
 /** `U1F60D` after a backslash: `\U1F60D`, the only marker without a colon, 4–8 hex digits as a whole name token */
 private val UNICODE_ESCAPE = Regex("U([0-9A-Fa-f]{4,8})(?![A-Za-z0-9_-])")
 /** A name token after `\:`; the `+` of a leading `U+` belongs to it */
@@ -414,6 +416,7 @@ private class Conversion(val index: EntityIndex, val source: String, val lenient
 	private fun operand(block: String, token: String, effects: List<String>, at: Int): String {
 		fun ownForm(own: String) = afterBase(own, effectSuffixes(effects, own.firstCodePoint() ?: ' '.code, at))
 		name("$block $token")?.let { return ownForm(it) }
+		operandCodePoint(token)?.let { return styled(block, it, effects, at) }
 		if (form(block, READINGS_KEY) != null) {
 			// <:chinese> shihan: whole readings, never letters (nuli is nu li, not n u l i)
 			return readings(block, token)?.joinToString("") { ownForm(it) }
@@ -693,6 +696,11 @@ private fun scriptOf(character: Int) = when (character) {
 fun isNameChar(character: Char) = character in 'a'..'z' || character in 'A'..'Z' || character in '0'..'9' || character == '-' || character == '_'
 
 /** The value of a code point token (`U+1F60D`, `1F60D`), else null */
+/** The code point of a block operand written as a prefixed code point (`U+2661` ♡, `0x41` A), else null */
+internal fun operandCodePoint(token: String): Int? =
+	OPERAND_CODE_POINT.matchEntire(token)?.groupValues?.get(1)?.toLong(16)
+		?.takeIf { it <= Character.MAX_CODE_POINT && it !in Character.MIN_SURROGATE.code..Character.MAX_SURROGATE.code }?.toInt()
+
 fun codePointValue(token: String): Long? =
 	CODE_POINT.matchEntire(token)?.destructured?.let { (prefixed, bare) -> prefixed.ifEmpty { bare }.toLong(16) }
 

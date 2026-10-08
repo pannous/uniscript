@@ -56,6 +56,8 @@ const ATTRIBUTE_QUOTE: char = '"';
 const UNICODE_ESCAPE: char = 'U';
 /// `U+1F60D`, `U1F60D`, `0x1F60D` in any case; `U+` before `U`
 const CODE_POINT_PREFIXES: [&str; 6] = ["U+", "u+", "0x", "0X", "U", "u"];
+/// A block operand is a code point only with one of these: `<:bold 0x41>`, `<:red U+2661>`; beef or ubad stay words
+const OPERAND_CODE_POINT_PREFIXES: [&str; 4] = ["U+", "u+", "0x", "0X"];
 const MAX_HEX_DIGITS: usize = 8;
 /// Bare hex (`\:1F60D`) and `\U` need at least 4 digits, so a mistyped short name stays unknown
 const MIN_BARE_HEX_DIGITS: usize = 4;
@@ -241,6 +243,11 @@ fn hex_value(digits: &str, minimum: usize) -> Option<u32> {
 }
 
 /// The value of a code point token: `U+1F60D`, `U1F60D`, `0x1F60D` (1–8 hex digits) or bare `1F60D` (4–8)
+/// The character of a block operand written as a prefixed code point: `U+2661` ♡, `0x41` A
+fn operand_code_point(token: &str) -> Option<char> {
+	OPERAND_CODE_POINT_PREFIXES.iter().find_map(|prefix| token.strip_prefix(prefix)).and_then(|digits| hex_value(digits, 1)).and_then(char::from_u32)
+}
+
 pub fn code_point_value(token: &str) -> Option<u32> {
 	match CODE_POINT_PREFIXES.iter().find_map(|prefix| token.strip_prefix(prefix)) {
 		Some(digits) => hex_value(digits, 1),
@@ -599,6 +606,9 @@ impl<'a> Uniscript<'a> {
 		let own_form = |own: &str| meta::after_base(own, &self.effect_suffixes(effects, own.chars().next().unwrap_or(' '), at));
 		if let Some(own) = self.name(&format!("{block} {token}")) {
 			return own_form(own);
+		}
+		if let Some(character) = operand_code_point(token) {
+			return self.styled(block, character, effects, at);
 		}
 		if self.form(block, READINGS_KEY).is_some() {
 			// <:chinese> shihan: whole readings, never letters (nuli is nu li, not n u l i)

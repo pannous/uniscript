@@ -43,6 +43,8 @@ const BLOCK_PADDING = ["\r\n", " ", "\t", "\n", "\r"];
 /** A code point token: `U+1F60D`, `U1F60D`, `0x1F60D` in any case (1–8 hex digits) or bare `1F60D` (4–8, so a mistyped
  * short name stays unknown) */
 const CODE_POINT = /^(?:(?:[Uu]\+?|0[xX])([0-9A-Fa-f]{1,8})|([0-9A-Fa-f]{4,8}))$/;
+/** <:bold 0x41>, <:red U+2661>: a block operand is a code point only with a prefix, so beef stays a word */
+const OPERAND_CODE_POINT = /^(?:[Uu]\+|0[xX])([0-9A-Fa-f]{1,8})$/;
 /** `U1F60D` after a backslash: `\U1F60D`, the only marker without a colon, 4–8 hex digits as a whole name token */
 const UNICODE_ESCAPE = /U([0-9A-Fa-f]{4,8})(?![A-Za-z0-9_-])/y;
 /** A name token after `\:`; the `+` of a leading `U+` belongs to it */
@@ -136,6 +138,13 @@ function matchAt(pattern: RegExp, text: string, position: number): RegExpExecArr
 export function codePointValue(token: string): number | undefined {
 	const digits = CODE_POINT.exec(token);
 	return digits ? parseInt(digits[1] ?? digits[2], 16) : undefined;
+}
+
+/** The character of a block operand written as a prefixed code point (`U+2661` ♡, `0x41` A), else undefined */
+function operandCodePoint(token: string): string | undefined {
+	const digits = OPERAND_CODE_POINT.exec(token);
+	const value = digits ? parseInt(digits[1], 16) : -1;
+	return value >= 0 && value <= MAX_CODE_POINT && (value < SURROGATES[0] || value > SURROGATES[1]) ? String.fromCodePoint(value) : undefined;
 }
 
 /** The hex digits of `\U1F60D` whose backslash is at `position - 1`, else undefined */
@@ -436,6 +445,8 @@ export class Uniscript {
 		const ownForm = (own: string) => afterBase(own, this.#effectSuffixes(effects, firstCharacter(own) || " ", at));
 		const own = this.#name(`${block} ${token}`);
 		if (own !== undefined) return ownForm(own);
+		const character = operandCodePoint(token);
+		if (character !== undefined) return this.#styled(block, character, effects, at);
 		if (this.#form(block, READINGS_KEY) !== undefined) {
 			// <:chinese> shihan: whole readings, never letters (nuli is nu li, not n u l i)
 			const pieces = this.#readings(block, token);
