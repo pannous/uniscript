@@ -6,9 +6,7 @@
 - TODO: intellij/ plugin: no Settings page (colors, folding on/off); unknown `\:name` is an error in every file, also LaTeX's `\:` spacing command in .tex files.
 - TODO: combinations Unicode lacks (`<:double bold A>`, `<:bold italic 7>`) stay in the inner style with a warning; the Uniscript fonts could render them with a style control instead.
 - TODO: greek transliteration writes σ at the end of a word (kosmos → κοσμοσ); Greek uses final sigma ς there (κοσμος). Now that words keep their spaces, word ends are known.
-- wasm: 3.8 MB .wasm, 3.65 MB of it the compiled-in entities.idx; loading the index at runtime needs a reference API for it
 - ports (wasm, C, Python) do not cover index building from data/entities/*.wasp (index::build, Entities::parse); only TypeScript rebuilds the idx
-- C: no CMake, untested on Linux; native .incbin not MSVC-compatible
 - every reference change needs a manual re-port: run the differential tests (js, python/native, c/native) after src/ changes
 - DONE deploy docs/demo.html (needs fonts/ and built wasm/pkg next to docs/) (pannous.com/uniscript/rust/); TODO publish js to npm and python packages to PyPI
 - 2026-10-03: harden and optimize the published libraries (fuzzing, Linux/Windows builds, CI wheel matrix, re-port drift checks); reminder set in Reminders
@@ -76,7 +74,6 @@ From CHANGES.md (changes that need to be propagated through all implementations)
 - TODO html mode?? Partially implemented: `--html` renders meta information (fonts, colors, angles) as spans, but styles stay Unicode (`<:bold a>` ⩵ 𝐚 rather than `<b>a</b>`). Which features can be done in HTML and which can't? Do we really want that?
 
 Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
-- TODO nested group tags: `<:above 宀 <:beside 电 脑>>` gives ⿱宀<:beside电脑> (the inner tag stays unconverted); raw IDS inside works (`<:above 宀 ⿰电脑>`).
 - TODO Firefox: an IDS right after Latin text is not composed (the IDC joins the Latin run); `--html` could wrap IDS in `<span lang="zh">`.
 - TODO Uniscript Hanzi is 36 MB of unsubroutinized CFF: subroutinize (cffsubr) and slice before serving it on the web page.
 - TODO Uniscript Hanzi: parts keep their standalone form (no 木→dot-ending left form, 火→灬); no interlocking (介 under 田).

@@ -64,3 +64,6 @@ DONE - C ffi/native: NULL or invalid UTF-8 input fails with UNISCRIPT_INVALID_IN
 - DONE (every port, prefixed forms only: <:bold 0x41/> 𝐀; shared cases) Code points as block operands (`<:red U+2661>`, `<:bold 0x41>`) are not supported: only a whole tag or `\:` token is a code point.
 DONE (2026-10-08) Code points don't work as operands inside a tag, e.g. <:red U+2661>.
 There is no ASCII-only option for to_uniscript.
+- DONE (wasm/uniscript.js init() loads entities.idx at runtime; the .wasm is 200 KB) wasm: 3.8 MB .wasm, 3.65 MB of it the compiled-in entities.idx; loading the index at runtime needs a reference API for it
+- DONE (c/CMakeLists.txt; Linux x86_64 tested on pannous.com; MSVC: see the C/C++ .incbin item) C: no CMake, untested on Linux; native .incbin not MSVC-compatible
+- DONE (superseded: the user does not want nested tags; a group word among the parts groups the rest, done.md) nested group tags: `<:above 宀 <:beside 电 脑>>` gives ⿱宀<:beside电脑> (the inner tag stays unconverted); raw IDS inside works (`<:above 宀 ⿰电脑>`).
