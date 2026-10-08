@@ -43,7 +43,7 @@ UNICODE_MATH_TABLE = Path("/usr/local/texlive/2026basic/texmf-dist/tex/latex/uni
 MAGIC = b"USX1"
 HASH_MULTIPLIER = 31
 HASH_MODULUS = 1 << 32
-DEFAULT_SCRIPT = "latin"  # the script that short names leave out: E-with-tilde-below, but cyrillic-zhe
+DEFAULT_SCRIPT = "latin"  # the script that keeps the short name when letters of several scripts share it: schwa is Latin's
 CASED_LETTER = {"-capital-letter-": True, "-small-letter-": False}
 RECORD_FIELDS = 5  # hash, key offset, key length, value offset, value length: all u32 little endian
 TABLE_NAMES = ("names", "chars", "suffixes", "fonts", "meta")  # forward, reverse, suffix control → block type, font styles, meta keys
@@ -711,28 +711,35 @@ def ascii_uppercase(text):
 	return text.encode().upper().decode()
 
 
-def short_name(name):
-	"""The Unicode name of a cased letter without its case words, which the letter's case says, and without the default
-	script: latin-capital-letter-e-with-tilde-below → E-with-tilde-below, cyrillic-capital-letter-zhe → cyrillic-Zhe;
-	None for other names and for a single letter (latin-small-letter-a is just a)"""
+def cased_letter(name):
+	"""The script and the letter of a cased letter's Unicode name, the letter's case saying what the case words did:
+	latin-capital-letter-e-with-tilde-below → (latin, E-with-tilde-below), cyrillic-small-letter-zhe → (cyrillic, zhe)"""
 	words = next((words for words in CASED_LETTER if words in name), None)
 	if not words:
 		return None
 	script, _, rest = name.partition(words)
-	rest = ascii_uppercase(rest[:1]) + rest[1:] if CASED_LETTER[words] else rest
-	short = rest if script == DEFAULT_SCRIPT else f"{script}-{rest}"
-	return short if len(short) > 1 else None
+	return script, ascii_uppercase(rest[:1]) + rest[1:] if CASED_LETTER[words] else rest
 
 
 def short_names(sections):
-	"""Unicode name of a cased letter → its short name, when no other letter and no other name has that short name"""
-	derived = {}
-	for name in sections.get("names", {}):
-		short = short_name(name)
-		if short:
-			derived.setdefault(short, []).append(name)
+	"""Unicode name of a cased letter → its short name: the letter without its script (zhe) where no other letter has that
+	name, or no other Latin one (Latin is the default: schwa is Latin's, Cyrillic's is cyrillic-schwa), else with its
+	script; never a name that another entity already has"""
+	letters = [(name, *cased_letter(name)) for name in sections.get("names", {}) if cased_letter(name)]
+	bare, latin_bare, scripted = {}, {}, {}
+	for _, script, letter in letters:
+		bare[letter] = bare.get(letter, 0) + 1
+		latin_bare[letter] = latin_bare.get(letter, 0) + (script == DEFAULT_SCRIPT)
+		scripted[f"{script}-{letter}"] = scripted.get(f"{script}-{letter}", 0) + 1
 	taken = lambda short: any(short in sections.get(section, {}) for section in ENTITY_SECTIONS)
-	return {names[0]: short for short, names in derived.items() if len(names) == 1 and not taken(short)}
+	shorts = {}
+	for name, script, letter in letters:
+		with_script = f"{script}-{letter}"
+		if len(letter) > 1 and not taken(letter) and (bare[letter] == 1 or (script == DEFAULT_SCRIPT and latin_bare[letter] == 1)):
+			shorts[name] = letter
+		elif script != DEFAULT_SCRIPT and scripted[with_script] == 1 and not taken(with_script):
+			shorts[name] = with_script
+	return shorts
 
 
 def forward_entries(sections):

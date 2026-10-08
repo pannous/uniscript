@@ -22,3 +22,10 @@ fn single_letters_and_taken_names_keep_their_meaning() {
 	assert_eq!(to_unicode("\\:ETH \\:eth").as_deref(), Ok("Ð ð")); // HTML names win over the derived Eth/eth
 	assert_eq!(to_uniscript("a"), "a");
 }
+
+#[test]
+fn other_scripts_drop_their_script_word_when_unique() {
+	assert_eq!(to_uniscript("ա Ա"), "\\:ayb \\:Ayb"); // only Armenian has ayb
+	assert_eq!(to_uniscript("ж"), "\\:cyrillic-zhe"); // Armenian has a zhe too
+	assert_eq!(to_uniscript("ə ә"), "\\:schwa \\:cyrillic-schwa"); // Latin, the default, keeps a shared name
+}

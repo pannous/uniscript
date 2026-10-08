@@ -71,3 +71,4 @@
   JSesh A6B) and come last. Order in egyptian_block: Unicode names, descriptions, JSesh (Unicode wins, user decision), private use list, Unikemet own.
 - `seed` retired (user decision 2026-10-08): `python3 data/uniscript_index.py regenerate unicode/<block>.wasp …` rewrites only block files under unicode/ from data/sources/; the top-level files carry hand edits.
 - Neutral tone (2026-10-08, user decision): readings without a tone number are neutral and stored as tone 5 (`shi5` 匙 of 钥匙, `de5`), so the toneless key (`shi` 是) is the most frequent character of any tone and no longer mixes in numbered neutral readings.
+- Short names v2 (2026-10-08, user decision): other scripts drop their script word when the bare letter name is unique (`\:ayb`), else keep it (`\:cyrillic-zhe`); on a tie Latin keeps the bare name (`\:schwa`, `\:cyrillic-schwa`).

@@ -20,7 +20,7 @@ const SUFFIX_KEY: &str = "*suffix";
 /// a block only for typing: its characters do not spell back as it (口 stays 口, not `<:chinese kou>`)
 const ONE_WAY_KEY: &str = "*one-way";
 const ENTITY_EXTENSION: &str = "wasp";
-/// the script that short names leave out: `E-with-tilde-below`, but `cyrillic-zhe`
+/// the script that keeps the short name when letters of several scripts share it: `schwa` is Latin's
 const DEFAULT_SCRIPT: &str = "latin";
 const CASED_LETTER: [(&str, bool); 2] = [("-capital-letter-", true), ("-small-letter-", false)];
 
@@ -238,22 +238,38 @@ impl Entities {
 		types
 	}
 
-	/// Unicode name of a cased letter → its short name and text, when no other letter and no other name has that short name
+	/// Unicode name of a cased letter → its short name and text: the letter without its script (`zhe`) where no other letter
+	/// has that name, or no other Latin one (Latin is the default: `schwa` is Latin's, Cyrillic's is `cyrillic-schwa`),
+	/// else with its script; never a name that another entity already has
 	fn short_names(&self) -> HashMap<String, (String, String)> {
 		let names = self.section("names");
-		let mut derived: HashMap<String, Vec<(&str, &str)>> = HashMap::new();
-		for (name, text) in names.texts() {
-			if let Some(short) = short_name(name) {
-				derived.entry(short).or_default().push((name, text));
-			}
+		let letters: Vec<(&str, &str, &str, String)> =
+			names.texts().filter_map(|(name, text)| cased_letter(name).map(|(script, letter)| (name, text, script, letter))).collect();
+		let mut bare: HashMap<&str, (usize, usize)> = HashMap::new(); // letter → (letters, Latin letters) named so
+		let mut scripted: HashMap<String, usize> = HashMap::new();
+		for (_, _, script, letter) in &letters {
+			let counts = bare.entry(letter.as_str()).or_default();
+			counts.0 += 1;
+			counts.1 += usize::from(*script == DEFAULT_SCRIPT);
+			*scripted.entry(format!("{script}-{letter}")).or_default() += 1;
 		}
 		let sections: Vec<Table> = ENTITY_SECTIONS.iter().map(|section| self.section(section)).collect();
 		let taken = |short: &str| sections.iter().any(|section| section.get(short).is_some());
-		derived
-			.into_iter()
-			.filter(|(short, letters)| letters.len() == 1 && !taken(short))
-			.map(|(short, letters)| (letters[0].0.to_string(), (short, letters[0].1.to_string())))
-			.collect()
+		let mut shorts = HashMap::new();
+		for (name, text, script, letter) in &letters {
+			let (named, latin_named) = bare[letter.as_str()];
+			let wins_bare = letter.chars().count() > 1 && !taken(letter) && (named == 1 || (*script == DEFAULT_SCRIPT && latin_named == 1));
+			let with_script = format!("{script}-{letter}");
+			let short = if wins_bare {
+				letter.clone()
+			} else if *script != DEFAULT_SCRIPT && scripted[&with_script] == 1 && !taken(&with_script) {
+				with_script
+			} else {
+				continue;
+			};
+			shorts.insert(name.to_string(), (short, text.to_string()));
+		}
+		shorts
 	}
 
 	/// name → text; a block entry is `block operand`, the block itself `block ` → ""
@@ -416,12 +432,9 @@ fn take_token(text: &str, is_key: bool) -> Option<(String, &str)> {
 	(end > 0).then(|| (text[..end].to_string(), &text[end..]))
 }
 
-/// The Unicode name of a cased letter without its case words, which the letter's case says, and without the default
-/// script: `latin-capital-letter-e-with-tilde-below` → `E-with-tilde-below`, `cyrillic-capital-letter-zhe` → `cyrillic-Zhe`;
-/// None for other names and for a single letter (`latin-small-letter-a` is just a)
-fn short_name(name: &str) -> Option<String> {
+/// The script and the letter of a cased letter's Unicode name, the letter's case saying what the case words did:
+/// `latin-capital-letter-e-with-tilde-below` → (latin, `E-with-tilde-below`), `cyrillic-small-letter-zhe` → (cyrillic, `zhe`)
+fn cased_letter(name: &str) -> Option<(&str, String)> {
 	let (script, rest, capital) = CASED_LETTER.iter().find_map(|(words, capital)| name.split_once(words).map(|(script, rest)| (script, rest, *capital)))?;
-	let rest = if capital { rest[..1].to_ascii_uppercase() + &rest[1..] } else { rest.to_string() };
-	let short = if script == DEFAULT_SCRIPT { rest } else { format!("{script}-{rest}") };
-	(short.chars().count() > 1).then_some(short)
+	Some((script, if capital { rest[..1].to_ascii_uppercase() + &rest[1..] } else { rest.to_string() }))
 }
