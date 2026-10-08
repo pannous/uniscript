@@ -16,9 +16,11 @@ PREFIX ?= /usr/local
 LIBDIR := $(PREFIX)/lib
 INCLUDEDIR := $(PREFIX)/include
 BINDIR := $(PREFIX)/bin
+MAN1DIR := $(PREFIX)/share/man/man1
+MAN_PAGE := $(ROOT)/packaging/debian/uniscript.1
 PKGCONFIGDIR := $(LIBDIR)/pkgconfig
 DIST_NAME := uniscript-c-$(VERSION)
-DIST_FILES := LICENSE c/uniscript.h c/uniscript.hpp c/CMakeLists.txt c/cmake c/tests c/native data/entities.idx
+DIST_FILES := LICENSE c/uniscript.h c/uniscript.hpp c/CMakeLists.txt c/cmake c/tests c/native data/entities.idx packaging/debian/uniscript.1
 CONSUMER_PREFIX ?= $(ROOT)/probes/publish/site/c
 DIST_TEST := $(ROOT)/probes/publish/dist
 INDEX := $(ROOT)/data/entities.idx
@@ -93,8 +95,9 @@ clean:
 install: install-lib install-cli
 
 install-cli: $(BUILD)/uniscript
-	install -d $(DESTDIR)$(BINDIR)
+	install -d $(DESTDIR)$(BINDIR) $(DESTDIR)$(MAN1DIR)
 	install -m 755 $< $(DESTDIR)$(BINDIR)
+	install -m 644 $(MAN_PAGE) $(DESTDIR)$(MAN1DIR)
 
 install-lib: $(BUILD)/libuniscript.a $(BUILD)/libuniscript.$(SHARED_EXTENSION) $(BUILD)/uniscript.pc
 	install -d $(DESTDIR)$(LIBDIR) $(DESTDIR)$(INCLUDEDIR) $(DESTDIR)$(PKGCONFIGDIR)

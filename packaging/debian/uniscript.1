@@ -1,38 +1,63 @@
-.TH UNISCRIPT 1 "October 2026" "uniscript 1.0.0" "User Commands"
+.TH UNISCRIPT 1 "October 2026" "uniscript 1.0.5" "User Commands"
 .SH NAME
 uniscript \- ASCII names for Unicode text and back
 .SH SYNOPSIS
 .B uniscript
-[\fB\-r\fR] [\fB\-\-strict\fR|\fB\-\-lenient\fR] [\fB\-\-html\fR] [\fItext\fR|\fI/path/file\fR]
+[\fB\-r\fR] [\fB\-\-strict\fR|\fB\-\-lenient\fR] [\fB\-\-html\fR] [\fB\-\-explicit\fR] [\fItext\fR|\fI/path/file\fR]
+.br
+.B uniscript names
 .br
 .B uniscript build
 [\fIentities/\fR] [\fIentities.idx\fR]
+.br
+.B uniscript check
+[\fIentities/\fR] [\fIentities.idx\fR]
+.br
+.B uniscript chunks
+[\fIentities.idx\fR] [\fIchunks/\fR]
 .SH DESCRIPTION
 .B uniscript
-converts tags like \fB<:alpha>\fR or \fB<:fracture A>\fR into the Unicode text they name
+converts names like \fB\e:alpha\fR or \fB<:fracture A/>\fR into the Unicode text they name
 (\fBα 𝔄\fR). Without a text argument it reads standard input. Arguments starting with
-\fB/\fR are files whose content is converted.
+\fB/\fR are files whose content is converted. A bare inline tag like \fB<:alpha>\fR converts too, with a
+warning: it looks like an opening tag (\fB<:greek> athos <:/greek>\fR).
+.PP
+\fB./.uniscript\fR, those of its parent directories and \fB~/.uniscript\fR add or override names
+(\fBvirus: 🦠\fR, the format of the entity files).
 .SH OPTIONS
 .TP
 .B \-r
-the other direction: Unicode text back into tags.
+the other direction: Unicode text back into names.
 .TP
 .B \-\-strict
 unsupported characters are errors.
 .TP
 .B \-\-lenient
-no errors: unknown tags stay as written.
+no errors: unknown names stay as written, with a warning.
 .TP
 .B \-\-html
 meta information as <span lang style> instead of tag sequences.
 .TP
+.B \-\-explicit
+rewrite inline tags, which warn, in their explicit form: \fB<:alpha>\fR becomes \fB\e:alpha\fR.
+.TP
+.B names
+every name with its text, tab separated.
+.TP
 .B build
 rebuild the name index from the readable entity files.
+.TP
+.B check
+verify that the entity files and the index agree.
+.TP
+.B chunks
+cut the index into chunks a web page loads on demand.
 .SH EXAMPLES
 .nf
-uniscript "<:alpha> <:fracture A>"      # α 𝔄
-uniscript \-r "α 𝔄"                     # <:alpha> <:fracture A>
-echo "<:beside 犭 句>" | uniscript      # ⿰犭句
+uniscript "\e:alpha <:fracture A/>"      # α 𝔄
+uniscript \-r "α 𝔄"                      # \e:alpha \e:fracture-A
+uniscript \-\-explicit "<:alpha>"         # \e:alpha
+echo "<:beside 犭 句/>" | uniscript      # ⿰犭句
 .fi
 .SH SEE ALSO
 https://pannous.com/uniscript/

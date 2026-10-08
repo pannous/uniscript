@@ -12,7 +12,7 @@ categories = ["text-processing", "encoding"]
 # one test crate: tests/main.rs declares every tests/*.rs file as a module
 autotests = false
 # the crate: the library, the CLI, its data (entities.idx is compiled in, entities/ is the source `uniscript build` reads) and the Rust tests
-include = ["/src/**/*.rs", "/data/entities.idx", "/data/entities/**", "/tests/*.rs", "/README.md", "/LICENSE", "/docs/uniscript.md"]
+include = ["/src/**/*.rs", "/data/entities.idx", "/data/entities/**", "/tests/*.rs", "/README.md", "/LICENSE", "/docs/uniscript.md", "/packaging/debian/uniscript.1"]
 
 [features]
 default = ["embedded-index", "pack"]

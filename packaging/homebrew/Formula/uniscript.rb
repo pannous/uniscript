@@ -26,6 +26,7 @@ class Uniscript < Formula
 
   def install
     system "cargo", "install", *std_cargo_args
+    man1.install "packaging/debian/uniscript.1" if File.exist?("packaging/debian/uniscript.1") # in the crate since 1.0.6
     if build.head?
       install_library
     else
@@ -46,7 +47,7 @@ class Uniscript < Formula
 
   test do
     assert_equal "α 𝔄", shell_output("#{bin}/uniscript '<:alpha> <:fracture A>'").strip
-    assert_equal "<:alpha> <:fracture A>", shell_output("#{bin}/uniscript -r 'α 𝔄'").strip
+    assert_equal "\\:alpha \\:fracture-A", shell_output("#{bin}/uniscript -r 'α 𝔄'").strip
 
     (testpath/"test.c").write <<~C
       #include <string.h>
@@ -60,7 +61,7 @@ class Uniscript < Formula
     C
     (testpath/"test.cpp").write <<~CPP
       #include <uniscript.hpp>
-      int main() { return uniscript::to_uniscript(uniscript::to_unicode("<:alpha> <:fracture A>")) != "<:alpha> <:fracture A>"; }
+      int main() { return uniscript::to_uniscript(uniscript::to_unicode("\\\\:alpha \\\\:fracture-A")) != "\\\\:alpha \\\\:fracture-A"; }
     CPP
     flags = shell_output("pkgconf --cflags --libs #{lib}/pkgconfig/uniscript.pc").split
     system ENV.cc, "-std=c11", "test.c", *flags, "-o", "test_c"
