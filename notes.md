@@ -13,3 +13,9 @@ entity name table v2: + HTML5 entity samples (case pairs like Tilde/tilde; HTML 
 
 - 2026-10-02 emoji ZWJ sequences: only woman/man/adult(+person) are RGI bases for 🦰🦱🦳🦲; girl/boy+hair is not standard. Block forms that contain a ZWJ get reverse entries (entities.rs is_one_glyph); to_uniscript tries the longest joined prefix first (meta::joined_prefixes).
 - 2026-10-02 skin tones: Fitzpatrick type-4 is medium, not dark (CLDR: type-1-2 light, 3 medium-light, 4 medium, 5 medium-dark, 6 dark). A modifier belongs right after the person, before the ZWJ: 👩🏿‍🦰 (after_base in every port). java/csharp test the prebuilt c/ffi natives: `make -C c/ffi natives` after Rust changes.
+- 2026-10-08 TODO sweep: TODO.md and todo.md are one file (case-insensitive APFS). DONE items now live in done.md (split script: lines starting `- DONE`/`DONE`, continuation lines move along; free-text lines after a DONE line move with it).
+- Python 3.14 unicodedata.name() returns algorithmic names (EGYPTIAN HIEROGLYPH-13460), so "has a Unicode name" checks must test the name's shape, not its presence.
+- Unikemet kEH_UniK `HJ A072A` = a number taken over from JSesh (zero padded); 110 of Unikemet's own numbers mean another sign in JSesh numbering (U+13517 UniK A006C, JSesh A6B). 2857 Extended-A JSesh numbers equal private use numbers of gardiner.full.csv (same sign).
+- warp parses a local variable named like a function (`operand`, `restyled`) as a call ("operand needs 4 arguments"); no error-message accessor exists for wasp Error values.
+- npm pack skips symlinked files, hence the prepack copy over js/entities.idx.
+- The stale-reference checks (python/native test_reference, js differential, java checkNativesCurrent, csharp RequireCurrentNative) compare mtimes: rebuilding data/entities.idx with identical content still marks the binaries stale.
