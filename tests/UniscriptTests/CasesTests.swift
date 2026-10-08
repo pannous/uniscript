@@ -1,5 +1,4 @@
-// The cases every uniscript library shares, js/test/cases.json (format in its `_format`); lenient: the Swift port has no
-// lenient mode
+// The cases every uniscript library shares, js/test/cases.json (format in its `_format`)
 import Foundation
 import XCTest
 import Uniscript
@@ -48,6 +47,14 @@ final class CasesTests: XCTestCase {
 
 	func testConverts() throws {
 		try check("converts") { XCTAssertEqual(try uniscript.convert($0.text(0)).text, $0.text(1), "\($0)") }
+	}
+
+	func testLenient() throws {
+		try check("lenient") {
+			let converted = try uniscript.convert($0.text(0), mode: .lenient)
+			XCTAssertEqual(converted.text, $0.text(1), "\($0)")
+			XCTAssertEqual(converted.warnings.map(\.message), ($0.fields[2] as! [String]).map(expanded), "\($0)")
+		}
 	}
 
 	func testQuiet() throws {

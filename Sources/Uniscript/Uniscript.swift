@@ -111,10 +111,12 @@ public struct Warning: Equatable, Sendable, CustomStringConvertible {
 	public var description: String { "uniscript: \(message) at byte \(at)" }
 }
 
-/// Whether unsupported characters are warnings (the output keeps them plain) or errors
+/// Whether unsupported characters are warnings (the output keeps them plain) or errors; lenient also turns errors
+/// (unknown entities, invalid meta values, an unclosed `<:`) into warnings and keeps their uniscript as written
 public enum WarningMode: Sendable {
 	case warn
 	case error
+	case lenient
 }
 
 /// A converter over one entity index
@@ -171,7 +173,7 @@ public struct Uniscript: Sendable {
 	}
 
 	public func convert(_ source: String, mode: WarningMode = .warn) throws -> (text: String, warnings: [Warning]) {
-		let conversion = Conversion(index: index)
+		let conversion = Conversion(index: index, mode: mode)
 		let text = try conversion.unicode(of: source)
 		if mode == .error, let first = conversion.warnings.first { throw UniscriptError.unsupported(first) }
 		return (text, conversion.warnings)
@@ -328,10 +330,19 @@ public struct Uniscript: Sendable {
 /// One uniscript → Unicode conversion, collecting its warnings
 private final class Conversion {
 	let index: EntityIndex
+	let mode: WarningMode
 	var warnings: [Warning] = []
 
-	init(index: EntityIndex) {
+	init(index: EntityIndex, mode: WarningMode) {
 		self.index = index
+		self.mode = mode
+	}
+
+	/// The source text of an error, with a warning, in `.lenient` mode; else the error
+	private func kept(_ error: UniscriptError, _ written: String, _ at: Int) throws -> String {
+		guard mode == .lenient else { throw error }
+		warn(error.description, at)
+		return written
 	}
 
 	private func name(_ key: String) -> String? {
@@ -715,14 +726,13 @@ private final class Conversion {
 				let entity = text(position + 2..<nameEnd)
 				// not a name: read as the tag with hyphens as spaces, \:egyptian-seated-man is <:egyptian seated man>
 				let spaced = entity.replacingOccurrences(of: "-", with: " ")
-				guard let found = name(entity) ?? codePoint(entity, written: text(position..<nameEnd), position) ?? (try? tag(spaced, position)) else {
-					throw UniscriptError.unknownEntity(entity)
-				}
-				out += found
+				let found = name(entity) ?? codePoint(entity, written: text(position..<nameEnd), position) ?? (try? tag(spaced, position))
+				out += try found ?? kept(.unknownEntity(entity), text(position..<nameEnd), position)
 				position = nameEnd
 			} else {
 				guard let close = firstIndex(from: position + 2, where: { bytes[$0] == tagClose }) else {
-					throw UniscriptError.unclosed(text(position..<bytes.count))
+					out += try kept(.unclosed(text(position..<bytes.count)), text(position..<bytes.count), position)
+					break
 				}
 				let content = text(position + 2..<close)
 				var after = close + 1
@@ -736,9 +746,16 @@ private final class Conversion {
 				} else {
 					let selfClosed = content.hasSuffix("/") && content.utf8.count > 1 ? String(content.dropLast()) : nil
 					let earlierWarnings = warnings.count
-					out += try tag(selfClosed ?? content, position)
+					let converted: String?
+					do {
+						converted = try tag(selfClosed ?? content, position)
+					} catch let error as UniscriptError {
+						converted = nil
+						out += try kept(error, text(position..<close + 1), position)
+					}
+					out += converted ?? ""
 					// one warning per tag: <:fracture 7> already says there is no fracture 7
-					if selfClosed == nil && warnings.count == earlierWarnings && index.readsAsOpener(content) {
+					if converted != nil && selfClosed == nil && warnings.count == earlierWarnings && index.readsAsOpener(content) {
 						let forms = index.explicitForms(content, next: bytes.dropFirst(after).first)
 						warn("<:\(content)> looks like an opening tag: write \(either(forms))", position)
 					}

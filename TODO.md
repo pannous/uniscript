@@ -4,7 +4,7 @@
 - TODO: 151 hieroglyphs have no description in Wikipedia's list (e.g. Aa28…Aa32); only their Gardiner numbers name them.
 - TODO: `swift test` with the swiftly toolchain first on PATH fails (`unknown argument: '-target-arch-variant'` against the Xcode SDK); `xcrun swift test` works.
 - TODO: Sublime plugin: typing the closer `<:/greek>` could convert the whole block on that line; for now blocks need the command.
-- TODO: the Swift package and wasp's lib/uniscript.wasp have no lenient mode yet (Rust: WarningMode::Lenient, `--lenient`: errors become warnings, the faulty uniscript stays as written).
+- TODO (Swift DONE 2026-10-08, wasp still open): the Swift package and wasp's lib/uniscript.wasp have no lenient mode yet (Rust: WarningMode::Lenient, `--lenient`: errors become warnings, the faulty uniscript stays as written).
 - TODO: intellij/ plugin: no Settings page (colors, folding on/off); unknown `\:name` is an error in every file, also LaTeX's `\:` spacing command in .tex files.
 - TODO: wasp's lib/uniscript.wasp (warp) needs the stacked-style resolution of src/lib.rs `restyled` (combined block over permutations, else commute): `<:bold italic alpha>` → 𝜶, `<:greek bold a>` → 𝛂.
 - TODO: combinations Unicode lacks (`<:double bold A>`, `<:bold italic 7>`) stay in the inner style with a warning; the Uniscript fonts could render them with a style control instead.
@@ -104,7 +104,6 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - Inline tags warn (user decision 2026-10-02, 8ed80c0): usage.md, README, sample.md and test.md still write inline tags (`<:alpha> <:fracture A>`, `<:color red 𓀀>`), so their examples print the new warnings; rewrite the inputs to explicit forms (`uniscript --explicit` per language string, minding each language's escaping)?
 - Sublime with "completion_inserts": "name" leaves an inline `<:alpha>`, which now warns: insert `\:alpha` / `<:…/>` instead
 - IntelliJ and VS Code plugins: rebuild against the ports with explicit(), maybe offer "Make Tags Explicit" as a quick fix there too
-- Swift port has no lenient WarningMode, so its new shared-case runner skips the lenient section
 - warp: a function with parameters cannot write a global (the assignment becomes a local); uniscript.wasp works around it with a U+FDD0 mark in unsupported() (notes/wasp.md, also: a variable named like a function parses as a call; a text const built from an expression breaks the module's types)
 - warp repo tests/test_uniscript.rs expect the old reverse spelling (spells("α","<:alpha>")); they will break once warp's packages/uniscript copy is updated past ed75f9a: switch them to \:alpha
 - wasp port has no shared cases.json runner (and no meta/TAG sequences)
