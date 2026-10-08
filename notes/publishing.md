@@ -55,8 +55,12 @@
   it for the pinned tag instead of building the package (which once overwrote this checkout's build in the shared cargo
   target). publish.sh smoke-tests it with wasmtime (`--dir=<checkout>::.` for `check`). The smoke input is now explicit
   (`\:alpha <:fracture A/>`): inline tags warn since 8ed80c0.
-- Publishing to warp (2026-10-07, v1.0.2): warp uses the git tag pinned in ~/warp/packages.wasp, never the default
-  branch. Bump `version` in Cargo.toml and uniscript.wasp, tag `v<version>`, `gh release create v<version>
-  /opt/cargo/wasm32-wasip1/release/uniscript.wasm`, raise the pin, run warp's `cargo test --test tests -- test_uniscript
-  test_package test_versions`. Check the wasp port under warp first (`/opt/cargo/release/warp probes/<dir>/x.wasp`): tags
-  never move, so v1.0.1 (strict errors sliced into "uniscrip") needed a v1.0.2. Registries stay at 1.0.0 until publish.sh --publish.
+- Publishing to warp (2026-10-07, v1.0.2): warp uses the git tag pinned in ~/warp/packages.warp, never the default
+  branch, so a fix on main reaches warp and https://pannous.com/uniscript/ only with a new tag (final sigma waited for v1.0.6).
+  Bump `version` in Cargo.toml and uniscript.wasp, tag `v<version>`, `gh release create v<version>
+  /opt/cargo/wasm32-wasip1/release/uniscript.wasm`, raise the pin (packages.warp and PINNED in tests/modules/test_package_pin.rs),
+  regenerate warp's built-in `\:name` table (`WARP_REGENERATE_ENTITIES=1 tests/queue.sh --test tests -- the_entity_table`),
+  run warp's `cargo test --test tests -- test_uniscript test_package test_versions test_entity_table`, then
+  `web/uniscript/build.sh deploy` and commit the rebuilt web/uniscript/uniscript.wasm. Check the wasp port under warp first
+  (`tests/wasp/run.sh`): tags never move, so v1.0.1 (strict errors sliced into "uniscrip") needed a v1.0.2. Registries
+  stay at 1.0.0 until publish.sh --publish.
