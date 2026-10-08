@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Uniscript entity data: seed the readable entity file, build its binary index, check that both agree.
+"""Uniscript entity data: build the binary index of the readable entity files, check that both agree, regenerate the
+block files that sources drive.
 
-    python3 data/uniscript_index.py seed    # sources → entities/*.wasp (overwrites them!)
     python3 data/uniscript_index.py build   # entities/*.wasp → entities.idx
     python3 data/uniscript_index.py check   # every entry of entities/*.wasp resolves the same in entities.idx
+    python3 data/uniscript_index.py regenerate unicode/egyptian-hieroglyphs.wasp …   # those files from data/sources/
 
-The entity files are the source of truth once seeded: edit them, then build. They are read in path order and their
+The entity files are the source of truth: edit them, then build. Only block files under unicode/ can be regenerated:
+the top-level files (uniscript, latex, html, styles, meta) carry hand edits a regeneration would lose. They are read in path order and their
 sections merged (the first entry of a key wins); entities/unicode/ has one file per Unicode block with its character
 names and its script's block types. The index format is documented in README.md.
 """
@@ -898,11 +900,19 @@ def check(sections, data):
 	return failures == 0
 
 
-def main(command):
-	if command == "seed":
-		files = seed_files()
-		write_entities(files, ENTITIES_DIRECTORY)
-		print(f"wrote {len(files)} files to {ENTITIES_DIRECTORY}")
+def regenerate(paths):
+	"""The named block files from the sources; a top-level file or an unknown path is refused"""
+	files = seed_files()
+	for path in paths:
+		if not path.startswith(UNICODE_DIRECTORY + "/") or path not in files:
+			sys.exit(f"{path}: only block files under {UNICODE_DIRECTORY}/ are regenerated")
+	write_entities({path: files[path] for path in paths}, ENTITIES_DIRECTORY)
+	print(f"regenerated {', '.join(paths)}")
+
+
+def main(command, arguments):
+	if command == "regenerate" and arguments:
+		regenerate(arguments)
 	elif command == "build":
 		INDEX_FILE.write_bytes(build_index(read_entities(ENTITIES_DIRECTORY)))
 		print(f"wrote {INDEX_FILE} ({INDEX_FILE.stat().st_size} bytes)")
@@ -913,4 +923,4 @@ def main(command):
 
 
 if __name__ == "__main__":
-	main(sys.argv[1] if len(sys.argv) > 1 else "")
+	main(sys.argv[1] if len(sys.argv) > 1 else "", sys.argv[2:])

@@ -72,7 +72,6 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - TODO Firefox: an IDS right after Latin text is not composed (the IDC joins the Latin run); `--html` could wrap IDS in `<span lang="zh">`.
 - TODO Uniscript Hanzi is 36 MB of unsubroutinized CFF: subroutinize (cffsubr) and slice before serving it on the web page.
 - TODO Uniscript Hanzi: parts keep their standalone form (no 木→dot-ending left form, 火→灬); no interlocking (介 under 田).
-- seed drift 2 (2026-10-08): `seed` also drops every hand edit since the split: latex.wasp (P198 comments and exceptions, `to neq land lor lnot ldots dots nat complex euler degree cbrt`), uniscript.wasp (own names, descriptions) and styles.wasp (red-haired, curly-haired, … hair styles). The wasp files are the ground truth now; see open-decisions.md
 - `<:eg>` alone now opens the Egyptian block instead of the HTML entity ⪚ (blocks shadow names of the same word)
 - Omni4 (finer stacking) breaks in HarfBuzz after 3 consecutive stacked groups (Chrome/Firefox, the web demo) and puts small groups 0.045 em above the descender (probes/egyptian_baseline_test.py fails test_stacked_group_composes_on_the_descender_too); CoreText is fine. Way out: our own Omni built with hieropy (smaller sep, finer scales), or back to 2d4 via OMNI_URL
 - suffix names (user idea): `<:SANS-SERIF DIGIT NINE>` for MATHEMATICAL SANS-SERIF DIGIT NINE is unknown and not even unique (DINGBAT CIRCLED SANS-SERIF DIGIT NINE …); unique word-suffix aliases of the Unicode names would add ~42.7k index entries (23.5k when only the first word is dropped)
