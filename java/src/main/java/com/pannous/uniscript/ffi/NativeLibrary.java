@@ -14,6 +14,10 @@ import java.lang.foreign.SymbolLookup;
 import java.lang.invoke.MethodHandle;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +31,8 @@ import static java.lang.foreign.ValueLayout.JAVA_LONG;
 /** The C ABI of c/uniscript.h, loaded from native/&lt;rid&gt;/ in the jar or the path in the property uniscript.library */
 final class NativeLibrary {
 	static final String LIBRARY_PROPERTY = "uniscript.library";
+	/** hex digits of the library's SHA-256 that name its extraction directory */
+	private static final int DIRECTORY_HASH_LENGTH = 16;
 	private static final AddressLayout POINTER = ADDRESS;
 	private static final MemoryLayout SIZE = JAVA_LONG; // size_t on every bundled platform (all 64-bit)
 
@@ -92,7 +98,11 @@ final class NativeLibrary {
 		return configured != null ? Path.of(configured) : extractedLibrary();
 	}
 
-	/** The bundled library copied to a temporary directory: a library inside a jar cannot be loaded in place */
+	/**
+	 * The bundled library copied to the temporary directory (a library inside a jar cannot be loaded in place), once per
+	 * library version and user: later starts load the same copy when its content still matches, so nothing piles up in
+	 * %TEMP% on Windows, where a loaded DLL cannot be deleted at exit
+	 */
 	private static Path extractedLibrary() {
 		String resource = "/native/" + platform() + "/" + libraryName();
 		try (InputStream library = NativeLibrary.class.getResourceAsStream(resource)) {
@@ -100,14 +110,27 @@ final class NativeLibrary {
 				throw new UnsatisfiedLinkError("uniscript bundles no native library for " + platform() + " (" + resource
 						+ "); set -D" + LIBRARY_PROPERTY + "=<path to " + libraryName() + ">");
 			}
-			Path directory = Files.createTempDirectory("uniscript-");
+			byte[] bytes = library.readAllBytes();
+			String hash = sha256(bytes);
+			String user = System.getProperty("user.name", "").replaceAll("[^A-Za-z0-9_.-]", "_");
+			Path directory = Path.of(System.getProperty("java.io.tmpdir"), "uniscript-" + user + "-" + hash.substring(0, DIRECTORY_HASH_LENGTH));
 			Path file = directory.resolve(libraryName());
-			Files.copy(library, file);
-			file.toFile().deleteOnExit();
-			directory.toFile().deleteOnExit();
+			if (Files.isRegularFile(file) && sha256(Files.readAllBytes(file)).equals(hash)) return file;
+			Files.createDirectories(directory);
+			Path written = Files.createTempFile(directory, "extracting-", ".tmp"); // another JVM may extract at the same time
+			Files.write(written, bytes);
+			Files.move(written, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
 			return file;
 		} catch (IOException failure) {
 			throw new UncheckedIOException("cannot extract " + resource, failure);
+		}
+	}
+
+	private static String sha256(byte[] bytes) {
+		try {
+			return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
+		} catch (NoSuchAlgorithmException missing) {
+			throw new IllegalStateException(missing); // every JVM has SHA-256
 		}
 	}
 
