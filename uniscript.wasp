@@ -27,6 +27,19 @@ const hex_digits = "0123456789ABCDEF"
 const max_operand_words = 8      // the most words one operand spans: <:egyptian man with hand to mouth>
 const warned_code_point = 64976  // U+FDD0, a noncharacter: the mark unsupported() leaves in converted text
 const readings_key = "*readings" // a block whose words split into whole readings (chinese shihan → shi han), not letters
+// algorithmic Unicode names (UAX #44 NR1/NR2, src/algorithmic_names.rs): no index entries, derived from the code point
+const hex_named_prefixes = ["cjk-unified-ideograph-", "cjk-compatibility-ideograph-", "tangut-ideograph-", "khitan-small-script-character-", "nushu-character-", "egyptian-hieroglyph-"]
+// the ranges each prefix names, as triples prefix index, first, last (Unicode 16.0.0 blocks)
+const hex_named_ranges = [0, 0x3400, 0x4DBF, 0, 0x4E00, 0x9FFF, 0, 0x20000, 0x2A6DF, 0, 0x2A700, 0x2B73F, 0, 0x2B740, 0x2B81F, 0, 0x2B820, 0x2CEAF, 0, 0x2CEB0, 0x2EBEF, 0, 0x2EBF0, 0x2EE5F, 0, 0x30000, 0x3134F, 0, 0x31350, 0x323AF, 1, 0xF900, 0xFAFF, 1, 0x2F800, 0x2FA1F, 2, 0x17000, 0x187FF, 2, 0x18D00, 0x18D7F, 3, 0x18B00, 0x18CFF, 4, 0x1B170, 0x1B2FF, 5, 0x13460, 0x143FF]
+const tangut_component = "tangut-component-"  // numbered in decimal: tangut-component-001 is U+18800
+const first_tangut_component = 0x18800
+const tangut_components = 768
+const hangul_syllable = "hangul-syllable-"
+const first_hangul_syllable = 0xAC00
+// the jamo short names of a syllable's leading consonant, vowel and trailing consonant
+const hangul_leading = ["g", "gg", "n", "d", "dd", "r", "m", "b", "bb", "s", "ss", "", "j", "jj", "c", "k", "t", "p", "h"]
+const hangul_vowels = ["a", "ae", "ya", "yae", "eo", "e", "yeo", "ye", "o", "wa", "wae", "oe", "yo", "u", "weo", "we", "wi", "yu", "eu", "yi", "i"]
+const hangul_trailing = ["", "g", "gg", "gs", "n", "nj", "nh", "d", "l", "lg", "lm", "lb", "ls", "lt", "lp", "lh", "m", "b", "bs", "s", "ss", "ng", "j", "c", "k", "t", "p", "h"]
 
 // ---- the index -------------------------------------------------------------------------------------------------
 
@@ -444,6 +457,9 @@ tag(content:text, at) := {
 	if record >= 0 { return value_of(record) }
 	value = code_point_value(content)
 	if value >= 0 { return code_point_text(value, "<:" + content + ">", at) }
+	// before the blocks: <:egyptian hieroglyph-13460> is no operand of the egyptian block
+	algorithmic = algorithmic_text(content)
+	if algorithmic.bytes > 0 { return algorithmic }
 	if is_block(content) { return "<" + content + ">" }
 	space = offset_of(content, 32, 0)
 	if space == content.bytes { space = offset_of(content, 45, 0) }
@@ -737,6 +753,79 @@ uniscript(source:text) := {
 		}
 	}
 	out
+}
+
+// ---- algorithmic names: <:CJK UNIFIED IDEOGRAPH-4E00> 一, <:hangul syllable ga> 가, <:TANGUT COMPONENT-001> -------------
+
+// the value of the decimal digits of text, else -1
+decimal_value(text:text) := {
+	if text.bytes == 0 { return (-1) }
+	value = 0
+	i = 0
+	while i < text.bytes {
+		b = byte_at(text, i)
+		if b < 48 or b > 57 { return (-1) }
+		value = value * 10 + b - 48
+		i++
+	}
+	value
+}
+
+// the syllable whose jamo short names spell name: ga is 가, hih is 힣; else ""
+hangul_syllable_text(name:text) := {
+	leading = 0
+	while leading < hangul_leading.count {
+		consonant = "" + hangul_leading[leading]  // "" +: a one-letter list item reads back as a codepoint (warp card list-items)
+		if starts_with(name, consonant) {
+			after_consonant = byte_slice(name, consonant.bytes, name.bytes)
+			vowel = 0
+			while vowel < hangul_vowels.count {
+				vowel_name = "" + hangul_vowels[vowel]
+				if starts_with(after_consonant, vowel_name) {
+					rest = byte_slice(after_consonant, vowel_name.bytes, after_consonant.bytes)
+					trailing = 0
+					while trailing < hangul_trailing.count {
+						if rest == "" + hangul_trailing[trailing] { return "" + ((first_hangul_syllable + (leading * 21 + vowel) * 28 + trailing) as char) }
+						trailing++
+					}
+				}
+				vowel++
+			}
+		}
+		leading++
+	}
+	""
+}
+
+// the code point a hex named prefix names with its hex digits, else -1
+hex_named_value(name:text) := {
+	prefix = 0
+	while prefix < hex_named_prefixes.count {
+		if starts_with(name, hex_named_prefixes[prefix]) {
+			value = hex_value(name, hex_named_prefixes[prefix].bytes, name.bytes, min_bare_hex_digits)
+			i = 0
+			while i < hex_named_ranges.count {
+				if hex_named_ranges[i] == prefix and value >= hex_named_ranges[i + 1] and value <= hex_named_ranges[i + 2] { return value }
+				i += 3
+			}
+		}
+		prefix++
+	}
+	-1
+}
+
+// the character an algorithmic Unicode name stands for, in any case, spaces as hyphens; else ""
+algorithmic_text(content:text) := {
+	name = hyphenated(ascii_lowercased(content))
+	if starts_with(name, hangul_syllable) { return hangul_syllable_text(byte_slice(name, hangul_syllable.bytes, name.bytes)) }
+	if starts_with(name, tangut_component) {
+		number = decimal_value(byte_slice(name, tangut_component.bytes, name.bytes))
+		if number >= 1 and number <= tangut_components { return "" + ((first_tangut_component + number - 1) as char) }
+		return ""
+	}
+	value = hex_named_value(name)
+	if value >= 0 { return "" + (value as char) }
+	""
 }
 
 // ---- Unicode → uniscript ---------------------------------------------------------------------------------------

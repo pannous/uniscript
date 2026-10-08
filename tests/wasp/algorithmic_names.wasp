@@ -1,0 +1,6 @@
+use uniscript
+ok = uniscript("<:CJK UNIFIED IDEOGRAPH-4E00/> <:cjk unified ideograph-31cb0/> \\:cjk-unified-ideograph-4e00") == "一 𱲰 一"
+ok = ok and uniscript("<:HANGUL SYLLABLE GA/> <:hangul syllable hih/> \\:hangul-syllable-a") == "가 힣 " + (0xC544 as char)
+ok = ok and uniscript("<:TANGUT COMPONENT-001/> <:egyptian hieroglyph-13460/>") == (0x18800 as char) + " 𓑠"
+ok = ok and uniscript("<:CJK COMPATIBILITY IDEOGRAPH-F900/> <:NUSHU CHARACTER-1B170/> <:KHITAN SMALL SCRIPT CHARACTER-18B00/>") == (0xF900 as char) + " " + (0x1B170 as char) + " " + (0x18B00 as char)
+ok
