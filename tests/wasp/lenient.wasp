@@ -1,0 +1,7 @@
+use uniscript
+ok = lenient_uniscript("\\:alpha <:nosuchthing> \\:nosuch \\:beta") == "α <:nosuchthing> \\:nosuch β"
+ok = ok and lenient_uniscript("\\:alpha a <: b") == "α a <: b"
+ok = ok and lenient_uniscript("<:nosuch/> <:alpha/>") == "<:nosuch/> α"
+ok = ok and lenient_uniscript("<:fracture 7/>") == "7"
+ok = ok and is_error(uniscript("\\:nosuch"))
+ok

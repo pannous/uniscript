@@ -3,7 +3,6 @@
 - TODO: 151 hieroglyphs have no description in Wikipedia's list (e.g. Aa28…Aa32); only their Gardiner numbers name them.
 - TODO: `swift test` with the swiftly toolchain first on PATH fails (`unknown argument: '-target-arch-variant'` against the Xcode SDK); `xcrun swift test` works.
 - TODO: Sublime plugin: typing the closer `<:/greek>` could convert the whole block on that line; for now blocks need the command.
-- TODO (Swift DONE 2026-10-08, wasp still open): the Swift package and wasp's lib/uniscript.wasp have no lenient mode yet (Rust: WarningMode::Lenient, `--lenient`: errors become warnings, the faulty uniscript stays as written).
 - TODO: intellij/ plugin: no Settings page (colors, folding on/off); unknown `\:name` is an error in every file, also LaTeX's `\:` spacing command in .tex files.
 - TODO: combinations Unicode lacks (`<:double bold A>`, `<:bold italic 7>`) stay in the inner style with a warning; the Uniscript fonts could render them with a style control instead.
 - TODO: greek transliteration writes σ at the end of a word (kosmos → κοσμοσ); Greek uses final sigma ς there (κοσμος). Now that words keep their spaces, word ends are known.

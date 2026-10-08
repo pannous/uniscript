@@ -705,10 +705,14 @@ byte_after(source:text, at) := if at + 1 < source.bytes { byte_at(source, at + 1
 
 // the text of the inline tag <:content> at byte at, followed by byte next: <:…/> self-closes; a bare one that converts without
 // a warning warns that it looks like an opening tag, naming its explicit forms
+is_self_closed(content:text) := content.bytes > 1 and byte_at(content, content.bytes - 1) == 47
+
+// the name of a tag's content without the slash of a self-closed tag: alpha of alpha/
+self_closed_name(content:text) := if is_self_closed(content) { byte_slice(content, 0, content.bytes - 1) } else { content }
+
 inline_tag(content:text, at, next) := {
-	self_closed = content.bytes > 1 and byte_at(content, content.bytes - 1) == 47
-	name = content
-	if self_closed { name = byte_slice(content, 0, content.bytes - 1) }
+	self_closed = is_self_closed(content)
+	name = self_closed_name(content)
 	text = tag(name, at)
 	if text == unknown_entity(name) { return text }
 	if not self_closed and not warned(text) and reads_as_opener(content) {
@@ -849,7 +853,18 @@ header_length(source:text) := {
 	end
 }
 
-uniscript(source:text) := {
+uniscript(source:text) := converted(source, false)
+
+// lenient: unknown entities and an unclosed <: warn and stay as written instead of failing (Rust WarningMode::Lenient)
+lenient_uniscript(source:text) := converted(source, true)
+
+// the source as written, with the message as a warning, when lenient; else the error
+kept(message:text, written:text, lenient, at) := {
+	if lenient == false { return error(message) }
+	unmarked(unsupported(message, at) + written)
+}
+
+converted(source:text, lenient) := {
 	out = ""
 	block = ""
 	i = header_length(source)
@@ -877,14 +892,18 @@ uniscript(source:text) := {
 					if value >= 0 { out += unmarked(code_point_text(value, byte_slice(source, i, end), i)) } else {
 						// not a name: read as the tag with hyphens as spaces
 						text = tag(spaced(name), i)
-						if text == unknown_entity(spaced(name)) { return unknown_entity(name) }
+						if text == unknown_entity(spaced(name)) { text = kept("unknown uniscript entity: " + name, byte_slice(source, i, end), lenient, i) }
+						if is_error(text) { return text }
 						out += unmarked(text)
 					}
 				}
 				i = end
 			} else {
 				close = offset_of(source, 62, i + 2)
-				if close == source.bytes { return error("unclosed <: at byte " + byte_slice(source, i, source.bytes)) }
+				if close == source.bytes {
+					if lenient == false { return error("unclosed <: at byte " + byte_slice(source, i, source.bytes)) }
+					return out + kept("unclosed <: at " + byte_slice(source, i, source.bytes), byte_slice(source, i, source.bytes), lenient, i)
+				}
 				content = byte_slice(source, i + 2, close)
 				at = i
 				i = close + 1
@@ -892,7 +911,11 @@ uniscript(source:text) := {
 					if is_block(content) {
 						block = content
 						i += opening_padding(source, i)
-					} else { out += inline_tag(content, at, byte_after(source, close)) }
+					} else {
+						text = inline_tag(content, at, byte_after(source, close))
+						if lenient and is_error(text) { text = kept("unknown uniscript entity: " + self_closed_name(content), byte_slice(source, at, close + 1), lenient, at) }
+						out += text
+					}
 				}
 			} }
 		}

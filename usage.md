@@ -596,7 +596,7 @@ Build and test: `cd kotlin && ./gradlew test` (the library against the shared ca
 
 [warp](https://github.com/pannous/warp) supports uniscript natively: `use uniscript` fetches this repository as a
 package and loads [uniscript.wasp](uniscript.wasp), the implementation in the wasp language. `use strict` makes
-warnings errors.
+warnings errors; `lenient_uniscript(source)` turns errors into warnings and keeps the faulty uniscript as written.
 
 ```wasp probes/usage/wasp/usage.wasp
 use uniscript
