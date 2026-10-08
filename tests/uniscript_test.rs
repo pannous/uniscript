@@ -114,7 +114,7 @@ fn hieroglyphs_have_gardiner_numbers_and_descriptions() {
 
 #[test]
 fn gardiner_numbers_beyond_unicode_use_the_aegyptus_private_use_signs() {
-	converts("<:gardiner Q4A>", "\u{F446E}");
+	converts("<:gardiner Q6F>", "\u{F4476}"); // Q4A is in Unicode since 16.0 (𔂦), user decision 2026-10-08
 	converts("<:gardiner Q4>", "𓊫");
 }
 
@@ -123,7 +123,7 @@ fn gardiner_numbers_are_short_names_in_lower_case() {
 	converts("\\:egyptian-a2", "𓀁");
 	converts("\\:egyptian-aa1", "𓐍");
 	converts("<:egyptian-a2>", "𓀁");
-	converts("\\:egyptian-q4a", "\u{F446E}");
+	converts("\\:egyptian-q6f", "\u{F4476}");
 	assert_eq!(to_uniscript("𓀁"), "\\:egyptian-A2");
 }
 
@@ -147,7 +147,7 @@ fn block_operands_of_several_letters_are_found_in_lower_case() {
 	converts("<:egyptian a2>", "𓀁");
 	converts("<:egyptian aa1>", "𓐍");
 	converts("<:anatolian caput>", "\u{14409}");
-	converts("\\:egyptian-q4a", "\u{F446E}");
+	converts("\\:egyptian-q6f", "\u{F4476}");
 }
 
 #[test]

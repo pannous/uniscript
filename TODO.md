@@ -1,5 +1,4 @@
 - TODO: `<:greek> athos <:/greek>` gives αθοσ; Greek orthography wants final sigma ς at word end (αθος). Decide whether `greek` should apply it (the spec example in docs/uniscript.md shows αθοσ).
-- TODO (1158 of 3995 done 2026-10-08: numbers the extended sign list lacks; the rest wait for open-decisions.md) Egyptian Hieroglyphs Extended-A (U+13460…, Unicode 16) have algorithmic names only; give them Gardiner/Unikemet numbers (Unikemet.txt kEH_UniK, kEH_JSesh) in the `egyptian` block.
 - TODO: 151 hieroglyphs have no description in Wikipedia's list (e.g. Aa28…Aa32); only their Gardiner numbers name them.
 - TODO: `swift test` with the swiftly toolchain first on PATH fails (`unknown argument: '-target-arch-variant'` against the Xcode SDK); `xcrun swift test` works.
 - TODO: Sublime plugin: typing the closer `<:/greek>` could convert the whole block on that line; for now blocks need the command.

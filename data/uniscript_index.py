@@ -400,8 +400,8 @@ def egyptian_block(named):
 			                          for synonym in synonyms if pattern.match(name)]:
 				table.setdefault(spelling, character)
 	jsesh, own = unikemet_numbers()
-	# the private use signs keep their numbers (tests pin Q4A → U+F446E, see open-decisions.md), Unikemet's own numbers last
-	for number, sign in [*extended_signs().items(), *jsesh.items(), *own.items()]:
+	# Unicode before the private use sign of the same JSesh number (user decision 2026-10-08), Unikemet's own numbers last
+	for number, sign in [*jsesh.items(), *extended_signs().items(), *own.items()]:
 		table.setdefault(number, sign)
 	return table
 
