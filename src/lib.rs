@@ -235,7 +235,19 @@ impl Uniscript<'static> {
 		if files.is_empty() {
 			return Ok(Uniscript::new(built_in));
 		}
-		let local = Box::leak(index::build(&entities::Entities::load_files(files)?).into_boxed_slice());
+		let mut entities = entities::Entities::load_files(files)?;
+		// `tiniest: "upper"`: an alias of a built-in block takes that block's operands along
+		for block in entities.missing_alias_targets() {
+			let prefix = format!("{block} ");
+			let operands: Vec<(String, String)> = built_in
+				.entries(Table::Names)
+				.filter_map(|(key, text)| key.strip_prefix(&prefix).filter(|operand| !operand.is_empty()).map(|operand| (operand.to_string(), text.to_string())))
+				.collect();
+			if !operands.is_empty() {
+				entities.borrow_block(&block, operands);
+			}
+		}
+		let local = Box::leak(index::build(&entities).into_boxed_slice());
 		Ok(Uniscript::new(built_in.with_local(local)?))
 	}
 }

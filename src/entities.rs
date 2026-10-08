@@ -186,6 +186,27 @@ impl Entities {
 		self.sections.table(name).cloned().unwrap_or_default()
 	}
 
+	/// The blocks the aliases name that these entities lack (`tiniest: "upper"` in a `.uniscript` file)
+	pub fn missing_alias_targets(&self) -> Vec<String> {
+		let blocks = self.blocks();
+		let mut missing: Vec<String> = Vec::new();
+		for target in self.section(BLOCK_ALIASES).texts().flat_map(|(_, targets)| targets.split_whitespace()) {
+			if blocks.table(target).is_none() && !missing.iter().any(|known| known == target) {
+				missing.push(target.to_string());
+			}
+		}
+		missing
+	}
+
+	/// A block borrowed from another index for the aliases naming it: typed only (`*one-way`), so the characters keep
+	/// spelling back as that index spells them; declared blocks of the same name win
+	pub fn borrow_block(&mut self, name: &str, operands: Vec<(String, String)>) {
+		let mut table: Vec<(String, Entry)> = operands.into_iter().map(|(operand, text)| (operand, Entry::Text(text))).collect();
+		table.push((ONE_WAY_KEY.to_string(), Entry::Text(String::new())));
+		let block = Table(vec![(name.to_string(), Entry::Table(Table(table)))]);
+		self.sections.merge(Table(vec![(BLOCKS.to_string(), Entry::Table(block))]));
+	}
+
 	/// The declared blocks, in file order
 	pub fn blocks(&self) -> Table {
 		self.section(BLOCKS)

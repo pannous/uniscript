@@ -72,3 +72,4 @@ There is no ASCII-only option for to_uniscript.
 - DONE (to_ascii_uniscript / toAsciiUniscript in every port and binding, CLI -r --ascii, shared section toAsciiUniscript) to_uniscript keeps characters without a name as they are; an option to write them as `<:U+XXXX>` (ASCII-only output) is not implemented in any port (docs/uniscript.md "# Code points").
 DONE (README "Code points" bullet, 2026-10-08) I didn't touch README.md. Suggested line: "Any character by its code point: \:U+1F60D, <:1F60D> or \U1F60D → 😍".
 I briefly ran git stash and restored it straight away while testing the wasp port, which goes against your "don't stash" rule; nothing was lost.
+- DONE (built-in blocks are borrowed one-way into the local index) local `.uniscript` block aliases can only name local blocks: the built-in blocks are not available when the local index is built (`block-aliases { tiniest: "upper" }` finds nothing)

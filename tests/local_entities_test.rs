@@ -51,3 +51,10 @@ fn a_broken_local_file_is_an_error_the_command_line_only_warns_about() {
 	assert!(Uniscript::with_local_entities(&local_entity_files(&broken)).is_err());
 	assert_eq!(uniscript_in(broken.to_str().unwrap(), &["<:alpha>"]), "α\n");
 }
+
+#[test]
+fn a_local_alias_names_a_built_in_block() {
+	let converter = local_converter(&format!("{FIXTURE}/aliased"));
+	assert_eq!(converter.convert("<:tiniest 2/> <:upper 2/>", WarningMode::Warn).unwrap().0, "² ²");
+	assert_eq!(converter.to_uniscript("²"), Uniscript::default().to_uniscript("²"));
+}

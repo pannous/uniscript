@@ -7,5 +7,6 @@
   (`Index::with_local`): every lookup asks the local index first. The bytes are leaked (`Box::leak`) so the converter
   stays `Uniscript<'static>`; built once per program.
 - CLI: `converter()` in `src/main.rs`; a broken file warns and falls back to the built-in entities.
-- Limits: aliases cannot reach built-in blocks; ports and editor plugins do not read the files (TODO.md).
+- Aliases may name built-in blocks (`tiniest: "upper"`): `with_local_entities` borrows the block's operands from the built-in index into the local one as `*one-way`, so spelling back stays the built-in one.
+- Limits: ports and editor plugins do not read the files (TODO.md).
 - Tests: `tests/local_entities_test.rs`, fixtures `tests/local_entities/`.
