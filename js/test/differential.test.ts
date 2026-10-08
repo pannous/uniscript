@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { Table, describeWarning, standard } from "../src/index.ts";
 import type { Warning } from "../src/index.ts";
 
@@ -55,4 +55,13 @@ test("every name converts and every character spells back as in Rust", { skip },
 	sameLines(printedWarnings(warnings), expected.warnings, "names warnings");
 	const characters = [...standard.index.entries(Table.chars)].map(([key]) => key).join("\n") + "\n";
 	sameLines(printed(standard.toUniscript(characters)), rust(characters, ["-r"]).text, "characters");
+});
+
+test("the reference binary is current", { skip }, () => {
+	// a reference built before the last change of the Rust sources or the index fails every comparison: say so
+	const sources = new URL("src/", REPOSITORY);
+	const inputs = [new URL("data/entities.idx", REPOSITORY), ...readdirSync(sources).filter(file => file.endsWith(".rs")).map(file => new URL(file, sources))];
+	const newest = inputs.reduce((latest, input) => (statSync(input).mtimeMs > statSync(latest).mtimeMs ? input : latest));
+	assert.ok(statSync(RUST_BINARY).mtimeMs >= statSync(newest).mtimeMs,
+		`${RUST_BINARY} is older than ${newest.pathname}: rebuild it with CARGO_TARGET_DIR=/opt/cargo cargo build --release`);
 });

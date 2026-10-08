@@ -23,7 +23,6 @@
 - Swift: Linux build unverified (podman machine fails: vfkit exited with code 1); Bundle.module + Data(.alwaysMapped) should work on Linux Foundation, SPI will show it
 - Swift: `swift` in PATH is swiftly 6.0.3 and cannot build against the current macOS SDK (Foundation module error); use `xcrun swift`
 - C packaging: the Linux shared library has no soname/versioned name (libuniscript.so only), and the install is untested on Linux
-- C packaging: c/native builds with -Werror, so a downstream compiler with new warnings breaks release builds (Homebrew, Conan); consider dropping -Werror outside `make test`
 - C packaging: c/native `make install` and c/ffi both name the library libuniscript: installing both would collide (c/ffi has no install target)
 - TODO: IntelliJ plugin first upload to JetBrains Marketplace is manual (website); later versions via `PUBLISH_TOKEN=… ./gradlew publishPlugin`. No signing certificate yet.
 - TODO: Sublime package depends on the `uniscript` CLI (cargo install): Package Control users without Rust cannot use it. Bundle python/native + entities.idx (loaded via sublime.load_binary_resource, no mmap in a zip) to make it self-contained.
@@ -38,7 +37,6 @@
 - The deployed demo requests ../fonts/UniscriptSans-Regular.ttf, NewGardinerOmni2d4.ttf and UniscriptCJK-Regular.otf (404, 0 bytes): the local-font fallbacks of docs/demo.html, needed for docs/make_demo.sh screenshots, do not exist on the server.
 - pannous.com/uniscript/ (the wasp page) still downloads the whole 1.2 MB entities.idx on every load; the chunked index of the Rust demo (54 chunks, ~100 KB) is not ported to the wasp page.
 - Stale whole fonts stay on the server (no rsync --delete): /var/www/pannous/uniscript/fonts/UniscriptCJK-Regular.woff2 and NewGardinerOmni2d4.woff2 are no longer referenced.
-- js/test/differential.test.ts and the Python native differential tests compare against /opt/cargo/release/uniscript, which embeds data/entities.idx at compile time: after an index change they fail until something rebuilds the release binary (js chunks.test.ts does, so a second run passes). They should build it first or fail loudly as stale.
 - Anatolian hieroglyphs: NamesList gives no reading for 246 of the 583 signs (only their Laroche numbers name them), and uncertain readings (`?`, `-x`) are skipped.
 - Other hieroglyphic scripts could join `hieroglyph: "egyptian anatolian"`: Meroitic hieroglyphs (letter names), Egyptian Extended-A once it has Gardiner/Unikemet numbers.
 - TODO: release 1.0.0 is on crates.io, PyPI (uniscript-py, uniscript-rs), GitHub (v1.0.0 with the C tarball and the IntelliJ zip, sublime-1.0.0), Homebrew (pannous/homebrew-tap) and pending at the Swift Package Index (SwiftPackageIndex/PackageList#15450). Still open: npm (@pannous/uniscript, @pannous/uniscript-wasm) needs the user's 2FA per publish: `npm publish probes/publish/dist/pannous-uniscript{,-wasm}-1.0.0.tgz --access public`; the first JetBrains Marketplace upload by hand; the Package Control PR (line above).
@@ -100,7 +98,6 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - swift: build and test with `xcrun swift test` (Xcode toolchain); the swiftly `swift` on PATH cannot build Foundation against the Xcode SDK
 - local `.uniscript` entity files (`virus: 🦠`) are read by the Rust library and CLI only: the native ports (Swift, TypeScript, Python, C, Kotlin, wasp) and the editor plugins (VS Code, Sublime, IntelliJ completion) do not see them yet
 - local `.uniscript` block aliases can only name local blocks: the built-in blocks are not available when the local index is built (`block-aliases { tiniest: "upper" }` finds nothing)
-- js/test/differential.test.ts compares against /opt/cargo/release/uniscript (UNISCRIPT_RUST): a stale build fails it after an index or converter change; rebuild with CARGO_TARGET_DIR=/opt/cargo cargo build --release (the cause of the "flaky" run above)
 - Inline tags warn (user decision 2026-10-02, 8ed80c0): usage.md, README, sample.md and test.md still write inline tags (`<:alpha> <:fracture A>`, `<:color red 𓀀>`), so their examples print the new warnings; rewrite the inputs to explicit forms (`uniscript --explicit` per language string, minding each language's escaping)?
 - Sublime with "completion_inserts": "name" leaves an inline `<:alpha>`, which now warns: insert `\:alpha` / `<:…/>` instead
 - IntelliJ and VS Code plugins: rebuild against the ports with explicit(), maybe offer "Make Tags Explicit" as a quick fix there too

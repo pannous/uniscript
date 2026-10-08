@@ -25,7 +25,9 @@ INDEX := $(ROOT)/data/entities.idx
 BUILD := build
 CC ?= cc
 CFLAGS ?= -O2
-WARNINGS := -std=c11 -Wall -Wextra -Wpedantic -Wno-overlength-strings -Werror
+# -Werror only in `make test`: a downstream compiler with new warnings must not break release builds (Homebrew, Conan)
+WERROR :=
+WARNINGS = -std=c11 -Wall -Wextra -Wpedantic -Wno-overlength-strings $(WERROR)
 INCLUDES := -I.. -Isrc
 DEFINES := -DUNISCRIPT_INDEX_PATH='"$(INDEX)"'
 SANITIZE := -fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=all -g -O1
@@ -77,6 +79,7 @@ $(BUILD)/sanitized/test_%: ../tests/test_%.c ../tests/cases.h $(SANITIZED_OBJECT
 
 TEST_NAMES := $(notdir $(subst .cpp,_cpp,$(TESTS:.c=)))
 TEST_BINARIES := $(foreach test,$(TEST_NAMES),$(BUILD)/$(test) $(BUILD)/sanitized/$(test))
+test: WERROR := -Werror
 test: $(TEST_BINARIES)
 	@for binary in $^; do echo "== $$binary"; ASAN_OPTIONS=detect_leaks=$(if $(DARWIN),0,1) $$binary || exit 1; done
 	@$(if $(DARWIN),for binary in $(TEST_NAMES); do leaks --quiet --atExit -- $(BUILD)/$$binary >/dev/null 2>&1 || { echo "leaks in $$binary"; exit 1; }; done; echo "== no leaks (macOS leaks)")

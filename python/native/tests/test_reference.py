@@ -60,3 +60,12 @@ def test_every_block_converts_like_the_reference():
     expected = run([str(REFERENCE), "--lenient"], corpus)
     assert text + "\n" == expected[1]
     assert "".join(f"warning: {warning}\n" for warning in warnings) == expected[2]
+
+
+def test_reference_binary_is_current():
+    """A reference built before the last change of the Rust sources or the index fails every comparison: say so"""
+    inputs = [REPOSITORY / "data" / "entities.idx", *(REPOSITORY / "src").glob("*.rs")]
+    newest = max(inputs, key=lambda path: path.stat().st_mtime)
+    assert REFERENCE.stat().st_mtime >= newest.stat().st_mtime, (
+        f"{REFERENCE} is older than {newest.relative_to(REPOSITORY)}: rebuild it with "
+        "CARGO_TARGET_DIR=/opt/cargo cargo build --release")
