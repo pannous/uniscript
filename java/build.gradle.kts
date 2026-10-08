@@ -74,10 +74,23 @@ tasks.jar {
 	)
 }
 
+// The host's native library built before the last change of the Rust sources or the index fails the shared cases: say so
+val checkNativesCurrent by tasks.registering {
+	description = "Fails when the host's native library of c/ffi is older than src/*.rs or data/entities.idx"
+	val native = nativeBuild.resolve("natives/${hostPlatform()}").listFiles()?.firstOrNull()
+	val inputs = repositoryRoot.resolve("src").listFiles { file -> file.extension == "rs" }.orEmpty().toList() + repositoryRoot.resolve("data/entities.idx")
+	doLast {
+		val newest = inputs.maxBy { it.lastModified() }
+		check(native == null || native.lastModified() >= newest.lastModified()) { "$native is older than $newest: run make -C c/ffi natives" }
+	}
+}
+
 tasks.test {
+	dependsOn(checkNativesCurrent)
 	useJUnitPlatform()
 	jvmArgs("--enable-native-access=ALL-UNNAMED")
 	systemProperty("uniscript.cases", repositoryRoot.resolve("js/test/cases.json").path)
+	inputs.file(repositoryRoot.resolve("js/test/cases.json")) // a changed case file reruns the tests instead of reporting the cached success
 	testLogging { events("failed"); exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL }
 }
 

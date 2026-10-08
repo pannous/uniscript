@@ -26,7 +26,10 @@ tasks.processResources { from(entitiesIndex) }
 // the JPMS name next to com.pannous.uniscript.ffi (java/), so both jars sit on one module path
 tasks.jar { manifest { attributes("Automatic-Module-Name" to "com.pannous.uniscript") } }
 
-tasks.test { systemProperty("uniscript.cases", sharedCases.absolutePath) }
+tasks.test {
+	systemProperty("uniscript.cases", sharedCases.absolutePath)
+	inputs.file(sharedCases) // a changed case file reruns the tests instead of reporting the cached success
+}
 
 // credentials (mavenCentralUsername, mavenCentralPassword, signingInMemoryKey…) come from ~/.gradle/gradle.properties
 // or ORG_GRADLE_PROJECT_* environment variables, never from files in git; shared with com.pannous:uniscript (java/)

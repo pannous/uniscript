@@ -93,8 +93,7 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - suffix names (user idea): `<:SANS-SERIF DIGIT NINE>` for MATHEMATICAL SANS-SERIF DIGIT NINE is unknown and not even unique (DINGBAT CIRCLED SANS-SERIF DIGIT NINE …); unique word-suffix aliases of the Unicode names would add ~42.7k index entries (23.5k when only the first word is dropped)
 - Sublime completion glue (uniscript.py: on_query_completions, popup after `<:`/`\:`, commit_completion hooks) is untested in a live Sublime; only uniscript_cli.completions is probed
 - `~/.cargo/bin/uniscript` must be reinstalled (`cargo install --path .`) whenever the CLI gains commands the editor plugins use (`names`)
-- kotlin/java gradle test tasks do not list js/test/cases.json as an input: after editing the shared cases, `gradle test` reports success from cache; run with `--rerun-tasks`
-- java and csharp test the prebuilt c/ffi/build natives: after Rust changes run `make -C c/ffi natives` first, else they test a stale library (csharp failed on LATIN CAPITAL LETTER ETH for that reason)
+- TODO (java DONE: checkNativesCurrent fails the test task loudly; csharp still open) java and csharp test the prebuilt c/ffi/build natives: after Rust changes run `make -C c/ffi natives` first, else they test a stale library (csharp failed on LATIN CAPITAL LETTER ETH for that reason)
 - swift: build and test with `xcrun swift test` (Xcode toolchain); the swiftly `swift` on PATH cannot build Foundation against the Xcode SDK
 - local `.uniscript` entity files (`virus: 🦠`) are read by the Rust library and CLI only: the native ports (Swift, TypeScript, Python, C, Kotlin, wasp) and the editor plugins (VS Code, Sublime, IntelliJ completion) do not see them yet
 - local `.uniscript` block aliases can only name local blocks: the built-in blocks are not available when the local index is built (`block-aliases { tiniest: "upper" }` finds nothing)
