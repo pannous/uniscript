@@ -40,6 +40,10 @@ A short name that is no entity reads as the tag with its hyphens as spaces, so e
 `\:fracture-A` ⩵ `<:fracture A>` ⩵ 𝔄, `\:mirror-red-A` ⩵ `<:mirror red A>`, `\:egyptian-seated-man` ⩵ 𓀀.
 Block operands of several letters are also found in lowercase: `\:egyptian-a2` ⩵ `<:egyptian A2>` ⩵ 𓀁; a single
 letter keeps its case (`<:fracture a>` ⩵ 𝔞).    
+A Unicode name also reads without its filler word (letter, sign, syllable …, the `*fillers` key of uniscript.wasp):
+`\:syriac-taw` ⩵ `\:syriac-letter-taw` ⩵ ܬ, `\:phaistos-bee` ⩵ 𐇱, and is written back that way. Failing every exact
+name, a name of at least 3 letters also reads as the end of one (`\:taw` ⩵ ܬ, the shortest, then the lowest character),
+read only. Editor completion offers both after the names starting with what was typed.    
   
 The essential marker for the beginning of complex uniscript elements is "<:".    
   

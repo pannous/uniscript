@@ -77,3 +77,10 @@
   non-ASCII, alike in every port incl. C). `c` types ς; a lone `s` and the operand `sigma` stay σ.
 - Short names: a bare name also has to be no block operand (Cherokee `wo` would shadow chinese `wo` 我 for `\:wo`), else
   it keeps its script word (`\:cherokee-wo`).
+- Filler-free names and name endings (2026-10-09, user request: "avoid duplication in the index"): nothing stored.
+  Reading, after the case fallback: put one `*fillers` word back after each hyphen (\:syriac-taw), then the shortest plain
+  name ending in `-<typed>` (lowest code point on a tie, ≥ 3 letters, read only: \:taw ܬ before hatran 𐣵). Writing: the
+  builder (both, byte-identical) replaces a still-long `<:name>` by the shortest filler-free form that reads back the same,
+  after the block forms (operands need whole names) and never one whose first word is a block or meta key. All ports
+  read it (Rust, C, JS, Python, Kotlin, Swift, wasp); completion in VS Code, Sublime and IntelliJ ranks prefix > filler-free
+  > later segment (~40 ms per keystroke over 240k names in JS). Side effect: `\:the` reads as 𐖶 (an ending).
