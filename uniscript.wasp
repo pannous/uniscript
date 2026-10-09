@@ -27,6 +27,8 @@ const hex_digits = "0123456789ABCDEF"
 const max_operand_words = 8      // the most words one operand spans: <:egyptian man with hand to mouth>
 const warned_code_point = 64976  // U+FDD0, a noncharacter: the mark unsupported() leaves in converted text
 const readings_key = "*readings" // a block whose words split into whole readings (chinese shihan → shi han), not letters
+const fillers_key = "*fillers"   // the words a Unicode name may drop, in the order reading puts them back: syriac-taw
+const min_ending_length = 3      // \:ab stays an unknown name rather than the end of some long one
 // algorithmic Unicode names (UAX #44 NR1/NR2, src/algorithmic_names.rs): no index entries, derived from the code point
 const hex_named_prefixes = ["cjk-unified-ideograph-", "cjk-compatibility-ideograph-", "tangut-ideograph-", "khitan-small-script-character-", "nushu-character-", "egyptian-hieroglyph-"]
 // the ranges each prefix names, as triples prefix index, first, last (Unicode 16.0.0 blocks)
@@ -648,10 +650,70 @@ tag(content:text, at) := {
 			return restyled_operands(styles, stacked_words(effects, true), operands(block, rest, "", at), at)
 		}
 	}
-	// the case fallback, after the blocks: <:LATIN CAPITAL LETTER ETH> is latin-capital-letter-eth, <:TILDE> tilde
-	record = find(names_table, hyphenated(ascii_lowercased(content)))
+	// the case fallback, after the blocks: <:LATIN CAPITAL LETTER ETH> is latin-capital-letter-eth, <:TILDE> tilde; then
+	// without a filler word or by its ending
+	spelled = hyphenated(ascii_lowercased(content))
+	record = find(names_table, spelled)
+	if record < 0 { record = filled_record(spelled) }
+	if record < 0 { record = ending_record(spelled) }
 	if record >= 0 { return value_of(record) }
 	unknown_entity(content)
+}
+
+// the record of a Unicode name written without its filler word, or -1: syriac-taw is syriac-letter-taw, one filler put
+// back after each hyphen in turn
+filled_record(key:text) := {
+	fillers = entry(fillers_key)
+	found = -1
+	hyphen = offset_of(key, 45, 0)
+	while found < 0 and hyphen < key.bytes {
+		start = 0
+		while found < 0 and start < fillers.bytes {
+			end = offset_of(fillers, 32, start)
+			found = find(names_table, byte_slice(key, 0, hyphen) + "-" + byte_slice(fillers, start, end) + byte_slice(key, hyphen, key.bytes))
+			start = end + 1
+		}
+		hyphen = offset_of(key, 45, hyphen + 1)
+	}
+	found
+}
+
+// the record of the shortest name ending in these words, on a tie the lowest code point, or -1; read only: letter-taw
+// and taw are syriac-letter-taw ܬ. A scan of all names, only for a name that is nothing else
+ending_record(words:text) := {
+	best = -1
+	first = u32(8 + 8 * names_table)
+	count = u32(12 + 8 * names_table)
+	i = 0
+	while words.bytes >= min_ending_length and i < count {
+		record = first + i * record_size
+		length = u32(record + 8)
+		start = u32(record + 4)
+		if length > words.bytes and byte_at(uniscript_index, start + length - words.bytes - 1) == 45 {
+			key = byte_slice(uniscript_index, start, start + length)
+			plain = offset_of(key, 32, 0) == length and offset_of(key, 42, 0) == length
+			if plain and byte_slice(key, length - words.bytes, length) == words {
+				if best < 0 or ranks_before(record, best) { best = record }
+			}
+		}
+		i++
+	}
+	best
+}
+
+// shorter names first, on a tie the lower first character (UTF-8 bytes sort as code points do), then the name
+ranks_before(record, best) := {
+	if u32(record + 8) != u32(best + 8) { return u32(record + 8) < u32(best + 8) }
+	order = byte_order(u32(record + 12), u32(best + 12), utf8_width(byte_at(uniscript_index, u32(record + 12))))
+	if order != 0 { return order < 0 }
+	byte_order(u32(record + 4), u32(best + 4), u32(record + 8)) < 0
+}
+
+// -1, 0 or 1: the `length` bytes of the index at one offset against those at the other
+byte_order(one, other, length) := {
+	i = 0
+	while i < length and byte_at(uniscript_index, one + i) == byte_at(uniscript_index, other + i) { i++ }
+	if i == length { 0 } else { if byte_at(uniscript_index, one + i) < byte_at(uniscript_index, other + i) { -1 } else { 1 } }
 }
 
 unknown_entity(name:text) := error("unknown uniscript entity: " + name)

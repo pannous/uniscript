@@ -1,0 +1,4 @@
+use uniscript
+ok = uniscript("\:syriac-taw \:phaistos-bee <:SYRIAC TAW/>") == "ܬ 𐇱 ܬ"
+ok = ok and uniscript("\:letter-taw \:taw \:hatran-taw") == "ܬ ܬ 𐣵"
+ok
