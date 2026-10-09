@@ -20,6 +20,10 @@ const SUFFIX_KEY = "*suffix";
 const GROUP_KEY = "*group";
 /** a block whose words split into whole readings (chinese shihan → shi han), not letters and digraphs (greek) */
 const READINGS_KEY = "*readings";
+/** The words a Unicode name may drop, in the order reading puts them back: `\:syriac-taw` is syriac-letter-taw */
+const FILLERS_KEY = "*fillers";
+/** `\:ab` stays an unknown name rather than the end of some long one */
+const MIN_ENDING_LENGTH = 3;
 /** `"*final σ": "ς"`: the form a letter of the block takes at the end of a word */
 const FINAL_KEY = "*final";
 /** The most words one operand spans: `<:egyptian man with hand to mouth>` */
@@ -207,6 +211,20 @@ function splitOnce(text: string, separator: string): [string, string] | undefine
 
 const words = (text: string) => text.split(" ").filter((word) => word.length > 0);
 const firstCharacter = (text: string) => [...text][0] ?? "";
+
+/** The names a name without its filler word may stand for, in reading order: one filler put back after each hyphen in
+ * turn, `phaistos-bee` → phaistos-disc-sign-bee, phaistos-vowel-sign-bee, … */
+function* filledNames(name: string, fillers: string): Generator<string> {
+	for (let at = name.indexOf("-"); at >= 0; at = name.indexOf("-", at + 1)) {
+		for (const filler of fillers.split(" ")) yield `${name.slice(0, at)}-${filler}${name.slice(at)}`;
+	}
+}
+
+/** Lexical order of equally long tuples */
+function compareRanks(one: readonly (number | string)[], other: readonly (number | string)[]): number {
+	const differing = one.findIndex((value, at) => value !== other[at]);
+	return differing < 0 ? 0 : one[differing] < other[differing] ? -1 : 1;
+}
 
 /** A converter over one entity index */
 export class Uniscript {
@@ -630,9 +648,36 @@ export class Uniscript {
 				.join("");
 		}
 		// the case fallback, after the blocks: <:LATIN CAPITAL LETTER ETH> is latin-capital-letter-eth, <:TILDE> tilde
-		const lowercased = this.#name(content.replace(/[A-Z]/g, (capital) => capital.toLowerCase()).replaceAll(" ", "-"));
-		if (lowercased !== undefined) return lowercased;
+		const lowercase = content.replace(/[A-Z]/g, (capital) => capital.toLowerCase()).replaceAll(" ", "-");
+		const found = this.#name(lowercase) ?? this.#filledName(lowercase) ?? this.#nameEndingIn(lowercase);
+		if (found !== undefined) return found;
 		throw new UniscriptError("UnknownEntity", content);
+	}
+
+	/** The text of a Unicode name written without its filler word: `syriac-taw` is syriac-letter-taw */
+	#filledName(name: string): string | undefined {
+		const fillers = this.#name(FILLERS_KEY);
+		if (fillers === undefined) return undefined;
+		for (const filled of filledNames(name, fillers)) {
+			const text = this.#name(filled);
+			if (text !== undefined) return text;
+		}
+		return undefined;
+	}
+
+	/** The text of the shortest name ending in these words, on a tie the lowest code point, read only: `letter-taw` and
+	 * `taw` are syriac-letter-taw ܬ. A scan of all names, only for a name that is nothing else; of a chunked index only the
+	 * chunks loaded so far */
+	#nameEndingIn(words: string): string | undefined {
+		if (words.length < MIN_ENDING_LENGTH) return undefined;
+		const ending = `-${words}`;
+		const rank = ([name, text]: [string, string]) => [name.length, text.codePointAt(0)!, name] as const;
+		let best: [string, string] | undefined;
+		for (const entry of this.index.entries(Table.names)) {
+			if (!entry[0].endsWith(ending) || entry[0].includes(" ") || entry[0].includes("*")) continue;
+			if (best === undefined || compareRanks(rank(entry), rank(best)) < 0) best = entry;
+		}
+		return best?.[1];
 	}
 
 	/** `<:key value …>` with meta keys: `<:font han-japanese>` opens spans, `<:color #ff8800 mirror A>` attaches to each

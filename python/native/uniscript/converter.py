@@ -37,6 +37,8 @@ SUFFIX_KEY = "*suffix"
 GROUP_KEY = "*group"
 # a block whose words split into whole readings (chinese shihan → shi han), not letters and digraphs (greek)
 READINGS_KEY = "*readings"
+FILLERS_KEY = "*fillers"  # the words a Unicode name may drop, in the order reading puts them back: syriac-taw
+MIN_ENDING_LENGTH = 3  # \:ab stays an unknown name rather than the end of some long one
 FINAL_KEY = "*final"  # "*final σ": "ς", the form a letter of the block takes at the end of a word
 MAX_OPERAND_WORDS = 8  # the most words one operand spans: `<:egyptian man with hand to mouth>`
 # the block control naming the meta a block becomes where it has no suffix control (`red *meta` → `color red`)
@@ -152,6 +154,12 @@ def opening_padding_length(text: str) -> int:
 def without_closing_padding(text: str) -> str:
     """The text without the one whitespace a block's closer eats before it"""
     return next((text[:-len(padding)] for padding in BLOCK_PADDING if text.endswith(padding)), text)
+
+
+def filled_names(name: str, fillers: str):
+    """The names a name without its filler word may stand for, in reading order: one filler put back after each hyphen in
+    turn, phaistos-bee → phaistos-disc-sign-bee, phaistos-vowel-sign-bee, …"""
+    return (f"{name[:at]}-{filler}{name[at:]}" for at, c in enumerate(name) if c == "-" for filler in fillers.split(" "))
 
 
 class Uniscript:
@@ -545,10 +553,28 @@ class Uniscript:
             return "".join(self._restyled(styles, character, at) + self._effect_suffixes(effects, character, at)
                            for character in self._operands(block, rest, [], at))
         # the case fallback, after the blocks: <:LATIN CAPITAL LETTER ETH> is latin-capital-letter-eth, <:TILDE> tilde
-        text = self._name(content.encode().lower().decode().replace(" ", "-"))
-        if text is not None:
-            return text
+        lowercase = content.encode().lower().decode().replace(" ", "-")
+        for read in (self._name, self._filled_name, self._name_ending_in):
+            text = read(lowercase)
+            if text is not None:
+                return text
         raise UnknownEntity(content)
+
+    def _filled_name(self, name: str):
+        """The text of a Unicode name written without its filler word: syriac-taw is syriac-letter-taw"""
+        fillers = self._name(FILLERS_KEY)
+        return fillers and next(filter(None, map(self._name, filled_names(name, fillers))), None)
+
+    def _name_ending_in(self, words: str):
+        """The text of the shortest name ending in these words, on a tie the lowest code point, read only: letter-taw and
+        taw are syriac-letter-taw ܬ. A scan of all names, only for a name that is nothing else"""
+        if len(words) < MIN_ENDING_LENGTH:
+            return None
+        if not hasattr(self, "_plain_names"):
+            self._plain_names = [(name, text) for name, text in self.index.entries(Table.NAMES) if " " not in name and "*" not in name]
+        ending = "-" + words
+        found = [(len(name), text[:1], name, text) for name, text in self._plain_names if name.endswith(ending)]
+        return min(found)[3] if found else None
 
     def _meta_tag(self, content: str, at: int):
         """`<:key value …>` with meta keys: `<:font han-japanese>` opens spans, `<:color #ff8800 mirror A>` attaches to

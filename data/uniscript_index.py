@@ -50,6 +50,7 @@ TABLE_NAMES = ("names", "chars", "suffixes", "fonts", "meta")  # forward, revers
 
 # sections holding plain entities, earlier ones win when a name occurs twice
 ENTITY_SECTIONS = ("uniscript", "names", "latex", "html", "descriptions")
+FILLERS_KEY = "*fillers"  # the words a Unicode name may drop, in the order reading puts them back: syriac-taw
 # the uniscript section: escapes of the '<:' marker (wiki/uniscript.md "Special remark") and short spec names
 UNISCRIPT_NAMES = {"less": "<", "colon": ":", "greater": ">", "empty": "∅"}
 
@@ -795,7 +796,44 @@ def reverse_entries(sections):
 		chosen.setdefault(text, f"<:{shortened.get(name, name)}>")
 	for text, (block, operand) in block_forms.items():
 		chosen[text] = f"<:{block} {ascii_operand(operand, chosen)}>"
+	# after the block forms: an operand is read by its whole name (<:turned latin-small-letter-delta>)
+	reading = Reading(sections)
+	for name, text in sections.get("names", {}).items():
+		short = chosen.get(text) == f"<:{name}>" and reading.without_filler(name, text)
+		if short:
+			chosen[text] = f"<:{short}>"
 	return {text: form for text, form in chosen.items() if not text.isascii()}
+
+
+def filled_names(name, fillers):
+	"""The names a name without its filler word may stand for, in reading order: one filler put back after each hyphen in
+	turn, phaistos-bee → phaistos-disc-sign-bee, phaistos-vowel-sign-bee, …"""
+	return (f"{name[:at]}-{filler}{name[at:]}" for at, c in enumerate(name) if c == "-" for filler in fillers.split(" "))
+
+
+class Reading:
+	"""How the built index reads a \\:name, for the names that are written back"""
+
+	def __init__(self, sections):
+		self.names = forward_entries(sections)
+		self.meta_keys = set(sections.get("meta", {}))
+		self.fillers = sections.get("uniscript", {}).get(FILLERS_KEY, "")
+
+	def text(self, name):
+		"""The text \\:name reads as, as far as names go: a name, else none when it reads as a tag (\\:greek-taw, a code point
+		never has a hyphen), else the name with a filler put back"""
+		if name in self.names:
+			return self.names[name]
+		first = name.split("-")[0]
+		if f"{first} " in self.names or first in self.meta_keys:
+			return None
+		return next((self.names[filled] for filled in filled_names(name, self.fillers) if filled in self.names), None)
+
+	def without_filler(self, name, text):
+		"""The shortest Unicode name without one of its filler words that reads back as text: phaistos-disc-sign-bee → phaistos-bee"""
+		shorts = [name[:match.start()] + name[match.start() + len(filler) + 1:]
+			for filler in self.fillers.split(" ") if filler for match in re.finditer(f"(?=-{re.escape(filler)}-)", name)]
+		return next((short for short in sorted(shorts, key=len) if self.text(short) == text), None)
 
 
 def is_one_glyph(text):

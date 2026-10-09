@@ -6,7 +6,7 @@
 
 use std::collections::{HashMap, HashSet};
 use crate::meta::ZERO_WIDTH_JOINER;
-use crate::{algorithmic_names, filled_names, FILLERS_KEY};
+use crate::{filled_names, FILLERS_KEY};
 use std::path::{Path, PathBuf};
 
 /// Sections holding plain entities, earlier ones win when a name occurs twice
@@ -411,7 +411,7 @@ impl Reading {
 			return Some(text);
 		}
 		let first = name.split('-').next().unwrap_or(name);
-		if self.names.contains_key(&format!("{first} ")) || self.meta_keys.contains(first) || algorithmic_names::character(&name.replace('-', " ")).is_some() {
+		if self.names.contains_key(&format!("{first} ")) || self.meta_keys.contains(first) {
 			return None;
 		}
 		filled_names(name, &self.fillers).find_map(|filled| self.names.get(&filled)).map(String::as_str)

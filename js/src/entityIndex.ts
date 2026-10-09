@@ -55,6 +55,8 @@ export async function readBytes(source: string | URL): Promise<Uint8Array> {
 export interface Lookup {
 	get(table: Table, key: string): string | undefined;
 	entry(table: Table, key: string): [string, string] | undefined;
+	/** The entries of a table; of a chunked index only those of the chunks loaded so far */
+	entries(table: Table): Iterable<[string, string]>;
 	/** The chunks lookups needed since the last call and did not have */
 	takeMissing?(): number[];
 	/** Fetches and adds chunks */
