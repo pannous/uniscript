@@ -85,3 +85,4 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - warp: `list += [x]` fails WASM validation (type mismatch i64 vs ref); `list = list + [x]` works (found by the wasp *readings port, notes/wasp.md)
 - the case fallback leaks a capital into a bare name kept free for a block operand: before nicknames.wasp, \:bee was Deseret 𐐒 (Bee) although the small 𐐺 is \:deseret-bee because egyptian has the operand bee; the fallback should skip short names whose lowercase is taken
 - Phaistos Disc signs have only their long names (\:phaistos-disc-sign-bee 𐇱): the short-name rule covers cased letters only; consider \:phaistos-bee for non-letter signs of a script
+- the Rust CLI ignores nicknames.wasp: `uniscript.wasm` types \:bee as Deseret 𐐒 and rejects \:wasp, while data/entities.idx (read by the wasp port and warp) has both → 🐝

@@ -1,7 +1,10 @@
 # Open decisions
 
-- Nicknames (data/entities/nicknames.wasp: \:bee and \:wasp → 🐝, read only): shipped to everyone with the next
-  release (assumed for now, so warp gets them), or moved to ~/.uniscript for one user only (then warp never sees them).
+(none open)
+
+## Decided 2026-10-09
+- Nicknames (data/entities/nicknames.wasp: \:bee and \:wasp → 🐝) ship to everyone with v1.0.7, so warp's `\:name`
+  table has them; names are added here and regenerated into warp, never by hand in warp.
 
 ## Decided 2026-10-08 (quiz)
 - Greek final sigma: automatic (Unicode Final_Sigma: σ after a letter and before no letter is ς, `kosmos` → κοσμος), and
