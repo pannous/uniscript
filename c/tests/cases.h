@@ -68,6 +68,8 @@ static const conversion_case round_trips[] = {
 	{"<:color #ff8800 angle 90 alpha/>", "α{:color #ff8800}{:angle 90}"},
 	{"<:color red B/>", "B{:color red}"}, /* the r of "color red" is no red suffix control */
 	{"<:red-haired woman/>", "👩\u200D🦰"}, {"<:dark-skinned woman/>", "👩🏿"},
+	/* Unicode names without their filler word (letter, sign …), not stored but read with one put back */
+	{"\\:syriac-taw", "ܬ"}, {"\\:phaistos-bee", "𐇱"},
 };
 
 /* uniscript → Unicode without warnings */
@@ -143,6 +145,8 @@ static const conversion_case converts[] = {
 	{"<:greek beef/>", "βεεφ"},
 	/* final sigma: after a letter and before none; a lone s stays σ, sigma always σ, c types ς */
 	{"<:greek> s kosmoc <:/greek>", "σ κοσμος"}, {"<:greek kosmo sigma/>", "κοσμοσ"}, {"<:greek> psis kosmos <:/greek>", "ψις κοσμος"},
+	/* the whole name, then by its ending: the shortest name ending so, on a tie the lowest code point (syriac before hatran) */
+	{"\\:phaistos-disc-sign-bee <:SYRIAC TAW/> \\:letter-taw \\:taw", "𐇱 ܬ ܬ ܬ"},
 };
 
 /* Unicode → uniscript in ASCII only, and back */

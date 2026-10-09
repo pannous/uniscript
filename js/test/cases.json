@@ -180,7 +180,8 @@
 		["<:greek beef/>", "βεεφ"],
 		["<:greek> s kosmoc <:/greek>", "σ κοσμος"],
 		["<:greek kosmo sigma/>", "κοσμοσ"],
-		["<:greek> psis kosmos <:/greek>", "ψις κοσμος"]
+		["<:greek> psis kosmos <:/greek>", "ψις κοσμος"],
+		["\\:phaistos-disc-sign-bee <:SYRIAC TAW/> \\:letter-taw \\:taw", "𐇱 ܬ ܬ ܬ"]
 	],
 	"warnCounts": [
 		["<:double bold A>", "𝐀", 1]
@@ -203,7 +204,9 @@
 		["<:color #ff8800 A/>", "A{attached color #ff8800}"],
 		["<:color #ff8800 mirror red A/>", "A{U+E0072}{U+E004D}{attached color #ff8800}"],
 		["<:color #ff8800 angle 90 alpha/>", "α{attached color #ff8800}{attached angle 90}"],
-		["<:color red B/>", "B{attached color red}"]
+		["<:color red B/>", "B{attached color red}"],
+		["\\:syriac-taw", "ܬ"],
+		["\\:phaistos-bee", "𐇱"]
 	],
 	"toUniscript": [
 ["👩🏿‍🦰", "<:dark-skinned woman/>\\:red-hair"], 		["A{U+E0072}{U+E004D} 🔴{U+E004D}", "\\:mirror-red-A \\:mirror-red-circle"],

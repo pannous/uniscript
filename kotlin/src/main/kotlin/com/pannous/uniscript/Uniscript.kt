@@ -42,6 +42,10 @@ private const val GROUP_KEY = "*group"
 private const val READINGS_KEY = "*readings"
 /** `"*final σ": "ς"`: the form a letter of the block takes at the end of a word */
 private const val FINAL_KEY = "*final"
+/** The words a Unicode name may drop, in the order reading puts them back: `\:syriac-taw` is syriac-letter-taw */
+private const val FILLERS_KEY = "*fillers"
+/** `\:ab` stays an unknown name rather than the end of some long one */
+private const val MIN_ENDING_LENGTH = 3
 private val WHITESPACE = Regex("\\s+")
 /** The current uniscript version, declared by the header `<:uniscript version="…">`; every later uniscript.org version is read too */
 const val UNISCRIPT_VERSION = "https://uniscript.org/v1"
@@ -584,10 +588,29 @@ private class Conversion(val index: EntityIndex, val source: String, val lenient
 		}
 	}
 
-	/** After the blocks: `<:LATIN CAPITAL LETTER ETH>` is latin-capital-letter-eth, `<:TILDE>` tilde */
-	private fun caseFallback(content: String): String =
-		name(content.map { if (it in 'A'..'Z') it.lowercaseChar() else it }.joinToString("").replace(' ', '-'))
-			?: throw UniscriptError.UnknownEntity(content)
+	/** After the blocks: `<:LATIN CAPITAL LETTER ETH>` is latin-capital-letter-eth, `<:TILDE>` tilde; then without a filler
+	 * word or by its ending */
+	private fun caseFallback(content: String): String {
+		val lowercase = content.map { if (it in 'A'..'Z') it.lowercaseChar() else it }.joinToString("").replace(' ', '-')
+		return name(lowercase) ?: filledName(lowercase) ?: nameEndingIn(lowercase) ?: throw UniscriptError.UnknownEntity(content)
+	}
+
+	/** The text of a Unicode name written without its filler word: `syriac-taw` is syriac-letter-taw, one filler put back
+	 * after each hyphen in turn */
+	private fun filledName(key: String): String? {
+		val fillers = name(FILLERS_KEY)?.split(' ') ?: return null
+		val hyphens = key.indices.asSequence().filter { key[it] == '-' }
+		return hyphens.flatMap { at -> fillers.asSequence().map { "${key.substring(0, at)}-$it${key.substring(at)}" } }.firstNotNullOfOrNull(::name)
+	}
+
+	/** The text of the shortest name ending in these words, on a tie the lowest code point, read only: `letter-taw` and
+	 * `taw` are syriac-letter-taw ܬ. A scan of all names, only for a name that is nothing else */
+	private fun nameEndingIn(words: String): String? {
+		if (words.length < MIN_ENDING_LENGTH) return null
+		val ending = "-$words"
+		val names = index.entries(Table.NAMES).filter { (name, _) -> name.endsWith(ending) && ' ' !in name && '*' !in name }
+		return names.minWithOrNull(compareBy<Pair<String, String>>({ it.first.length }, { it.second.codePointAt(0) }, { it.first }))?.second
+	}
 
 	/** The text of `<:content>` at `at` that is no block opener or closer */
 	private fun tag(content: String, at: Int): String {

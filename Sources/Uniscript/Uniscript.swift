@@ -32,6 +32,10 @@ private let groupKey = "*group"
 private let readingsKey = "*readings"
 /// `"*final σ": "ς"`: the form a letter of the block takes at the end of a word
 private let finalKey = "*final"
+/// The words a Unicode name may drop, in the order reading puts them back: `\:syriac-taw` is syriac-letter-taw
+private let fillersKey = "*fillers"
+/// `\:ab` stays an unknown name rather than the end of some long one
+private let minEndingLength = 3
 /// The most words one operand spans: `<:egyptian man with hand to mouth>`
 private let maxOperandWords = 8
 private let fontKey = "font"
@@ -688,11 +692,35 @@ private final class Conversion {
 				restyled(styles, $0, at) + effectSuffixes(effects, $0, at)
 			}.joined()
 		}
-		// the case fallback, after the blocks: <:LATIN CAPITAL LETTER ETH> is latin-capital-letter-eth, <:TILDE> tilde
-		if let text = name(asciiLowercased(content).replacingOccurrences(of: " ", with: "-")) {
+		// the case fallback, after the blocks: <:LATIN CAPITAL LETTER ETH> is latin-capital-letter-eth, <:TILDE> tilde; then
+		// without a filler word or by its ending
+		let lowercase = asciiLowercased(content).replacingOccurrences(of: " ", with: "-")
+		if let text = name(lowercase) ?? filledName(lowercase) ?? nameEndingIn(lowercase) {
 			return text
 		}
 		throw UniscriptError.unknownEntity(content)
+	}
+
+	/// The text of a Unicode name written without its filler word: `syriac-taw` is syriac-letter-taw, one filler put back
+	/// after each hyphen in turn
+	private func filledName(_ key: String) -> String? {
+		guard let fillers = name(fillersKey)?.split(separator: " ") else { return nil }
+		for hyphen in key.indices where key[hyphen] == "-" {
+			for filler in fillers {
+				if let text = name("\(key[..<hyphen])-\(filler)\(key[hyphen...])") { return text }
+			}
+		}
+		return nil
+	}
+
+	/// The text of the shortest name ending in these words, on a tie the lowest code point, read only: `letter-taw` and
+	/// `taw` are syriac-letter-taw ܬ. A scan of all names, only for a name that is nothing else
+	private func nameEndingIn(_ words: String) -> String? {
+		guard words.utf8.count >= minEndingLength else { return nil }
+		let ending = "-\(words)"
+		let rank = { (entry: (key: String, value: String)) in (entry.key.utf8.count, entry.value.unicodeScalars.first?.value ?? 0, entry.key) }
+		let names = index.entries(.names).filter { $0.key.hasSuffix(ending) && !$0.key.contains(" ") && !$0.key.contains("*") }
+		return names.min { rank($0) < rank($1) }?.value
 	}
 
 	/// Bytes of the header to skip; a version that is no uniscript.org version (`readsVersion`) warns
