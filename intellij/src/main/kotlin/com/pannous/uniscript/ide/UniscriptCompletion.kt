@@ -10,6 +10,7 @@ import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.completion.InsertionContext
 import com.intellij.codeInsight.completion.PlainPrefixMatcher
+import com.intellij.codeInsight.completion.PrioritizedLookupElement
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate
 import com.intellij.codeInsight.lookup.Lookup
 import com.intellij.codeInsight.lookup.LookupElement
@@ -26,6 +27,9 @@ private const val MAX_COMPLETIONS = 1000 // the shortest first; typing on narrow
 private const val GROUP_SAMPLES = 3 // characters shown beside a group of names
 private const val BLOCK_TYPE_TEXT = "block" // a block word without operands of its own (mirror)
 private const val SEGMENT_END = '-'
+private const val CONTROL_PREFIX = '*' // index keys that are no names
+private const val FILLERS_KEY = "*fillers" // the filler words a name may drop, space separated
+private const val MIN_LOOSE_LENGTH = 3 // a typed name this long also finds names loosely
 private const val TAG_END = '>'
 private const val LONG_OPEN = "<:"
 private const val SHORT_OPEN = "\\:"
@@ -79,11 +83,14 @@ private object Completions {
 	val names = mutableListOf<Pair<String, String>>()
 	val blocks = mutableSetOf<String>()
 	val operands = mutableMapOf<String, MutableList<Pair<String, String>>>()
+	var fillers = emptyList<String>()
 
 	init {
 		for ((key, text) in uniscript.index.entries(Table.NAMES)) {
 			val space = key.indexOf(' ')
 			when {
+				key == FILLERS_KEY -> fillers = text.split(' ')
+				key.startsWith(CONTROL_PREFIX) -> {}
 				space < 0 -> names += key to text
 				space == key.lastIndex -> blocks += key.trimEnd()
 				key[space + 1] != '*' -> operands.getOrPut(key.substring(0, space)) { mutableListOf() } += key.substring(space + 1) to text
@@ -120,6 +127,34 @@ private fun grouped(candidates: List<Pair<String, String>>, prefix: String): Lis
 	}
 }
 
+/** The name without one of its filler words: phaistos-disc-sign-bee → phaistos-bee */
+private fun withoutFillers(name: String) = Completions.fillers.mapNotNull { filler ->
+	name.indexOf("$SEGMENT_END$filler$SEGMENT_END").takeIf { it >= 0 }?.let { name.removeRange(it, it + filler.length + 1) }
+}
+
+/** The names not starting with prefix that start so without a filler word (\:syriac-taw syriac-letter-taw), then those
+ *  with a later segment starting so (\:taw); the shortest first, then the lowest character, as reading picks them */
+private fun looseMatches(prefix: String): List<Pair<String, String>> {
+	if (prefix.length < MIN_LOOSE_LENGTH) return emptyList()
+	val typed = prefix.lowercase()
+	return Completions.names.mapNotNull { named ->
+		val name = named.first.lowercase()
+		val shortened = if (name.startsWith(typed)) return@mapNotNull null else withoutFillers(name)
+		when {
+			shortened.any { it.startsWith(typed) } -> 0 to named
+			(shortened + name).any { "$SEGMENT_END$typed" in it } -> 1 to named
+			else -> null
+		}
+	}.sortedWith(compareBy({ it.first }, { it.second.first.length }, { it.second.second.codePointAt(0) }, { it.second.first }))
+		.map { it.second }
+}
+
+/** Matches the names starting with the typed prefix and those found loosely */
+private class LooseMatcher(prefix: String, private val loose: Set<String>) : PlainPrefixMatcher(prefix) {
+	override fun prefixMatches(element: LookupElement) = element.lookupString in loose || super.prefixMatches(element)
+	override fun cloneWithPrefix(prefix: String) = LooseMatcher(prefix, loose)
+}
+
 class UniscriptCompletionContributor : CompletionContributor(), DumbAware {
 	override fun fillCompletionVariants(parameters: CompletionParameters, result: CompletionResultSet) {
 		val tag = typedTag(parameters.editor.document.charsSequence, parameters.offset) ?: return
@@ -127,7 +162,8 @@ class UniscriptCompletionContributor : CompletionContributor(), DumbAware {
 		val leading = words.dropLast(1).takeWhile { it in Completions.blocks }
 		// spaces between the operand's words stand for hyphens: the same length, so the replaced text stays right
 		val prefix = words.drop(leading.size).joinToString(SEGMENT_END.toString())
-		val matching = result.withPrefixMatcher(PlainPrefixMatcher(prefix))
+		val loose = if (leading.isEmpty()) looseMatches(prefix).take(MAX_COMPLETIONS) else emptyList()
+		val matching = result.withPrefixMatcher(LooseMatcher(prefix, loose.mapTo(HashSet()) { it.first }))
 		matching.restartCompletionOnAnyPrefixChange()
 		val candidates = if (leading.isEmpty()) Completions.names else Completions.operands[leading.last()] ?: emptyList()
 		val closes = leading.isEmpty() && !tag.isShort
@@ -141,6 +177,11 @@ class UniscriptCompletionContributor : CompletionContributor(), DumbAware {
 				val typeText = Completions.operands[block]?.let(::summary) ?: BLOCK_TYPE_TEXT
 				matching.addElement(LookupElementBuilder.create(block).withTypeText(typeText).withInsertHandler(continueWithOperands))
 			}
+		}
+		// after the names starting so, in their order
+		loose.forEachIndexed { at, (name, text) ->
+			val element = LookupElementBuilder.create(name).withTypeText(text).withInsertHandler { context, _ -> finishName(context, closes) }
+			matching.addElement(PrioritizedLookupElement.withPriority(element, -1.0 - at))
 		}
 		matching.stopHere()
 	}

@@ -79,4 +79,14 @@ class UniscriptCompletionTest : BasePlatformTestCase() {
 		myFixture.launchAction(myFixture.findSingleIntention("Replace with 𝔄"))
 		myFixture.checkResult("x 𝔄 y")
 	}
+
+	fun testNamesWithoutTheirFillerWordOrByALaterSegmentFollow() {
+		assertEquals("syriac-letter-taw", completions("\\:syriac-ta<caret>").first())
+		val taw = completions("\\:taw<caret>")
+		assertTrue(taw.toString(), taw.indexOf("syriac-letter-taw") in 0 until taw.indexOf("hatran-letter-taw"))
+		assertEquals("man", completions("\\:man<caret>").first())
+		assertFalse("syriac-letter-taw" in completions("\\:ta<caret>"))
+		choose("x \\:phaistos-bee<caret> y", "phaistos-disc-sign-bee", TAB)
+		myFixture.checkResult("x \\:phaistos-disc-sign-bee<caret> y")
+	}
 }
