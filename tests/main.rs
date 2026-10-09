@@ -13,6 +13,7 @@ mod chunks_test;
 mod cli_file_test;
 mod code_points_test;
 mod entity_names_test;
+mod filler_names_test;
 mod inline_tags_test;
 mod latex_names_test;
 mod lenient_test;

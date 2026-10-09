@@ -28,6 +28,11 @@ pub const ENTITIES_INDEX: &[u8] = include_bytes!("../data/entities.idx");
 
 /// Local entities in the format of data/entities/ (`virus: 🦠`, sections like `blocks { … }`), see [`local_entity_files`]
 pub const LOCAL_ENTITIES_FILE: &str = ".uniscript";
+/// The names key of the filler words a Unicode name may drop, in the order reading puts them back
+pub const FILLERS_KEY: &str = "*fillers";
+const CONTROL_PREFIX: char = '*';
+/// `\:ab` stays an unknown name rather than the end of some long one
+const MIN_ENDING_LENGTH: usize = 3;
 const HOME_VARIABLES: [&str; 2] = ["HOME", "USERPROFILE"];
 const MARKER_COLON: char = ':';
 const TAG_OPEN: char = '<';
@@ -298,6 +303,12 @@ fn hex_value(digits: &str, minimum: usize) -> Option<u32> {
 /// The character of a block operand written as a prefixed code point: `U+2661` ♡, `0x41` A
 fn operand_code_point(token: &str) -> Option<char> {
 	OPERAND_CODE_POINT_PREFIXES.iter().find_map(|prefix| token.strip_prefix(prefix)).and_then(|digits| hex_value(digits, 1)).and_then(char::from_u32)
+}
+
+/// The names a name without its filler word may stand for, in reading order: one filler (of the space separated
+/// `fillers`) put back after each hyphen in turn, `phaistos-bee` → phaistos-disc-sign-bee, phaistos-vowel-sign-bee, …
+pub fn filled_names<'n>(name: &'n str, fillers: &'n str) -> impl Iterator<Item = String> + 'n {
+	name.match_indices('-').flat_map(move |(at, _)| fillers.split(' ').map(move |filler| format!("{}-{filler}{}", &name[..at], &name[at..])))
 }
 
 pub fn code_point_value(token: &str) -> Option<u32> {
@@ -845,10 +856,28 @@ impl<'a> Uniscript<'a> {
 			}
 		}
 		// the case fallback, after the blocks: `<:LATIN CAPITAL LETTER ETH>` is latin-capital-letter-eth, `<:TILDE>` tilde
-		if let Some(text) = self.name(&content.to_ascii_lowercase().replace(' ', "-")) {
+		let lowercase = content.to_ascii_lowercase().replace(' ', "-");
+		if let Some(text) = self.name(&lowercase).or_else(|| self.filled_name(&lowercase)).or_else(|| self.name_ending_in(&lowercase)) {
 			return Ok(text.to_string());
 		}
 		Err(Error::UnknownEntity(content.to_string()))
+	}
+
+	/// The text of a Unicode name written without its filler word: `syriac-taw` is syriac-letter-taw
+	fn filled_name(&self, name: &str) -> Option<&'a str> {
+		let fillers = self.name(FILLERS_KEY)?;
+		filled_names(name, fillers).find_map(|filled| self.name(&filled))
+	}
+
+	/// The text of the shortest name ending in these words, on a tie the lowest code point, read only: `letter-taw` and
+	/// `taw` are syriac-letter-taw ܬ, not hatran-letter-taw 𐣵. A scan of all names, only for a name that is nothing else;
+	/// of a chunked index only the chunks loaded so far
+	fn name_ending_in(&self, words: &str) -> Option<&'a str> {
+		let ending = format!("-{words}");
+		let plain = |name: &str| !name.contains([' ', CONTROL_PREFIX]);
+		(words.len() >= MIN_ENDING_LENGTH).then_some(())?;
+		let names = self.index.entries(Table::Names).filter(|(name, _)| name.ends_with(&ending) && plain(name));
+		names.min_by_key(|(name, text)| (name.len(), text.chars().next(), *name)).map(|(_, text)| text)
 	}
 
 	/// `<:key value …>` with meta keys: `<:font han-japanese>` opens spans, `<:color #ff8800 mirror A>` attaches to each

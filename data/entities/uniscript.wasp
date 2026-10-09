@@ -15,8 +15,11 @@
 //   fonts          font styles: <:font cuneiform-hittite> … <:/font>; lang (BCP 47), families (CSS), features (OpenType)
 //   meta           meta keys (<:color #ff8800 A>, <:font han-japanese> … <:/font>) → CSS declaration, {} is the value
 // Values are quoted text; invisible and combining characters are written \u{hex}.
+// *fillers: the words a Unicode name may drop, in the order reading puts them back (\:syriac-taw is syriac-letter-taw,
+// \:phaistos-bee phaistos-disc-sign-bee); no short name is stored, writing takes the shortest that reads back the same.
 
 uniscript {
+	*fillers: "disc-sign vowel-sign numeric-sign letter sign syllable symbol digit hieroglyph ideogram logogram character"
 	less: "<"
 	colon: ":"
 	greater: ">"

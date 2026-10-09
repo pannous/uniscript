@@ -6,6 +6,7 @@
 
 use std::collections::{HashMap, HashSet};
 use crate::meta::ZERO_WIDTH_JOINER;
+use crate::{algorithmic_names, filled_names, FILLERS_KEY};
 use std::path::{Path, PathBuf};
 
 /// Sections holding plain entities, earlier ones win when a name occurs twice
@@ -346,6 +347,14 @@ impl Entities {
 			let spelled = format!("<:{block} {}>", ascii_operand(operand, &chosen));
 			chosen.set(text, &spelled);
 		}
+		// after the block forms: an operand is read by its whole name (<:turned latin-small-letter-delta>)
+		let reading = self.reading();
+		for (name, text) in names.texts() {
+			let unshortened = chosen.get(text) == Some(format!("<:{name}>").as_str());
+			if let Some(short) = reading.without_filler(name, text).filter(|_| unshortened) {
+				chosen.set(text, &format!("<:{short}>"));
+			}
+		}
 		chosen.entries.into_iter().filter(|(text, _)| !text.is_ascii()).collect()
 	}
 
@@ -377,6 +386,46 @@ impl Entities {
 	/// meta key → CSS declaration template
 	pub fn meta_entries(&self) -> Vec<(String, String)> {
 		self.section(META).texts().map(|(key, template)| (key.to_string(), template.to_string())).collect()
+	}
+
+	/// How the built index reads a `\:name`, for the names that are written back
+	fn reading(&self) -> Reading {
+		let fillers = self.section(OWN_SECTION).texts().find(|(key, _)| *key == FILLERS_KEY).map(|(_, fillers)| fillers.to_string());
+		let meta_keys = self.section(META).texts().map(|(key, _)| key.to_string()).collect();
+		Reading { names: self.forward_entries().into_iter().collect(), meta_keys, fillers: fillers.unwrap_or_default() }
+	}
+}
+
+/// The names of a built index and the words that make a `\:name` no plain name (blocks, meta keys)
+struct Reading {
+	names: HashMap<String, String>,
+	meta_keys: HashSet<String>,
+	fillers: String,
+}
+
+impl Reading {
+	/// The text `\:name` reads as, as far as names go: a name, else none when it reads as a tag (`\:greek-taw`, a code
+	/// point never has a hyphen), else the name with a filler put back
+	fn text(&self, name: &str) -> Option<&str> {
+		if let Some(text) = self.names.get(name) {
+			return Some(text);
+		}
+		let first = name.split('-').next().unwrap_or(name);
+		if self.names.contains_key(&format!("{first} ")) || self.meta_keys.contains(first) || algorithmic_names::character(&name.replace('-', " ")).is_some() {
+			return None;
+		}
+		filled_names(name, &self.fillers).find_map(|filled| self.names.get(&filled)).map(String::as_str)
+	}
+
+	/// The shortest Unicode name without one of its filler words that reads back as text: phaistos-disc-sign-bee → phaistos-bee
+	fn without_filler(&self, name: &str, text: &str) -> Option<String> {
+		let mut shorts: Vec<String> = Vec::new();
+		for filler in self.fillers.split(' ').filter(|filler| !filler.is_empty()) {
+			let words = format!("-{filler}-");
+			shorts.extend(name.match_indices(&words).map(|(at, _)| format!("{}{}", &name[..at], &name[at + filler.len() + 1..])));
+		}
+		shorts.sort_by_key(String::len);
+		shorts.into_iter().find(|short| self.text(short) == Some(text))
 	}
 }
 
