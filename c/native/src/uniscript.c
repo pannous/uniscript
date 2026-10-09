@@ -31,6 +31,8 @@
 #define READINGS_KEY "*readings"
 /* "*final σ": "ς", the form a letter of the block takes at the end of a word */
 #define FINAL_KEY "*final"
+#define FILLERS_KEY "*fillers" /* the words a Unicode name may drop, in the order reading puts them back: syriac-taw */
+#define MIN_ENDING_LENGTH 3 /* \:ab stays an unknown name rather than the end of some long one */
 #define MAX_OPERAND_WORDS 8 /* the most words one operand spans: <:egyptian man with hand to mouth> */
 /* the block control naming the meta a block becomes where it has no suffix control (red *meta → color red) */
 #define META_FALLBACK_KEY "*meta"
@@ -663,13 +665,57 @@ static bool code_point(converter *self, buf *out, str token, str written, size_t
 }
 
 /* The name spelled with spaces for hyphens (<:greek small letter alpha>), in lowercase when `lowercase` */
-static bool spelled_name(buf *out, str content, bool lowercase) {
+static buf spelled_key(str content, bool lowercase) {
 	buf spelled = { 0 };
 	buf_adds(&spelled, content);
 	for (size_t i = 0; i < spelled.n; i++) {
 		if (spelled.p[i] == ' ') spelled.p[i] = '-';
 		else if (lowercase && spelled.p[i] >= 'A' && spelled.p[i] <= 'Z') spelled.p[i] += 'a' - 'A';
 	}
+	return spelled;
+}
+
+/* The text of a Unicode name written without its filler word: syriac-taw is syriac-letter-taw, one filler put back after
+   each hyphen in turn */
+static bool filled_name(str key, str *text) {
+	str fillers, filler, rest;
+	if (!name(str_of(FILLERS_KEY), &fillers)) return false;
+	for (size_t at = 0; at < key.n; at++) {
+		if (key.p[at] != '-') continue;
+		for (rest = fillers; rest.n > 0;) {
+			if (!split_once(rest, ' ', &filler, &rest)) filler = rest, rest.n = 0;
+			if (index_getf(TABLE_NAMES, text, "%.*s-%.*s%.*s", (int)at, key.p, S(filler), (int)(key.n - at), key.p + at)) return true;
+		}
+	}
+	return false;
+}
+
+/* Shorter first, on a tie the lower first code point, then the name */
+static bool ranks_before(str key, str text, str best_key, str best_text) {
+	if (key.n != best_key.n) return key.n < best_key.n;
+	uint32_t first = first_character(text), best_first = first_character(best_text);
+	return first != best_first ? first < best_first : memcmp(key.p, best_key.p, key.n) < 0;
+}
+
+/* The text of the shortest name ending in these words, read only: letter-taw and taw are syriac-letter-taw. A scan of all
+   names, only for a name that is nothing else */
+static bool name_ending_in(str words, str *text) {
+	if (words.n < MIN_ENDING_LENGTH) return false;
+	bool found = false;
+	str best_key = { 0 };
+	for (size_t position = 0; position < index_count(TABLE_NAMES); position++) {
+		uint32_t hash;
+		str key, value;
+		index_record(TABLE_NAMES, position, &hash, &key, &value);
+		bool ends = key.n > words.n && key.p[key.n - words.n - 1] == '-' && !memcmp(key.p + key.n - words.n, words.p, words.n);
+		if (!ends || memchr(key.p, ' ', key.n) || memchr(key.p, '*', key.n)) continue;
+		if (!found || ranks_before(key, value, best_key, *text)) found = true, best_key = key, *text = value;
+	}
+	return found;
+}
+
+static bool spelled_name(buf *out, str content, bool lowercase) {
+	buf spelled = spelled_key(content, lowercase);
 	str text;
 	bool named = name(buf_str(&spelled), &text);
 	buf_free(&spelled);
@@ -744,9 +790,15 @@ static bool tag(converter *self, buf *out, str content, size_t at) {
 		free(styles.items);
 		return true;
 	}
-	/* the case fallback, after the blocks: <:LATIN CAPITAL LETTER ETH> is latin-capital-letter-eth, <:TILDE> tilde */
+	/* the case fallback, after the blocks: <:LATIN CAPITAL LETTER ETH> is latin-capital-letter-eth, <:TILDE> tilde; then
+	   without a filler word or by its ending */
 	if (spelled_name(out, content, true)) return true;
-	return fail(self, UNISCRIPT_UNKNOWN_ENTITY, content);
+	buf spelled = spelled_key(content, true);
+	str text;
+	bool found = filled_name(buf_str(&spelled), &text) || name_ending_in(buf_str(&spelled), &text);
+	buf_free(&spelled);
+	if (found) buf_adds(out, text);
+	return found || fail(self, UNISCRIPT_UNKNOWN_ENTITY, content);
 }
 
 /* The source text of an error, with a warning, in UNISCRIPT_LENIENT; else the error */
