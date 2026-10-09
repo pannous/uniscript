@@ -18,6 +18,7 @@ mod latex_names_test;
 mod lenient_test;
 mod local_entities_test;
 mod meta_test;
+mod nicknames_test;
 mod runtime_index_test;
 mod styles_test;
 mod uniscript_test;

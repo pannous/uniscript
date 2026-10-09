@@ -1,0 +1,8 @@
+// Uniscript entities: nicknames.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Names Unicode never gave a character, uniscript's own: read but never written back (🐝 stays \:honeybee).
+// Undecided: shipped to everyone, or moved to ~/.uniscript (same format) for one user only (open-decisions.md).
+
+descriptions {
+	bee: "🐝"
+	wasp: "🐝"
+}

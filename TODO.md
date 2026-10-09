@@ -83,3 +83,5 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - wasp port has no shared cases.json runner (and no meta/TAG sequences)
 - probes/egyptian_baseline_test.py fails test_stacked_group_composes_on_the_descender_too (bottom −0.125, expected −0.17 of Aegyptus): fix, then promote it with egyptian_private_use_test.py (which imports its constants) to tests/fonts/
 - warp: `list += [x]` fails WASM validation (type mismatch i64 vs ref); `list = list + [x]` works (found by the wasp *readings port, notes/wasp.md)
+- the case fallback leaks a capital into a bare name kept free for a block operand: before nicknames.wasp, \:bee was Deseret 𐐒 (Bee) although the small 𐐺 is \:deseret-bee because egyptian has the operand bee; the fallback should skip short names whose lowercase is taken
+- Phaistos Disc signs have only their long names (\:phaistos-disc-sign-bee 𐇱): the short-name rule covers cased letters only; consider \:phaistos-bee for non-letter signs of a script
