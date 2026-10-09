@@ -46,6 +46,9 @@ CHOOSE = "choose"  # tab_completion: several names to choose from
 GROUP_SAMPLES = 3  # characters shown beside a group of names
 BLOCK_ANNOTATION = "block"  # a block word without operands of its own (mirror)
 SEGMENT_END = "-"
+CONTROL_PREFIX = "*"  # index keys that are no names
+FILLERS_KEY = "*fillers"  # the filler words a name may drop, space separated
+MIN_LOOSE_LENGTH = 3  # a typed name this long also finds names loosely
 SHORT_TAG = "\\:"  # the reverse conversion's form of a name: \:langle
 DESCRIPTION_SEPARATOR = " · "
 
@@ -224,6 +227,8 @@ def operand_first(trigger, annotation):
     """An operand of another block as Sublime lists it: chinese wo 我 as wo 我 chinese. Sublime ranks a trigger starting
     with the typed name above one holding it as a later word (wood above chinese wo), whatever order it was given"""
     block, _, operand = trigger.rpartition(" ")
+    if not block:
+        return trigger, annotation
     return operand, "{} {}".format(annotation, block)
 
 
@@ -231,10 +236,14 @@ class Names:
     """The index's names: entities with their text, block words, and each block's operands"""
 
     def __init__(self, lines):
-        self.entities, self.blocks, self.operands = [], set(), {}
+        self.entities, self.blocks, self.operands, self.fillers = [], set(), {}, []
         for line in lines:
             name, _, text = line.partition("\t")
             block, space, operand = name.partition(" ")
+            if name == FILLERS_KEY:
+                self.fillers = text.split(" ")
+            if name.startswith(CONTROL_PREFIX):
+                continue
             if not space:
                 self.entities.append((name, text))
             elif not operand:
@@ -271,6 +280,35 @@ class Names:
         for block, found, text, _ in ranked:
             chosen.setdefault(text, (block, found, text))
         return list(chosen.values())
+
+    def loose_matches(self, prefix):
+        """(name, text) of the entities not starting with prefix that start so without a filler word (\\:syriac-taw
+        syriac-letter-taw), then those with a later segment starting so (\\:taw); the shortest first, then the lowest
+        character, as reading picks them"""
+        if len(prefix) < MIN_LOOSE_LENGTH:
+            return []
+        typed = prefix.lower()
+        ranked = []
+        for name, text in self.entities:
+            lowered = name.lower()
+            if lowered.startswith(typed):
+                continue
+            shortened = self.without_fillers(lowered)
+            if any(short.startswith(typed) for short in shortened):
+                ranked.append((0, name, text))
+            elif any(SEGMENT_END + typed in form for form in [lowered] + shortened):
+                ranked.append((1, name, text))
+        ranked.sort(key=lambda entry: (entry[0], len(entry[1]), entry[2][:1], entry[1]))
+        return [(name, text) for _, name, text in ranked]
+
+    def without_fillers(self, name):
+        """The name without one of its filler words: phaistos-disc-sign-bee → phaistos-bee"""
+        shortened = []
+        for filler in self.fillers:
+            at = name.find(SEGMENT_END + filler + SEGMENT_END)
+            if at >= 0:
+                shortened.append(name[:at] + name[at + len(filler) + 1:])
+        return shortened
 
     def short_operands(self, typed):
         """(block-operand, text) of the block words leading the typed short name: \\:egyptian-seated-m offers
@@ -379,4 +417,9 @@ def completions(line_before_cursor, next_character, names, word, close_operands=
         # a block word is the group of its operands: <:red> shows 🔴🟥🍎… 18 and asks for them when chosen
         entries += [(block, summary(names.operands[block]) if block in names.operands else BLOCK_ANNOTATION, word_head + block[word_start:] + " ", None)
                     for block in sorted(names.blocks) if block.lower().startswith(prefix.lower())]
+    if not leading:
+        # names found loosely replace the whole typed tag: the word before the cursor may hold only their end
+        for name, text in names.loose_matches(prefix)[:MAX_COMPLETIONS - len(entries)]:
+            tag = (SHORT_TAG if is_short else MARKER) + name + (end if closes else "")
+            entries.append((shown(name), text, tag, tag))
     return entries[:MAX_COMPLETIONS]

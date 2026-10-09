@@ -57,3 +57,15 @@ test("the tag at a column, touched from either side", () => {
 	assert.equal(tagAt("a \\:infinity", 12)?.text, "\\:infinity");
 	assert.equal(tagAt("T <: Bound[T]>", 3), undefined);
 });
+
+test("names without their filler word, then by a later segment, follow the names starting so", () => {
+	const shown = (line: string) => suggested(line).items?.map((item) => item.name) ?? [];
+	assert.equal(shown("\\:syriac-taw")[0], "syriac-letter-taw");
+	const taw = shown("\\:taw");
+	assert.ok(taw.indexOf("syriac-letter-taw") >= 0 && taw.indexOf("syriac-letter-taw") < taw.indexOf("hatran-letter-taw"), taw.join(" "));
+	assert.equal(suggested("\\:phaistos-bee").byName.get("phaistos-disc-sign-bee")?.written, "\\:phaistos-disc-sign-bee");
+	assert.equal(suggested("<:letter-taw").byName.get("syriac-letter-taw")?.written, "<:syriac-letter-taw>");
+	assert.equal(shown("\\:man")[0], "man"); // a name starting so comes first
+	assert.ok(!shown("\\:ta").includes("syriac-letter-taw")); // too short to find names loosely
+	assert.ok(!names.entities.some(([name]) => name.startsWith("*"))); // control keys (*fillers) are no names
+});

@@ -1,12 +1,16 @@
 // What to suggest inside a uniscript tag, without VS Code: entity names after `<:` and `\:`, block words, after block
 // words their operands (`<:egyptian seated m` → seated-man). Names sharing their next segment fold into one group
-// (`alchemical-`), and a block word is the group of its operands (`red` 🍎🔴🟥… 18).
+// (`alchemical-`), and a block word is the group of its operands (`red` 🍎🔴🟥… 18). After the names starting so come
+// those found loosely: without a filler word (`\:syriac-taw` syriac-letter-taw), then by a later segment (`\:taw`).
 import { Table, type EntityIndex } from "../../js/src/core.ts";
 
 const MAX_SUGGESTIONS = 1000; // the shortest first
 const GROUP_SAMPLES = 3; // characters shown beside a group
 const BLOCK_DETAIL = "block"; // a block word without operands of its own (mirror)
 const SEGMENT_END = "-";
+const CONTROL_PREFIX = "*"; // index keys that are no names
+const FILLERS_KEY = "*fillers"; // the filler words a name may drop, space separated
+const MIN_LOOSE_LENGTH = 3; // a typed name this long also finds names loosely
 const TAG_END = ">";
 // the tag being typed at the end of the line: `<:` with words (no leading space), or `\:` with a name
 const TYPED_TAG = /(?:<:(?! )([^<>\n[\]{};="]*)|\\:([A-Za-z0-9_-]*))$/;
@@ -17,6 +21,7 @@ export interface Names {
 	entities: Named[];
 	blocks: Set<string>;
 	operands: Map<string, Named[]>;
+	fillers: string[];
 }
 
 /** name: what the list shows; written: the tag as it reads when this is chosen (`<:alpha>`, `<:red `) */
@@ -35,9 +40,11 @@ export interface Suggestions {
 }
 
 export function namesOf(index: EntityIndex): Names {
-	const names: Names = { entities: [], blocks: new Set(), operands: new Map() };
+	const names: Names = { entities: [], blocks: new Set(), operands: new Map(), fillers: [] };
 	for (const [key, text] of index.entries(Table.names)) {
 		const space = key.indexOf(" ");
+		if (key === FILLERS_KEY) names.fillers = text.split(" ");
+		if (key.startsWith(CONTROL_PREFIX)) continue;
 		if (space < 0) names.entities.push([key, text]);
 		else if (space === key.length - 1) names.blocks.add(key.trimEnd());
 		else if (key[space + 1] !== "*") {
@@ -84,6 +91,29 @@ function grouped(candidates: Named[], prefix: string): { name: string; detail: s
 	}
 }
 
+/** The name without one of its filler words: phaistos-disc-sign-bee → phaistos-bee */
+const withoutFillers = (name: string, fillers: string[]) => fillers.flatMap((filler) => {
+	const at = name.indexOf(`${SEGMENT_END}${filler}${SEGMENT_END}`);
+	return at < 0 ? [] : [name.slice(0, at) + name.slice(at + filler.length + 1)];
+});
+
+/** The entities not starting with prefix that start so without a filler word, then those with a later segment
+ *  starting so; the shortest first, then the lowest character, as reading picks them */
+function looseMatches(entities: Named[], prefix: string, fillers: string[]): Named[] {
+	if (prefix.length < MIN_LOOSE_LENGTH) return [];
+	const typed = prefix.toLowerCase();
+	const ranked: [number, Named][] = [];
+	for (const named of entities) {
+		const name = named[0].toLowerCase();
+		if (name.startsWith(typed)) continue;
+		const shortened = withoutFillers(name, fillers);
+		if (shortened.some((short) => short.startsWith(typed))) ranked.push([0, named]);
+		else if ([name, ...shortened].some((form) => form.includes(SEGMENT_END + typed))) ranked.push([1, named]);
+	}
+	return ranked.sort(([rank, [name, text]], [otherRank, [other, otherText]]) => rank - otherRank || name.length - other.length
+		|| text.codePointAt(0)! - otherText.codePointAt(0)! || (name < other ? -1 : name > other ? 1 : 0)).map(([, named]) => named);
+}
+
 export function suggestions(lineBeforeCursor: string, nextCharacter: string, names: Names): Suggestions | undefined {
 	const match = TYPED_TAG.exec(lineBeforeCursor);
 	if (!match) return undefined;
@@ -104,6 +134,11 @@ export function suggestions(lineBeforeCursor: string, nextCharacter: string, nam
 			if (!startsWith(block, prefix)) continue;
 			const operands = names.operands.get(block);
 			items.push({ name: block, detail: operands ? summary(operands) : BLOCK_DETAIL, kind: "block", written: `${head}${block} ` });
+		}
+	}
+	if (!leading) {
+		for (const [name, detail] of looseMatches(names.entities, prefix, names.fillers).slice(0, MAX_SUGGESTIONS - items.length)) {
+			items.push({ name, detail, kind: "name", written: head + name + (closes ? TAG_END : "") });
 		}
 	}
 	return { tagStart: match.index, isShort, items: items.slice(0, MAX_SUGGESTIONS) };
