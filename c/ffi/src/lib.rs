@@ -5,10 +5,17 @@ use std::ffi::{c_char, c_int, c_void, CStr};
 use std::ptr::null_mut;
 use uniscript::{Error, MetaRun, Uniscript, Warning, WarningMode};
 
+#[cfg(not(target_family = "wasm"))]
 extern "C" {
 	fn malloc(size: usize) -> *mut c_void;
 	fn free(pointer: *mut c_void);
 }
+
+// WebAssembly has no C library: the module exports malloc and free of its own, so a host copies texts in and frees them
+#[cfg(target_family = "wasm")]
+mod wasm_heap;
+#[cfg(target_family = "wasm")]
+use wasm_heap::{free, malloc};
 
 const NULL_INPUT: &str = "input is NULL";
 
@@ -191,6 +198,30 @@ pub unsafe extern "C" fn uniscript_convert(source: *const c_char, mode: Mode) ->
 #[no_mangle]
 pub unsafe extern "C" fn uniscript_to_unicode(source: *const c_char) -> *mut c_char {
 	text(source).and_then(|source| uniscript::to_unicode(source).ok()).map_or(null_mut(), |text| owned(&text))
+}
+
+/// The error converting the source gives ("unknown uniscript entity: x"), NULL when it converts. WebAssembly only
+/// (uniscript_c.wasm, ../uniscript_c.h): a host without struct returns calls this and uniscript_warnings
+#[cfg(target_family = "wasm")]
+#[no_mangle]
+pub unsafe extern "C" fn uniscript_error(source: *const c_char) -> *mut c_char {
+	let Some(source) = text(source) else { return owned("uniscript: invalid input (NULL or not UTF-8)") };
+	match CONVERTER.with(|converter| converter.convert(source, WarningMode::Warn)) {
+		Ok(_) => null_mut(),
+		Err(error) => owned(&error.to_string()),
+	}
+}
+
+/// The warnings converting the source gives, one per line as "uniscript: <message> at byte N"; "" without any.
+/// WebAssembly only
+#[cfg(target_family = "wasm")]
+#[no_mangle]
+pub unsafe extern "C" fn uniscript_warnings(source: *const c_char) -> *mut c_char {
+	let converted = text(source).and_then(|source| CONVERTER.with(|converter| converter.convert(source, WarningMode::Warn)).ok());
+	let warnings = converted.map_or(vec![], |(_, warnings)| warnings);
+	let lines: Vec<String> =
+		warnings.iter().map(|warning| format!("uniscript: {} at byte {}", warning.message, warning.at)).collect();
+	owned(&lines.join("\n"))
 }
 
 #[no_mangle]

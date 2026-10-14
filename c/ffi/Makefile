@@ -1,4 +1,5 @@
-# C/C++ library of the Rust crate: build/libuniscript.{a,dylib|so}, header ../uniscript.h, C++ wrapper ../uniscript.hpp
+# C/C++ library of the Rust crate: build/libuniscript.{a,dylib|so}, header ../uniscript.h, C++ wrapper ../uniscript.hpp;
+# make wasm: the WebAssembly core module build/uniscript_c.wasm with its header uniscript_c.h (a release asset for warp)
 CARGO_TARGET_DIR ?= /opt/cargo
 export CARGO_TARGET_DIR
 PROFILE := release
@@ -20,7 +21,10 @@ NATIVE_TARGETS := osx-arm64:aarch64-apple-darwin:libuniscript.dylib:libuniscript
 	linux-arm64:aarch64-unknown-linux-gnu.2.17:libuniscript.so:libuniscript_ffi.so \
 	win-x64:x86_64-pc-windows-gnu:uniscript.dll:uniscript_ffi.dll
 
-.PHONY: all test clean rust natives
+WASM_TARGET := wasm32-unknown-unknown
+WASM := $(BUILD)/uniscript_c.wasm
+
+.PHONY: all test clean rust natives wasm
 all: $(STATIC) $(SHARED)
 
 rust:
@@ -39,6 +43,14 @@ natives:
 		mkdir -p $(NATIVES)/$$rid; cp $(CARGO_TARGET_DIR)/$$triple/release/$$built $(NATIVES)/$$rid/$$name; \
 		case $$rid in osx-*) install_name_tool -id @rpath/libuniscript.dylib $(NATIVES)/$$rid/$$name;; esac; \
 	done; ls -l $(NATIVES)/*
+
+# names and debug sections stripped: 10 MB, most of it the embedded index
+wasm: | $(BUILD)
+	cargo build --release --target $(WASM_TARGET) --lib
+	wasm-tools strip $(CARGO_TARGET_DIR)/$(WASM_TARGET)/release/uniscript_ffi.wasm -o $(WASM)
+	cp uniscript_c.h $(BUILD)/
+	@test -z "$$(wasm-tools print $(WASM) | grep '(import ')" || { echo "$(WASM) has imports" >&2; exit 1; }
+	ls -l $(WASM)
 
 $(BUILD):
 	mkdir -p $@
