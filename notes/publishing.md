@@ -58,7 +58,7 @@
 - Publishing to warp (2026-10-07, v1.0.2): warp uses the git tag pinned in ~/warp/packages.warp, never the default
   branch, so a fix on main reaches warp and https://pannous.com/uniscript/ only with a new tag (final sigma waited for v1.0.6).
   Bump `version` in Cargo.toml and uniscript.wasp, tag `v<version>`, `make -C c/ffi wasm`, `gh release create v<version>
-  /opt/cargo/wasm32-wasip1/release/uniscript.wasm c/ffi/build/uniscript_c.wasm c/ffi/build/uniscript_c.h`, raise the pin (packages.warp and PINNED in tests/modules/test_package_pin.rs),
+  <target>/wasm32-wasip1/release/uniscript.wasm c/ffi/build/uniscript_c.wasm c/ffi/build/uniscript_c.h`, raise the pin (packages.warp and PINNED in tests/modules/test_package_pin.rs),
   regenerate warp's built-in `\:name` table (`WARP_REGENERATE_ENTITIES=1 tests/queue.sh --test tests -- the_entity_table`),
   run warp's `cargo test --test tests -- test_uniscript test_package test_versions test_entity_table`, then
   `web/uniscript/build.sh deploy` and commit the rebuilt web/uniscript/uniscript.wasm. Check the wasp port under warp first
@@ -67,3 +67,6 @@
 - uniscript_c.wasm (2026-10-15, v1.0.8): warp's `use uniscript` calls this core module (c/ffi for wasm32-unknown-unknown,
   no imports, its own malloc/free, header c/ffi/uniscript_c.h) instead of compiling uniscript.wasp: 0.3 s instead of
   1.5-3 s per program. uniscript_error and uniscript_warnings exist only there (a wasm host passes no structs).
+- <target> is cargo's target directory, `cargo metadata --format-version 1 --no-deps | jq -r .target_directory`
+  (~/.cargo/config.toml's target-dir), not /opt/cargo: v1.0.8 first shipped a stale Oct 8 uniscript.wasm from
+  /opt/cargo whose `check` failed against the filler-free index; the asset was replaced the same hour.
