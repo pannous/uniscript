@@ -1,5 +1,6 @@
 # C/C++ library of the Rust crate: build/libuniscript.{a,dylib|so}, header ../uniscript.h, C++ wrapper ../uniscript.hpp;
-# make wasm: the WebAssembly core module build/uniscript_c.wasm with its header uniscript_c.h (a release asset for warp)
+# make wasm: the WebAssembly core module uniscript_c.wasm beside its header uniscript_c.h, both committed: warp's
+# `use uniscript` reads them from the pinned tag (packages.warp `library: "c/ffi/uniscript_c"`), the browser too
 CARGO_TARGET_DIR ?= /opt/cargo
 export CARGO_TARGET_DIR
 PROFILE := release
@@ -22,7 +23,7 @@ NATIVE_TARGETS := osx-arm64:aarch64-apple-darwin:libuniscript.dylib:libuniscript
 	win-x64:x86_64-pc-windows-gnu:uniscript.dll:uniscript_ffi.dll
 
 WASM_TARGET := wasm32-unknown-unknown
-WASM := $(BUILD)/uniscript_c.wasm
+WASM := uniscript_c.wasm
 
 .PHONY: all test clean rust natives wasm
 all: $(STATIC) $(SHARED)
@@ -45,10 +46,9 @@ natives:
 	done; ls -l $(NATIVES)/*
 
 # names and debug sections stripped: 10 MB, most of it the embedded index
-wasm: | $(BUILD)
+wasm:
 	cargo build --release --target $(WASM_TARGET) --lib
 	wasm-tools strip $(CARGO_TARGET_DIR)/$(WASM_TARGET)/release/uniscript_ffi.wasm -o $(WASM)
-	cp uniscript_c.h $(BUILD)/
 	@test -z "$$(wasm-tools print $(WASM) | grep '(import ')" || { echo "$(WASM) has imports" >&2; exit 1; }
 	ls -l $(WASM)
 
