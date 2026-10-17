@@ -6,7 +6,7 @@
 // Names and block types live in data/entities/*.wasp; this reads their binary index data/entities.idx, whose format
 // src/index.rs documents: tables of 20-byte records sorted by a hash of the key.
 
-version 1.0.9  // the package version, as in Cargo.toml: `use uniscript >= 1.0` checks it
+version 1.0.10  // the package version, as in Cargo.toml: `use uniscript >= 1.0` checks it
 const uniscript_index = read(module_directory + "/data/entities.idx")
 const names_table = 0     // name → text, block entries as "block operand"
 const chars_table = 1     // text → its uniscript
@@ -50,7 +50,7 @@ u32(offset) := byte_at(uniscript_index, offset) + 256 * byte_at(uniscript_index,
 text_hash(key:text) := {
 	hash = 0
 	i = 0
-	while i < key.bytes {
+	while i < byte_size(key) {
 		hash = (hash * hash_multiplier + byte_at(key, i)) % hash_modulus
 		i++
 	}
@@ -101,7 +101,7 @@ utf8_width(lead) := if lead < 128 {1} else { if lead < 224 {2} else { if lead < 
 script_of(character:text) := {
 	lead = byte_at(character, 0)
 	second = 0
-	if character.bytes > 1 { second = byte_at(character, 1) }
+	if byte_size(character) > 1 { second = byte_at(character, 1) }
 	if lead == 240 and second == 147 { return "egyptian" }
 	if (lead == 226 and second >= 186) or (lead >= 227 and lead <= 233) or (lead == 240 and second >= 160 and second <= 179) { return "cjk" }
 	""
@@ -109,17 +109,17 @@ script_of(character:text) := {
 
 is_name_byte(b) := (b >= 48 and b <= 57) or (b >= 65 and b <= 90) or (b >= 97 and b <= 122) or b == 45 or b == 95
 
-// offset of the first occurrence of byte in text at or after start, else text.bytes
+// offset of the first occurrence of byte in text at or after start, else byte_size(text)
 offset_of(text:text, byte, start) := {
 	i = start
-	while i < text.bytes and byte_at(text, i) != byte { i++ }
+	while i < byte_size(text) and byte_at(text, i) != byte { i++ }
 	i
 }
 
 ascii_lowercased(name:text) := {
 	out = ""
 	i = 0
-	while i < name.bytes {
+	while i < byte_size(name) {
 		b = byte_at(name, i)
 		if b >= 65 and b <= 90 { out += byte_slice("abcdefghijklmnopqrstuvwxyz", b - 65, b - 64) } else { out += byte_slice(name, i, i + 1) }
 		i++
@@ -127,11 +127,11 @@ ascii_lowercased(name:text) := {
 	out
 }
 
-// offset of the first occurrence of part in text at or after start, else text.bytes
+// offset of the first occurrence of part in text at or after start, else byte_size(text)
 offset_of_text(text:text, part:text, start) := {
 	i = start
-	while i + part.bytes <= text.bytes and byte_slice(text, i, i + part.bytes) != part { i++ }
-	if i + part.bytes > text.bytes { return text.bytes }
+	while i + byte_size(part) <= byte_size(text) and byte_slice(text, i, i + byte_size(part)) != part { i++ }
+	if i + byte_size(part) > byte_size(text) { return byte_size(text) }
 	i
 }
 
@@ -139,10 +139,10 @@ offset_of_text(text:text, part:text, start) := {
 byte_replaced(text:text, byte, by:text) := {
 	out = ""
 	i = 0
-	while i < text.bytes {
+	while i < byte_size(text) {
 		found = offset_of(text, byte, i)
 		out += byte_slice(text, i, found)
-		if found < text.bytes { out += by }
+		if found < byte_size(text) { out += by }
 		i = found + 1
 	}
 	out
@@ -161,7 +161,7 @@ spaced(name:text) := byte_replaced(name, 45, " ")
 unsupported(message:text, at) := warning("uniscript: " + message + " at byte " + join([at], "")) + (warned_code_point as char)
 
 // a strict warning is an Error, which warned too
-warned(text:text) := is_error(text) or offset_of_text(text, "" + (warned_code_point as char), 0) < text.bytes
+warned(text:text) := is_error(text) or offset_of_text(text, "" + (warned_code_point as char), 0) < byte_size(text)
 
 // a strict warning stays its Error: warp's byte_slice would read the Error as its message text
 unmarked(text:text) := {
@@ -169,10 +169,10 @@ unmarked(text:text) := {
 	mark = "" + (warned_code_point as char)
 	out = ""
 	i = 0
-	while i < text.bytes {
+	while i < byte_size(text) {
 		at = offset_of_text(text, mark, i)
 		out += byte_slice(text, i, at)
-		i = at + mark.bytes
+		i = at + byte_size(mark)
 	}
 	out
 }
@@ -182,7 +182,7 @@ unmarked(text:text) := {
 suffix_record(block:text, character:text) := {
 	script = script_of(character)
 	suffix = -1
-	if script.bytes > 0 { suffix = find(names_table, block + " *suffix " + script) }
+	if byte_size(script) > 0 { suffix = find(names_table, block + " *suffix " + script) }
 	if suffix < 0 { suffix = find(names_table, block + " *suffix") }
 	suffix
 }
@@ -198,7 +198,7 @@ effect_suffix(block:text, character:text, at) := {
 effect_suffixes(effects:text, character:text, at) := {
 	out = ""
 	i = 0
-	while i < effects.bytes {
+	while i < byte_size(effects) {
 		end = offset_of(effects, 32, i)
 		out += effect_suffix(byte_slice(effects, i, end), character, at)
 		i = end + 1
@@ -220,7 +220,7 @@ styled(block:text, character:text, effects:text, at) := {
 // the entry of the next one or two characters in a block (greek th → θ), or the styled first character; with its width
 styled_prefix(block:text, characters:text, i, effects:text, at) := {
 	width = utf8_width(byte_at(characters, i))
-	if i + width < characters.bytes {
+	if i + width < byte_size(characters) {
 		pair = byte_slice(characters, i, i + width + utf8_width(byte_at(characters, i + width)))
 		own = find(names_table, block + " " + pair)
 		if own >= 0 { return value_of(own) + effect_suffixes(effects, pair, at) }
@@ -231,7 +231,7 @@ styled_prefix(block:text, characters:text, i, effects:text, at) := {
 // how many bytes styled_prefix consumed: two characters when the pair has an entry
 prefix_width(block:text, characters:text, i) := {
 	width = utf8_width(byte_at(characters, i))
-	if i + width < characters.bytes {
+	if i + width < byte_size(characters) {
 		pair_width = width + utf8_width(byte_at(characters, i + width))
 		if find(names_table, block + " " + byte_slice(characters, i, i + pair_width)) >= 0 { return pair_width }
 	}
@@ -250,7 +250,7 @@ readings(block:text, word:text, effects:text, at) := {
 	fewest = [-1]
 	first_end = [0]
 	i = 0
-	while i < word.bytes {
+	while i < byte_size(word) {
 		i += utf8_width(byte_at(word, i))
 		bounds = bounds + [i]
 		fewest = fewest + [-1]
@@ -290,15 +290,15 @@ operand(block:text, token:text, effects:text, at) := {
 	if find(names_table, block + " " + readings_key) >= 0 {
 		// <:chinese> shihan: whole readings, never letters (nuli is nu li, not n u l i)
 		split = readings(block, token, effects, at)
-		if split.bytes > 0 { return split }
+		if byte_size(split) > 0 { return split }
 		return unsupported("no " + block + " form of " + token, at) + token
 	}
 	characters = token
 	named = find(names_table, token)
-	if named >= 0 and token.bytes > 1 { characters = value_of(named) }
+	if named >= 0 and byte_size(token) > 1 { characters = value_of(named) }
 	out = ""
 	i = 0
-	while i < characters.bytes {
+	while i < byte_size(characters) {
 		width = prefix_width(block, characters, i)
 		out += final_or_styled(block, characters, i, width, effects, at)
 		i += width
@@ -315,10 +315,10 @@ final_or_styled(block:text, characters:text, i, width, effects:text, at) := {
 	written = byte_slice(characters, i, i + width)
 	own = entry(block + " " + written)
 	ends_word = i > 0 and is_word_letter_byte(byte_at(characters, i - 1))
-	if ends_word and i + width < characters.bytes { ends_word = not is_word_letter_byte(byte_at(characters, i + width)) }
-	if ends_word and own.bytes > 0 {
+	if ends_word and i + width < byte_size(characters) { ends_word = not is_word_letter_byte(byte_at(characters, i + width)) }
+	if ends_word and byte_size(own) > 0 {
 		final_form = entry(block + " *final " + own)
-		if final_form.bytes > 0 { return final_form + effect_suffixes(effects, written, at) }
+		if byte_size(final_form) > 0 { return final_form + effect_suffixes(effects, written, at) }
 	}
 	styled_prefix(block, characters, i, effects, at)
 }
@@ -328,21 +328,21 @@ is_space(b) := b == 32 or b == 9 or b == 10 or b == 13
 
 // bytes of the one whitespace a block opener eats after it, at byte at (<:greek> athos <:/greek> is αθος); \r\n is one
 opening_padding(source:text, at) := {
-	if at + 1 < source.bytes and byte_at(source, at) == 13 and byte_at(source, at + 1) == 10 { return 2 }
-	if at < source.bytes and is_space(byte_at(source, at)) { return 1 }
+	if at + 1 < byte_size(source) and byte_at(source, at) == 13 and byte_at(source, at + 1) == 10 { return 2 }
+	if at < byte_size(source) and is_space(byte_at(source, at)) { return 1 }
 	0
 }
 
 // bytes of the one whitespace a block's closer eats before it, at the end of run
 closing_padding(run:text) := {
-	if run.bytes >= 2 and byte_at(run, run.bytes - 2) == 13 and byte_at(run, run.bytes - 1) == 10 { return 2 }
-	if run.bytes >= 1 and is_space(byte_at(run, run.bytes - 1)) { return 1 }
+	if byte_size(run) >= 2 and byte_at(run, byte_size(run) - 2) == 13 and byte_at(run, byte_size(run) - 1) == 10 { return 2 }
+	if byte_size(run) >= 1 and is_space(byte_at(run, byte_size(run) - 1)) { return 1 }
 	0
 }
 
 // whether a block closer (<:> or <:/greek>) starts at byte at
 closes_block_at(source:text, at) := {
-	if at + 2 >= source.bytes or byte_at(source, at) != 60 or byte_at(source, at + 1) != 58 { return false }
+	if at + 2 >= byte_size(source) or byte_at(source, at) != 60 or byte_at(source, at + 1) != 58 { return false }
 	byte_at(source, at + 2) == 62 or byte_at(source, at + 2) == 47
 }
 
@@ -352,11 +352,11 @@ block_text(block:text, text:text, at) := {
 	if is_group(block) { return group(block, "", text, at) }
 	out = ""
 	i = 0
-	while i < text.bytes {
+	while i < byte_size(text) {
 		end = i
-		while end < text.bytes and not is_space(byte_at(text, end)) { end++ }
+		while end < byte_size(text) and not is_space(byte_at(text, end)) { end++ }
 		if end > i { out += operand(block, byte_slice(text, i, end), "", at) }
-		if end < text.bytes { out += byte_slice(text, end, end + 1) }
+		if end < byte_size(text) { out += byte_slice(text, end, end + 1) }
 		i = end + 1
 	}
 	out
@@ -365,7 +365,7 @@ block_text(block:text, text:text, at) := {
 // the first byte from start that is no space
 skip_spaces(content:text, start) := {
 	i = start
-	while i < content.bytes and byte_at(content, i) == 32 { i++ }
+	while i < byte_size(content) and byte_at(content, i) == 32 { i++ }
 	i
 }
 
@@ -375,7 +375,7 @@ operand_end(block:text, content:text, start) := {
 	end = offset_of(content, 32, start)
 	best = end
 	words = 1
-	while block.bytes > 0 and words < max_operand_words and skip_spaces(content, end) < content.bytes {
+	while byte_size(block) > 0 and words < max_operand_words and skip_spaces(content, end) < byte_size(content) {
 		end = offset_of(content, 32, skip_spaces(content, end))
 		words++
 		if find(names_table, block + " " + hyphenated(byte_slice(content, start, end))) >= 0 { best = end }
@@ -386,14 +386,14 @@ operand_end(block:text, content:text, start) := {
 // whether the content starts with an operand of the block: <:egyptian red crown> names a sign, red is no effect
 starts_operand(block:text, content:text) := {
 	start = skip_spaces(content, 0)
-	start < content.bytes and find(names_table, block + " " + hyphenated(byte_slice(content, start, operand_end(block, content, start)))) >= 0
+	start < byte_size(content) and find(names_table, block + " " + hyphenated(byte_slice(content, start, operand_end(block, content, start)))) >= 0
 }
 
 // the space separated operands of an inline tag, spaces dropped
 operands(block:text, content:text, effects:text, at) := {
 	out = ""
 	i = skip_spaces(content, 0)
-	while i < content.bytes {
+	while i < byte_size(content) {
 		end = operand_end(block, content, i)
 		out += operand(block, hyphenated(byte_slice(content, i, end)), effects, at)
 		i = skip_spaces(content, end)
@@ -405,9 +405,9 @@ operands(block:text, content:text, effects:text, at) := {
 group_part(naming:text, token:text) := {
 	part = token
 	named = find(names_table, token)
-	if named >= 0 and token.bytes > 1 { part = value_of(named) }
+	if named >= 0 and byte_size(token) > 1 { part = value_of(named) }
 	own = find(names_table, naming + " " + token)
-	if naming.bytes > 0 and own >= 0 { part = value_of(own) }
+	if byte_size(naming) > 0 and own >= 0 { part = value_of(own) }
 	part
 }
 
@@ -418,15 +418,15 @@ group(group_name:text, naming:text, content:text, at) := {
 	script = ""
 	parts = 0
 	i = skip_spaces(content, 0)
-	while i < content.bytes {
+	while i < byte_size(content) {
 		end = operand_end(naming, content, i)
 		word = hyphenated(byte_slice(content, i, end))
 		part = group_part(naming, word)
 		if parts > 0 and is_group(word) {
 			// <:above 宀 beside 电 电>: a group word among the parts groups the parts after it
 			out += entry(group_name + " *infix " + script) + entry(group_name + " *open " + script)
-			out += group(word, naming, byte_slice(content, end, content.bytes), at) + entry(group_name + " *close " + script)
-			end = content.bytes
+			out += group(word, naming, byte_slice(content, end, byte_size(content)), at) + entry(group_name + " *close " + script)
+			end = byte_size(content)
 		} else {
 			if parts == 0 {
 				script = script_of(part)
@@ -449,10 +449,10 @@ group(group_name:text, naming:text, content:text, at) := {
 group_word(words:text) := {
 	found = ""
 	i = 0
-	while i < words.bytes {
+	while i < byte_size(words) {
 		end = offset_of(words, 32, i)
 		word = byte_slice(words, i, end)
-		if found.bytes == 0 and is_group(word) { found = word }
+		if byte_size(found) == 0 and is_group(word) { found = word }
 		i = end + 1
 	}
 	found
@@ -462,7 +462,7 @@ group_word(words:text) := {
 naming_word(words:text) := {
 	found = ""
 	i = 0
-	while i < words.bytes {
+	while i < byte_size(words) {
 		end = offset_of(words, 32, i)
 		word = byte_slice(words, i, end)
 		if not is_group(word) and not is_effect(word) { found = word }
@@ -477,10 +477,10 @@ naming_word(words:text) := {
 stacked_words(words:text, effects) := {
 	out = ""
 	i = 0
-	while i < words.bytes {
+	while i < byte_size(words) {
 		end = offset_of(words, 32, i)
 		word = byte_slice(words, i, end)
-		if word.bytes > 0 and is_effect(word) == effects { out += word + " " }
+		if byte_size(word) > 0 and is_effect(word) == effects { out += word + " " }
 		i = end + 1
 	}
 	out
@@ -491,40 +491,40 @@ spelling(character:text) := {
 	record = find(chars_table, character)
 	if record < 0 { return "" }
 	form = value_of(record)
-	if form.bytes < 3 or byte_slice(form, 0, 2) != "<:" { return "" }
-	byte_slice(form, 2, form.bytes - 1)
+	if byte_size(form) < 3 or byte_slice(form, 0, 2) != "<:" { return "" }
+	byte_slice(form, 2, byte_size(form) - 1)
 }
 
 // the block of a spelling ("" for none): bold of "bold a", "" of "alpha"
 spelling_block(content:text) := {
 	space = offset_of(content, 32, 0)
-	if space < content.bytes and is_block(byte_slice(content, 0, space)) { return byte_slice(content, 0, space) }
+	if space < byte_size(content) and is_block(byte_slice(content, 0, space)) { return byte_slice(content, 0, space) }
 	""
 }
 
 // the operand of a spelling: a of "bold a", alpha of "alpha"
 spelling_operand(content:text) := {
 	block = spelling_block(content)
-	if block.bytes == 0 { return content }
-	byte_slice(content, block.bytes + 1, content.bytes)
+	if byte_size(block) == 0 { return content }
+	byte_slice(content, byte_size(block) + 1, byte_size(content))
 }
 
 // a block named by the parts (split at hyphens) of the space terminated words, joined in some order: bold + sans + italic
 // → sans-bold-italic; prefix holds the parts placed so far; "" for none
 combined(prefix:text, parts:text) := {
-	if parts.bytes == 0 {
+	if byte_size(parts) == 0 {
 		if is_block(prefix) { return prefix }
 		return ""
 	}
 	i = 0
-	while i < parts.bytes {
+	while i < byte_size(parts) {
 		end = offset_of(parts, 32, i)
 		part = byte_slice(parts, i, end)
-		rest = byte_slice(parts, 0, i) + byte_slice(parts, end + 1, parts.bytes)
+		rest = byte_slice(parts, 0, i) + byte_slice(parts, end + 1, byte_size(parts))
 		joined = part
-		if prefix.bytes > 0 { joined = prefix + "-" + part }
+		if byte_size(prefix) > 0 { joined = prefix + "-" + part }
 		found = combined(joined, rest)
-		if found.bytes > 0 { return found }
+		if byte_size(found) > 0 { return found }
 		i = end + 1
 	}
 	""
@@ -535,10 +535,10 @@ style_parts(words:text) := {
 	out = ""
 	spaced_words = byte_replaced(words, 45, " ")
 	i = 0
-	while i < spaced_words.bytes {
+	while i < byte_size(spaced_words) {
 		end = offset_of(spaced_words, 32, i)
 		part = byte_slice(spaced_words, i, end)
-		if part.bytes > 0 and offset_of_text(" " + out, " " + part + " ", 0) >= out.bytes + 1 { out += part + " " }
+		if byte_size(part) > 0 and offset_of_text(" " + out, " " + part + " ", 0) >= byte_size(out) + 1 { out += part + " " }
 		i = end + 1
 	}
 	out
@@ -550,31 +550,31 @@ restyled_by(style:text, character:text) := {
 	own = find(names_table, style + " " + character)
 	if own >= 0 { return value_of(own) }
 	content = spelling(character)
-	if content.bytes == 0 { return "" }
+	if byte_size(content) == 0 { return "" }
 	block = spelling_block(content)
 	plain_operand = spelling_operand(content)
-	if block.bytes == 0 { return entry(style + " " + plain_operand) }
+	if byte_size(block) == 0 { return entry(style + " " + plain_operand) }
 	base = plain_operand
 	named = find(names_table, plain_operand)
-	if named >= 0 and plain_operand.bytes > 1 { base = value_of(named) }
-	if base.bytes != utf8_width(byte_at(base, 0)) { return "" }
+	if named >= 0 and byte_size(plain_operand) > 1 { base = value_of(named) }
+	if byte_size(base) != utf8_width(byte_at(base, 0)) { return "" }
 	base_form = restyled_by(style, base)
-	if base_form.bytes == 0 { return "" }
+	if byte_size(base_form) == 0 { return "" }
 	if base_form == base { return character }
 	entry(block + " " + base_form)
 }
 
 // the text in the space terminated styles, the last applied first; a style without a form keeps it, with a warning
 restyled_by_all(styles:text, text:text, at) := {
-	if styles.bytes == 0 { return text }
-	end = styles.bytes - 1
+	if byte_size(styles) == 0 { return text }
+	end = byte_size(styles) - 1
 	start = end
 	while start > 0 and byte_at(styles, start - 1) != 32 { start-- }
 	style = byte_slice(styles, start, end)
 	rest = byte_slice(styles, 0, start)
-	if text.bytes != utf8_width(byte_at(text, 0)) { return restyled_by_all(rest, text, at) }
+	if byte_size(text) != utf8_width(byte_at(text, 0)) { return restyled_by_all(rest, text, at) }
 	form = restyled_by(style, text)
-	if form.bytes == 0 { return restyled_by_all(rest, unsupported("no " + style + " form of " + text, at) + text, at) }
+	if byte_size(form) == 0 { return restyled_by_all(rest, unsupported("no " + style + " form of " + text, at) + text, at) }
 	restyled_by_all(rest, form, at)
 }
 
@@ -582,16 +582,16 @@ restyled_by_all(styles:text, text:text, at) := {
 // style after the other
 restyled(styles:text, character:text, at) := {
 	content = spelling(character)
-	if content.bytes > 0 {
+	if byte_size(content) > 0 {
 		block = spelling_block(content)
 		plain_operand = spelling_operand(content)
 		base = plain_operand
 		named = find(names_table, plain_operand)
-		if block.bytes > 0 and named >= 0 and plain_operand.bytes > 1 { base = value_of(named) }
+		if byte_size(block) > 0 and named >= 0 and byte_size(plain_operand) > 1 { base = value_of(named) }
 		all = styles
-		if block.bytes > 0 { all += block + " " }
+		if byte_size(block) > 0 { all += block + " " }
 		combination = combined("", style_parts(all))
-		if combination.bytes > 0 {
+		if byte_size(combination) > 0 {
 			form = find(names_table, combination + " " + base)
 			if form >= 0 { return value_of(form) }
 		}
@@ -604,7 +604,7 @@ restyled_operands(styles:text, effects:text, plain:text, at) := {
 	mark = "" + (warned_code_point as char)
 	out = ""
 	i = 0
-	while i < plain.bytes {
+	while i < byte_size(plain) {
 		width = utf8_width(byte_at(plain, i))
 		character = byte_slice(plain, i, i + width)
 		if character == mark { out += mark } else { out += restyled(styles, character, at) + effect_suffixes(effects, character, at) }
@@ -615,37 +615,37 @@ restyled_operands(styles:text, effects:text, plain:text, at) := {
 
 // the text of <:content> at byte `at` of the source, or the block it opens (as "<block>"), or "" for a closing tag; an Error when nothing matches
 tag(content:text, at) := {
-	if content.bytes == 0 or byte_at(content, 0) == 47 { return "" }
-	if content.bytes == 1 { return content }
+	if byte_size(content) == 0 or byte_at(content, 0) == 47 { return "" }
+	if byte_size(content) == 1 { return content }
 	record = find(names_table, hyphenated(content))
 	if record >= 0 { return value_of(record) }
 	value = code_point_value(content)
 	if value >= 0 { return code_point_text(value, "<:" + content + ">", at) }
 	// before the blocks: <:egyptian hieroglyph-13460> is no operand of the egyptian block
 	algorithmic = algorithmic_text(content)
-	if algorithmic.bytes > 0 { return algorithmic }
+	if byte_size(algorithmic) > 0 { return algorithmic }
 	if is_block(content) { return "<" + content + ">" }
 	space = offset_of(content, 32, 0)
-	if space == content.bytes { space = offset_of(content, 45, 0) }
-	if space < content.bytes {
+	if space == byte_size(content) { space = offset_of(content, 45, 0) }
+	if space < byte_size(content) {
 		block = byte_slice(content, 0, space)
 		if is_block(block) {
 			// <:mirror red A>: effect words stack, the last one takes the operands, the others add their suffixes
 			effects = ""
-			rest = byte_slice(content, space + 1, content.bytes)
+			rest = byte_slice(content, space + 1, byte_size(content))
 			// a word that starts an operand of the block before it is no block (<:egyptian red crown>)
 			next = offset_of(rest, 32, 0)
-			while next < rest.bytes and is_block(byte_slice(rest, 0, next)) and (starts_operand(block, rest) == false) {
+			while next < byte_size(rest) and is_block(byte_slice(rest, 0, next)) and (starts_operand(block, rest) == false) {
 				effects += block + " "
 				block = byte_slice(rest, 0, next)
-				rest = byte_slice(rest, next + 1, rest.bytes)
+				rest = byte_slice(rest, next + 1, byte_size(rest))
 				next = offset_of(rest, 32, 0)
 			}
 			// <:egyptian above A1 A2>: the other block names the parts of the group
 			grouping = group_word(effects + block)
-			if grouping.bytes > 0 { return group(grouping, naming_word(effects + block), rest, at) }
+			if byte_size(grouping) > 0 { return group(grouping, naming_word(effects + block), rest, at) }
 			styles = stacked_words(effects, false)
-			if styles.bytes == 0 { return operands(block, rest, effects, at) }
+			if byte_size(styles) == 0 { return operands(block, rest, effects, at) }
 			// <:bold italic A>: the other style words restyle the operands of the last
 			return restyled_operands(styles, stacked_words(effects, true), operands(block, rest, "", at), at)
 		}
@@ -666,11 +666,11 @@ filled_record(key:text) := {
 	fillers = entry(fillers_key)
 	found = -1
 	hyphen = offset_of(key, 45, 0)
-	while found < 0 and hyphen < key.bytes {
+	while found < 0 and hyphen < byte_size(key) {
 		start = 0
-		while found < 0 and start < fillers.bytes {
+		while found < 0 and start < byte_size(fillers) {
 			end = offset_of(fillers, 32, start)
-			found = find(names_table, byte_slice(key, 0, hyphen) + "-" + byte_slice(fillers, start, end) + byte_slice(key, hyphen, key.bytes))
+			found = find(names_table, byte_slice(key, 0, hyphen) + "-" + byte_slice(fillers, start, end) + byte_slice(key, hyphen, byte_size(key)))
 			start = end + 1
 		}
 		hyphen = offset_of(key, 45, hyphen + 1)
@@ -685,14 +685,14 @@ ending_record(words:text) := {
 	first = u32(8 + 8 * names_table)
 	count = u32(12 + 8 * names_table)
 	i = 0
-	while words.bytes >= min_ending_length and i < count {
+	while byte_size(words) >= min_ending_length and i < count {
 		record = first + i * record_size
 		length = u32(record + 8)
 		start = u32(record + 4)
-		if length > words.bytes and byte_at(uniscript_index, start + length - words.bytes - 1) == 45 {
+		if length > byte_size(words) and byte_at(uniscript_index, start + length - byte_size(words) - 1) == 45 {
 			key = byte_slice(uniscript_index, start, start + length)
 			plain = offset_of(key, 32, 0) == length and offset_of(key, 42, 0) == length
-			if plain and byte_slice(key, length - words.bytes, length) == words {
+			if plain and byte_slice(key, length - byte_size(words), length) == words {
 				if best < 0 or ranks_before(record, best) { best = record }
 			}
 		}
@@ -725,7 +725,7 @@ opens_meta(content:text) := {
 	words = 0
 	keys = 0
 	i = skip_spaces(content, 0)
-	while i < content.bytes {
+	while i < byte_size(content) {
 		end = offset_of(content, 32, i)
 		if words % 2 == 0 and is_meta_key(byte_slice(content, i, end)) { keys++ }
 		words++
@@ -736,7 +736,7 @@ opens_meta(content:text) := {
 
 // an inline tag's content looks like it opens something; not an escape (<:<>), closer, self-closed tag, block or meta span opener
 reads_as_opener(content:text) := {
-	if content.bytes <= 1 or byte_at(content, 0) == 47 or byte_at(content, content.bytes - 1) == 47 { return false }
+	if byte_size(content) <= 1 or byte_at(content, 0) == 47 or byte_at(content, byte_size(content) - 1) == 47 { return false }
 	not is_block(content) and not opens_meta(content)
 }
 
@@ -749,25 +749,25 @@ short_form(content:text, next) := {
 	spaces = 0
 	hyphens = 0
 	i = 0
-	while i < content.bytes {
+	while i < byte_size(content) {
 		b = byte_at(content, i)
 		if b == 32 { spaces++ } else { if is_name_byte(b) { names_only++ } }
 		if b == 45 { hyphens++ }
 		i++
 	}
 	space = offset_of(content, 32, 0)
-	starts_meta = space < content.bytes and is_meta_key(byte_slice(content, 0, space))
-	if names_only + spaces < content.bytes or (spaces > 0 and hyphens > 0) or starts_meta or is_name_byte(next) { return "" }
+	starts_meta = space < byte_size(content) and is_meta_key(byte_slice(content, 0, space))
+	if names_only + spaces < byte_size(content) or (spaces > 0 and hyphens > 0) or starts_meta or is_name_byte(next) { return "" }
 	"\\:" + hyphenated(content)
 }
 
 // <:greek> athos <:/greek> of greek athos, else "": a block and one operand (a block keeps the spaces between operands)
 block_form(content:text) := {
 	space = offset_of(content, 32, 0)
-	if space == content.bytes { return "" }
+	if space == byte_size(content) { return "" }
 	block = byte_slice(content, 0, space)
-	word = byte_slice(content, space + 1, content.bytes)
-	if not is_block(block) or offset_of(word, 32, 0) < word.bytes or is_block(word) { return "" }
+	word = byte_slice(content, space + 1, byte_size(content))
+	if not is_block(block) or offset_of(word, 32, 0) < byte_size(word) or is_block(word) { return "" }
 	"<:" + block + "> " + word + " <:/" + block + ">"
 }
 
@@ -776,21 +776,21 @@ explicit_forms(content:text, next) := {
 	short = short_form(content, next)
 	block = block_form(content)
 	listed = short
-	if short.bytes > 0 and block.bytes > 0 { listed += ", " }
+	if byte_size(short) > 0 and byte_size(block) > 0 { listed += ", " }
 	listed += block
-	if listed.bytes > 0 { listed += " or " }
+	if byte_size(listed) > 0 { listed += " or " }
 	listed + self_closed_form(content)
 }
 
 // the byte after offset at, -1 at the end
-byte_after(source:text, at) := if at + 1 < source.bytes { byte_at(source, at + 1) } else { 0 - 1 }
+byte_after(source:text, at) := if at + 1 < byte_size(source) { byte_at(source, at + 1) } else { 0 - 1 }
 
 // the text of the inline tag <:content> at byte at, followed by byte next: <:…/> self-closes; a bare one that converts without
 // a warning warns that it looks like an opening tag, naming its explicit forms
-is_self_closed(content:text) := content.bytes > 1 and byte_at(content, content.bytes - 1) == 47
+is_self_closed(content:text) := byte_size(content) > 1 and byte_at(content, byte_size(content) - 1) == 47
 
 // the name of a tag's content without the slash of a self-closed tag: alpha of alpha/
-self_closed_name(content:text) := if is_self_closed(content) { byte_slice(content, 0, content.bytes - 1) } else { content }
+self_closed_name(content:text) := if is_self_closed(content) { byte_slice(content, 0, byte_size(content) - 1) } else { content }
 
 inline_tag(content:text, at, next) := {
 	self_closed = is_self_closed(content)
@@ -807,18 +807,18 @@ inline_tag(content:text, at, next) := {
 explicit(source:text) := {
 	i = header_length(source)
 	out = byte_slice(source, 0, i)
-	while i < source.bytes {
+	while i < byte_size(source) {
 		open = offset_of_text(source, "<:", i)
 		close = offset_of(source, 62, open + 2)
-		if close >= source.bytes {
-			out += byte_slice(source, i, source.bytes)
-			i = source.bytes
+		if close >= byte_size(source) {
+			out += byte_slice(source, i, byte_size(source))
+			i = byte_size(source)
 		} else {
 			content = byte_slice(source, open + 2, close)
 			out += byte_slice(source, i, open)
 			if reads_as_opener(content) {
 				form = short_form(content, byte_after(source, close))
-				if form.bytes == 0 { form = self_closed_form(content) }
+				if byte_size(form) == 0 { form = self_closed_form(content) }
 				out += form
 			} else { out += byte_slice(source, open, close + 1) }
 			i = close + 1
@@ -855,27 +855,27 @@ is_u(b) := b == 85 or b == 117
 
 // bytes of the prefix U+ u+ 0x 0X U u of a code point token, else 0
 code_point_prefix(token:text) := {
-	if token.bytes >= 2 and is_u(byte_at(token, 0)) and byte_at(token, 1) == 43 { return 2 }
-	if token.bytes >= 2 and byte_at(token, 0) == 48 and (byte_at(token, 1) == 120 or byte_at(token, 1) == 88) { return 2 }
-	if token.bytes >= 1 and is_u(byte_at(token, 0)) { return 1 }
+	if byte_size(token) >= 2 and is_u(byte_at(token, 0)) and byte_at(token, 1) == 43 { return 2 }
+	if byte_size(token) >= 2 and byte_at(token, 0) == 48 and (byte_at(token, 1) == 120 or byte_at(token, 1) == 88) { return 2 }
+	if byte_size(token) >= 1 and is_u(byte_at(token, 0)) { return 1 }
 	0
 }
 
 // the value of a code point token: U+1F60D U1F60D 0x1F60D (1–8 hex digits) or bare 1F60D (4–8), else -1
 code_point_value(token:text) := {
 	prefix = code_point_prefix(token)
-	if prefix > 0 { return hex_value(token, prefix, token.bytes, 1) }
-	hex_value(token, 0, token.bytes, min_bare_hex_digits)
+	if prefix > 0 { return hex_value(token, prefix, byte_size(token), 1) }
+	hex_value(token, 0, byte_size(token), min_bare_hex_digits)
 }
 
 // the code point of a block operand written with the prefix U+ or 0x (<:bold 0x41>, <:red U+2661>), else -1: only with a
 // prefix, so beef stays a word
 operand_code_point(token:text) := {
-	if token.bytes < 3 { return (-1) }
+	if byte_size(token) < 3 { return (-1) }
 	first = byte_at(token, 0)
 	second = byte_at(token, 1)
 	if not ((is_u(first) and second == 43) or (first == 48 and (second == 120 or second == 88))) { return (-1) }
-	value = hex_value(token, 2, token.bytes, 1)
+	value = hex_value(token, 2, byte_size(token), 1)
 	if value > max_code_point or (value >= first_surrogate and value <= last_surrogate) { return (-1) }
 	value
 }
@@ -883,7 +883,7 @@ operand_code_point(token:text) := {
 // U+ and at least 4 upper case hex digits
 code_point_name(value) := {
 	out = ""
-	while value > 0 or out.bytes < 4 {
+	while value > 0 or byte_size(out) < 4 {
 		digit = value % 16
 		out = byte_slice(hex_digits, digit, digit + 1) + out
 		value = (value - digit) / 16  // exact: / of integers that do not divide gives a float
@@ -900,49 +900,49 @@ code_point_text(value, written:text, at) := {
 // the end of the name token from start; the + of a leading U+ belongs to it
 token_end(source:text, start) := {
 	end = start
-	if end + 1 < source.bytes and is_u(byte_at(source, end)) and byte_at(source, end + 1) == 43 { end += 2 }
-	while end < source.bytes and is_name_byte(byte_at(source, end)) { end++ }
+	if end + 1 < byte_size(source) and is_u(byte_at(source, end)) and byte_at(source, end + 1) == 43 { end += 2 }
+	while end < byte_size(source) and is_name_byte(byte_at(source, end)) { end++ }
 	end
 }
 
 // the end of \U1F60D whose backslash is at i (4–8 hex digits as a whole token), the only marker without a colon; else -1
 unicode_escape_end(source:text, i) := {
-	if i + 1 >= source.bytes or byte_at(source, i + 1) != 85 { return (-1) }
+	if i + 1 >= byte_size(source) or byte_at(source, i + 1) != 85 { return (-1) }
 	end = token_end(source, i + 2)
 	if hex_value(source, i + 2, end, min_bare_hex_digits) < 0 { return (-1) }
 	end
 }
 
-// offset of the next "<:", "\:" or "\U1F60D" at or after start, else source.bytes
+// offset of the next "<:", "\:" or "\U1F60D" at or after start, else byte_size(source)
 next_marker(source:text, start) := {
 	i = start
-	while i + 1 < source.bytes {
+	while i + 1 < byte_size(source) {
 		b = byte_at(source, i)
 		if (b == 60 or b == 92) and byte_at(source, i + 1) == 58 { return i }
 		if b == 92 and unicode_escape_end(source, i) >= 0 { return i }
 		i++
 	}
-	source.bytes
+	byte_size(source)
 }
 
 // bytes of the header <:uniscript version="https://uniscript.org/v1"> at the start of a file and its line break, else 0;
 // another version warns
 header_length(source:text) := {
-	open = header_open.bytes
-	if source.bytes <= open or byte_slice(source, 0, open) != header_open { return 0 }
+	open = byte_size(header_open)
+	if byte_size(source) <= open or byte_slice(source, 0, open) != header_open { return 0 }
 	if byte_at(source, open) != 32 and byte_at(source, open) != 62 { return 0 }
 	close = offset_of(source, 62, open)
-	if close == source.bytes { return 0 }
+	if close == byte_size(source) { return 0 }
 	attribute = open + 1
-	while attribute + version_attribute.bytes < close and byte_slice(source, attribute, attribute + version_attribute.bytes) != version_attribute { attribute++ }
-	value = attribute + version_attribute.bytes + 1
+	while attribute + byte_size(version_attribute) < close and byte_slice(source, attribute, attribute + byte_size(version_attribute)) != version_attribute { attribute++ }
+	value = attribute + byte_size(version_attribute) + 1
 	if value < close {
 		version = byte_slice(source, value, offset_of(source, 34, value))
 		if version != uniscript_version { unsupported("unsupported uniscript version " + version, 0) }
 	}
 	end = close + 1
-	if end + 1 < source.bytes and byte_at(source, end) == 13 and byte_at(source, end + 1) == 10 { end += 2 } else {
-		if end < source.bytes and byte_at(source, end) == 10 { end++ }
+	if end + 1 < byte_size(source) and byte_at(source, end) == 13 and byte_at(source, end + 1) == 10 { end += 2 } else {
+		if end < byte_size(source) and byte_at(source, end) == 10 { end++ }
 	}
 	end
 }
@@ -962,13 +962,13 @@ converted(source:text, lenient) := {
 	out = ""
 	block = ""
 	i = header_length(source)
-	while i < source.bytes {
+	while i < byte_size(source) {
 		next = next_marker(source, i)
 		if next > i {
 			run = byte_slice(source, i, next)
-			if block.bytes > 0 {
+			if byte_size(block) > 0 {
 				closing = closes_block_at(source, next)
-				if closing { run = byte_slice(run, 0, run.bytes - closing_padding(run)) }
+				if closing { run = byte_slice(run, 0, byte_size(run) - closing_padding(run)) }
 				out += unmarked(block_text(block, run, i))
 			} else { out += run }
 			i = next
@@ -994,14 +994,14 @@ converted(source:text, lenient) := {
 				i = end
 			} else {
 				close = offset_of(source, 62, i + 2)
-				if close == source.bytes {
-					if lenient == false { return error("unclosed <: at byte " + byte_slice(source, i, source.bytes)) }
-					return out + kept("unclosed <: at " + byte_slice(source, i, source.bytes), byte_slice(source, i, source.bytes), lenient, i)
+				if close == byte_size(source) {
+					if lenient == false { return error("unclosed <: at byte " + byte_slice(source, i, byte_size(source))) }
+					return out + kept("unclosed <: at " + byte_slice(source, i, byte_size(source)), byte_slice(source, i, byte_size(source)), lenient, i)
 				}
 				content = byte_slice(source, i + 2, close)
 				at = i
 				i = close + 1
-				if content.bytes == 0 or byte_at(content, 0) == 47 { block = "" } else {
+				if byte_size(content) == 0 or byte_at(content, 0) == 47 { block = "" } else {
 					if is_block(content) {
 						block = content
 						i += opening_padding(source, i)
@@ -1021,10 +1021,10 @@ converted(source:text, lenient) := {
 
 // the value of the decimal digits of text, else -1
 decimal_value(text:text) := {
-	if text.bytes == 0 { return (-1) }
+	if byte_size(text) == 0 { return (-1) }
 	value = 0
 	i = 0
-	while i < text.bytes {
+	while i < byte_size(text) {
 		b = byte_at(text, i)
 		if b < 48 or b > 57 { return (-1) }
 		value = value * 10 + b - 48
@@ -1039,12 +1039,12 @@ hangul_syllable_text(name:text) := {
 	while leading < hangul_leading.count {
 		consonant = "" + hangul_leading[leading]  // "" +: a one-letter list item reads back as a codepoint (warp card list-items)
 		if starts_with(name, consonant) {
-			after_consonant = byte_slice(name, consonant.bytes, name.bytes)
+			after_consonant = byte_slice(name, byte_size(consonant), byte_size(name))
 			vowel = 0
 			while vowel < hangul_vowels.count {
 				vowel_name = "" + hangul_vowels[vowel]
 				if starts_with(after_consonant, vowel_name) {
-					rest = byte_slice(after_consonant, vowel_name.bytes, after_consonant.bytes)
+					rest = byte_slice(after_consonant, byte_size(vowel_name), byte_size(after_consonant))
 					trailing = 0
 					while trailing < hangul_trailing.count {
 						if rest == "" + hangul_trailing[trailing] { return "" + ((first_hangul_syllable + (leading * 21 + vowel) * 28 + trailing) as char) }
@@ -1064,7 +1064,7 @@ hex_named_value(name:text) := {
 	prefix = 0
 	while prefix < hex_named_prefixes.count {
 		if starts_with(name, hex_named_prefixes[prefix]) {
-			value = hex_value(name, hex_named_prefixes[prefix].bytes, name.bytes, min_bare_hex_digits)
+			value = hex_value(name, byte_size(hex_named_prefixes[prefix]), byte_size(name), min_bare_hex_digits)
 			i = 0
 			while i < hex_named_ranges.count {
 				if hex_named_ranges[i] == prefix and value >= hex_named_ranges[i + 1] and value <= hex_named_ranges[i + 2] { return value }
@@ -1079,9 +1079,9 @@ hex_named_value(name:text) := {
 // the character an algorithmic Unicode name stands for, in any case, spaces as hyphens; else ""
 algorithmic_text(content:text) := {
 	name = hyphenated(ascii_lowercased(content))
-	if starts_with(name, hangul_syllable) { return hangul_syllable_text(byte_slice(name, hangul_syllable.bytes, name.bytes)) }
+	if starts_with(name, hangul_syllable) { return hangul_syllable_text(byte_slice(name, byte_size(hangul_syllable), byte_size(name))) }
 	if starts_with(name, tangut_component) {
-		number = decimal_value(byte_slice(name, tangut_component.bytes, name.bytes))
+		number = decimal_value(byte_slice(name, byte_size(tangut_component), byte_size(name)))
 		if number >= 1 and number <= tangut_components { return "" + ((first_tangut_component + number - 1) as char) }
 		return ""
 	}
@@ -1095,14 +1095,14 @@ algorithmic_text(content:text) := {
 // one character, and the block types of the suffix controls after it ("" for none): <:mirror red A>, <:mirror red circle>
 spelled(character:text, blocks:text) := {
 	own = find(chars_table, character)
-	if blocks.bytes == 0 {
+	if byte_size(blocks) == 0 {
 		if own >= 0 { return value_of(own) }
 		return character
 	}
 	inner = character
 	if own >= 0 {
 		form = value_of(own)
-		inner = byte_slice(form, 2, form.bytes - 1)
+		inner = byte_slice(form, 2, byte_size(form) - 1)
 	}
 	"<:" + blocks + " " + inner + ">"
 }
@@ -1125,7 +1125,7 @@ ascii_escaped(text:text) := {
 	out = ""
 	in_tag = false
 	i = 0
-	while i < text.bytes {
+	while i < byte_size(text) {
 		b = byte_at(text, i)
 		width = utf8_width(b)
 		if b == 60 and byte_after(text, i) == 58 { in_tag = true }
@@ -1144,9 +1144,9 @@ ascii_escaped(text:text) := {
 unicode_to_uniscript(text:text) := {
 	out = ""
 	i = 0
-	while i < text.bytes {
+	while i < byte_size(text) {
 		b = byte_at(text, i)
-		if (b == 60 or b == 92) and i + 1 < text.bytes and byte_at(text, i + 1) == 58 {
+		if (b == 60 or b == 92) and i + 1 < byte_size(text) and byte_at(text, i + 1) == 58 {
 			out += byte_slice(text, i, i + 1) + "<::>"
 			i += 2
 		} else { if b == 92 and unicode_escape_end(text, i) >= 0 {
@@ -1160,11 +1160,11 @@ unicode_to_uniscript(text:text) := {
 			first = ""
 			others = ""
 			suffix = 0
-			while suffix >= 0 and i < text.bytes {
+			while suffix >= 0 and i < byte_size(text) {
 				next = utf8_width(byte_at(text, i))
 				suffix = find(suffixes_table, byte_slice(text, i, i + next))
 				if suffix >= 0 {
-					if first.bytes == 0 { first = value_of(suffix) } else { others += value_of(suffix) + " " }
+					if byte_size(first) == 0 { first = value_of(suffix) } else { others += value_of(suffix) + " " }
 					i += next
 				}
 			}

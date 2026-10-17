@@ -73,3 +73,7 @@
 - <target> is cargo's target directory, `cargo metadata --format-version 1 --no-deps | jq -r .target_directory`
   (~/.cargo/config.toml's target-dir), not /opt/cargo: v1.0.8 first shipped a stale Oct 8 uniscript.wasm from
   /opt/cargo whose `check` failed against the filler-free index; the asset was replaced the same hour.
+- v1.0.10 (2026-10-17): warp's text-unit decision makes `text.bytes` the list of bytes (`text.bytecount` the count), so
+  uniscript.wasp counts with `byte_size(x)`, which old and new warp both read as a number. The C core is unchanged.
+  tests/wasp/run.sh no longer runs inside this checkout ("./uniscript.wasp shadows the package uniscript"); the port's
+  tests pass (13 of 14, strict_first_problem fails as before the change) when they `use "<path>/uniscript.wasp"`.
