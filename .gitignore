@@ -38,3 +38,4 @@ fonts/sources/
 probes/unihan/
 tests/wasp/case.wasp
 probes/usage/wasp/packages/
+tests/wasp/.run/

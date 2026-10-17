@@ -1,10 +1,11 @@
 #!/bin/bash
 # uniscript.wasp's warnings for inline tags (shared cases js/test/cases.json "warns"/"quiet"), run with warp: one run per case
+[ -x "${WARP:-/opt/cargo/release/warp}" ] || WARP=$(command -v warp)
 WARP=${WARP:-/opt/cargo/release/warp}
 cd "$(dirname "$0")/../.."
 failures=0
 expect() { # source (wasp string literal), expected stderr warning or "" for none
-	printf 'use uniscript\nuniscript("%s")\n' "$1" > tests/wasp/case.wasp
+	printf 'use "%s/uniscript.wasp"\nuniscript("%s")\n' "$PWD" "$1" > tests/wasp/case.wasp  # by path: see run.sh
 	warning=$("$WARP" tests/wasp/case.wasp 2>&1 >/dev/null | grep '^warning' | sed 's/^warning: //')
 	if [ "$warning" != "$2" ]; then echo "FAIL $1: got '$warning' want '$2'"; failures=$((failures + 1)); fi
 }
