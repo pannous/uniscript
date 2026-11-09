@@ -288,3 +288,9 @@ fn i_is_the_imaginary_unit() {
 	converts("<:<> <:a>", "< a");
 	assert_eq!(to_uniscript("ⅈ ⅈx αⅈ"), "<:i> <:i>x \\:alpha<:i>");
 }
+
+#[test]
+fn norm_is_the_double_vertical_line() {
+	converts("\\:norm x \\:norm", "‖ x ‖");
+	assert_eq!(to_uniscript("‖x‖ ‖"), "<:norm/>x\\:norm \\:norm");
+}

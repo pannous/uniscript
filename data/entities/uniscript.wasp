@@ -25,6 +25,7 @@ uniscript {
 	greater: ">"
 	empty: "∅"
 	i: "ⅈ"
+	norm: "‖"
 	world: "🌍"
 	red-hair: "\u{200D}🦰"
 	curly-hair: "\u{200D}🦱"
