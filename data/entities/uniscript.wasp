@@ -24,6 +24,7 @@ uniscript {
 	colon: ":"
 	greater: ">"
 	empty: "∅"
+	i: "ⅈ"
 	world: "🌍"
 	red-hair: "\u{200D}🦰"
 	curly-hair: "\u{200D}🦱"

@@ -20,6 +20,7 @@
 		"Offsets (at, length, run start/end) are UTF-8 byte offsets."
 	],
 	"converts": [
+		["\\:i <:i/> <:<> <:a>", "ⅈ ⅈ < a"],
 		["<:greek> kosmos, <:/greek>", "κοσμος,"],
 ["<:dark-skinned red-haired woman>", "👩🏿‍🦰"], ["<:woman><:red-hair>", "👩‍🦰"], 		["<:alpha>", "α"],
 		["\\:infinity", "∞"],
@@ -187,6 +188,8 @@
 		["<:double bold A>", "𝐀", 1]
 	],
 	"roundTrips": [
+		["<:i>", "ⅈ"],
+		["<:i>x \\:alpha<:i>", "ⅈx αⅈ"],
 ["<:red-haired woman/>", "👩‍🦰"], ["<:dark-skinned woman/>", "👩🏿"], 		["\\:bold-Alpha", "𝚨"],
 		["\\:bold-alpha", "𝛂"],
 		["<:bold-italic Alpha/>", "𝜜"],

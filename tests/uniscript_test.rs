@@ -280,3 +280,11 @@ fn a_group_word_among_the_parts_groups_the_rest() {
 	converts("<:egyptian above A1 beside A2 A3>", "𓀀\u{13430}\u{13437}𓀁\u{13431}𓀂\u{13438}");
 	converts("<:above 犭 句>", "⿱犭句");
 }
+
+/// \:i is the imaginary unit ⅈ; a one character tag that is no name stays an escape of the marker
+#[test]
+fn i_is_the_imaginary_unit() {
+	converts("\\:i <:i> <:i/>", "ⅈ ⅈ ⅈ");
+	converts("<:<> <:a>", "< a");
+	assert_eq!(to_uniscript("ⅈ ⅈx αⅈ"), "<:i> <:i>x \\:alpha<:i>");
+}

@@ -725,11 +725,11 @@ static bool spelled_name(buf *out, str content, bool lowercase) {
 
 /* The text of <:content> at byte `at` that is no block opener or closer */
 static bool tag(converter *self, buf *out, str content, size_t at) {
-	if (content.n == 1) { /* <:<> <::> escape the marker */
+	if (spelled_name(out, content, false)) return true;
+	if (content.n == 1) { /* <:<> <::> escape the marker, <:i> is a name */
 		buf_adds(out, content);
 		return true;
 	}
-	if (spelled_name(out, content, false)) return true;
 	buf written = { 0 };
 	buf_addf(&written, "<:%.*s>", S(content));
 	bool coded = code_point(self, out, content, buf_str(&written), at);

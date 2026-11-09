@@ -651,11 +651,11 @@ private final class Conversion {
 
 	/// The text of `<:content>` at byte `at` that is no block opener or closer
 	private func tag(_ content: String, _ at: Int) throws -> String {
-		if content.utf8.count == 1 {
-			return content // <:<> <::> escape the marker
-		}
 		if let text = name(content.replacingOccurrences(of: " ", with: "-")) {
 			return text
+		}
+		if content.utf8.count == 1 {
+			return content // <:<> <::> escape the marker, <:i> is a name
 		}
 		if let text = codePoint(content, written: "<:\(content)>", at) {
 			return text

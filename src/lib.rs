@@ -807,11 +807,11 @@ impl<'a> Uniscript<'a> {
 
 	/// The text of `<:content>` at byte `at` that is no block opener or closer
 	fn tag(&self, content: &str, at: usize) -> Result<String, Error> {
-		if content.len() == 1 {
-			return Ok(content.to_string()); // <:<> <::> escape the marker
-		}
 		if let Some(text) = self.name(&content.replace(' ', "-")) {
 			return Ok(text.to_string());
+		}
+		if content.len() == 1 {
+			return Ok(content.to_string()); // <:<> <::> escape the marker, <:i> is a name
 		}
 		if let Some(text) = self.code_point(content, &format!("<:{content}>"), at) {
 			return Ok(text);

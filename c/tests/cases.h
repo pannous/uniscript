@@ -57,6 +57,7 @@ typedef struct { const char *name, *lang, *first_family, *first_feature; } font_
 
 /* uniscript → Unicode without warnings, and back to the same uniscript */
 static const conversion_case round_trips[] = {
+	{"<:i>", "ⅈ"}, {"<:i>x \\:alpha<:i>", "ⅈx αⅈ"},
 	{"\\:bold-Alpha", "𝚨"}, {"\\:bold-alpha", "𝛂"}, {"<:bold-italic Alpha/>", "𝜜"}, {"<:bold-italic alpha/>", "𝜶"},
 	{"<:sans-bold Alpha/>", "𝝖"}, {"<:sans-bold alpha/>", "𝝰"}, {"<:sans-bold-italic Alpha/>", "𝞐"},
 	{"<:sans-bold-italic alpha/>", "𝞪"}, {"\\:double-gamma", "ℽ"},
@@ -74,6 +75,7 @@ static const conversion_case round_trips[] = {
 
 /* uniscript → Unicode without warnings */
 static const conversion_case converts[] = {
+	{"\\:i <:i/> <:<> <:a>", "ⅈ ⅈ < a"},
 	{"<:bold ϑ/>", "𝛝"}, {"<:italic ω/>", "𝜔"},
 	{"<:bold italic alpha/>", "𝜶"}, {"<:italic bold A/>", "𝑨"}, {"<:sans bold italic alpha/>", "𝞪"}, /* stacked styles */
 	{"<:bold sans italic Alpha/>", "𝞐"}, {"<:bold fracture A/>", "𝕬"}, {"<:fraktur bold A/>", "𝕬"},

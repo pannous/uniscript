@@ -610,9 +610,9 @@ export class Uniscript {
 	}
 
 	#tag(content: string, at: number): string {
-		if (utf8Length(content) === 1) return content; // <:<> <::> escape the marker
 		const text = this.#name(content.replaceAll(" ", "-"));
 		if (text !== undefined) return text;
+		if (utf8Length(content) === 1) return content; // <:<> <::> escape the marker, <:i> is a name
 		const codePoint = this.#codePoint(content, `<:${content}>`, at);
 		if (codePoint !== undefined) return codePoint;
 		// `<:CJK UNIFIED IDEOGRAPH-4E00>`, `<:hangul syllable ga>`, `<:egyptian hieroglyph-13460>` before the egyptian block

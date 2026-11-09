@@ -614,8 +614,8 @@ private class Conversion(val index: EntityIndex, val source: String, val lenient
 
 	/** The text of `<:content>` at `at` that is no block opener or closer */
 	private fun tag(content: String, at: Int): String {
-		if (content.utf8Size == 1) return content // <:<> <::> escape the marker
 		name(content.replace(' ', '-'))?.let { return it }
+		if (content.utf8Size == 1) return content // <:<> <::> escape the marker, <:i> is a name
 		codePoint(content, "<:$content>", at)?.let { return it }
 		// `<:CJK UNIFIED IDEOGRAPH-4E00>`, `<:hangul syllable ga>`, `<:egyptian hieroglyph-13460>` before the egyptian block
 		AlgorithmicNames.character(content)?.let { return it }

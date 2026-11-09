@@ -514,11 +514,11 @@ class Uniscript:
 
     def _tag(self, content: str, at: int) -> str:
         """The text of `<:content>` at byte `at` that is no block opener or closer"""
-        if utf8_length(content) == 1:
-            return content  # <:<> <::> escape the marker
         text = self._name(content.replace(" ", "-"))
         if text is not None:
             return text
+        if utf8_length(content) == 1:
+            return content  # <:<> <::> escape the marker, <:i> is a name
         text = self._code_point(content, f"<:{content}>", at)
         if text is not None:
             return text
