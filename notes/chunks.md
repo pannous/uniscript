@@ -6,7 +6,7 @@ The 3.6 MB `data/entities.idx` (1.2 MB gzipped) is too big to load at once on a 
 ## Design
 - Lookup stays a binary search: the manifest holds the `(group, hash)` start of each chunk; a key's chunk is found by
   binary search there, then the chunk is searched like a whole index. Readers reuse their USX1 code for chunks.
-- Semantic grouping (user suggestion): chars by code point with cuts at Unicode blocks (Egyptian, CJK, math
+- Semantic grouping : chars by code point with cuts at Unicode blocks (Egyptian, CJK, math
   alphanumerics get their own chunks); names by first word split at space/hyphen, so a block type's operands
   (`fracture A`, `fracture-B`) and names like `egyptian-hieroglyph-…` share chunks. Groups ≥ ¼ chunk get their own chunks.
   Semantic cuts: 294 KB → 213 KB for the demo examples. Splitting names only at spaces (not hyphens): 305 KB.

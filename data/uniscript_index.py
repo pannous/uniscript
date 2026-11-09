@@ -92,7 +92,7 @@ LETTERLIKE_HOLES = {("italic", "h"): "PLANCK CONSTANT"}
 # block type 'greek': phonetic transliteration; letters without a clear counterpart (h j q v w y) have none,
 # so uniscript warns about them instead of guessing; the other letters by name: <:greek eta>, <:greek Omega>
 GREEK_LETTERS = dict(zip("abgdezikl" "mnxoprstuf", "αβγδεζικλ" "μνξοπρστυφ"))
-GREEK_TYPED_FINAL = {"c": "ς"}  # final sigma typed on purpose (user decision 2026-10-08); no capital form exists
+GREEK_TYPED_FINAL = {"c": "ς"}  # final sigma typed on purpose ; no capital form exists
 FINAL_KEY = "*final"  # "*final σ": ς, the form a letter takes at the end of a word (after a letter, before none)
 GREEK_FINAL_FORMS = {"σ": "ς"}
 GREEK_DIGRAPHS = {"th": "θ", "ch": "χ", "ps": "ψ"}
@@ -406,7 +406,7 @@ def egyptian_block(named):
 			                          for synonym in synonyms if pattern.match(name)]:
 				table.setdefault(spelling, character)
 	jsesh, own = unikemet_numbers()
-	# Unicode before the private use sign of the same JSesh number (user decision 2026-10-08), Unikemet's own numbers last
+	# Unicode before the private use sign of the same JSesh number , Unikemet's own numbers last
 	for number, sign in [*jsesh.items(), *extended_signs().items(), *own.items()]:
 		table.setdefault(number, sign)
 	return table
@@ -478,7 +478,7 @@ def ranked_readings(source):
 	return [(c, s[position]) for position in range(max(len(s) for _, s in readings)) for c, s in readings if position < len(s)]
 
 
-NEUTRAL_TONE = "5"  # the neutral tone as pinyin input methods write it (user decision 2026-10-08)
+NEUTRAL_TONE = "5"  # the neutral tone as pinyin input methods write it 
 
 
 def chinese_block():

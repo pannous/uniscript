@@ -13,7 +13,7 @@
 #                                         packaging/conan, vcpkg port packaging/vcpkg: smoke-tested only, upstream by PR)
 #   Debian     uniscript, libuniscript1, libuniscript-dev  (amd64 + arm64 .debs from the crate and the C tarball, cross-built
 #                                         with zig; signed flat apt repository $APT_URL and assets of the GitHub release)
-# Publishing needs: `npm login` (user pannous), `cargo login <crates.io token>`, a PyPI token in ~/.pypirc
+# Publishing needs: `npm login` , `cargo login <crates.io token>`, a PyPI token in ~/.pypirc
 # ([pypi] username = __token__, password = pypi-…) or TWINE_USERNAME=__token__ TWINE_PASSWORD=pypi-….
 # Maven Central: mavenCentralUsername, mavenCentralPassword (a Central Portal user token), signingInMemoryKey and
 # signingInMemoryKeyPassword in ~/.gradle/gradle.properties (or ORG_GRADLE_PROJECT_<name> variables).

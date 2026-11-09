@@ -1,5 +1,5 @@
 //! A block marked "*readings" (chinese, cuneiform) splits a word that is none of its operands into whole readings,
-//! silently (user decision 2026-10-02): the fewest pieces, the longest first. A word that does not split stays as
+//! silently : the fewest pieces, the longest first. A word that does not split stays as
 //! written with one warning. Letter blocks (greek) still spell a word letter by letter, digraphs first.
 use uniscript::{convert, WarningMode};
 

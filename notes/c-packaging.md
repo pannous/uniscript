@@ -57,7 +57,7 @@ vcpkg port, all built by c/CMakeLists.txt except Homebrew (Makefile). c/ffi (Rus
   After the release: SHA512 of the asset into portfile.cmake, `vcpkg x-add-version uniscript --overwrite-version`, push
   to a fork of microsoft/vcpkg, PR. vcpkg CI builds Windows triplets too; unsupported ones are skipped by "supports".
 
-## At a release (user commands)
+## At a release
 1. Tag and GitHub release: `git tag v1.0.0 && git push origin v1.0.0` (v0.1.0 exists and is stale),
    `make -C c/native dist` (prints the sha256), `gh release create v1.0.0 c/native/build/uniscript-c-1.0.0.tar.gz`.
 2. Fill the sha256: the resource in packaging/homebrew/Formula/uniscript.rb and packaging/conan/recipes/uniscript/all/conandata.yml get the `make dist` sha

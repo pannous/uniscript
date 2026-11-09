@@ -1,5 +1,5 @@
 //! Egyptian Hieroglyphs Extended-A (U+13460…) by their Unikemet/JSesh numbers (data/sources/unikemet_numbers.txt); Unicode
-//! wins over the private use sign of the same JSesh number (user decision 2026-10-08)
+//! wins over the private use sign of the same JSesh number 
 
 use uniscript::{to_unicode, to_uniscript};
 

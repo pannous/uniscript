@@ -1,7 +1,7 @@
 // Uniscript entities: latex.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
 
 latex {
-	// LaTeX readings of names HTML defines as no letter win (user decision P198: asymp ≍, circ ∘; letters stay HTML: ocirc ô)
+	// LaTeX readings of names HTML defines as no letter win 
 	circ: "∘"
 	// P198 exception: a math name, not a letter with a diacritic, keeps its LaTeX reading
 	varepsilon: "ε"

@@ -17,7 +17,7 @@ def expect(actual, expected):
 
 
 shi = block_word_completions("<:chinese> shi", names)
-# the neutral tone is tone 5 (user decision 2026-10-08): the toneless shi is only 是, 匙 of 钥匙 is shi5
+# the neutral tone is tone 5 : the toneless shi is only 是, 匙 of 钥匙 is shi5
 expect([entry[:3] for entry in shi[:2]], [("shi", "是", "shi"), ("shi1", "师", "shi1")])
 readings = [entry[2] for entry in shi]
 expect(readings.count("shi"), 1)
