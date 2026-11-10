@@ -176,7 +176,7 @@ public struct Uniscript: Sendable {
 			let content = text(open + 2..<close)
 			out += text(position..<open)
 			if index.readsAsOpener(content) {
-				out += index.shortForm(content, next: bytes.dropFirst(close + 1).first) ?? selfClosedForm(content)
+				out += index.shortForm(content, previous: out.utf8.last, next: bytes.dropFirst(close + 1).first) ?? selfClosedForm(content)
 			} else {
 				out += text(open..<close + 1)
 			}
@@ -743,7 +743,7 @@ private final class Conversion {
 		}
 		func isMarker(_ at: Int) -> Bool {
 			let colon = at + 1 < bytes.count && bytes[at + 1] == markerColon && (bytes[at] == tagOpen || bytes[at] == shortOpen)
-			return colon || (bytes[at] == shortOpen && unicodeEscapeLength(bytes, after: at) != nil)
+			return colon || (bytes[at] == shortOpen && unicodeEscapeLength(bytes, after: at) != nil) || escapedShortMarker(bytes, at: at)
 		}
 		func markerClosesBlock(_ marker: Int) -> Bool {
 			guard marker + 1 < bytes.count, bytes[marker] == tagOpen, bytes[marker + 1] == markerColon,
@@ -763,7 +763,10 @@ private final class Conversion {
 			}
 			position = marker
 			if position == bytes.count { break }
-			if let length = unicodeEscapeLength(bytes, after: position) {
+			if escapedShortMarker(bytes, at: position) {
+				out += text(position + 1..<position + 3) // the escaped marker as text, what follows it is plain text
+				position += 3
+			} else if let length = unicodeEscapeLength(bytes, after: position) {
 				let end = position + 1 + length
 				out += codePoint(text(position + 2..<end), written: text(position..<end), position)!
 				position = end
@@ -834,17 +837,17 @@ extension EntityIndex {
 	/// The explicit forms of an inline tag followed by the byte `next`, which convert alike: `\:greek-athos`,
 	/// `<:greek> athos <:/greek>` and `<:greek athos/>`
 	func explicitForms(_ content: String, next: UInt8?) -> [String] {
-		[shortForm(content, next: next), blockForm(content), selfClosedForm(content)].compactMap { $0 }
+		[shortForm(content, previous: nil, next: next), blockForm(content), selfClosedForm(content)].compactMap { $0 }
 	}
 
-	/// `\:greek-athos` of `greek athos` followed by `next`: names only, no name character may follow, hyphens only
-	/// without spaces (\: reads them as spaces: `<:red-haired woman>` is no `\:red-haired-woman`), and no meta key, which
-	/// reads better as a tag (`<:color red A/>`)
-	func shortForm(_ content: String, next: UInt8?) -> String? {
+	/// `\:greek-athos` of `greek athos` between the bytes `previous` and `next`: names only, no name character may follow,
+	/// no backslash precede (`\\:` is the escaped marker), hyphens only without spaces (\: reads them as spaces:
+	/// `<:red-haired woman>` is no `\:red-haired-woman`), and no meta key, which reads better as a tag (`<:color red A/>`)
+	func shortForm(_ content: String, previous: UInt8?, next: UInt8?) -> String? {
 		let namesOnly = content.utf8.allSatisfy { isNameByte($0) || $0 == UInt8(ascii: " ") }
 		let startsMeta = splitOnce(content, " ").map { get(.meta, $0.0) != nil } ?? false
 		let mixesHyphensAndSpaces = content.contains(" ") && content.contains("-")
-		guard namesOnly && !mixesHyphensAndSpaces && !startsMeta && !(next.map(isNameByte) ?? false) else { return nil }
+		guard namesOnly && !mixesHyphensAndSpaces && !startsMeta && !(next.map(isNameByte) ?? false) && previous != shortOpen else { return nil }
 		return "\\:" + content.replacingOccurrences(of: " ", with: "-")
 	}
 
@@ -874,7 +877,8 @@ public func asciiEscaped(_ uniscript: String) -> String {
 		}
 		let codePoint = "U+" + String(format: "%04X", scalar.value)
 		let beforeName = next.map { $0.isASCII && isNameByte(UInt8($0.value)) } ?? false
-		out += inTag ? codePoint : beforeName ? selfClosedForm(codePoint) : "\\:" + codePoint
+		let afterBackslash = position > 0 && scalars[position - 1] == "\\" // \\: would be the escaped marker
+		out += inTag ? codePoint : beforeName || afterBackslash ? selfClosedForm(codePoint) : "\\:" + codePoint
 	}
 	return out
 }
@@ -952,6 +956,12 @@ private func unicodeEscapeLength(_ bytes: [UInt8], after backslash: Int) -> Int?
 	guard start < bytes.count, bytes[start] == unicodeEscape else { return nil }
 	let length = tokenLength(bytes, from: start + 1)
 	return hexValue(String(decoding: bytes[start + 1..<start + 1 + length], as: UTF8.self), minimum: minBareHexDigits).map { _ in 1 + length }
+}
+
+/// A backslash before a short marker at `at` escapes it: `\\:alpha` is the text `\:alpha`, `\\U1F60D` the text `\U1F60D`
+private func escapedShortMarker(_ bytes: [UInt8], at: Int) -> Bool {
+	guard at + 2 < bytes.count, bytes[at] == shortOpen, bytes[at + 1] == shortOpen else { return false }
+	return bytes[at + 2] == markerColon || unicodeEscapeLength(bytes, after: at + 1) != nil
 }
 
 /// Bytes of the one whitespace a block opener eats after it
