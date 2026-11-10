@@ -20,6 +20,7 @@
 		"Offsets (at, length, run start/end) are UTF-8 byte offsets."
 	],
 	"converts": [
+		["\\\\:mars x \\:mars", "\\:mars x ♂"], ["\\\\U1F60D \\U1F60D", "\\U1F60D 😍"], ["a\\\\\\:b", "a\\\\:b"],
 		["\\:i <:i/> <:<> <:a>", "ⅈ ⅈ < a"],
 		["<:greek> kosmos, <:/greek>", "κοσμος,"],
 ["<:dark-skinned red-haired woman>", "👩🏿‍🦰"], ["<:woman><:red-hair>", "👩‍🦰"], 		["<:alpha>", "α"],
@@ -188,6 +189,7 @@
 		["<:double bold A>", "𝐀", 1]
 	],
 	"roundTrips": [
+		["\\<:mars/> x", "\\♂ x"], ["\\<:e-with-acute/>", "\\é"], ["\\\\<::>x \\<::>x", "\\\\:x \\:x"],
 		["<:i>", "ⅈ"],
 		["<:i>x \\:alpha<:i>", "ⅈx αⅈ"],
 ["<:red-haired woman/>", "👩‍🦰"], ["<:dark-skinned woman/>", "👩🏿"], 		["\\:bold-Alpha", "𝚨"],
@@ -221,11 +223,13 @@
 		["print(\"\\U0001F60D\") \\Users", "print(\"\\<:U>0001F60D\") \\Users"]
 	],
 	"explicit": [
+		["\\<:mars> \\\\:mars", "\\<:mars/> \\\\:mars"],
 		["<:uniscript version=\"https://uniscript.org/v1\">\n<:alpha> <:greek> athos <:/greek> <:alpha>x <:color #ff8800 A> <:font han-japanese>直<:/font> <<::>alpha>", "<:uniscript version=\"https://uniscript.org/v1\">\n\\:alpha <:greek> athos <:/greek> <:alpha/>x <:color #ff8800 A/> <:font han-japanese>直<:/font> <<::>alpha>"],
 		["<:greek athos> <:red-haired woman> <:color red A> <:fracture 7>", "\\:greek-athos <:red-haired woman/> <:color red A/> \\:fracture-7"],
 		["\\:alpha <:alpha/> <:/greek> <:>", "\\:alpha <:alpha/> <:/greek> <:>"]
 	],
 	"unicodeRoundTrips": [
+		["\\♂ x"], ["\\é"], ["\\\\:x \\:x"],
 		["∀x∈ℝ: 𝔄 A{U+E0072}{U+E004D} 𓀀{U+13440} ⿰犭句 <: é 🔴 日本語"],
 		["🏴{U+E0067}{U+E0062}{U+E0073}{U+E0063}{U+E0074}{U+E007F}"],
 		["a{attached blink fast}"],
@@ -297,6 +301,7 @@
 		["nosuchfont", null]
 	],
 	"toAsciiUniscript": [
+		["\\{U+E000} \\é", "\\<:U+E000/> \\<:e-with-acute/>"],
 		["α {U+E000} {U+E000}x", "\\:alpha \\:U+E000 <:U+E000/>x"],
 		["{U+E000}{U+E0072}", "<:red U+E000/>"],
 		["é 😀", "\\:e-with-acute \\:grinning-face"],

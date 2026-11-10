@@ -55,7 +55,8 @@ const OPERAND_CODE_POINT = /^(?:[Uu]\+|0[xX])([0-9A-Fa-f]{1,8})$/;
 const UNICODE_ESCAPE = /U([0-9A-Fa-f]{4,8})(?![A-Za-z0-9_-])/y;
 /** A name token after `\:`; the `+` of a leading `U+` belongs to it */
 const NAME_TOKEN = /(?:[Uu]\+)?[A-Za-z0-9_-]*/y;
-const MARKERS = /<:|\\:|\\(?=U[0-9A-Fa-f]{4,8}(?![A-Za-z0-9_-]))/g;
+/** `<:`, `\:`, `\U1F60D` and the escaped short markers `\\:` `\\U1F60D` (a backslash before a short marker escapes it) */
+const MARKERS = /<:|\\(?=\\?(?::|U[0-9A-Fa-f]{4,8}(?![A-Za-z0-9_-])))/g;
 const MAX_CODE_POINT = 0x10ffff;
 const SURROGATES = [0xd800, 0xdfff];
 /** Rust split_inclusive(char::is_whitespace): each piece is a word and the one whitespace character ending it */
@@ -158,6 +159,10 @@ function operandCodePoint(token: string): string | undefined {
 /** The hex digits of `\U1F60D` whose backslash is at `position - 1`, else undefined */
 const unicodeEscapeAt = (text: string, position: number) => matchAt(UNICODE_ESCAPE, text, position)?.[1];
 
+/** A backslash before a short marker at `position` escapes it: `\\:alpha` is the text `\:alpha`, `\\U1F60D` the text `\U1F60D` */
+const escapedShortMarkerAt = (text: string, position: number) =>
+	text.startsWith(SHORT_OPEN + SHORT_OPEN, position) && (text.startsWith(MARKER_COLON, position + 2) || unicodeEscapeAt(text, position + 2) !== undefined);
+
 /** Every order of the parts */
 function permutations(parts: string[]): string[][] {
 	if (parts.length <= 1) return [parts];
@@ -184,7 +189,8 @@ export function asciiEscaped(uniscript: string): string {
 		if (character.charCodeAt(0) < 0x80) return character;
 		const codePoint = `U+${character.codePointAt(0)!.toString(16).toUpperCase().padStart(4, "0")}`;
 		const beforeName = position + 1 < characters.length && isNameCharacter(characters[position + 1]);
-		return inTag ? codePoint : beforeName ? selfClosedForm(codePoint) : `${SHORT_OPEN}${MARKER_COLON}${codePoint}`;
+		const afterBackslash = characters[position - 1] === SHORT_OPEN; // \\: would be the escaped marker
+		return inTag ? codePoint : beforeName || afterBackslash ? selfClosedForm(codePoint) : `${SHORT_OPEN}${MARKER_COLON}${codePoint}`;
 	}).join("");
 }
 
@@ -282,17 +288,17 @@ export class Uniscript {
 	/** The explicit forms of an inline tag followed by `next`, which convert alike: `\:greek-athos`,
 	 * `<:greek> athos <:/greek>` and `<:greek athos/>` */
 	#explicitForms(content: string, next: string | undefined): string[] {
-		return [this.#shortForm(content, next), this.#blockForm(content), selfClosedForm(content)].filter((form) => form !== undefined);
+		return [this.#shortForm(content, undefined, next), this.#blockForm(content), selfClosedForm(content)].filter((form) => form !== undefined);
 	}
 
-	/** `\:greek-athos` of `greek athos` followed by `next`: names only, no name character may follow, hyphens only
-	 * without spaces (\: reads them as spaces: `<:red-haired woman>` is no `\:red-haired-woman`), and no meta key, which
-	 * reads better as a tag (`<:color red A/>`) */
-	#shortForm(content: string, next: string | undefined): string | undefined {
+	/** `\:greek-athos` of `greek athos` between `previous` and `next`: names only, no name character may follow, no
+	 * backslash precede (`\\:` is the escaped marker), hyphens only without spaces (\: reads them as spaces:
+	 * `<:red-haired woman>` is no `\:red-haired-woman`), and no meta key, which reads better as a tag (`<:color red A/>`) */
+	#shortForm(content: string, previous: string | undefined, next: string | undefined): string | undefined {
 		const namesOnly = [...content].every((character) => isNameCharacter(character) || character === " ");
 		const key = splitOnce(content, " ")?.[0];
 		const startsMeta = key !== undefined && this.metaTemplate(key) !== undefined;
-		const fits = namesOnly && !(content.includes(" ") && content.includes("-")) && !startsMeta && !(next !== undefined && isNameCharacter(next));
+		const fits = namesOnly && !(content.includes(" ") && content.includes("-")) && !startsMeta && !(next !== undefined && isNameCharacter(next)) && previous !== SHORT_OPEN;
 		return fits ? `${SHORT_OPEN}${MARKER_COLON}${content.replaceAll(" ", "-")}` : undefined;
 	}
 
@@ -314,7 +320,7 @@ export class Uniscript {
 			if (close < 0) break;
 			const content = source.slice(open + 2, close);
 			out += source.slice(position, open);
-			out += this.#readsAsOpener(content) ? this.#shortForm(content, characterAt(source, close + 1)) ?? selfClosedForm(content) : source.slice(open, close + 1);
+			out += this.#readsAsOpener(content) ? this.#shortForm(content, out.at(-1), characterAt(source, close + 1)) ?? selfClosedForm(content) : source.slice(open, close + 1);
 			position = close + 1;
 		}
 		return out + source.slice(position);
@@ -761,6 +767,11 @@ export class Uniscript {
 			else out += this.#blockText(block, this.#closesBlockAt(source, marker) ? withoutClosingPadding(plain) : plain, bytes);
 			advance(marker);
 			if (position >= source.length) break;
+			if (escapedShortMarkerAt(source, position)) {
+				out += source.slice(position + 1, position + 3); // the escaped marker as text, what follows it is plain text
+				advance(position + 3);
+				continue;
+			}
 			const escaped = unicodeEscapeAt(source, position + 1);
 			if (escaped !== undefined) {
 				const end = position + 2 + escaped.length;
