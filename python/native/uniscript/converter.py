@@ -15,7 +15,8 @@ from .meta import Font, Meta, MetaRun, Styled, utf8_length
 UNISCRIPT_VERSION = "https://uniscript.org/v1"
 # every https://uniscript.org/vN is read (backwards compatible, a later version as well as the current tables allow)
 READ_VERSION = re.compile(r"https://uniscript\.org/v[0-9]+")
-MARKER = re.compile(r"[<\\]:|\\(?=U[0-9A-Fa-f]{4,8}(?![A-Za-z0-9_-]))")
+# <: \: \U1F60D and the escaped short markers \\: \\U1F60D (a backslash before a short marker escapes it)
+MARKER = re.compile(r"<:|\\(?=\\?(?::|U[0-9A-Fa-f]{4,8}(?![A-Za-z0-9_-])))")
 # a code point token: U+1F60D, U1F60D, 0x1F60D in any case (1–8 hex digits) or bare 1F60D (4–8, so a mistyped short
 # name stays unknown)
 CODE_POINT = re.compile(r"(?:[Uu]\+?|0[xX])([0-9A-Fa-f]{1,8})|([0-9A-Fa-f]{4,8})")
@@ -132,6 +133,12 @@ def unicode_escape_at(text: str, position: int):
     return found[1] if found else None
 
 
+def escaped_short_marker_at(text: str, position: int) -> bool:
+    """A backslash before a short marker at `position` escapes it: `\\\\:alpha` is the text `\\:alpha`, `\\\\U1F60D` the text `\\U1F60D`"""
+    return text.startswith(SHORT_OPEN + SHORT_OPEN, position) and (
+        text.startswith(MARKER_COLON, position + 2) or unicode_escape_at(text, position + 2) is not None)
+
+
 def is_closing(content: str) -> bool:
     """`<:>` or `<:/greek>`"""
     return not content or content.startswith(CLOSING_SLASH)
@@ -201,16 +208,17 @@ class Uniscript:
     def _explicit_forms(self, content: str, next_character: str) -> list:
         """The forms of an inline tag followed by `next_character`, which convert alike: `\\:greek-athos`,
         `<:greek> athos <:/greek>` and `<:greek athos/>`"""
-        return [form for form in (self._short_form(content, next_character), self._block_form(content)) if form] + [self_closed_form(content)]
+        return [form for form in (self._short_form(content, None, next_character), self._block_form(content)) if form] + [self_closed_form(content)]
 
-    def _short_form(self, content: str, next_character: str):
-        """`\\:greek-athos` of `greek athos` followed by `next_character`: names only, no name character may follow,
-        hyphens only without spaces (\\: reads them as spaces: `<:red-haired woman>` is no `\\:red-haired-woman`), and no
-        meta key, which reads better as a tag (`<:color red A/>`)"""
+    def _short_form(self, content: str, previous_character, next_character: str):
+        """`\\:greek-athos` of `greek athos` between `previous_character` and `next_character`: names only, no name
+        character may follow, no backslash precede (`\\\\:` is the escaped marker), hyphens only without spaces (\\: reads
+        them as spaces: `<:red-haired woman>` is no `\\:red-haired-woman`), and no meta key, which reads better as a tag
+        (`<:color red A/>`)"""
         names_only = all(is_name_character(character) or character == " " for character in content)
         starts_meta = " " in content and self.meta_template(content.split(" ", 1)[0]) is not None
         fits = (names_only and not (" " in content and "-" in content) and not starts_meta
-                and not (next_character and is_name_character(next_character)))
+                and not (next_character and is_name_character(next_character)) and previous_character != SHORT_OPEN)
         return f"{SHORT_OPEN}{MARKER_COLON}{content.replace(' ', '-')}" if fits else None
 
     def _block_form(self, content: str):
@@ -231,7 +239,8 @@ class Uniscript:
             content = rest[open_at + 2:close]
             out.append(rest[:open_at])
             if self._reads_as_opener(content):
-                out.append(self._short_form(content, rest[close + 1:close + 2]) or self_closed_form(content))
+                previous = next((piece[-1] for piece in reversed(out) if piece), None)
+                out.append(self._short_form(content, previous, rest[close + 1:close + 2]) or self_closed_form(content))
             else:
                 out.append(rest[open_at:close + 1])
             rest = rest[close + 1:]
@@ -668,6 +677,10 @@ class Uniscript:
             if position >= len(source):
                 break
             rest = source[position:]
+            if escaped_short_marker_at(rest, 0):
+                out.append(rest[1:3])  # the escaped marker as text, what follows it is plain text
+                advance(3)
+                continue
             escaped = unicode_escape_at(rest, 1)
             if escaped is not None:
                 end = 2 + len(escaped)
@@ -842,7 +855,8 @@ def ascii_escaped(uniscript: str) -> str:
             continue
         code_point = f"U+{ord(character):04X}"
         before_name = at + 1 < len(uniscript) and is_name_character(uniscript[at + 1])
-        out.append(code_point if in_tag else self_closed_form(code_point) if before_name else f"{SHORT_OPEN}{MARKER_COLON}{code_point}")
+        after_backslash = uniscript[at - 1:at] == SHORT_OPEN  # \\: would be the escaped marker
+        out.append(code_point if in_tag else self_closed_form(code_point) if before_name or after_backslash else f"{SHORT_OPEN}{MARKER_COLON}{code_point}")
     return "".join(out)
 
 
