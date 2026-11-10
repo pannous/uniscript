@@ -742,9 +742,10 @@ reads_as_opener(content:text) := {
 
 self_closed_form(content:text) := "<:" + content + "/>"
 
-// \:greek-athos of greek athos followed by byte next (-1 at the end), else "": names only, no name byte may follow, hyphens
-// only without spaces (\: reads them as spaces), and no meta key, which reads better as a tag (<:color red A/>)
-short_form(content:text, next) := {
+// \:greek-athos of greek athos between the bytes before and next (-1 at either end), else "": names only, no name byte may
+// follow, no backslash precede (\\: is the escaped marker), hyphens only without spaces (\: reads them as spaces), and no
+// meta key, which reads better as a tag (<:color red A/>)
+short_form(content:text, before, next) := {
 	names_only = 0
 	spaces = 0
 	hyphens = 0
@@ -757,7 +758,7 @@ short_form(content:text, next) := {
 	}
 	space = offset_of(content, 32, 0)
 	starts_meta = space < byte_size(content) and is_meta_key(byte_slice(content, 0, space))
-	if names_only + spaces < byte_size(content) or (spaces > 0 and hyphens > 0) or starts_meta or is_name_byte(next) { return "" }
+	if names_only + spaces < byte_size(content) or (spaces > 0 and hyphens > 0) or starts_meta or is_name_byte(next) or before == 92 { return "" }
 	"\\:" + hyphenated(content)
 }
 
@@ -773,7 +774,7 @@ block_form(content:text) := {
 
 // the explicit forms of an inline tag followed by byte next, which convert alike: "a, b or c"
 explicit_forms(content:text, next) := {
-	short = short_form(content, next)
+	short = short_form(content, 0 - 1, next)
 	block = block_form(content)
 	listed = short
 	if byte_size(short) > 0 and byte_size(block) > 0 { listed += ", " }
@@ -784,6 +785,9 @@ explicit_forms(content:text, next) := {
 
 // the byte after offset at, -1 at the end
 byte_after(source:text, at) := if at + 1 < byte_size(source) { byte_at(source, at + 1) } else { 0 - 1 }
+
+// the last byte of text, -1 for none
+last_byte(text:text) := if byte_size(text) > 0 { byte_at(text, byte_size(text) - 1) } else { 0 - 1 }
 
 // the text of the inline tag <:content> at byte at, followed by byte next: <:…/> self-closes; a bare one that converts without
 // a warning warns that it looks like an opening tag, naming its explicit forms
@@ -817,7 +821,7 @@ explicit(source:text) := {
 			content = byte_slice(source, open + 2, close)
 			out += byte_slice(source, i, open)
 			if reads_as_opener(content) {
-				form = short_form(content, byte_after(source, close))
+				form = short_form(content, last_byte(out), byte_after(source, close))
 				if byte_size(form) == 0 { form = self_closed_form(content) }
 				out += form
 			} else { out += byte_slice(source, open, close + 1) }
@@ -913,10 +917,17 @@ unicode_escape_end(source:text, i) := {
 	end
 }
 
-// offset of the next "<:", "\:" or "\U1F60D" at or after start, else byte_size(source)
+// a backslash before a short marker at i escapes it: \\:alpha is the text \:alpha, \\U1F60D the text \U1F60D
+escaped_short_marker(source:text, i) := {
+	if i + 2 >= byte_size(source) or byte_at(source, i) != 92 or byte_at(source, i + 1) != 92 { return false }
+	byte_at(source, i + 2) == 58 or unicode_escape_end(source, i + 1) >= 0
+}
+
+// offset of the next "<:", "\:", "\U1F60D" or escaped short marker "\\:" "\\U1F60D" at or after start, else byte_size(source)
 next_marker(source:text, start) := {
 	i = start
 	while i + 1 < byte_size(source) {
+		if escaped_short_marker(source, i) { return i }
 		b = byte_at(source, i)
 		if (b == 60 or b == 92) and byte_at(source, i + 1) == 58 { return i }
 		if b == 92 and unicode_escape_end(source, i) >= 0 { return i }
@@ -972,6 +983,9 @@ converted(source:text, lenient) := {
 				out += unmarked(block_text(block, run, i))
 			} else { out += run }
 			i = next
+		} else { if escaped_short_marker(source, i) {
+			out += byte_slice(source, i + 1, i + 3) // the escaped marker as text, what follows it is plain text
+			i += 3
 		} else {
 			escape = unicode_escape_end(source, i)
 			if escape >= 0 {
@@ -1012,7 +1026,7 @@ converted(source:text, lenient) := {
 					}
 				}
 			} }
-		}
+		} }
 	}
 	out
 }
@@ -1133,7 +1147,7 @@ ascii_escaped(text:text) := {
 		if b < 128 { out += byte_slice(text, i, i + 1) } else {
 			written = code_point_name(code_point_at(text, i, width))
 			if in_tag { out += written } else {
-				if is_name_byte(byte_after(text, i + width - 1)) { out += self_closed_form(written) } else { out += "\\:" + written }
+				if is_name_byte(byte_after(text, i + width - 1)) or last_byte(out) == 92 { out += self_closed_form(written) } else { out += "\\:" + written }
 			}
 		}
 		i += width

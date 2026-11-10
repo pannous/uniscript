@@ -1,0 +1,12 @@
+use uniscript
+// a backslash escapes the short marker: \\:mars is the text \:mars, \\U1F60D the text \U1F60D; the writer puts no \: after a backslash
+private = (0xE000 as char)
+ok = uniscript("\\\\:mars x \\:mars") == "\\:mars x ♂"
+ok = ok and uniscript("\\\\U1F60D \\U2642") == "\\U1F60D ♂" // 😍 itself: warp traps converting the code point escape of an emoji (TODO.md)
+ok = ok and uniscript("a\\\\\\:b") == "a\\\\:b"
+ok = ok and unicode_to_uniscript("\\♂ x") == "\\<:mars/> x"
+ok = ok and unicode_to_uniscript("\\é") == "\\<:e-with-acute/>"
+ok = ok and uniscript(unicode_to_uniscript("\\\\:x \\:x")) == "\\\\:x \\:x"
+ok = ok and unicode_to_ascii_uniscript("\\" + private + " \\é") == "\\<:U+E000/> \\<:e-with-acute/>"
+ok = ok and explicit("\\<:mars> \\\\:mars") == "\\<:mars/> \\\\:mars"
+ok
