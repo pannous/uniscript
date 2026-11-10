@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/sundanese.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/sundanese.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	sundanese-sign-panyecek: "\u{1B80}"

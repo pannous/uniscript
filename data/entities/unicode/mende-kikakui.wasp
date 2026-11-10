@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/mende-kikakui.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/mende-kikakui.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	mende-kikakui-syllable-m001-ki: "𞠀"

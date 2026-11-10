@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/modi.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/modi.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	modi-letter-a: "𑘀"

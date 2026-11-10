@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/latin-extended-additional.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/latin-extended-additional.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	latin-capital-letter-a-with-ring-below: "Ḁ"

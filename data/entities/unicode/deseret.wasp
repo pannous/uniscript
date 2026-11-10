@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/deseret.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/deseret.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	deseret-capital-letter-long-i: "𐐀"

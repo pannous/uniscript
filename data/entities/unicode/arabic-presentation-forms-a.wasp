@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/arabic-presentation-forms-a.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/arabic-presentation-forms-a.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	arabic-letter-alef-wasla-isolated-form: "ﭐ"

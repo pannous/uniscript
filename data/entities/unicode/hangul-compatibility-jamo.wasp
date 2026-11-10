@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/hangul-compatibility-jamo.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/hangul-compatibility-jamo.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	hangul-letter-kiyeok: "ㄱ"

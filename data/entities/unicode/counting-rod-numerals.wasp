@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/counting-rod-numerals.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/counting-rod-numerals.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	counting-rod-unit-digit-one: "𝍠"

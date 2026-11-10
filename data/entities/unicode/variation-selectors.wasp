@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/variation-selectors.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/variation-selectors.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	variation-selector-1: "\u{FE00}"

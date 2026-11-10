@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/nag-mundari.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/nag-mundari.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	nag-mundari-letter-o: "𞓐"

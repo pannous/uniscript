@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/khmer.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/khmer.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	khmer-letter-ka: "ក"

@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/mathematical-alphanumeric-symbols.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/mathematical-alphanumeric-symbols.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	mathematical-bold-capital-a: "𝐀"

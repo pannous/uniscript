@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/cyrillic-extended-d.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/cyrillic-extended-d.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	modifier-letter-cyrillic-small-a: "𞀰"

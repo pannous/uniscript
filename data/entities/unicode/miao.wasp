@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/miao.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/miao.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	miao-letter-pa: "𖼀"

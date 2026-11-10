@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/znamenny-musical-notation.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/znamenny-musical-notation.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	znamenny-combining-mark-gorazdo-nizko-s-kryzhem-on-left: "\u{1CF00}"

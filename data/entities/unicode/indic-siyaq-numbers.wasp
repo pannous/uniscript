@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/indic-siyaq-numbers.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/indic-siyaq-numbers.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	indic-siyaq-number-one: "𞱱"

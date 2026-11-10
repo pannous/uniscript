@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/avestan.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/avestan.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	avestan-letter-a: "𐬀"

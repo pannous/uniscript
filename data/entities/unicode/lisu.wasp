@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/lisu.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/lisu.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	lisu-letter-ba: "ꓐ"

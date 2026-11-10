@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/gothic.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/gothic.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	gothic-letter-ahsa: "𐌰"

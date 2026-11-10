@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/new-tai-lue.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/new-tai-lue.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	new-tai-lue-letter-high-qa: "ᦀ"

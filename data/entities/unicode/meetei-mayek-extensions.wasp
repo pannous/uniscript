@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/meetei-mayek-extensions.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/meetei-mayek-extensions.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	meetei-mayek-letter-e: "ꫠ"

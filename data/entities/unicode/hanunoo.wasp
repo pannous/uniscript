@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/hanunoo.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/hanunoo.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	hanunoo-letter-a: "ᜠ"

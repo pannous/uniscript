@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/inscriptional-pahlavi.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/inscriptional-pahlavi.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	inscriptional-pahlavi-letter-aleph: "𐭠"

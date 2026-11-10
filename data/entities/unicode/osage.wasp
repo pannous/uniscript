@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/osage.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/osage.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	osage-capital-letter-a: "𐒰"

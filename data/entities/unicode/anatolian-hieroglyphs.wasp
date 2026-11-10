@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/anatolian-hieroglyphs.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/anatolian-hieroglyphs.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	anatolian-hieroglyph-a001: "𔐀"

@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/cyrillic-extended-a.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/cyrillic-extended-a.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	combining-cyrillic-letter-be: "\u{2DE0}"

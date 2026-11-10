@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/byzantine-musical-symbols.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/byzantine-musical-symbols.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	byzantine-musical-symbol-psili: "𝀀"

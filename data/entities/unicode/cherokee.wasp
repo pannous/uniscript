@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/cherokee.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/cherokee.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	cherokee-letter-a: "Ꭰ"

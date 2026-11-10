@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/telugu.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/telugu.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	telugu-sign-combining-candrabindu-above: "\u{C00}"

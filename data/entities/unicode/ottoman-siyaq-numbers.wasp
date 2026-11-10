@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/ottoman-siyaq-numbers.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/ottoman-siyaq-numbers.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	ottoman-siyaq-number-one: "𞴁"

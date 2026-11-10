@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/gurmukhi.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/gurmukhi.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	gurmukhi-sign-adak-bindi: "\u{A01}"

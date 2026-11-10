@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/runic.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/runic.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	runic-letter-fehu-feoh-fe-f: "ᚠ"

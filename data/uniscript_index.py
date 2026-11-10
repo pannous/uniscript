@@ -546,7 +546,7 @@ def seed_files():
 	styles["above"] = {GROUP_KEY: "", f"{PREFIX_KEY} cjk": IDS_ABOVE_TO_BELOW, f"{INFIX_KEY} egyptian": EGYPTIAN_VERTICAL_JOINER, **segment}
 	styles["beside"] = {GROUP_KEY: "", f"{PREFIX_KEY} cjk": IDS_LEFT_TO_RIGHT, f"{INFIX_KEY} egyptian": EGYPTIAN_HORIZONTAL_JOINER, **segment}
 	files = {
-		"uniscript.wasp": {"uniscript": dict(UNISCRIPT_NAMES)},
+		"custom.wasp": {"uniscript": dict(UNISCRIPT_NAMES)},
 		"latex.wasp": {"latex": unicode_math_names()},
 		"html.wasp": {"html": html_names()},
 		"styles.wasp": {"blocks": styles, "block-aliases": dict(BLOCK_ALIASES)},
@@ -589,7 +589,7 @@ HEADER = """// Uniscript entities (docs/uniscript.md), the human readable source
 //   meta           meta keys (<:color #ff8800 A>, <:font han-japanese> … <:/font>) → CSS declaration, {{}} is the value
 // Values are quoted text; invisible and combining characters are written \\u{{hex}}.
 """
-FILE_HEADER = "// Uniscript entities: {path}, part of data/entities/ (the sections are explained in uniscript.wasp)\n"
+FILE_HEADER = "// Uniscript entities: {path}, part of data/entities/ (the sections are explained in custom.wasp)\n"
 
 
 def is_visible(character):
@@ -608,7 +608,7 @@ def key_text(key):
 
 def write_entities(files, directory):
 	for path, sections in files.items():
-		header = HEADER.format(unicode=unicodedata.unidata_version) if path == "uniscript.wasp" else FILE_HEADER.format(path=path)
+		header = HEADER.format(unicode=unicodedata.unidata_version) if path == "custom.wasp" else FILE_HEADER.format(path=path)
 		(directory / path).parent.mkdir(parents=True, exist_ok=True)
 		write_sections(sections, header, directory / path)
 

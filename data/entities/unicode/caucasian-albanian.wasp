@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/caucasian-albanian.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/caucasian-albanian.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	caucasian-albanian-letter-alt: "𐔰"

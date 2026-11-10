@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/kana-extended-b.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/kana-extended-b.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	katakana-letter-minnan-tone-2: "𚿰"

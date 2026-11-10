@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/gunjala-gondi.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/gunjala-gondi.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	gunjala-gondi-letter-a: "𑵠"

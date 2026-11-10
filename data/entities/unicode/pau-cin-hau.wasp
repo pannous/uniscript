@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/pau-cin-hau.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/pau-cin-hau.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	pau-cin-hau-letter-pa: "𑫀"

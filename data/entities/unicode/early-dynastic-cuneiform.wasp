@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/early-dynastic-cuneiform.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/early-dynastic-cuneiform.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	cuneiform-sign-ab-times-nun-tenu: "𒒀"

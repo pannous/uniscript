@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/kayah-li.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/kayah-li.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	kayah-li-digit-zero: "꤀"

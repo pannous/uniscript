@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/geometric-shapes-extended.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/geometric-shapes-extended.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	black-left-pointing-isosceles-right-triangle: "🞀"

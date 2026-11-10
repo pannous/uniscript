@@ -1,4 +1,4 @@
-// Uniscript entities: latex.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: latex.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 latex {
 	// LaTeX readings of names HTML defines as no letter win 

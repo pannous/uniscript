@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/elymaic.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/elymaic.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	elymaic-letter-aleph: "𐿠"

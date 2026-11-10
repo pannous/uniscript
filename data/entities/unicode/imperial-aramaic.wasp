@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/imperial-aramaic.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/imperial-aramaic.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	imperial-aramaic-letter-aleph: "𐡀"

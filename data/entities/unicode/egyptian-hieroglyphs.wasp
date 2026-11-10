@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/egyptian-hieroglyphs.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/egyptian-hieroglyphs.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	egyptian-hieroglyph-a001: "𓀀"

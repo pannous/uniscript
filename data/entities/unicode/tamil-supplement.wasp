@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/tamil-supplement.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/tamil-supplement.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	tamil-fraction-one-three-hundred-and-twentieth: "𑿀"

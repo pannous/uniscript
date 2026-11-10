@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/modifier-tone-letters.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/modifier-tone-letters.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	modifier-letter-chinese-tone-yin-ping: "꜀"

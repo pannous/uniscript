@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/greek-and-coptic.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/greek-and-coptic.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	greek-capital-letter-heta: "Ͱ"

@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/yijing-hexagram-symbols.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/yijing-hexagram-symbols.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	hexagram-for-the-creative-heaven: "䷀"

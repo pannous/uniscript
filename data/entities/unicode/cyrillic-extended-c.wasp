@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/cyrillic-extended-c.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/cyrillic-extended-c.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	cyrillic-small-letter-rounded-ve: "ᲀ"

@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/arabic-extended-a.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/arabic-extended-a.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	arabic-letter-beh-with-small-v-below: "ࢠ"

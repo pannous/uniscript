@@ -19,4 +19,4 @@ entity name table v2: + HTML5 entity samples (case pairs like Tilde/tilde; HTML 
 - warp parses a local variable named like a function (`operand`, `restyled`) as a call ("operand needs 4 arguments"); no error-message accessor exists for wasp Error values.
 - npm pack skips symlinked files, hence the prepack copy over js/entities.idx.
 - The stale-reference checks (python/native test_reference, js differential, java checkNativesCurrent, csharp RequireCurrentNative) compare mtimes: rebuilding data/entities.idx with identical content still marks the binaries stale.
-- \:i is ⅈ (uniscript.wasp own name); a one character tag `<:x>` is the marker escape only when x is no name, so `<:i>` (the written form) reads ⅈ in every port (2026-11-09)
+- \:i is ⅈ (data/entities/custom.wasp own name); a one character tag `<:x>` is the marker escape only when x is no name, so `<:i>` (the written form) reads ⅈ in every port (2026-11-09)

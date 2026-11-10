@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/carian.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/carian.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	carian-letter-a: "𐊠"

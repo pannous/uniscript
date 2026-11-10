@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/old-north-arabian.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/old-north-arabian.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	old-north-arabian-letter-heh: "𐪀"

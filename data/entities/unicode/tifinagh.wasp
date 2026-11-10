@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/tifinagh.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/tifinagh.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	tifinagh-letter-ya: "ⴰ"

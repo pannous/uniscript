@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/old-sogdian.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/old-sogdian.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	old-sogdian-letter-aleph: "𐼀"

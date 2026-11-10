@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/sharada.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/sharada.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	sharada-sign-candrabindu: "\u{11180}"

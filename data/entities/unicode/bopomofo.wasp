@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/bopomofo.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/bopomofo.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	bopomofo-letter-b: "ㄅ"

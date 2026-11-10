@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/balinese.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/balinese.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	balinese-sign-ulu-ricem: "\u{1B00}"

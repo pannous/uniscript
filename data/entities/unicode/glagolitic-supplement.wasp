@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/glagolitic-supplement.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/glagolitic-supplement.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	combining-glagolitic-letter-azu: "\u{1E000}"

@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/halfwidth-and-fullwidth-forms.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/halfwidth-and-fullwidth-forms.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	fullwidth-exclamation-mark: "！"

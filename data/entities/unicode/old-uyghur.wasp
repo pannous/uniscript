@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/old-uyghur.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/old-uyghur.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	old-uyghur-letter-aleph: "𐽰"

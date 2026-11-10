@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/takri.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/takri.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	takri-letter-a: "𑚀"

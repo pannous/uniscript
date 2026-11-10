@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/vedic-extensions.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/vedic-extensions.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	vedic-tone-karshana: "\u{1CD0}"

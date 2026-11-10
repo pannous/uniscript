@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/hangul-jamo-extended-a.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/hangul-jamo-extended-a.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	hangul-choseong-tikeut-mieum: "ꥠ"

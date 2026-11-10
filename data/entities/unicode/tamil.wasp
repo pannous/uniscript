@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/tamil.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/tamil.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	tamil-sign-anusvara: "\u{B82}"

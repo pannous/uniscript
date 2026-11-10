@@ -1,4 +1,4 @@
-// Uniscript entities: styles.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: styles.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 blocks {
 	bold {

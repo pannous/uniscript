@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/kharoshthi.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/kharoshthi.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	kharoshthi-letter-a: "𐨀"

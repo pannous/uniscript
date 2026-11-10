@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/kana-supplement.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/kana-supplement.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	katakana-letter-archaic-e: "𛀀"

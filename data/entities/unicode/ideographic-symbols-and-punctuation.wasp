@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/ideographic-symbols-and-punctuation.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/ideographic-symbols-and-punctuation.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	tangut-iteration-mark: "𖿠"

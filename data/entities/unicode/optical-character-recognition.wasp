@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/optical-character-recognition.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/optical-character-recognition.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	ocr-hook: "⑀"

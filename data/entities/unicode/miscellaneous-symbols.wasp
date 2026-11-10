@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/miscellaneous-symbols.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/miscellaneous-symbols.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	black-sun-with-rays: "☀"

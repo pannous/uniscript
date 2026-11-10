@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/control-pictures.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/control-pictures.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	symbol-for-null: "␀"

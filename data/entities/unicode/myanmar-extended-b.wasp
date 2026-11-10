@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/myanmar-extended-b.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/myanmar-extended-b.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	myanmar-letter-shan-gha: "ꧠ"

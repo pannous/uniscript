@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/ancient-greek-numbers.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/ancient-greek-numbers.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	greek-acrophonic-attic-one-quarter: "𐅀"

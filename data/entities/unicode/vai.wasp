@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/vai.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/vai.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	vai-syllable-ee: "ꔀ"

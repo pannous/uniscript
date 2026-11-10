@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/arabic-supplement.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/arabic-supplement.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	arabic-letter-beh-with-three-dots-horizontally-below: "ݐ"

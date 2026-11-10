@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/phonetic-extensions.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/phonetic-extensions.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	latin-letter-small-capital-a: "ᴀ"

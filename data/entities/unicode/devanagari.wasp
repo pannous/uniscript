@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/devanagari.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/devanagari.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	devanagari-sign-inverted-candrabindu: "\u{900}"

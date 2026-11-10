@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/hatran.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/hatran.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	hatran-letter-aleph: "𐣠"

@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/kana-extended-a.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/kana-extended-a.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	hentaigana-letter-re-3: "𛄀"

@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/pahawh-hmong.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/pahawh-hmong.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	pahawh-hmong-vowel-keeb: "𖬀"

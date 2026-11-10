@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/cjk-symbols-and-punctuation.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/cjk-symbols-and-punctuation.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	ideographic-space: "\u{3000}"

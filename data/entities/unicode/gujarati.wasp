@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/gujarati.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/gujarati.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	gujarati-sign-candrabindu: "\u{A81}"

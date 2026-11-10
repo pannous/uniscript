@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/brahmi.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/brahmi.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	brahmi-sign-candrabindu: "\u{11000}"

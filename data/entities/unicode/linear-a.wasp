@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/linear-a.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/linear-a.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	linear-a-sign-ab001: "𐘀"

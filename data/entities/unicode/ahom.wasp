@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/ahom.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/ahom.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	ahom-letter-ka: "𑜀"

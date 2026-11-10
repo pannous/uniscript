@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/nandinagari.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/nandinagari.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	nandinagari-letter-a: "𑦠"

@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/latin-1-supplement.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/latin-1-supplement.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	no-break-space: "\u{A0}"

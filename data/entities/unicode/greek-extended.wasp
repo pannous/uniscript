@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/greek-extended.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/greek-extended.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	greek-small-letter-alpha-with-psili: "ἀ"

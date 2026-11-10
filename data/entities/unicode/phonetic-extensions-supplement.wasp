@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/phonetic-extensions-supplement.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/phonetic-extensions-supplement.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	latin-small-letter-b-with-palatal-hook: "ᶀ"

@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/linear-b-syllabary.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/linear-b-syllabary.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	linear-b-syllable-b008-a: "𐀀"

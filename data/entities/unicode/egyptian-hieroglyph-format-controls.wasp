@@ -1,4 +1,4 @@
-// Uniscript entities: unicode/egyptian-hieroglyph-format-controls.wasp, part of data/entities/ (the sections are explained in uniscript.wasp)
+// Uniscript entities: unicode/egyptian-hieroglyph-format-controls.wasp, part of data/entities/ (the sections are explained in custom.wasp)
 
 names {
 	egyptian-hieroglyph-vertical-joiner: "\u{13430}"
