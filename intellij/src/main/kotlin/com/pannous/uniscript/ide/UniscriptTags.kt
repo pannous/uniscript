@@ -9,8 +9,10 @@ import com.pannous.uniscript.Uniscript
 import com.pannous.uniscript.UniscriptError
 
 /** `<:content>` on one line, `\:name` (`\:U+1F60D` too) and the code point `\U1F60D`. The content starts with no space and
- *  has no brackets, braces, `;`, `=` or quotes, so Scala's `T <: Bound[…]>` and C++'s `<:` digraph are no tags. */
-private val TAG = Regex("""<:(?:[^\s>][^>\n\[\]{};="]*)?>|\\:(?:[Uu]\+)?[A-Za-z0-9_-]+|\\U[0-9A-Fa-f]{4,8}(?![A-Za-z0-9_-])""")
+ *  has no brackets, braces, `;`, `=` or quotes, so Scala's `T <: Bound[…]>` and C++'s `<:` digraph are no tags. The first
+ *  alternative is the escaped short marker `\\:` `\\U1F60D` (the text `\:` `\U`), matched only to be skipped. */
+private val TAG = Regex("""\\\\(?::|U[0-9A-Fa-f]{4,8}(?![A-Za-z0-9_-]))|<:(?:[^\s>][^>\n\[\]{};="]*)?>|\\:(?:[Uu]\+)?[A-Za-z0-9_-]+|\\U[0-9A-Fa-f]{4,8}(?![A-Za-z0-9_-])""")
+private const val ESCAPED_SHORT_OPEN = "\\\\"
 private const val SHORT_MARKER_LENGTH = 2
 private const val LONG_OPEN_LENGTH = 2
 
@@ -35,7 +37,7 @@ data class UniscriptTag(val range: TextRange, val text: String) {
 }
 
 fun uniscriptTags(text: CharSequence): Sequence<UniscriptTag> =
-	TAG.findAll(text).map { UniscriptTag(TextRange(it.range.first, it.range.last + 1), it.value) }
+	TAG.findAll(text).filterNot { it.value.startsWith(ESCAPED_SHORT_OPEN) }.map { UniscriptTag(TextRange(it.range.first, it.range.last + 1), it.value) }
 
 /** The main file of a view provider, once: not injected fragments nor the other language roots of the same text */
 fun isScannedFile(file: PsiFile): Boolean {

@@ -63,4 +63,11 @@ class UniscriptPluginTest : BasePlatformTestCase() {
 		myFixture.performEditorAction("Uniscript.ToUniscript")
 		myFixture.checkResult("<:alpha> <:fracture A> <:infinity>")
 	}
+
+	fun testTheEscapedShortMarkerIsText() {
+		val infos = highlighted("notes.txt", "\\\\:nosuchthing \\\\U1F60D \\:mars")
+		assertEquals(listOf<String>(), infos.filter { it.second == HighlightSeverity.ERROR }.map { it.first })
+		EditorTestUtil.buildInitialFoldingsInBackground(myFixture.editor)
+		assertEquals(listOf("♂"), myFixture.editor.foldingModel.allFoldRegions.map { it.placeholderText })
+	}
 }

@@ -45,10 +45,13 @@ private fun typedTag(text: CharSequence, caret: Int): TypedTag? {
 	val content = text.subSequence(start, caret).toString()
 	return when (text[start - 2]) {
 		'<' -> TypedTag(start - 2, content, false).takeUnless { content.startsWith(' ') }
-		'\\' -> TypedTag(start - 2, content, true).takeIf { content.all(::isNameChar) }
+		'\\' -> TypedTag(start - 2, content, true).takeIf { content.all(::isNameChar) && !isEscaped(text, start - 2) }
 		else -> null
 	}
 }
+
+/** A backslash before the short marker at `marker` escapes it: `\\:alpha` is the text `\:alpha` */
+private fun isEscaped(text: CharSequence, marker: Int) = marker > 0 && text[marker - 1] == '\\'
 
 private fun reopenPopup(context: InsertionContext) = AutoPopupController.getInstance(context.project).scheduleAutoPopup(context.editor)
 
@@ -190,8 +193,9 @@ class UniscriptCompletionContributor : CompletionContributor(), DumbAware {
 class UniscriptTypedHandler : TypedHandlerDelegate() {
 	override fun checkAutoPopup(charTyped: Char, project: Project, editor: Editor, file: PsiFile): Result {
 		val caret = editor.caretModel.offset
-		val opened = editor.document.charsSequence.subSequence(maxOf(0, caret - 1), caret).toString() + charTyped
-		if (opened == LONG_OPEN || opened == SHORT_OPEN) AutoPopupController.getInstance(project).scheduleAutoPopup(editor)
+		val text = editor.document.charsSequence
+		val opened = text.subSequence(maxOf(0, caret - 1), caret).toString() + charTyped
+		if (opened == LONG_OPEN || opened == SHORT_OPEN && !isEscaped(text, caret - 1)) AutoPopupController.getInstance(project).scheduleAutoPopup(editor)
 		return Result.CONTINUE
 	}
 }

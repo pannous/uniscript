@@ -89,4 +89,8 @@ class UniscriptCompletionTest : BasePlatformTestCase() {
 		choose("x \\:phaistos-bee<caret> y", "phaistos-disc-sign-bee", TAB)
 		myFixture.checkResult("x \\:phaistos-disc-sign-bee<caret> y")
 	}
+
+	fun testNothingAfterTheEscapedShortMarker() {
+		assertEquals(emptyList<String>(), completions("\\\\:alph<caret>"))
+	}
 }
