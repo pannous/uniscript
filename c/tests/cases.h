@@ -57,6 +57,7 @@ typedef struct { const char *name, *lang, *first_family, *first_feature; } font_
 
 /* uniscript → Unicode without warnings, and back to the same uniscript */
 static const conversion_case round_trips[] = {
+	{"\\<:mars/> x", "\\♂ x"}, {"\\<:e-with-acute/>", "\\é"}, {"\\\\<::>x \\<::>x", "\\\\:x \\:x"}, /* no \: after a backslash */
 	{"<:i>", "ⅈ"}, {"<:i>x \\:alpha<:i>", "ⅈx αⅈ"},
 	{"\\:bold-Alpha", "𝚨"}, {"\\:bold-alpha", "𝛂"}, {"<:bold-italic Alpha/>", "𝜜"}, {"<:bold-italic alpha/>", "𝜶"},
 	{"<:sans-bold Alpha/>", "𝝖"}, {"<:sans-bold alpha/>", "𝝰"}, {"<:sans-bold-italic Alpha/>", "𝞐"},
@@ -75,6 +76,7 @@ static const conversion_case round_trips[] = {
 
 /* uniscript → Unicode without warnings */
 static const conversion_case converts[] = {
+	{"\\\\:mars x \\:mars", "\\:mars x ♂"}, {"\\\\U1F60D \\U1F60D", "\\U1F60D 😍"}, {"a\\\\\\:b", "a\\\\:b"}, /* a backslash escapes the short marker */
 	{"\\:i <:i/> <:<> <:a>", "ⅈ ⅈ < a"},
 	{"<:bold ϑ/>", "𝛝"}, {"<:italic ω/>", "𝜔"},
 	{"<:bold italic alpha/>", "𝜶"}, {"<:italic bold A/>", "𝑨"}, {"<:sans bold italic alpha/>", "𝞪"}, /* stacked styles */
@@ -153,6 +155,7 @@ static const conversion_case converts[] = {
 
 /* Unicode → uniscript in ASCII only, and back */
 static const conversion_case ascii_spells[] = {
+	{"\\<:U+E000/> \\<:e-with-acute/>", "\\\uE000 \\é"},
 	{"\\:alpha \\:U+E000 <:U+E000/>x", "α \uE000 \uE000x"}, {"<:red U+E000/>", "\uE000\U000E0072"},
 	{"\\:e-with-acute \\:grinning-face", "é 😀"}, {"\\:U+10FFFD.", "\U0010FFFD."},
 };
@@ -171,6 +174,7 @@ static const conversion_case spells_back[] = {
 /* uniscript_explicit: the inline tags, which warn, in their explicit form; everything else stays */
 typedef struct { const char *source, *rewritten; } explicit_case;
 static const explicit_case explicits[] = {
+	{"\\<:mars> \\\\:mars", "\\<:mars/> \\\\:mars"},
 	{HEADER "\n<:alpha> <:greek> athos <:/greek> <:alpha>x <:color #ff8800 A> <:font han-japanese>直<:/font> <<::>alpha>",
 	 HEADER "\n\\:alpha <:greek> athos <:/greek> <:alpha/>x <:color #ff8800 A/> <:font han-japanese>直<:/font> <<::>alpha>"},
 	{"<:greek athos> <:red-haired woman> <:color red A> <:fracture 7>", "\\:greek-athos <:red-haired woman/> <:color red A/> \\:fracture-7"},
@@ -179,6 +183,7 @@ static const explicit_case explicits[] = {
 
 /* Unicode → uniscript → the same Unicode */
 static const char *const restores[] = {
+	"\\♂ x", "\\é", "\\\\:x \\:x",
 	"∀x∈ℝ: 𝔄 A\U000E0072\U000E004D 𓀀\U00013440 ⿰犭句 <: é 🔴 日本語",
 	SCOTLAND,
 	"a{:blink fast}", /* a key the entities do not know: spelled out */

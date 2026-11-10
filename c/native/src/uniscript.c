@@ -177,6 +177,11 @@ static size_t unicode_escape(str after_backslash) {
 	return hex_value(str_slice(after_backslash, 1, 1 + length), MIN_BARE_HEX_DIGITS, &value) ? 1 + length : 0;
 }
 
+/* A backslash before a short marker escapes it: \\:alpha is the text \:alpha, \\U1F60D the text \U1F60D */
+static bool escaped_short_marker(str rest) {
+	return rest.n > 2 && rest.p[0] == '\\' && rest.p[1] == '\\' && (rest.p[2] == ':' || unicode_escape(str_from(rest, 2)));
+}
+
 static size_t character_count(str text) {
 	size_t count = 0;
 	for (size_t i = 0; i < text.n; i++) count += ((unsigned char)text.p[i] & 0xC0) != 0x80;
@@ -884,10 +889,10 @@ static bool reads_as_opener(str content) {
 	return content.n > 1 && content.p[0] != '/' && content.p[content.n - 1] != '/' && !is_block(content) && !opens_meta(content);
 }
 
-/* \:greek-athos of "greek athos" followed by next: names only, no name character may follow, hyphens only without
- * spaces (\: reads them as spaces: <:red-haired woman> is no \:red-haired-woman), and no meta key, which reads better
- * as a tag (<:color red A/>) */
-static bool short_form(buf *out, str content, char next) {
+/* \:greek-athos of "greek athos" between previous and next: names only, no name character may follow, no backslash
+ * precede (\\: is the escaped marker), hyphens only without spaces (\: reads them as spaces: <:red-haired woman> is no
+ * \:red-haired-woman), and no meta key, which reads better as a tag (<:color red A/>) */
+static bool short_form(buf *out, str content, char previous, char next) {
 	bool has_space = false, has_hyphen = false;
 	for (size_t i = 0; i < content.n; i++) {
 		if (!is_name_character(content.p[i]) && content.p[i] != ' ') return false;
@@ -895,7 +900,7 @@ static bool short_form(buf *out, str content, char next) {
 		has_hyphen |= content.p[i] == '-';
 	}
 	str key, rest;
-	if ((has_space && has_hyphen) || is_name_character(next) || (split_once(content, ' ', &key, &rest) && meta_template(key, NULL)))
+	if ((has_space && has_hyphen) || is_name_character(next) || previous == '\\' || (split_once(content, ' ', &key, &rest) && meta_template(key, NULL)))
 		return false;
 	buf_addz(out, "\\:");
 	for (size_t i = 0; i < content.n; i++) buf_add(out, content.p[i] == ' ' ? "-" : content.p + i, 1);
@@ -918,7 +923,7 @@ static void self_closed_form(buf *out, str content) { buf_addf(out, "<:%.*s/>", 
 static void warn_opener(converter *self, str content, char next, size_t at) {
 	buf forms[3] = { 0 }, message = { 0 };
 	size_t count = 0;
-	if (short_form(&forms[count], content, next)) count++;
+	if (short_form(&forms[count], content, 0, next)) count++;
 	if (block_form(&forms[count], content)) count++;
 	self_closed_form(&forms[count++], content);
 	for (size_t i = 0; i < count; i++) {
@@ -951,7 +956,7 @@ static char *explicit_of(const char *source) {
 		buf_adds(&out, str_slice(rest, 0, open));
 		if (!reads_as_opener(content))
 			buf_adds(&out, str_slice(rest, open, close + 1));
-		else if (!short_form(&out, content, close + 1 < rest.n ? rest.p[close + 1] : 0))
+		else if (!short_form(&out, content, out.n ? out.p[out.n - 1] : 0, close + 1 < rest.n ? rest.p[close + 1] : 0))
 			self_closed_form(&out, content);
 		rest = str_from(rest, close + 1);
 	}
@@ -959,9 +964,10 @@ static char *explicit_of(const char *source) {
 	return buf_take(&out);
 }
 
-/* The start of the next <:, \: or \U1F60D marker, or the end */
+/* The start of the next <:, \: or \U1F60D marker or escaped short marker \\: \\U1F60D, or the end */
 static size_t marker_in(str rest) {
 	for (size_t at = 0; at + 1 < rest.n; at++) {
+		if (escaped_short_marker(str_from(rest, at))) return at;
 		if ((rest.p[at] == '<' || rest.p[at] == '\\') && rest.p[at + 1] == ':') return at;
 		if (rest.p[at] == '\\' && unicode_escape(str_from(rest, at + 1))) return at;
 	}
@@ -1018,6 +1024,11 @@ static bool unicode_of(converter *self, buf *out, const char *text, uniscript_mo
 		position += marker;
 		rest = str_from(source, position);
 		if (!rest.n) break;
+		if (escaped_short_marker(rest)) {
+			buf_adds(out, str_slice(rest, 1, 3)); /* the escaped marker as text, what follows it is plain text */
+			position += 3;
+			continue;
+		}
 		size_t escape = unicode_escape(str_from(rest, 1));
 		if (escape) {
 			code_point(self, out, str_slice(rest, 2, 1 + escape), str_slice(rest, 0, 1 + escape), position);
@@ -1274,7 +1285,8 @@ static char *ascii_escaped(str uniscript) {
 			continue;
 		}
 		bool before_name = length < rest.n && is_name_character(rest.p[length]);
-		buf_addf(&out, in_tag ? "U+%04X" : before_name ? "<:U+%04X/>" : "\\:U+%04X", (unsigned)character);
+		bool after_backslash = out.n && out.p[out.n - 1] == '\\'; /* \\: would be the escaped marker */
+		buf_addf(&out, in_tag ? "U+%04X" : before_name || after_backslash ? "<:U+%04X/>" : "\\:U+%04X", (unsigned)character);
 	}
 	return buf_take(&out);
 }
