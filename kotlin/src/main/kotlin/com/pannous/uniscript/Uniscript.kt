@@ -28,7 +28,8 @@ private val OPERAND_CODE_POINT = Regex("(?:[Uu]\\+|0[xX])([0-9A-Fa-f]{1,8})")
 private val UNICODE_ESCAPE = Regex("U([0-9A-Fa-f]{4,8})(?![A-Za-z0-9_-])")
 /** A name token after `\:`; the `+` of a leading `U+` belongs to it */
 private val NAME_TOKEN = Regex("(?:[Uu]\\+)?[A-Za-z0-9_-]*")
-private val MARKERS = Regex("<:|\\\\:|\\\\(?=U[0-9A-Fa-f]{4,8}(?![A-Za-z0-9_-]))")
+/** `<:`, `\:`, `\U1F60D` and the escaped short markers `\\:` `\\U1F60D` (a backslash before a short marker escapes it) */
+private val MARKERS = Regex("<:|\\\\(?=\\\\?(?::|U[0-9A-Fa-f]{4,8}(?![A-Za-z0-9_-])))")
 private const val FONT_KEY = "font"
 private const val LANG_KEY = "lang"
 private const val VALUE_PLACEHOLDER = "{}"
@@ -198,7 +199,7 @@ class Uniscript(val index: EntityIndex = EntityIndex.bundled) {
 			val close = source.indexOf(TAG_CLOSE, open + 2).takeIf { it >= 0 } ?: break
 			val content = source.substring(open + 2, close)
 			out.append(source, position, open)
-			if (index.readsAsOpener(content)) out.append(index.shortForm(content, source.getOrNull(close + 1)) ?: selfClosedForm(content))
+			if (index.readsAsOpener(content)) out.append(index.shortForm(content, out.lastOrNull(), source.getOrNull(close + 1)) ?: selfClosedForm(content))
 			else out.append(source, open, close + 1)
 			position = close + 1
 		}
@@ -290,15 +291,15 @@ private fun EntityIndex.readsAsOpener(content: String) =
 
 /** The explicit forms of an inline tag followed by `next`, which convert alike: `\:greek-athos`,
  *  `<:greek> athos <:/greek>` and `<:greek athos/>` */
-private fun EntityIndex.explicitForms(content: String, next: Char?) = listOfNotNull(shortForm(content, next), blockForm(content), selfClosedForm(content))
+private fun EntityIndex.explicitForms(content: String, next: Char?) = listOfNotNull(shortForm(content, null, next), blockForm(content), selfClosedForm(content))
 
-/** `\:greek-athos` of `greek athos` followed by `next`: names only, no name character may follow, hyphens only without
- *  spaces (\: reads them as spaces: `<:red-haired woman>` is no `\:red-haired-woman`), and no meta key, which reads
- *  better as a tag (`<:color red A/>`) */
-private fun EntityIndex.shortForm(content: String, next: Char?): String? {
+/** `\:greek-athos` of `greek athos` between `previous` and `next`: names only, no name character may follow, no backslash
+ *  precede (`\\:` is the escaped marker), hyphens only without spaces (\: reads them as spaces: `<:red-haired woman>` is no
+ *  `\:red-haired-woman`), and no meta key, which reads better as a tag (`<:color red A/>`) */
+private fun EntityIndex.shortForm(content: String, previous: Char?, next: Char?): String? {
 	val namesOnly = content.all { isNameChar(it) || it == ' ' }
 	val startsMeta = splitOnce(content, ' ')?.let { isMetaKey(it.first) } == true
-	val fits = namesOnly && !(' ' in content && '-' in content) && !startsMeta && !(next != null && isNameChar(next))
+	val fits = namesOnly && !(' ' in content && '-' in content) && !startsMeta && !(next != null && isNameChar(next)) && previous != SHORT_OPEN
 	return if (fits) "$SHORT_OPEN$MARKER_COLON${content.replace(' ', '-')}" else null
 }
 
@@ -327,7 +328,8 @@ fun asciiEscaped(uniscript: String): String {
 		}
 		val codePoint = "U+%04X".format(character)
 		val beforeName = characters.getOrNull(position + 1)?.let { it < 0x80 && isNameChar(it.toChar()) } ?: false
-		out.append(if (inTag) codePoint else if (beforeName) selfClosedForm(codePoint) else "$SHORT_OPEN$MARKER_COLON$codePoint")
+		val afterBackslash = characters.getOrNull(position - 1) == SHORT_OPEN.code // \\: would be the escaped marker
+		out.append(if (inTag) codePoint else if (beforeName || afterBackslash) selfClosedForm(codePoint) else "$SHORT_OPEN$MARKER_COLON$codePoint")
 	}
 	return out.toString()
 }
@@ -676,7 +678,10 @@ private class Conversion(val index: EntityIndex, val source: String, val lenient
 			position = marker
 			if (position == source.length) break
 			val escaped = unicodeEscapeAt(source, position + 1)
-			if (escaped != null) {
+			if (escapedShortMarkerAt(source, position)) {
+				out.append(source, position + 1, position + 3) // the escaped marker as text, what follows it is plain text
+				position += 3
+			} else if (escaped != null) {
 				val end = position + 2 + escaped.length
 				out.append(codePoint(escaped, source.substring(position, end), position))
 				position = end
@@ -762,6 +767,10 @@ fun codePointValue(token: String): Long? =
 
 /** The hex digits of `\U1F60D` whose backslash is at `position - 1`, else null */
 private fun unicodeEscapeAt(text: String, position: Int) = UNICODE_ESCAPE.matchAt(text, position)?.groupValues?.get(1)
+
+/** A backslash before a short marker at `position` escapes it: `\\:alpha` is the text `\:alpha`, `\\U1F60D` the text `\U1F60D` */
+private fun escapedShortMarkerAt(text: String, position: Int) = text.startsWith("$SHORT_OPEN$SHORT_OPEN", position) &&
+	(text.startsWith(MARKER_COLON.toString(), position + 2) || unicodeEscapeAt(text, position + 2) != null)
 
 /** A tag's content is a closing tag: `<:>` or `<:/greek>` */
 private fun isClosing(content: String) = content.isEmpty() || content.startsWith(CLOSING_SLASH)
