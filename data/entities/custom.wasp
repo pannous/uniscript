@@ -8,6 +8,7 @@
 /*
 ./build.sh       # 💡 will do:
    cargo run -- build             rewrites data/entities.idx, which every port reads and the Rust library compiles in
+   cargo build --release          the Sublime plugin runs this checkout's newest release build
    cargo install --path .         puts the new names into the `uniscript` command (~/.cargo/bin)
    commit and push, then ~/dev/apps/MarkdownPreview/install.sh for the Markdown preview
 */

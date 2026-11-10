@@ -15,7 +15,25 @@ CHECKOUT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__fi
 CARGO_MANIFEST = "Cargo.toml"
 CARGO_SOURCES = "src" + os.sep  # dep-info of a build of the checkout names <checkout>/src/…
 DEP_INFO_SUFFIX = ".d"
-DEVELOPMENT_BUILDS = ("~/.cargo/shared-target/release", "/opt/cargo/release", "target/release")
+CARGO_CONFIGS = (os.path.join(CHECKOUT, ".cargo", "config.toml"), "~/.cargo/config.toml")
+TARGET_DIR_SETTING = re.compile(r'^\s*target-dir\s*=\s*"([^"]+)"', re.MULTILINE)
+KNOWN_TARGET_DIRECTORIES = ("~/.cargo/shared-target", "/opt/cargo", "target")
+RELEASE = "release"
+
+
+def cargo_target_directories():
+    """Where cargo builds: $CARGO_TARGET_DIR, the target-dir of the cargo configs, then the known shared ones"""
+    configured = [os.environ.get("CARGO_TARGET_DIR", "")]
+    for config in CARGO_CONFIGS:
+        path = os.path.expanduser(config)
+        if os.path.isfile(path):
+            with open(path, encoding="utf-8") as file:
+                configured += TARGET_DIR_SETTING.findall(file.read())
+    directories = [directory for directory in configured if directory] + list(KNOWN_TARGET_DIRECTORIES)
+    return tuple(dict.fromkeys(os.path.join(directory, RELEASE) for directory in directories))
+
+
+DEVELOPMENT_BUILDS = cargo_target_directories()
 CHECKOUT_INDEX = os.path.join("data", "entities.idx")  # compiled into the binary
 REVERSE_FLAG = "--reverse"
 LENIENT_FLAG = "--lenient"  # unknown entities stay as written, with a warning, instead of failing the conversion
@@ -29,9 +47,9 @@ SELF_CLOSING_END = "/>"  # an inline tag left as uniscript is written self-close
 # a complete `<:…>` tag just before the cursor, the last one on its line
 TAG_BEFORE_CURSOR = re.compile(r"<:[^<>\n]+>$")
 # a tag finished by a chosen completion: a closed `<:…>`, or `\:name` not ending in "-" (a group)
-FINISHED_TAG_BEFORE_CURSOR = re.compile(r"<:[^<>\n]+>$|\\:[A-Za-z0-9_-]*[A-Za-z0-9_]$")
+FINISHED_TAG_BEFORE_CURSOR = re.compile(r"<:[^<>\n]+>$|(?<!\\)\\:[A-Za-z0-9_-]*[A-Za-z0-9_]$")
 # the tag the cursor is typing in: `<:` with words (no leading space), or `\:` with a name
-TYPED_TAG = re.compile(r"(?:<:(?! )([^<>\n\[\]{};=\"]*)|\\:([A-Za-z0-9_-]*))$")
+TYPED_TAG = re.compile(r"(?:<:(?! )([^<>\n\[\]{};=\"]*)|(?<!\\)\\:([A-Za-z0-9_-]*))$")
 TAG = re.compile(r"<:([^<>\n]*)>")
 CLOSING_SLASH = "/"
 CLOSING_MARKER = MARKER + CLOSING_SLASH
