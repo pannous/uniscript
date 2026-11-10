@@ -88,3 +88,4 @@ Uniscript Hanzi (notes/hanzi.md), 2026-10-01:
 - the Rust CLI ignores nicknames.wasp: `uniscript.wasm` types \:bee as Deseret 𐐒 and rejects \:wasp, while data/entities.idx (read by the wasp port and warp) has both → 🐝
 - IntelliJ UniscriptPluginTest fails 2 of 5 (unrelated to completion): testTagsFoldToTheirUnicode expects `<:greek q>` to fold to `c` but Greek q has no form since 4c81493; testActionsConvertTheSelectionOrTheFile expects ToUniscript to write `<:alpha> <:fracture A> <:infinity>`, the converter writes `\:alpha` forms
 - swiftly's Swift 6.0.3 cannot build against the current SDK; `xcrun swift test` (6.4) works: `swiftly install latest`
+- tests/sublime/test_sublime_names_reload.py: its sublime stub lacks status_message, so the test crashes instead of passing whenever the dev binary is older than data/entities.idx (stale_build warns); seen 2026-11-10
