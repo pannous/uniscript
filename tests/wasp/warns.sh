@@ -1,7 +1,6 @@
 #!/bin/bash
 # uniscript.wasp's warnings for inline tags (shared cases js/test/cases.json "warns"/"quiet"), run with warp: one run per case
-[ -x "${WARP:-/opt/cargo/release/warp}" ] || WARP=$(command -v warp)
-WARP=${WARP:-/opt/cargo/release/warp}
+source "$(dirname "$0")/warp.sh"
 cd "$(dirname "$0")/../.."
 failures=0
 expect() { # source (wasp string literal), expected stderr warning or "" for none

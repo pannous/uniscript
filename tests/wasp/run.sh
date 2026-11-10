@@ -3,8 +3,7 @@
 # Build warp first: cd ~/dev/apps/warp && CARGO_TARGET_DIR=/opt/cargo cargo build --release --bin warp
 # A plain `use uniscript` beside ./uniscript.wasp is refused (it shadows the package), so each test runs as a copy in
 # tests/wasp/.run that uses this checkout's file by path; the checkout stays the working directory (data/entities.idx)
-[ -x "${WARP:-/opt/cargo/release/warp}" ] || WARP=$(command -v warp)
-export WARP=${WARP:-/opt/cargo/release/warp}
+source "$(dirname "$0")/warp.sh"
 HERE=$(cd "$(dirname "$0")" && pwd)
 cd "$HERE/../.." || exit 1
 mkdir -p "$HERE/.run"

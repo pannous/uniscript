@@ -1,0 +1,18 @@
+FAIL algorithmic_names.wasp: 
+ok ascii_uniscript.wasp
+FAIL block_padding.wasp: 
+FAIL codepoints.wasp: 
+ok escaped_marker.wasp
+FAIL explicit.wasp: 
+FAIL filler_names.wasp: 
+FAIL final_sigma.wasp: 
+FAIL groups.wasp: 
+FAIL inner_groups.wasp: 
+FAIL lenient.wasp: 
+FAIL operand_code_points.wasp: 
+FAIL readings.wasp: 
+FAIL stacked_styles.wasp: 
+FAIL strict_first_problem.wasp: 
+FAIL <:greek athos>: got '' want 'uniscript: <:greek athos> looks like an opening tag: write \:greek-athos, <:greek> athos <:/greek> or <:greek athos/> at byte 0'
+FAIL <:fracture A b c>: got '' want 'uniscript: <:fracture A b c> looks like an opening tag: write \:fracture-A-b-c or <:fracture A b c/> at byte 0'
+FAIL <:red-haired woman>: got '' want 'uniscript: <:red-haired woman> looks like an opening tag: write <:red-haired> woman <:/red-haired> or <:red-haired woman/> at byte 0'

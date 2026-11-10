@@ -37,6 +37,7 @@ def stub_sublime():
     sublime = types.ModuleType("sublime")
     sublime.Region = Region
     sublime.load_settings = lambda name: Settings()
+    sublime.status_message = print  # the plugin reports a stale build there
     plugin = types.ModuleType("sublime_plugin")
     for base in ("TextCommand", "WindowCommand", "EventListener", "ViewEventListener"):
         setattr(plugin, base, type(base, (), {}))
