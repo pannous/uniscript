@@ -21,6 +21,8 @@ const SUFFIX_KEY: &str = "*suffix";
 /// a block only for typing: its characters do not spell back as it (口 stays 口, not `<:chinese kou>`)
 const ONE_WAY_KEY: &str = "*one-way";
 const ENTITY_EXTENSION: &str = "wasp";
+const LINE_COMMENTS: [&str; 2] = ["//", "#"];
+const BLOCK_COMMENT: (&str, &str) = ("/*", "*/");
 /// the script that keeps the short name when letters of several scripts share it: `schwa` is Latin's
 const DEFAULT_SCRIPT: &str = "latin";
 const CASED_LETTER: [(&str, bool); 2] = [("-capital-letter-", true), ("-small-letter-", false)];
@@ -162,9 +164,14 @@ impl Entities {
 
 	pub fn parse(source: &str) -> Result<Self, String> {
 		let mut stack: Vec<(String, Table)> = vec![(String::new(), Table::default())];
+		let mut in_block_comment = false;
 		for (number, raw) in source.lines().enumerate() {
 			let line = raw.trim();
-			if line.is_empty() || line.starts_with("//") {
+			if in_block_comment || line.starts_with(BLOCK_COMMENT.0) {
+				in_block_comment = !line.ends_with(BLOCK_COMMENT.1) || line == BLOCK_COMMENT.0;
+				continue;
+			}
+			if line.is_empty() || is_comment(line) {
 				continue;
 			}
 			if let Some(name) = line.strip_suffix('{') {
@@ -454,7 +461,13 @@ fn parse_entry(line: &str) -> Option<(String, String)> {
 	let (key, rest) = take_token(line, true)?;
 	let rest = rest.strip_prefix(':')?.trim_start();
 	let (value, rest) = take_token(rest, false)?;
-	rest.trim().is_empty().then_some((key, value))
+	let rest = rest.trim();
+	(rest.is_empty() || is_comment(rest)).then_some((key, value))
+}
+
+/// A `//` or `#` comment, alone on its line or after an entry; `/* … */` spans whole lines
+fn is_comment(text: &str) -> bool {
+	LINE_COMMENTS.iter().any(|marker| text.starts_with(marker))
 }
 
 /// A quoted text or a bare word (up to ':' for a key, up to whitespace for a value), and the rest of the line

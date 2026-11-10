@@ -7,7 +7,7 @@ block files that sources drive.
     python3 data/uniscript_index.py regenerate unicode/egyptian-hieroglyphs.wasp …   # those files from data/sources/
 
 The entity files are the source of truth: edit them, then build. Only block files under unicode/ can be regenerated:
-the top-level files (uniscript, latex, html, styles, meta) carry hand edits a regeneration would lose. They are read in path order and their
+the top-level files (custom, latex, html, styles, meta) carry hand edits a regeneration would lose. They are read in path order and their
 sections merged (the first entry of a key wins); entities/unicode/ has one file per Unicode block with its character
 names and its script's block types. The index format is documented in README.md.
 """
@@ -630,7 +630,9 @@ def write_sections(sections, header, path):
 	path.write_text("\n".join(lines))
 
 
-ENTRY = re.compile(r'^("(?:[^"\\]|\\.)*"|[^\s:"]+):\s*("(?:[^"\\]|\\.)*"|\S+)$')
+ENTRY = re.compile(r'^("(?:[^"\\]|\\.)*"|[^\s:"]+):\s*("(?:[^"\\]|\\.)*"|\S+)(?:\s+(?://|#).*)?$')
+LINE_COMMENTS = ("//", "#")
+BLOCK_COMMENT = ("/*", "*/")
 ESCAPE = re.compile(r'\\u\{([0-9A-Fa-f]+)\}|\\(.)')
 
 
@@ -658,10 +660,13 @@ def merge(into, table):
 
 def read_file(path):
 	"""The sections of one entity file: one `key: value` per line, `name {` opens a table, `}` closes it"""
-	sections, stack = {}, []
+	sections, stack, in_block_comment = {}, [], False
 	for number, raw in enumerate(path.read_text().splitlines(), 1):
 		line = raw.strip()
-		if not line or line.startswith("//"):
+		if in_block_comment or line.startswith(BLOCK_COMMENT[0]):
+			in_block_comment = not line.endswith(BLOCK_COMMENT[1]) or line == BLOCK_COMMENT[0]
+			continue
+		if not line or line.startswith(LINE_COMMENTS):
 			continue
 		if line.endswith("{"):
 			table = {}

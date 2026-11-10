@@ -1,11 +1,16 @@
-// Uniscript entities (docs/uniscript.md), the human readable source of data/entities.idx, read with all other
+// CUSTOM Uniscript entities (docs/uniscript.md), the human readable source of data/entities.idx, read with all other
 // files of data/entities/ in path order (the first entry of a key wins); entities/unicode/ has one file per Unicode block.
+
 // Seeded by data/uniscript_index.py from Unicode 16.0.0 character names and blocks, the HTML5 entity list,
 // unicode-math-table.tex and Wikipedia's list of hieroglyphs; edit freely.
+
 // To bake an edit in, in the repository root:
-//   cargo run -- build             rewrites data/entities.idx, which every port reads and the Rust library compiles in
-//   cargo install --path .         puts the new names into the `uniscript` command (~/.cargo/bin)
-//   commit and push, then ~/dev/apps/MarkdownPreview/install.sh for the Markdown preview
+/*
+./build.sh       # 💡 will do:
+   cargo run -- build             rewrites data/entities.idx, which every port reads and the Rust library compiles in
+   cargo install --path .         puts the new names into the `uniscript` command (~/.cargo/bin)
+   commit and push, then ~/dev/apps/MarkdownPreview/install.sh for the Markdown preview
+*/
 //   uniscript      own names, win over all others
 //   names          Unicode names, lower case, spaces as hyphens: <:greek-small-letter-alpha> or <:greek small letter alpha>
 //   latex          unicode-math command names without backslash: <:alpha> <:infty> <:mfrakA>
@@ -33,6 +38,11 @@ uniscript {
 	mars: "♂"
 	venus: "♀"
 	world: "🌍"
+	# americas: "🌎︎"  # Already findable with \\:earth-globe-americas
+	idea: "💡" 
+	attention: "⚠️"
+	alarm:"🚨"
+	flash:"⚡️"
 	red-hair: "\u{200D}🦰"
 	curly-hair: "\u{200D}🦱"
 	white-hair: "\u{200D}🦳"

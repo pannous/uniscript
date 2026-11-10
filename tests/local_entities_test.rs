@@ -58,3 +58,14 @@ fn a_local_alias_names_a_built_in_block() {
 	assert_eq!(converter.convert("<:tiniest 2/> <:upper 2/>", WarningMode::Warn).unwrap().0, "² ²");
 	assert_eq!(converter.to_uniscript("²"), Uniscript::default().to_uniscript("²"));
 }
+
+#[test]
+fn comments_in_an_entity_file_are_skipped() {
+	let commented = Path::new(env!("CARGO_TARGET_TMPDIR")).join("commented");
+	std::fs::create_dir_all(&commented).unwrap();
+	let source = "uniscript {\n/*\n./build.sh\n   cargo run -- build\n*/\n\t# zqx-gone: \"🪐\"\n\tidea: \"💡\" # a lamp\n\tsun: \"☀\" // shines\n}\n";
+	std::fs::write(commented.join(".uniscript"), source).unwrap();
+	let converter = Uniscript::with_local_entities(&local_entity_files(&commented)).unwrap();
+	assert_eq!(converter.convert("\\:idea \\:sun", WarningMode::Warn).unwrap().0, "💡 ☀");
+	assert!(converter.convert("\\:zqx-gone", WarningMode::Error).is_err());
+}
