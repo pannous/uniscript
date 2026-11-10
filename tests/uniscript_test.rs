@@ -294,3 +294,8 @@ fn norm_is_the_double_vertical_line() {
 	converts("\\:norm x \\:norm", "‖ x ‖");
 	assert_eq!(to_uniscript("‖x‖ ‖"), "<:norm/>x\\:norm \\:norm");
 }
+
+#[test]
+fn mars_and_venus_are_the_gender_signs() {
+	converts("\\:mars \\:venus", "♂ ♀");
+}

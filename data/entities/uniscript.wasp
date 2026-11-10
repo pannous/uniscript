@@ -26,6 +26,8 @@ uniscript {
 	empty: "∅"
 	i: "ⅈ"
 	norm: "‖"
+	mars: "♂"
+	venus: "♀"
 	world: "🌍"
 	red-hair: "\u{200D}🦰"
 	curly-hair: "\u{200D}🦱"
