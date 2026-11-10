@@ -36,6 +36,8 @@ Simple entities can be represented as `\:` followed by the entity name:
   
 `\:infinity == ∞`    
   
+A backslash escapes the short marker: `\\:infinity` is the text `\:infinity`, `\\U1F60D` the text `\U1F60D`.    
+  
 A short name that is no entity reads as the tag with its hyphens as spaces, so every block works short too:
 `\:fracture-A` ⩵ `<:fracture A>` ⩵ 𝔄, `\:mirror-red-A` ⩵ `<:mirror red A>`, `\:egyptian-seated-man` ⩵ 𓀀.
 Block operands of several letters are also found in lowercase: `\:egyptian-a2` ⩵ `<:egyptian A2>` ⩵ 𓀁; a single

@@ -299,3 +299,13 @@ fn norm_is_the_double_vertical_line() {
 fn mars_and_venus_are_the_gender_signs() {
 	converts("\\:mars \\:venus", "♂ ♀");
 }
+
+#[test]
+fn a_backslash_escapes_the_short_marker() {
+	converts("\\\\:mars x \\:mars", "\\:mars x ♂");
+	converts("\\\\U1F60D \\U1F60D", "\\U1F60D 😍");
+	converts("a\\\\\\:b", "a\\\\:b");
+	for text in ["\\♂ x", "\\é", "\\\\:x \\:x"] {
+		assert_eq!(to_unicode(&to_uniscript(text)), Ok(text.to_string()), "{text}");
+	}
+}

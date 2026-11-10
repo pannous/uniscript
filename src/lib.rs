@@ -167,7 +167,8 @@ pub fn ascii_escaped(uniscript: &str) -> String {
 		}
 		let code_point = format!("U+{:04X}", u32::from(character));
 		let before_name = characters.peek().is_some_and(|(_, next)| is_name_character(*next));
-		out += &match (in_tag, before_name) {
+		let after_backslash = out.ends_with(SHORT_OPEN); // \\: would be the escaped marker
+		out += &match (in_tag, before_name || after_backslash) {
 			(true, _) => code_point,
 			(false, true) => self_closed_form(&code_point),
 			(false, false) => format!("{SHORT_OPEN}{MARKER_COLON}{code_point}"),
@@ -325,14 +326,23 @@ fn unicode_escape(after_backslash: &str) -> Option<(u32, usize)> {
 	hex_value(&digits[..length], MIN_BARE_HEX_DIGITS).map(|value| (value, 1 + length))
 }
 
-/// Whether a uniscript marker starts the text: `<:`, `\:` or `\U1F60D`
+/// Whether a uniscript marker starts the text: `<:`, `\:`, `\U1F60D` or an escaped short marker `\\:` `\\U1F60D`
 fn starts_marker(text: &str) -> bool {
+	starts_tag_or_short_marker(text) || escaped_short_marker(text)
+}
+
+fn starts_tag_or_short_marker(text: &str) -> bool {
 	let mut characters = text.chars();
 	match (characters.next(), characters.as_str()) {
 		(Some(TAG_OPEN | SHORT_OPEN), after) if after.starts_with(MARKER_COLON) => true,
 		(Some(SHORT_OPEN), after) => unicode_escape(after).is_some(),
 		_ => false,
 	}
+}
+
+/// A backslash before a short marker escapes it: `\\:alpha` is the text `\:alpha`, `\\U1F60D` the text `\U1F60D`
+fn escaped_short_marker(text: &str) -> bool {
+	text.strip_prefix(SHORT_OPEN).is_some_and(|after| after.starts_with(SHORT_OPEN) && starts_tag_or_short_marker(after))
 }
 
 /// Every order of the parts
@@ -434,16 +444,16 @@ impl<'a> Uniscript<'a> {
 	/// The explicit forms of an inline tag followed by `next`, which convert alike: `\:greek-athos`,
 	/// `<:greek> athos <:/greek>` and `<:greek athos/>`
 	fn explicit_forms(&self, content: &str, next: Option<char>) -> Vec<String> {
-		[self.short_form(content, next), self.block_form(content), Some(self_closed_form(content))].into_iter().flatten().collect()
+		[self.short_form(content, None, next), self.block_form(content), Some(self_closed_form(content))].into_iter().flatten().collect()
 	}
 
-	/// `\:greek-athos` of `greek athos` followed by `next`: names only, no name character may follow, hyphens only
-	/// without spaces (\: reads them as spaces: `<:red-haired woman>` is no `\:red-haired-woman`), and no meta key, which
-	/// reads better as a tag (`<:color red A/>`)
-	fn short_form(&self, content: &str, next: Option<char>) -> Option<String> {
+	/// `\:greek-athos` of `greek athos` between `previous` and `next`: names only, no name character may follow, no
+	/// backslash precede (`\\:` is the escaped marker), hyphens only without spaces (\: reads them as spaces:
+	/// `<:red-haired woman>` is no `\:red-haired-woman`), and no meta key, which reads better as a tag (`<:color red A/>`)
+	fn short_form(&self, content: &str, previous: Option<char>, next: Option<char>) -> Option<String> {
 		let names_only = content.chars().all(|character| is_name_character(character) || character == ' ');
 		let starts_meta = content.split_once(' ').is_some_and(|(key, _)| self.meta_template(key).is_some());
-		let fits = names_only && !(content.contains(' ') && content.contains('-')) && !starts_meta && !next.is_some_and(is_name_character);
+		let fits = names_only && !(content.contains(' ') && content.contains('-')) && !starts_meta && !next.is_some_and(is_name_character) && previous != Some(SHORT_OPEN);
 		fits.then(|| format!("{SHORT_OPEN}{MARKER_COLON}{}", content.replace(' ', "-")))
 	}
 
@@ -462,7 +472,8 @@ impl<'a> Uniscript<'a> {
 			let content = &rest[open + 2..close];
 			out += &rest[..open];
 			if self.reads_as_opener(content) {
-				out += &self.short_form(content, rest[close + 1..].chars().next()).unwrap_or_else(|| self_closed_form(content));
+				let (previous, next) = (out.chars().last(), rest[close + 1..].chars().next());
+				out += &self.short_form(content, previous, next).unwrap_or_else(|| self_closed_form(content));
 			} else {
 				out += &rest[open..=close];
 			}
@@ -954,7 +965,10 @@ impl<'a> Uniscript<'a> {
 			if rest.is_empty() {
 				break;
 			}
-			if let Some((_, length)) = unicode_escape(&rest[1..]) {
+			if escaped_short_marker(rest) {
+				out += &rest[1..3]; // the escaped marker as text, what follows it is plain text
+				position += 3;
+			} else if let Some((_, length)) = unicode_escape(&rest[1..]) {
 				out += &self.code_point(&rest[2..=length], &rest[..=length], position).expect("a code point");
 				position += 1 + length;
 			} else if rest.starts_with(SHORT_OPEN) {
