@@ -1,0 +1,16 @@
+ok algorithmic_names.wasp
+ok ascii_uniscript.wasp
+ok block_padding.wasp
+FAIL codepoints.wasp: no
+ok escaped_marker.wasp
+ok explicit.wasp
+ok filler_names.wasp
+ok final_sigma.wasp
+FAIL groups.wasp: no
+FAIL inner_groups.wasp: no
+FAIL lenient.wasp: 
+ok operand_code_points.wasp
+FAIL readings.wasp: no
+ok stacked_styles.wasp
+FAIL strict_first_problem.wasp: no
+0 failures

@@ -22,6 +22,10 @@ warp's own tests/test_uniscript.rs use warp's fetched copy packages/uniscript (s
 - A text const built by an expression (`const m = "" + (64976 as char)`) used in a module function gave
   "error + text" type errors for the whole module; an int const with the expression inline works.
 - A zero-argument function call `f()` in a module was read as an undefined variable.
+- warp text `==`/`!=` NFC-canonicalized byte_slice pieces that cut a character and trapped (out of bounds in
+  code_point_at) on 4-byte UTF-8 (emoji); fixed in warp 46080afc16 (core/runtime/text.warp whole_utf8: such texts
+  compare by bytes). Walking the code points of a cut text still traps (warp card walking-code).
+- `warning(…) + text` gives "ø" + text (warp card `warning`), which breaks unsupported()'s mark.
 
 ## *readings blocks split words into whole readings (Rust c9cd2a1)
 - readings() is the DP over character boundaries with three parallel lists (bounds, fewest, first_end), filled

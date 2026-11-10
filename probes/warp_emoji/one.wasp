@@ -1,0 +1,2 @@
+use "/Users/me/dev/uniscript/uniscript.wasp"
+uniscript("a <:U+1F60D>")
