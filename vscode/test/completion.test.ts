@@ -69,3 +69,10 @@ test("names without their filler word, then by a later segment, follow the names
 	assert.ok(!shown("\\:ta").includes("syriac-letter-taw")); // too short to find names loosely
 	assert.ok(!names.entities.some(([name]) => name.startsWith("*"))); // control keys (*fillers) are no names
 });
+
+test("an escaped short marker is no tag: \\\\:alph completes nothing, \\\\:alpha and \\\\U1F60D are text", () => {
+	assert.equal(suggestions("x \\\\:alph", "", names), undefined);
+	assert.equal(tagAt("x \\\\:alpha y", 6), undefined);
+	assert.equal(tagAt("x \\\\U1F60D y", 6), undefined);
+	assert.equal(tagAt("x \\:alpha y", 5)?.text, "\\:alpha");
+});

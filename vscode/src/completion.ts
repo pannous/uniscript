@@ -13,7 +13,7 @@ const FILLERS_KEY = "*fillers"; // the filler words a name may drop, space separ
 const MIN_LOOSE_LENGTH = 3; // a typed name this long also finds names loosely
 const TAG_END = ">";
 // the tag being typed at the end of the line: `<:` with words (no leading space), or `\:` with a name
-const TYPED_TAG = /(?:<:(?! )([^<>\n[\]{};="]*)|\\:([A-Za-z0-9_-]*))$/;
+const TYPED_TAG = /(?:<:(?! )([^<>\n[\]{};="]*)|(?<!\\)\\:([A-Za-z0-9_-]*))$/;
 
 type Named = [name: string, text: string];
 
