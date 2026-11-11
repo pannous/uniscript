@@ -195,14 +195,16 @@ pub unsafe extern "C" fn uniscript_convert(source: *const c_char, mode: Mode) ->
 	}
 }
 
+/// Uniscript → Unicode, NULL on an error; its warnings are uniscript_warnings', never printed
 #[no_mangle]
 pub unsafe extern "C" fn uniscript_to_unicode(source: *const c_char) -> *mut c_char {
-	text(source).and_then(|source| uniscript::to_unicode(source).ok()).map_or(null_mut(), |text| owned(&text))
+	text(source)
+		.and_then(|source| CONVERTER.with(|converter| converter.convert(source, WarningMode::Warn)).ok())
+		.map_or(null_mut(), |(text, _)| owned(&text))
 }
 
-/// The error converting the source gives ("unknown uniscript entity: x"), NULL when it converts. WebAssembly only
-/// (uniscript_c.wasm, ../uniscript_c.h): a host without struct returns calls this and uniscript_warnings
-#[cfg(target_family = "wasm")]
+/// The error converting the source gives ("unknown uniscript entity: x"), NULL when it converts: with uniscript_warnings
+/// what uniscript_convert tells, for a caller without struct returns (a WebAssembly host, warp's `use uniscript`)
 #[no_mangle]
 pub unsafe extern "C" fn uniscript_error(source: *const c_char) -> *mut c_char {
 	let Some(source) = text(source) else { return owned("uniscript: invalid input (NULL or not UTF-8)") };
@@ -212,9 +214,7 @@ pub unsafe extern "C" fn uniscript_error(source: *const c_char) -> *mut c_char {
 	}
 }
 
-/// The warnings converting the source gives, one per line as "uniscript: <message> at byte N"; "" without any.
-/// WebAssembly only
-#[cfg(target_family = "wasm")]
+/// The warnings converting the source gives, one per line as "uniscript: <message> at byte N"; "" without any
 #[no_mangle]
 pub unsafe extern "C" fn uniscript_warnings(source: *const c_char) -> *mut c_char {
 	let converted = text(source).and_then(|source| CONVERTER.with(|converter| converter.convert(source, WarningMode::Warn)).ok());

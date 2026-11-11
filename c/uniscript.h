@@ -81,8 +81,14 @@ typedef struct {
  * follow at offsets of the repaired text */
 uniscript_result uniscript_convert(const char *source, uniscript_mode mode);
 
-/* Uniscript → Unicode; NULL on an error, warnings go to stderr as "warning: uniscript: <message> at byte <n>\n" */
+/* Uniscript → Unicode; NULL on an error. Its warnings are uniscript_warnings', never printed */
 char *uniscript_to_unicode(const char *source);
+
+/* The error converting the source gives ("unknown uniscript entity: x"), NULL when it converts */
+char *uniscript_error(const char *source);
+
+/* The warnings converting the source gives, one per line as "uniscript: <message> at byte N"; "" without any */
+char *uniscript_warnings(const char *source);
 
 /* Unicode → uniscript; uniscript_to_unicode gives the text back. NULL only for NULL or invalid UTF-8 */
 char *uniscript_to_uniscript(const char *text);
